@@ -230,7 +230,8 @@ window.__ModuleLoader__.load({
 .eg-letters.answered .eg-letter { cursor: default; }
 .eg-lettercount { margin-top: 11px; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); }
 /* word training: centred column */
-.eg-word { max-width: 520px; min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.eg-word { max-width: 520px; min-height: 100%; display: flex; flex-direction: column; align-items: stretch; text-align: center; }
+.eg-word-main { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; min-height: 0; }
 .eg-word .eg-cap { justify-content: center; }
 .eg-word .eg-letters { justify-content: center; }
 .eg-word .eg-foot { justify-content: center; width: 100%; }
@@ -247,22 +248,37 @@ window.__ModuleLoader__.load({
 .eg-drill .eg-fb { width: 100%; text-align: left; }
 
 /* ===== word bank bar ===== */
-.eg-bankbar { width: 100%; display: flex; align-items: center; gap: 6px; padding-bottom: 10px; margin-bottom: 12px; border-bottom: 1px solid var(--eg-line); }
-.eg-banklabel { flex: 0 0 auto; font-size: var(--eg-fs-xs); color: var(--eg-ink-2); }
+.eg-bankbar { width: 100%; display: flex; align-items: center; gap: 8px; padding: 0 0 11px; margin: 0 0 8px; border-bottom: 1px solid var(--eg-line); }
+.eg-banklabel { flex: 0 0 auto; font-size: var(--eg-fs-xs); font-weight: 600; color: var(--eg-ink-2); letter-spacing: .02em; }
 .eg-select {
-  flex: 1 1 auto; min-width: 0; height: 28px; padding: 0 22px 0 8px; border: 1px solid var(--eg-line);
-  border-radius: 7px; background: var(--eg-bg); color: var(--eg-ink); cursor: pointer;
-  font: 500 var(--eg-fs-xs)/1 var(--eg-font); outline: none; appearance: none;
+  flex: 1 1 auto; min-width: 0; max-width: 230px; height: 30px; padding: 0 25px 0 11px; border: 1px solid var(--eg-line);
+  border-radius: 999px; background: var(--eg-bg-2); color: var(--eg-ink); cursor: pointer;
+  font: 600 var(--eg-fs-xs)/1 var(--eg-font); outline: none; appearance: none;
   background-image: linear-gradient(45deg, transparent 50%, var(--eg-ink-2) 50%), linear-gradient(135deg, var(--eg-ink-2) 50%, transparent 50%);
-  background-position: calc(100% - 11px) 12px, calc(100% - 7px) 12px; background-size: 4px 4px, 4px 4px; background-repeat: no-repeat;
+  background-position: calc(100% - 13px) 13px, calc(100% - 9px) 13px; background-size: 4px 4px, 4px 4px; background-repeat: no-repeat;
 }
+.eg-select:hover { border-color: var(--eg-line-2); }
 .eg-select:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
-.eg-bankbtn { flex: 0 0 auto; min-height: 28px; padding: 0 8px; font-size: var(--eg-fs-xs); }
+.eg-bankbtn {
+  flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: 3px;
+  min-height: 30px; padding: 0 11px; border: 1px solid var(--eg-line-2); border-radius: 999px;
+  background: var(--eg-bg); color: var(--eg-ink-2); cursor: pointer;
+  font: 600 var(--eg-fs-xs)/1 var(--eg-font);
+}
+.eg-bankbtn:hover { border-color: var(--eg-accent); color: var(--eg-accent-ink); background: color-mix(in srgb, var(--eg-accent) 5%, var(--eg-bg)); }
+.eg-bankbtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
 .eg-notice { margin: 0 0 12px; padding: 8px 10px; border-radius: 8px; background: color-mix(in srgb, var(--eg-ok) 8%, transparent); border: 1px solid color-mix(in srgb, var(--eg-ok) 28%, transparent); color: var(--eg-ink); font-size: var(--eg-fs-xs); line-height: 1.5; }
 
 /* ===== word bank import ===== */
 .eg-import { width: 100%; max-width: 520px; margin: 0 auto; text-align: left; }
 .eg-import-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.eg-import-back {
+  flex: 0 0 auto; display: inline-flex; align-items: center; min-height: 26px; padding: 3px 9px;
+  border: 1px solid var(--eg-line); border-radius: 999px; background: var(--eg-bg);
+  color: var(--eg-ink-2); cursor: pointer; font: 600 var(--eg-fs-xs)/1 var(--eg-font);
+}
+.eg-import-back:hover { border-color: var(--eg-line-2); color: var(--eg-ink); }
+.eg-import-back:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
 .eg-import-sub { margin-top: 4px; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); line-height: 1.5; }
 .eg-field { margin-top: 13px; }
 .eg-field label { display: block; margin-bottom: 6px; font-size: var(--eg-fs-xs); font-weight: 600; color: var(--eg-ink-2); }
@@ -688,7 +704,7 @@ window.__ModuleLoader__.load({
             h('div', { className: 'eg-ptitle' }, '导入词库'),
             h('div', { className: 'eg-import-sub' }, '支持 CSV / TSV / TXT / JSON，UTF-8 或 GBK'),
           ),
-          h('button', { className: 'eg-q-toggle', onClick: onClose }, '← 返回'),
+          h('button', { className: 'eg-import-back', onClick: onClose }, '← 返回'),
         ),
         h(
           'div',
@@ -1037,11 +1053,13 @@ window.__ModuleLoader__.load({
           ),
           React.createElement(
             'button',
-            { className: 'eg-btn ghost eg-bankbtn', onClick: () => { setNotice(''); setView('import') } },
+            { className: 'eg-bankbtn', onClick: () => { setNotice(''); setView('import') } },
+            React.createElement('span', { className: 'eg-plus', 'aria-hidden': 'true' }, '+'),
             '导入',
           ),
         ),
         notice ? React.createElement('div', { className: 'eg-notice' }, notice) : null,
+        React.createElement('div', { className: 'eg-word-main' },
         React.createElement('div', { className: 'eg-cap' }, '看中文，拼出下面的英文单词'),
         React.createElement('div', { className: 'eg-zh' }, item.zh),
         React.createElement('div', { className: 'eg-letters' + (answered ? ' answered' : '') }, cellsNodes),
@@ -1087,6 +1105,7 @@ window.__ModuleLoader__.load({
                 React.createElement('kbd', null, '↵'),
               ),
             ),
+        ),
       )
     }
 
