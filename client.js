@@ -2,28 +2,32 @@ window.__ModuleLoader__.load({
   id: 'dsh-english-gym',
   factory(require) {
     const React = require('react')
-    const { useState, useEffect, useRef, useCallback } = React
+    const { useState, useEffect, useRef, useCallback, useReducer } = React
 
     const API = '/api/english-gym'
     const STYLE_ID = 'eg-dock-style'
 
     const CSS = `
-.eg-overlay { position:fixed; inset:0; pointer-events:none; z-index:2147483000; font:13px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; color:var(--dsw-alias-label-primary, #1f2328); }
-.eg-overlay * { box-sizing:border-box; }
-.eg-launcher { position:fixed; right:28px; bottom:96px; width:52px; height:52px; border-radius:50%; border:none; cursor:pointer; pointer-events:auto; display:flex; align-items:center; justify-content:center; font-size:24px; color:#fff; background:linear-gradient(135deg, var(--dsw-alias-brand-primary,#0969da), #7b5cff); box-shadow:0 8px 24px rgba(0,0,0,.22); transition:transform .15s ease, box-shadow .15s ease; }
-.eg-launcher:hover { transform:translateY(-2px) scale(1.04); box-shadow:0 12px 28px rgba(0,0,0,.28); }
-.eg-launcher:active { transform:scale(.98); }
-.eg-lb-badge { position:absolute; top:-4px; right:-4px; min-width:18px; height:18px; padding:0 5px; border-radius:9px; background:var(--dsw-alias-state-error-primary,#cf222e); color:#fff; font-size:11px; line-height:18px; font-weight:700; box-shadow:0 0 0 2px var(--dsw-alias-bg-base,#fff); }
+.eg-root { font: 12px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; color: var(--dsw-alias-label-primary, #1f2328); }
+.eg-pill { display:flex; align-items:center; gap:8px; width:100%; padding:6px 10px; background:transparent; border:none; cursor:pointer; color:var(--dsw-alias-label-secondary, #57606a); text-align:left; border-radius:8px; }
+.eg-pill:hover { background:var(--dsw-alias-bg-layer-2, rgba(0,0,0,.04)); }
+.eg-dot { width:8px; height:8px; border-radius:50%; background:var(--dsw-alias-brand-primary, #0969da); flex:0 0 auto; }
+.eg-pill-title { font-weight:600; color:var(--dsw-alias-label-primary, #1f2328); }
 .eg-chip { display:inline-flex; align-items:center; padding:0 7px; height:18px; border-radius:9px; background:var(--dsw-alias-bg-layer-2, rgba(0,0,0,.06)); color:var(--dsw-alias-label-secondary, #57606a); font-size:11px; }
 .eg-chip.warn { background:var(--dsw-alias-state-warn-primary, #bf8700); color:#fff; opacity:.92; }
-.eg-panel { position:fixed; right:28px; bottom:160px; width:352px; max-width:calc(100vw - 32px); max-height:min(72vh, 580px); display:flex; flex-direction:column; pointer-events:auto; border:1px solid var(--dsw-alias-border-l1, rgba(0,0,0,.12)); border-radius:16px; background:var(--dsw-alias-bg-layer-1, #fff); box-shadow:0 16px 48px rgba(0,0,0,.22); overflow:hidden; }
-.eg-close { margin-left:8px; border:none; background:transparent; color:var(--dsw-alias-label-secondary,#57606a); cursor:pointer; font-size:15px; line-height:1; padding:4px 7px; border-radius:8px; flex:0 0 auto; }
-.eg-close:hover { background:var(--dsw-alias-bg-layer-2, rgba(0,0,0,.06)); }
+.eg-chev { margin-left:auto; opacity:.6; font-size:11px; }
+
+/* Floating board (rendered in shell.overlay) — fixed, never affects layout */
+.eg-panel { position:fixed; left:50%; bottom:150px; transform:translateX(-50%); width:360px; max-width:calc(100vw - 32px); max-height:min(72vh, 580px); display:flex; flex-direction:column; pointer-events:auto; z-index:2147483000; border:1px solid var(--dsw-alias-border-l1, rgba(0,0,0,.12)); border-radius:16px; background:var(--dsw-alias-bg-layer-1, #fff); box-shadow:0 16px 48px rgba(0,0,0,.22); overflow:hidden; font:13px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; color:var(--dsw-alias-label-primary, #1f2328); animation:eg-pop .16s ease-out; }
+.eg-panel * { box-sizing:border-box; }
+@keyframes eg-pop { from { opacity:0; transform:translateX(-50%) translateY(10px) scale(.98); } to { opacity:1; transform:translateX(-50%) translateY(0) scale(1); } }
 .eg-head { display:flex; align-items:center; gap:10px; padding:10px 12px 8px; border-bottom:1px solid var(--dsw-alias-border-l1, rgba(0,0,0,.1)); flex:0 0 auto; }
 .eg-tabs { display:flex; gap:4px; }
 .eg-tab { padding:4px 10px; border-radius:8px; border:none; background:transparent; color:var(--dsw-alias-label-secondary,#57606a); cursor:pointer; font-size:12px; }
 .eg-tab.active { background:var(--dsw-alias-bg-layer-2, rgba(0,0,0,.06)); color:var(--dsw-alias-label-primary,#1f2328); font-weight:600; }
 .eg-stats { margin-left:auto; display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
+.eg-close { margin-left:8px; border:none; background:transparent; color:var(--dsw-alias-label-secondary,#57606a); cursor:pointer; font-size:15px; line-height:1; padding:4px 7px; border-radius:8px; flex:0 0 auto; }
+.eg-close:hover { background:var(--dsw-alias-bg-layer-2, rgba(0,0,0,.06)); }
 .eg-body { padding:12px; overflow-y:auto; flex:1 1 auto; }
 .eg-zh { font-size:16px; line-height:1.6; font-weight:600; letter-spacing:.2px; }
 .eg-hint { margin-top:6px; color:var(--dsw-alias-label-secondary,#57606a); font-size:12px; }
@@ -86,6 +90,46 @@ window.__ModuleLoader__.load({
         throw error
       }
       return data
+    }
+
+    // Shared state between the inline pill (composer dock) and the floating
+    // board (shell overlay), so opening/closing and stats stay in sync.
+    const store = {
+      open: false,
+      stats: null,
+      listeners: new Set(),
+      emit() {
+        for (const l of Array.from(this.listeners)) l()
+      },
+      subscribe(l) {
+        this.listeners.add(l)
+        return () => this.listeners.delete(l)
+      },
+      setOpen(v) {
+        this.open = v
+        this.emit()
+      },
+      toggle() {
+        this.setOpen(!this.open)
+      },
+      setStats(s) {
+        this.stats = s
+        this.emit()
+      },
+    }
+
+    async function refreshStats() {
+      try {
+        store.setStats(await api('/state'))
+      } catch {
+        /* ignore */
+      }
+    }
+
+    function useShared() {
+      const [, force] = useReducer((x) => x + 1, 0)
+      useEffect(() => store.subscribe(force), [])
+      return store
     }
 
     function StatChip({ label, value, warn }) {
@@ -254,11 +298,43 @@ window.__ModuleLoader__.load({
       )
     }
 
-    function EnglishGymDock() {
+    // Inline trigger that stays under the composer.
+    function EnglishGymPill() {
       useStyle()
-      const [open, setOpen] = useState(false)
+      const shared = useShared()
+      useEffect(() => {
+        if (!store.stats) refreshStats()
+      }, [])
+      const stats = shared.stats
+      return React.createElement(
+        'div',
+        { className: 'eg-root' },
+        React.createElement(
+          'button',
+          {
+            className: 'eg-pill',
+            onClick: () => store.toggle(),
+            title: 'English Gym — 中文造句练习',
+            'aria-expanded': shared.open ? 'true' : 'false',
+          },
+          React.createElement('span', { className: 'eg-dot' }),
+          React.createElement('span', { className: 'eg-pill-title' }, 'English Gym'),
+          stats ? React.createElement('span', { className: 'eg-chip' }, '连续 ' + stats.streakDays + ' 天') : null,
+          stats && stats.reviewCount > 0
+            ? React.createElement('span', { className: 'eg-chip warn' }, '待复习 ' + stats.reviewCount)
+            : null,
+          stats ? React.createElement('span', { className: 'eg-chip' }, stats.accuracy + '% 正确') : null,
+          React.createElement('span', { className: 'eg-chev' }, shared.open ? '▾' : '▸'),
+        ),
+      )
+    }
+
+    // Floating board. Lives in shell.overlay (fixed) so opening it never
+    // reflows the conversation.
+    function EnglishGymBoard() {
+      useStyle()
+      const shared = useShared()
       const [tab, setTab] = useState('drill')
-      const [stats, setStats] = useState(null)
       const [card, setCard] = useState(null)
       const [answer, setAnswer] = useState('')
       const [feedback, setFeedback] = useState(null)
@@ -267,42 +343,31 @@ window.__ModuleLoader__.load({
       const [report, setReport] = useState(null)
       const [reportLoading, setReportLoading] = useState(false)
       const startedRef = useRef(false)
+      const stats = shared.stats
+      const open = shared.open
 
-      const refreshStats = useCallback(async () => {
+      const loadNext = useCallback(async (mode) => {
+        setBusy(true)
+        setError('')
         try {
-          const s = await api('/state')
-          setStats(s)
-        } catch {
-          /* ignore */
+          const data = await api('/next', {
+            method: 'POST',
+            body: JSON.stringify({ mode: mode || 'new' }),
+          })
+          setCard(data)
+          setAnswer('')
+          setFeedback(null)
+        } catch (e) {
+          setError(e.message || '出题失败')
+        } finally {
+          setBusy(false)
         }
       }, [])
-
-      const loadNext = useCallback(
-        async (mode) => {
-          setBusy(true)
-          setError('')
-          try {
-            const data = await api('/next', {
-              method: 'POST',
-              body: JSON.stringify({ mode: mode || 'new' }),
-            })
-            setCard(data)
-            setAnswer('')
-            setFeedback(null)
-          } catch (e) {
-            setError(e.message || '出题失败')
-          } finally {
-            setBusy(false)
-          }
-        },
-        [],
-      )
 
       const refreshReport = useCallback(async () => {
         setReportLoading(true)
         try {
-          const r = await api('/report')
-          setReport(r)
+          setReport(await api('/report'))
         } catch (e) {
           setError(e.message || '报告加载失败')
         } finally {
@@ -311,8 +376,8 @@ window.__ModuleLoader__.load({
       }, [])
 
       useEffect(() => {
-        refreshStats()
-      }, [refreshStats])
+        if (!store.stats) refreshStats()
+      }, [])
 
       useEffect(() => {
         if (open && tab === 'drill' && !card && !feedback && !startedRef.current) {
@@ -337,7 +402,7 @@ window.__ModuleLoader__.load({
             body: JSON.stringify({ id: card.id, answer }),
           })
           setFeedback(res)
-          if (res.summary) setStats(res.summary)
+          if (res.summary) store.setStats(res.summary)
         } catch (e) {
           setError(e.message || '判分失败')
           if (e.status === 409) {
@@ -357,107 +422,91 @@ window.__ModuleLoader__.load({
         loadNext('new')
       }, [loadNext])
 
-      const skip = useCallback(() => {
-        setFeedback(null)
-        setCard(null)
-        startedRef.current = false
-        loadNext('new')
-      }, [loadNext])
-
-      const reviewMode = card && card.mode === 'review'
+      if (!open) return null
 
       return React.createElement(
         'div',
-        { className: 'eg-overlay' },
+        { className: 'eg-panel', role: 'dialog', 'aria-label': 'English Gym' },
         React.createElement(
-          'button',
-          {
-            className: 'eg-launcher',
-            onClick: () => setOpen((v) => !v),
-            title: open ? '收起 English Gym' : 'English Gym — 中文造句练习',
-            'aria-label': 'English Gym',
-          },
-          React.createElement('span', null, '📘'),
-          !open && stats && stats.reviewCount > 0
-            ? React.createElement('span', { className: 'eg-lb-badge' }, stats.reviewCount)
+          'div',
+          { className: 'eg-head' },
+          React.createElement(
+            'div',
+            { className: 'eg-tabs' },
+            React.createElement(
+              'button',
+              { className: 'eg-tab' + (tab === 'drill' ? ' active' : ''), onClick: () => setTab('drill') },
+              '练习',
+            ),
+            React.createElement(
+              'button',
+              { className: 'eg-tab' + (tab === 'report' ? ' active' : ''), onClick: () => setTab('report') },
+              '今日报告',
+            ),
+          ),
+          stats
+            ? React.createElement(
+                'div',
+                { className: 'eg-stats' },
+                React.createElement(StatChip, { label: '今日', value: stats.today.answered }),
+                React.createElement(StatChip, { label: '待复习', value: stats.reviewCount, warn: stats.reviewCount > 0 }),
+                React.createElement(StatChip, { label: '正确率', value: stats.accuracy + '%' }),
+              )
             : null,
+          React.createElement(
+            'button',
+            { className: 'eg-close', onClick: () => store.setOpen(false), title: '收起' },
+            '✕',
+          ),
         ),
-        open
-          ? React.createElement(
-              'div',
-              { className: 'eg-panel', role: 'dialog', 'aria-label': 'English Gym' },
-              React.createElement(
-                'div',
-                { className: 'eg-head' },
-                React.createElement(
-                  'div',
-                  { className: 'eg-tabs' },
-                  React.createElement(
-                    'button',
-                    { className: 'eg-tab' + (tab === 'drill' ? ' active' : ''), onClick: () => setTab('drill') },
-                    '练习',
-                  ),
-                  React.createElement(
-                    'button',
-                    { className: 'eg-tab' + (tab === 'report' ? ' active' : ''), onClick: () => setTab('report') },
-                    '今日报告',
-                  ),
-                ),
-                stats
-                  ? React.createElement(
-                      'div',
-                      { className: 'eg-stats' },
-                      React.createElement(StatChip, { label: '今日', value: stats.today.answered }),
-                      React.createElement(StatChip, { label: '待复习', value: stats.reviewCount, warn: stats.reviewCount > 0 }),
-                      React.createElement(StatChip, { label: '正确率', value: stats.accuracy + '%' }),
-                    )
-                  : null,
-                React.createElement(
-                  'button',
-                  { className: 'eg-close', onClick: () => setOpen(false), title: '收起' },
-                  '✕',
-                ),
-              ),
-              React.createElement(
-                'div',
-                { className: 'eg-body' },
-                tab === 'drill'
-                  ? React.createElement(Drill, {
-                      card,
-                      answer,
-                      setAnswer,
-                      feedback,
-                      busy,
-                      error,
-                      onSubmit: submit,
-                      onNext: next,
-                      onSkip: skip,
-                    })
-                  : React.createElement(Report, {
-                      report,
-                      loading: reportLoading,
-                      onRefresh: () => {
-                        setReport(null)
-                        refreshReport()
-                      },
-                    }),
-              ),
-            )
-          : null,
+        React.createElement(
+          'div',
+          { className: 'eg-body' },
+          tab === 'drill'
+            ? React.createElement(Drill, {
+                card,
+                answer,
+                setAnswer,
+                feedback,
+                busy,
+                error,
+                onSubmit: submit,
+                onNext: next,
+                onSkip: next,
+              })
+            : React.createElement(Report, {
+                report,
+                loading: reportLoading,
+                onRefresh: () => {
+                  setReport(null)
+                  refreshReport()
+                },
+              }),
+        ),
       )
     }
 
     return {
       inject: ['slots'],
       apply(ctx) {
+        ctx.slots.inject('conversation.composer.dock', () =>
+          ctx.slots.register(
+            {
+              name: 'conversation.composer.dock',
+              id: 'dsh-english-gym.pill',
+              order: 20,
+            },
+            EnglishGymPill,
+          ),
+        )
         ctx.slots.inject('shell.overlay', () =>
           ctx.slots.register(
             {
               name: 'shell.overlay',
-              id: 'dsh-english-gym',
+              id: 'dsh-english-gym.board',
               order: 20,
             },
-            EnglishGymDock,
+            EnglishGymBoard,
           ),
         )
       },
