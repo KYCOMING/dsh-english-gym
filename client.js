@@ -227,6 +227,15 @@ window.__ModuleLoader__.load({
 .eg-word .eg-foot { justify-content: center; width: 100%; }
 .eg-word .eg-foot .eg-kbd { margin-left: 0; }
 .eg-word .eg-fb { width: 100%; text-align: left; }
+/* phrase drill: centred column */
+.eg-drill { max-width: 520px; min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.eg-drill .eg-cap { justify-content: center; }
+.eg-drill .eg-foot { justify-content: center; width: 100%; }
+.eg-drill .eg-foot .eg-kbd { margin-left: 0; }
+.eg-drill .eg-inputwrap { width: 100%; }
+.eg-drill .eg-input { text-align: left; }
+.eg-drill .eg-hintbox { text-align: left; }
+.eg-drill .eg-fb { width: 100%; text-align: left; }
 
 @media (prefers-reduced-motion: reduce) { .eg-panel { animation: none; } .eg-root *, .eg-panel * { transition: none !important; } }
 `
@@ -1049,17 +1058,21 @@ window.__ModuleLoader__.load({
           'div',
           { className: 'eg-body' },
           tab === 'drill'
-            ? React.createElement(Drill, {
-                key: card ? card.id : feedback ? 'fb' : 'loading',
-                card,
-                answer,
-                setAnswer,
-                feedback,
-                busy,
-                error,
-                onSubmit: submit,
-                onNext: next,
-              })
+            ? React.createElement(
+                'div',
+                { className: 'eg-drill' },
+                React.createElement(Drill, {
+                  key: card ? card.id : feedback ? 'fb' : 'loading',
+                  card,
+                  answer,
+                  setAnswer,
+                  feedback,
+                  busy,
+                  error,
+                  onSubmit: submit,
+                  onNext: next,
+                }),
+              )
             : tab === 'word'
               ? React.createElement(WordPractice, { key: 'word' })
               : React.createElement(Report, {
