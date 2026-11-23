@@ -37,6 +37,8 @@ window.__ModuleLoader__.load({
   --eg-fs-xs: 12px; --eg-fs-sm: 13px; --eg-fs-md: 15px; --eg-fs-lg: 19px; --eg-fs-xl: 32px;
 }
 .eg-root { font: var(--eg-fs-sm)/1.5 var(--eg-font); color: var(--eg-ink); }
+/* place the composer-strip pill at the far right of the dock row (after the context meter) */
+.eg-root.eg-entry { order: 999; flex: 0 0 auto; }
 .eg-root *, .eg-panel * { box-sizing: border-box; }
 
 /* ===== pill (composer strip) ===== */
@@ -775,7 +777,7 @@ window.__ModuleLoader__.load({
       const stats = shared.stats
       return React.createElement(
         'div',
-        { className: 'eg-root' },
+        { className: 'eg-root eg-entry' },
         React.createElement(
           'button',
           {
