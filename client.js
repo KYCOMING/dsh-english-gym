@@ -8,21 +8,23 @@ window.__ModuleLoader__.load({
     const STYLE_ID = 'eg-dock-style'
 
     const CSS = `
-.eg-root { font: 12px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; color: var(--dsw-alias-label-primary, #1f2328); }
-.eg-pill { display:flex; align-items:center; gap:8px; width:100%; padding:6px 10px; background:transparent; border:none; cursor:pointer; color:var(--dsw-alias-label-secondary, #57606a); text-align:left; border-radius:8px; }
-.eg-pill:hover { background:var(--dsw-alias-bg-layer-2, rgba(0,0,0,.04)); }
-.eg-dot { width:8px; height:8px; border-radius:50%; background:var(--dsw-alias-brand-primary, #0969da); flex:0 0 auto; }
-.eg-pill-title { font-weight:600; color:var(--dsw-alias-label-primary, #1f2328); }
+.eg-overlay { position:fixed; inset:0; pointer-events:none; z-index:2147483000; font:13px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; color:var(--dsw-alias-label-primary, #1f2328); }
+.eg-overlay * { box-sizing:border-box; }
+.eg-launcher { position:fixed; right:28px; bottom:96px; width:52px; height:52px; border-radius:50%; border:none; cursor:pointer; pointer-events:auto; display:flex; align-items:center; justify-content:center; font-size:24px; color:#fff; background:linear-gradient(135deg, var(--dsw-alias-brand-primary,#0969da), #7b5cff); box-shadow:0 8px 24px rgba(0,0,0,.22); transition:transform .15s ease, box-shadow .15s ease; }
+.eg-launcher:hover { transform:translateY(-2px) scale(1.04); box-shadow:0 12px 28px rgba(0,0,0,.28); }
+.eg-launcher:active { transform:scale(.98); }
+.eg-lb-badge { position:absolute; top:-4px; right:-4px; min-width:18px; height:18px; padding:0 5px; border-radius:9px; background:var(--dsw-alias-state-error-primary,#cf222e); color:#fff; font-size:11px; line-height:18px; font-weight:700; box-shadow:0 0 0 2px var(--dsw-alias-bg-base,#fff); }
 .eg-chip { display:inline-flex; align-items:center; padding:0 7px; height:18px; border-radius:9px; background:var(--dsw-alias-bg-layer-2, rgba(0,0,0,.06)); color:var(--dsw-alias-label-secondary, #57606a); font-size:11px; }
 .eg-chip.warn { background:var(--dsw-alias-state-warn-primary, #bf8700); color:#fff; opacity:.92; }
-.eg-chev { margin-left:auto; opacity:.6; font-size:11px; }
-.eg-panel { margin-top:4px; border:1px solid var(--dsw-alias-border-l1, rgba(0,0,0,.12)); border-radius:12px; background:var(--dsw-alias-bg-layer-1, #fff); box-shadow:0 6px 24px rgba(0,0,0,.08); overflow:hidden; }
-.eg-head { display:flex; align-items:center; gap:10px; padding:10px 12px 8px; border-bottom:1px solid var(--dsw-alias-border-l1, rgba(0,0,0,.1)); }
+.eg-panel { position:fixed; right:28px; bottom:160px; width:352px; max-width:calc(100vw - 32px); max-height:min(72vh, 580px); display:flex; flex-direction:column; pointer-events:auto; border:1px solid var(--dsw-alias-border-l1, rgba(0,0,0,.12)); border-radius:16px; background:var(--dsw-alias-bg-layer-1, #fff); box-shadow:0 16px 48px rgba(0,0,0,.22); overflow:hidden; }
+.eg-close { margin-left:8px; border:none; background:transparent; color:var(--dsw-alias-label-secondary,#57606a); cursor:pointer; font-size:15px; line-height:1; padding:4px 7px; border-radius:8px; flex:0 0 auto; }
+.eg-close:hover { background:var(--dsw-alias-bg-layer-2, rgba(0,0,0,.06)); }
+.eg-head { display:flex; align-items:center; gap:10px; padding:10px 12px 8px; border-bottom:1px solid var(--dsw-alias-border-l1, rgba(0,0,0,.1)); flex:0 0 auto; }
 .eg-tabs { display:flex; gap:4px; }
 .eg-tab { padding:4px 10px; border-radius:8px; border:none; background:transparent; color:var(--dsw-alias-label-secondary,#57606a); cursor:pointer; font-size:12px; }
 .eg-tab.active { background:var(--dsw-alias-bg-layer-2, rgba(0,0,0,.06)); color:var(--dsw-alias-label-primary,#1f2328); font-weight:600; }
 .eg-stats { margin-left:auto; display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
-.eg-body { padding:12px; }
+.eg-body { padding:12px; overflow-y:auto; flex:1 1 auto; }
 .eg-zh { font-size:16px; line-height:1.6; font-weight:600; letter-spacing:.2px; }
 .eg-hint { margin-top:6px; color:var(--dsw-alias-label-secondary,#57606a); font-size:12px; }
 .eg-hint summary { cursor:pointer; opacity:.85; }
@@ -366,23 +368,24 @@ window.__ModuleLoader__.load({
 
       return React.createElement(
         'div',
-        { className: 'eg-root' },
+        { className: 'eg-overlay' },
         React.createElement(
           'button',
-          { className: 'eg-pill', onClick: () => setOpen((v) => !v), title: 'English Gym — 中文造句练习' },
-          React.createElement('span', { className: 'eg-dot' }),
-          React.createElement('span', { className: 'eg-pill-title' }, 'English Gym'),
-          stats ? React.createElement('span', { className: 'eg-chip' }, '连续 ' + stats.streakDays + ' 天') : null,
-          stats && stats.reviewCount > 0
-            ? React.createElement('span', { className: 'eg-chip warn' }, '待复习 ' + stats.reviewCount)
+          {
+            className: 'eg-launcher',
+            onClick: () => setOpen((v) => !v),
+            title: open ? '收起 English Gym' : 'English Gym — 中文造句练习',
+            'aria-label': 'English Gym',
+          },
+          React.createElement('span', null, '📘'),
+          !open && stats && stats.reviewCount > 0
+            ? React.createElement('span', { className: 'eg-lb-badge' }, stats.reviewCount)
             : null,
-          stats ? React.createElement('span', { className: 'eg-chip' }, stats.accuracy + '% 正确') : null,
-          React.createElement('span', { className: 'eg-chev' }, open ? '▾' : '▸'),
         ),
         open
           ? React.createElement(
               'div',
-              { className: 'eg-panel' },
+              { className: 'eg-panel', role: 'dialog', 'aria-label': 'English Gym' },
               React.createElement(
                 'div',
                 { className: 'eg-head' },
@@ -409,6 +412,11 @@ window.__ModuleLoader__.load({
                       React.createElement(StatChip, { label: '正确率', value: stats.accuracy + '%' }),
                     )
                   : null,
+                React.createElement(
+                  'button',
+                  { className: 'eg-close', onClick: () => setOpen(false), title: '收起' },
+                  '✕',
+                ),
               ),
               React.createElement(
                 'div',
@@ -442,10 +450,10 @@ window.__ModuleLoader__.load({
     return {
       inject: ['slots'],
       apply(ctx) {
-        ctx.slots.inject('conversation.composer.dock', () =>
+        ctx.slots.inject('shell.overlay', () =>
           ctx.slots.register(
             {
-              name: 'conversation.composer.dock',
+              name: 'shell.overlay',
               id: 'dsh-english-gym',
               order: 20,
             },
