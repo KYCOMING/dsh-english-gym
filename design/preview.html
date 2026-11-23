@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>English Gym · component preview</title>
+<style>
+/* Hallmark · component: english-gym panel · genre: editorial · theme: in-place (dsh tokens) · states: 8 · contrast: pass · v2.0.0
+ * critique: the drill is a study desk — one sentence set in serif, one writing field, one action; feedback reads like a marked page.
+ * waive: none
+ */
+:root{
+  --eg-font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --eg-serif: "Songti SC", "Songti TC", "Georgia", "Times New Roman", serif;
+  --eg-ink: var(--dsw-alias-label-primary, #1f2328);
+  --eg-ink-2: var(--dsw-alias-label-secondary, #5a6069);
+  --eg-bg: var(--dsw-alias-bg-layer-1, #ffffff);
+  --eg-bg-2: var(--dsw-alias-bg-layer-2, rgba(23, 26, 31, .045));
+  --eg-bg-3: rgba(23, 26, 31, .09);
+  --eg-line: var(--dsw-alias-border-l1, rgba(23, 26, 31, .12));
+  --eg-line-2: var(--dsw-alias-border-l2, rgba(23, 26, 31, .24));
+  --eg-accent: var(--dsw-alias-brand-primary, #2f6fed);
+  --eg-accent-ink: #1d54c4;
+  --eg-on-accent: #ffffff;
+  --eg-ok: var(--dsw-alias-state-success-primary, #1a7f37);
+  --eg-bad: var(--dsw-alias-state-error-primary, #cf222e);
+  --eg-warn: var(--dsw-alias-state-warn-primary, #bf8700);
+  --eg-warn-strong: #7a5200;
+  --eg-r: 16px;
+  --eg-r-sm: 10px;
+  --eg-shadow: 0 20px 56px rgba(17, 22, 31, .22), 0 2px 8px rgba(17, 22, 31, .08);
+  --eg-dur: .16s;
+  --eg-fs-xs: 12px;
+  --eg-fs-sm: 13px;
+  --eg-fs-md: 15px;
+  --eg-fs-lg: 19px;
+  --eg-fs-xl: 32px;
+}
+*{box-sizing:border-box}
+html,body{overflow-x:clip;margin:0}
+body{
+  font-family:var(--eg-font);
+  color:var(--eg-ink);
+  background:#eef0f3;
+  padding:28px;
+  -webkit-font-smoothing:antialiased;
+}
+.page{max-width:1360px;margin:0 auto}
+.legend{font:600 13px/1.4 var(--eg-font);color:#4b5563;margin:0 0 14px}
+.row{display:flex;flex-wrap:wrap;gap:26px;align-items:flex-start}
+.frame{display:flex;flex-direction:column;gap:8px}
+.frame > .tag{font:600 12px/1 var(--eg-font);color:#5f6670;letter-spacing:.02em}
+.stage{
+  width:352px;padding:22px 20px;border-radius:20px;
+  background:linear-gradient(180deg,#f6f7f9,#eceef2);
+  display:flex;align-items:flex-end;justify-content:center;
+}
+
+/* ============ pill (composer strip) ============ */
+.eg-pill{
+  display:flex;align-items:center;gap:9px;width:100%;
+  padding:7px 10px;background:transparent;border:none;border-radius:10px;
+  color:var(--eg-ink-2);font-family:var(--eg-font);font-size:var(--eg-fs-sm);text-align:left;cursor:pointer;
+  transition:background var(--eg-dur) ease;
+}
+.eg-pill:hover{background:var(--eg-bg-2)}
+.eg-pill:focus-visible{outline:2px solid var(--eg-accent);outline-offset:2px}
+.eg-mono{
+  width:22px;height:22px;border-radius:7px;flex:0 0 auto;
+  background:var(--eg-accent);color:var(--eg-on-accent);
+  display:flex;align-items:center;justify-content:center;
+  font:700 var(--eg-fs-xs)/1 var(--eg-font);letter-spacing:.02em;
+}
+.eg-wordmark{font-weight:650;color:var(--eg-ink);letter-spacing:.01em}
+.eg-streak{color:var(--eg-ink-2);font-variant-numeric:tabular-nums}
+.eg-chip{
+  display:inline-flex;align-items:center;gap:4px;padding:1px 8px;height:20px;border-radius:10px;
+  background:var(--eg-bg-3);color:var(--eg-ink-2);font-size:var(--eg-fs-xs);font-variant-numeric:tabular-nums;
+}
+.eg-chip.warn{background:var(--eg-warn-strong);color:#fff}
+.eg-chev{margin-left:auto;opacity:.7;font-size:var(--eg-fs-xs)}
+
+/* ============ panel ============ */
+.eg-panel{
+  position:relative;width:100%;display:flex;flex-direction:column;
+  background:var(--eg-bg);border:1px solid var(--eg-line);border-radius:var(--eg-r);
+  box-shadow:var(--eg-shadow);overflow:hidden;
+  font:var(--eg-fs-sm)/1.5 var(--eg-font);color:var(--eg-ink);
+  transform-origin:bottom center;animation:eg-pop .18s cubic-bezier(.2,.85,.25,1);
+}
+@keyframes eg-pop{from{opacity:0;transform:scale(.94) translateY(10px)}to{opacity:1;transform:none}}
+.eg-head{
+  display:flex;align-items:center;gap:8px;padding:8px 10px 8px 12px;
+  border-bottom:1px solid var(--eg-line);flex:0 0 auto;cursor:move;user-select:none;touch-action:none;
+  background:var(--eg-bg);position:relative;
+}
+.eg-grip{color:var(--eg-ink-2);opacity:.9;font-size:var(--eg-fs-xs);letter-spacing:-2px;cursor:grab}
+.eg-tabs{display:flex;gap:2px;margin-left:2px}
+.eg-tab{
+  position:relative;padding:6px 9px;border:none;background:transparent;cursor:pointer;
+  color:var(--eg-ink-2);font:600 var(--eg-fs-sm)/1 var(--eg-font);border-radius:7px;transition:color var(--eg-dur) ease;
+}
+.eg-tab:hover{color:var(--eg-ink)}
+.eg-tab:focus-visible{outline:2px solid var(--eg-accent);outline-offset:1px}
+.eg-tab.active{color:var(--eg-ink)}
+.eg-tab.active::after{
+  content:"";position:absolute;left:9px;right:9px;bottom:-8px;height:2px;border-radius:2px;background:var(--eg-accent);
+}
+.eg-head-right{margin-left:auto;display:flex;align-items:center;gap:6px}
+.eg-close{
+  border:none;background:transparent;color:var(--eg-ink-2);cursor:pointer;
+  width:26px;height:26px;border-radius:7px;font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;
+  transition:background var(--eg-dur) ease,color var(--eg-dur) ease;
+}
+.eg-close:hover{background:var(--eg-bg-2);color:var(--eg-ink)}
+.eg-close:focus-visible{outline:2px solid var(--eg-accent);outline-offset:1px}
+.eg-body{padding:15px 15px 16px;overflow-y:auto;flex:1 1 auto}
+
+/* ============ drill ============ */
+.eg-cap{display:flex;align-items:center;gap:7px;color:var(--eg-ink-2);font-size:var(--eg-fs-xs);font-weight:600}
+.eg-cap::before{content:"";width:14px;height:2px;border-radius:2px;background:var(--eg-accent)}
+.eg-zh{
+  margin-top:11px;font-family:var(--eg-serif);font-size:var(--eg-fs-lg);line-height:1.55;font-weight:600;
+  letter-spacing:.01em;color:var(--eg-ink);overflow-wrap:break-word;
+}
+.eg-hintbtn{
+  margin-top:11px;display:inline-flex;align-items:center;gap:5px;min-height:26px;padding:4px 10px;
+  border:1px solid var(--eg-line);background:var(--eg-bg);border-radius:999px;
+  color:var(--eg-ink-2);font:600 var(--eg-fs-xs)/1 var(--eg-font);cursor:pointer;transition:all var(--eg-dur) ease;
+}
+.eg-hintbtn:hover{border-color:var(--eg-line-2);color:var(--eg-ink)}
+.eg-hintbtn:focus-visible{outline:2px solid var(--eg-accent);outline-offset:1px}
+.eg-hintbtn .caret{transition:transform var(--eg-dur) ease}
+.eg-hintbtn[aria-expanded="true"] .caret{transform:rotate(90deg)}
+.eg-hintbox{
+  margin-top:9px;padding:9px 11px;border-left:2px solid var(--eg-accent);border-radius:0 8px 8px 0;
+  background:var(--eg-bg-2);color:var(--eg-ink-2);font-size:var(--eg-fs-sm);line-height:1.6;
+}
+.eg-inputwrap{position:relative;margin-top:13px}
+.eg-input{
+  width:100%;min-height:86px;resize:vertical;padding:11px 12px;
+  border:1px solid var(--eg-line);border-radius:var(--eg-r-sm);
+  background:var(--eg-bg-2);color:var(--eg-ink);
+  font:var(--eg-fs-md)/1.55 var(--eg-font);outline:none;
+  transition:border-color var(--eg-dur) ease,box-shadow var(--eg-dur) ease,background var(--eg-dur) ease;
+}
+.eg-input::placeholder{color:var(--eg-ink-2);opacity:.85}
+.eg-input:hover{border-color:var(--eg-line-2)}
+.eg-input:focus{border-color:var(--eg-accent);background:var(--eg-bg);box-shadow:0 0 0 3px color-mix(in srgb,var(--eg-accent) 18%,transparent)}
+.eg-input.error{border-color:var(--eg-bad);box-shadow:0 0 0 3px color-mix(in srgb,var(--eg-bad) 15%,transparent)}
+.eg-hintline{display:flex;align-items:center;justify-content:space-between;margin-top:9px;gap:8px;min-height:18px}
+.eg-err{color:var(--eg-bad);font-size:var(--eg-fs-xs);flex:1 1 auto}
+.eg-kbd{color:var(--eg-ink-2);font-size:var(--eg-fs-xs);white-space:nowrap}
+.eg-kbd kbd{
+  font:600 12px/1 var(--eg-font);padding:2px 5px;border:1px solid var(--eg-line);border-bottom-width:2px;
+  border-radius:4px;background:var(--eg-bg);color:var(--eg-ink-2);
+}
+.eg-actions{display:flex;gap:8px;margin-top:11px}
+.eg-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  min-height:36px;padding:0 15px;border-radius:9px;cursor:pointer;
+  font:600 var(--eg-fs-sm)/1 var(--eg-font);transition:all var(--eg-dur) ease;
+  border:1px solid var(--eg-line-2);background:var(--eg-bg);color:var(--eg-ink);
+}
+.eg-btn:hover{background:var(--eg-bg-2)}
+.eg-btn:focus-visible{outline:2px solid var(--eg-accent);outline-offset:2px}
+.eg-btn:active{transform:translateY(1px)}
+.eg-btn.primary{border-color:transparent;background:var(--eg-accent);color:var(--eg-on-accent)}
+.eg-btn.primary:hover{filter:brightness(1.06)}
+.eg-btn:disabled{opacity:.5;cursor:default;pointer-events:none}
+.eg-btn.primary.is-loading{color:transparent;position:relative}
+.eg-btn.primary.is-loading::after{
+  content:"";position:absolute;width:15px;height:15px;border-radius:50%;
+  border:2px solid rgba(255,255,255,.5);border-top-color:#fff;animation:eg-spin .7s linear infinite;
+}
+.eg-btn.ghost{border-color:transparent;background:transparent;color:var(--eg-ink-2);padding:0 10px}
+.eg-btn.ghost:hover{background:var(--eg-bg-2);color:var(--eg-ink)}
+
+/* ============ feedback ============ */
+.eg-fb{margin-top:4px;border-radius:12px;padding:14px;border:1px solid transparent}
+.eg-fb.ok{background:color-mix(in srgb,var(--eg-ok) 8%,transparent);border-color:color-mix(in srgb,var(--eg-ok) 30%,transparent)}
+.eg-fb.bad{background:color-mix(in srgb,var(--eg-bad) 7%,transparent);border-color:color-mix(in srgb,var(--eg-bad) 28%,transparent)}
+.eg-fb-top{display:flex;align-items:baseline;gap:9px}
+.eg-score{font:700 var(--eg-fs-xl)/1 var(--eg-font);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.eg-fb.ok .eg-score{color:var(--eg-ok)}
+.eg-fb.bad .eg-score{color:var(--eg-bad)}
+.eg-score small{font-size:var(--eg-fs-xs);font-weight:700;opacity:1;color:inherit;margin-left:1px}
+.eg-fb-status{font-weight:700;font-size:var(--eg-fs-md)}
+.eg-fb.ok .eg-fb-status{color:var(--eg-ok)}
+.eg-fb.bad .eg-fb-status{color:var(--eg-bad)}
+.eg-fb-ref{
+  margin-top:11px;padding:10px 12px;border-radius:9px;background:var(--eg-bg);
+  border:1px solid var(--eg-line);font-family:var(--eg-serif);font-size:var(--eg-fs-md);line-height:1.6;color:var(--eg-ink);overflow-wrap:break-word;
+}
+.eg-fb-ref .lbl{display:block;font:600 var(--eg-fs-xs)/1 var(--eg-font);color:var(--eg-ink-2);letter-spacing:.02em;margin-bottom:5px}
+.eg-fb-tip{margin-top:10px;color:var(--eg-ink-2);font-size:var(--eg-fs-sm);line-height:1.6;display:flex;gap:6px;align-items:flex-start}
+.eg-fb-tip .b{color:var(--eg-accent-ink);font-weight:700;white-space:nowrap;flex:0 0 auto}
+.eg-fb-actions{margin-top:13px;display:flex;gap:8px}
+
+/* ============ report ============ */
+.eg-report .r-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.eg-rtitle{font-family:var(--eg-serif);font-size:var(--eg-fs-lg);line-height:1.35;font-weight:700;margin:0;overflow-wrap:break-word;min-width:0}
+.eg-rmeta{color:var(--eg-ink-2);font-size:var(--eg-fs-xs);margin-top:6px;font-variant-numeric:tabular-nums}
+.eg-rsum{margin:12px 0 0;padding:11px 12px;border-radius:10px;background:var(--eg-bg-2);color:var(--eg-ink-2);font-size:var(--eg-fs-sm);line-height:1.7}
+.eg-rp{margin:13px 0 0;font-size:var(--eg-fs-md);line-height:1.85;color:var(--eg-ink)}
+.eg-practice{margin-top:18px;padding-top:14px;border-top:1px solid var(--eg-line)}
+.eg-ptitle{display:flex;align-items:center;gap:7px;font-size:var(--eg-fs-sm);font-weight:700;color:var(--eg-ink)}
+.eg-q{margin-top:10px;padding:11px 12px;border-radius:10px;background:var(--eg-bg-2)}
+.eg-q-head{display:flex;gap:8px;align-items:baseline}
+.eg-q-n{font:700 var(--eg-fs-sm)/1.4 var(--eg-font);color:var(--eg-accent-ink);font-variant-numeric:tabular-nums;flex:0 0 auto}
+.eg-q-zh{font-size:var(--eg-fs-sm);line-height:1.6}
+.eg-q-en{display:none;margin-top:8px;padding-top:8px;border-top:1px dashed var(--eg-line);font-family:var(--eg-serif);font-size:var(--eg-fs-md);color:var(--eg-ink)}
+.eg-q.reveal .eg-q-en{display:block}
+.eg-q-toggle{margin-top:7px;display:inline-flex;align-items:center;min-height:24px;padding:4px 0;background:none;border:none;color:var(--eg-accent-ink);cursor:pointer;font:600 var(--eg-fs-xs)/1 var(--eg-font)}
+.eg-q-toggle:focus-visible{outline:2px solid var(--eg-accent);outline-offset:2px;border-radius:4px}
+
+/* ============ misc ============ */
+.eg-loading{display:flex;align-items:center;gap:9px;color:var(--eg-ink-2);padding:10px 0;font-size:var(--eg-fs-sm)}
+.eg-spin{display:inline-block;width:15px;height:15px;border:2px solid var(--eg-line-2);border-top-color:var(--eg-accent);border-radius:50%;animation:eg-spin .7s linear infinite}
+@keyframes eg-spin{to{transform:rotate(360deg)}}
+.eg-resize{position:absolute;right:0;bottom:0;width:18px;height:18px;cursor:nwse-resize;touch-action:none}
+.eg-resize::after{content:"";position:absolute;right:4px;bottom:4px;width:9px;height:9px;border-right:2px solid var(--eg-line-2);border-bottom:2px solid var(--eg-line-2);border-bottom-right-radius:3px;opacity:.7}
+@media (prefers-reduced-motion: reduce){
+  .eg-panel{animation:none}
+  *{transition:none!important}
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <p class="legend">English Gym · 组件预览（练习 / 反馈 / 错误 / 报告 / 状态）</p>
+  <div class="row">
+
+    <!-- F1: pill -->
+    <div class="frame">
+      <div class="tag">入口挂件</div>
+      <div class="stage" style="align-items:center">
+        <button class="eg-pill">
+          <span class="eg-mono">EN</span>
+          <span class="eg-wordmark">English Gym</span>
+          <span class="eg-streak">连续 3 天</span>
+          <span class="eg-chip warn">待复习 2</span>
+          <span class="eg-chev">▸</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- F2: drill default -->
+    <div class="frame">
+      <div class="tag">练习 · 默认</div>
+      <div class="stage">
+        <div class="eg-panel">
+          <div class="eg-head">
+            <span class="eg-grip">⠿</span>
+            <div class="eg-tabs"><button class="eg-tab active">练习</button><button class="eg-tab">今日报告</button></div>
+            <div class="eg-head-right"><button class="eg-close">✕</button></div>
+          </div>
+          <div class="eg-body">
+            <div class="eg-cap">把这句话译成英文</div>
+            <div class="eg-zh">我们需要确保这个新系统不会影响我们的日常工作。</div>
+            <button class="eg-hintbtn" aria-expanded="false"><span class="caret">▸</span>提示</button>
+            <div class="eg-inputwrap">
+              <textarea class="eg-input" placeholder="在这里写下你的英文…"></textarea>
+            </div>
+            <div class="eg-hintline">
+              <span class="eg-err"></span>
+              <span class="eg-kbd"><kbd>⌘</kbd> <kbd>↵</kbd> 提交</span>
+            </div>
+            <div class="eg-actions">
+              <button class="eg-btn primary">提交</button>
+              <button class="eg-btn ghost">换一题</button>
+            </div>
+          </div>
+          <div class="eg-resize"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- F3: feedback ok -->
+    <div class="frame">
+      <div class="tag">反馈 · 正确</div>
+      <div class="stage">
+        <div class="eg-panel">
+          <div class="eg-head">
+            <span class="eg-grip">⠿</span>
+            <div class="eg-tabs"><button class="eg-tab active">练习</button><button class="eg-tab">今日报告</button></div>
+            <div class="eg-head-right"><button class="eg-close">✕</button></div>
+          </div>
+          <div class="eg-body">
+            <div class="eg-fb ok">
+              <div class="eg-fb-top"><span class="eg-score">96<small>分</small></span><span class="eg-fb-status">很好</span></div>
+              <div class="eg-fb-ref"><span class="lbl">参考</span>We need to make sure this new system doesn’t affect our daily work.</div>
+              <div class="eg-fb-tip"><span class="b">提示</span><span>“make sure” 比 “ensure” 更口语；daily work 自然。</span></div>
+              <div class="eg-fb-actions"><button class="eg-btn primary">下一题 →</button></div>
+            </div>
+          </div>
+          <div class="eg-resize"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- F4: feedback bad + input error -->
+    <div class="frame">
+      <div class="tag">反馈 · 错误 + 输入错误态</div>
+      <div class="stage">
+        <div class="eg-panel">
+          <div class="eg-head">
+            <span class="eg-grip">⠿</span>
+            <div class="eg-tabs"><button class="eg-tab active">练习</button><button class="eg-tab">今日报告</button></div>
+            <div class="eg-head-right"><button class="eg-close">✕</button></div>
+          </div>
+          <div class="eg-body">
+            <div class="eg-cap">把这句话译成英文</div>
+            <div class="eg-zh">请把会议纪要发给我一份。</div>
+            <div class="eg-inputwrap"><textarea class="eg-input error">Please send me a meeting note.</textarea></div>
+            <div class="eg-hintline"><span class="eg-err">缺少 “copy” 这个词的意味</span></div>
+            <div class="eg-fb bad" style="margin-top:12px">
+              <div class="eg-fb-top"><span class="eg-score">62<small>分</small></span><span class="eg-fb-status">再试一次</span></div>
+              <div class="eg-fb-ref"><span class="lbl">参考</span>Please send me a copy of the meeting minutes.</div>
+              <div class="eg-fb-tip"><span class="b">提示</span><span>“会议纪要” = meeting minutes；“一份” = a copy。</span></div>
+              <div class="eg-fb-actions"><button class="eg-btn primary">下一题 →</button><button class="eg-btn ghost">重写</button></div>
+            </div>
+          </div>
+          <div class="eg-resize"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- F5: report -->
+    <div class="frame">
+      <div class="tag">今日报告</div>
+      <div class="stage">
+        <div class="eg-panel">
+          <div class="eg-head">
+            <span class="eg-grip">⠿</span>
+            <div class="eg-tabs"><button class="eg-tab">练习</button><button class="eg-tab active">今日报告</button></div>
+            <div class="eg-head-right"><button class="eg-close">✕</button></div>
+          </div>
+          <div class="eg-body">
+            <div class="eg-report">
+              <div class="r-top"><h2 class="eg-rtitle">AI Helps Small Teams Work Smarter</h2></div>
+              <div class="eg-rmeta">2026-11-23 · B1</div>
+              <p class="eg-rsum">AI 工具正在改变小团队的协作方式：把重复工作交给模型，人专注判断与沟通。</p>
+              <p class="eg-rp">Small teams are using AI tools to take over repetitive work. Instead of spending hours on drafts and summaries, people now review what the model produces and spend more time on decisions.</p>
+              <p class="eg-rp">The change is not about replacing people. It is about giving each person a little more room to think, while the routine tasks move faster in the background.</p>
+              <div class="eg-practice">
+                <div class="eg-ptitle">练一练</div>
+                <div class="eg-q reveal">
+                  <div class="eg-q-head"><span class="eg-q-n">1</span><span class="eg-q-zh">小团队正在用 AI 工具处理重复工作。</span></div>
+                  <button class="eg-q-toggle">收起参考</button>
+                  <div class="eg-q-en">Small teams are using AI tools to handle repetitive work.</div>
+                </div>
+                <div class="eg-q">
+                  <div class="eg-q-head"><span class="eg-q-n">2</span><span class="eg-q-zh">这不是要取代人，而是让人有更多思考的空间。</span></div>
+                  <button class="eg-q-toggle">看参考</button>
+                  <div class="eg-q-en">This is not about replacing people, but giving them more room to think.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="eg-resize"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- F6: loading + disabled states -->
+    <div class="frame">
+      <div class="tag">状态 · 加载 / 禁用</div>
+      <div class="stage">
+        <div class="eg-panel">
+          <div class="eg-head">
+            <span class="eg-grip">⠿</span>
+            <div class="eg-tabs"><button class="eg-tab active">练习</button><button class="eg-tab">今日报告</button></div>
+            <div class="eg-head-right"><button class="eg-close">✕</button></div>
+          </div>
+          <div class="eg-body">
+            <div class="eg-loading"><span class="eg-spin"></span>正在出题…</div>
+            <div class="eg-actions" style="margin-top:14px">
+              <button class="eg-btn primary is-loading">提交</button>
+              <button class="eg-btn" disabled>换一题</button>
+              <button class="eg-btn primary" disabled>提交</button>
+            </div>
+          </div>
+          <div class="eg-resize"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>
