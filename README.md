@@ -1,8 +1,9 @@
 # English Gym · DSH 英语练习挂件
 
-> 把英语学习嵌进 DSH 的工作流，而不是再做一个英语 App。一行常驻在**输入框下方**的小挂件（`English Gym`），点它时在**浮层**里弹出一块看板——**看板是浮动的，不会把对话内容撑开/顶上去**。给你一句**中文**，你写出**英文**，立刻判对错、给参考与提示；每天再推一篇 **AI / 科技** 主题的英文小报告。**全程不做语音。**
+> 把英语学习嵌进 DSH 的工作流，而不是再做一个英语 App。一行常驻在**输入框下方**的小挂件（`English Gym`），点它时在**浮层**里弹出一块看板——**看板是浮动的，不会把对话内容撑开/顶上去**。看板里分三个标签：**短语训练**（给你一句中文，你写出英文）、**单词训练**（看中文，按字母格拼出单词）、**今日报告**（每天一篇 AI / 科技英文小短文）。立刻判对错、给参考与提示。**全程不做语音。**
 
-- 🎯 **看中写英**：AI 按你的等级（默认 B1）出题，判分 + 参考译文 + 一句提示。
+- 🎯 **短语训练（看中写英）**：AI 按你的等级（默认 B1）出题，判分 + 参考译文 + 一句提示。
+- 🔤 **单词训练（拼写）**：内置 **4535 词**静态词库（CET4 精简 + AI 术语），看中文、按下方**字母空格**逐字拼出英文单词；纯本地判分、不耗模型，字母格会标出每个字母对错。
 - 🔁 **错题复习**：答错的句子自动进复习队列，隔天再考；答对后移出。
 - 🔥 **轻量统计**：连续天数、正确率、今日答题、待复习数。
 - 📰 **每日报告**：到点自动生成一篇 180–240 词的英文短文（附 3 道翻译小题），打开即读。
@@ -48,6 +49,8 @@ plugin_manager install_bundle --target /绝对路径/dsh-english-learn
 | GET | `/api/english-gym/state` | 统计摘要（连续/正确率/待复习/今日） |
 | POST | `/api/english-gym/next` | 出一道题（`{mode:'new'\|'review'}`，不返回答案） |
 | POST | `/api/english-gym/check` | 判分（`{id,answer}`），返回对错/分数/参考/提示 |
+| POST | `/api/english-gym/word/next` | 从静态词库取一个词（返回 `{id,zh,letters}`，`letters` = 字母空格数，不返回答案） |
+| POST | `/api/english-gym/word/check` | 单词拼写判分（`{id,answer}`），返回对错/正确拼写/每个字母 |
 | GET | `/api/english-gym/report` | 今日报告（有缓存则直接给） |
 | POST | `/api/english-gym/report/refresh` | 强制重新生成 |
 
@@ -61,4 +64,4 @@ plugin_manager install_bundle --target /绝对路径/dsh-english-learn
 
 ## License
 
-MIT
+MIT。内置单词库（`lib/wordbank.js`）取自 [KyleBing/english-vocabulary](https://github.com/KyleBing/english-vocabulary) 的 CET4 词表（BSD-3-Clause），详见 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)。

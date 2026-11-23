@@ -204,6 +204,22 @@ window.__ModuleLoader__.load({
 @keyframes eg-spin { to { transform: rotate(360deg); } }
 .eg-resize { position: absolute; right: 0; bottom: 0; width: 18px; height: 18px; cursor: nwse-resize; touch-action: none; }
 .eg-resize::after { content: ""; position: absolute; right: 4px; bottom: 4px; width: 9px; height: 9px; border-right: 2px solid var(--eg-line-2); border-bottom: 2px solid var(--eg-line-2); border-bottom-right-radius: 3px; opacity: .7; }
+/* ===== word training ===== */
+.eg-letters { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+.eg-letter {
+  width: 34px; height: 44px; padding: 0; text-align: center;
+  border: none; border-bottom: 2px solid var(--eg-line-2); border-radius: 7px 7px 0 0;
+  background: var(--eg-bg-2); color: var(--eg-ink);
+  font: 600 var(--eg-fs-lg)/1 var(--eg-font); text-transform: lowercase; outline: none;
+  transition: border-color var(--eg-dur) ease, background var(--eg-dur) ease, color var(--eg-dur) ease;
+}
+.eg-letter:hover { border-bottom-color: var(--eg-line-2); }
+.eg-letter:focus { border-bottom-color: var(--eg-accent); background: var(--eg-bg); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 16%, transparent); }
+.eg-letter.ok { border-bottom-color: var(--eg-ok); color: var(--eg-ok); }
+.eg-letter.bad { border-bottom-color: var(--eg-bad); color: var(--eg-bad); }
+.eg-letters.answered .eg-letter { cursor: default; }
+.eg-lettercount { margin-top: 11px; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); }
+
 @media (prefers-reduced-motion: reduce) { .eg-panel { animation: none; } .eg-root *, .eg-panel * { transition: none !important; } }
 `
 
@@ -519,6 +535,213 @@ window.__ModuleLoader__.load({
       )
     }
 
+    // Static word bank drill: Chinese gloss + one underline per letter.
+    function WordPractice() {
+      const [item, setItem] = useState(null)
+      const [cells, setCells] = useState([])
+      const [res, setRes] = useState(null)
+      const [busy, setBusy] = useState(false)
+      const [error, setError] = useState('')
+      const refs = useRef([])
+      const inFlight = useRef(false)
+
+      const load = useCallback(async () => {
+        if (inFlight.current) return
+        inFlight.current = true
+        setBusy(true)
+        setError('')
+        setRes(null)
+        try {
+          const data = await api('/word/next', { method: 'POST', body: '{}' })
+          setItem(data)
+          setCells(new Array(Math.max(0, data.letters || 0)).fill(''))
+          setTimeout(() => {
+            try {
+              if (refs.current[0]) refs.current[0].focus()
+            } catch {
+              /* ignore */
+            }
+          }, 0)
+        } catch (e) {
+          setError(e.message || '出题失败')
+        } finally {
+          inFlight.current = false
+          setBusy(false)
+        }
+      }, [])
+
+      useEffect(() => {
+        load()
+      }, [load])
+
+      const submit = useCallback(async () => {
+        if (!item || busy || res) return
+        if (cells.some((c) => !c)) return
+        setBusy(true)
+        setError('')
+        try {
+          const r = await api('/word/check', {
+            method: 'POST',
+            body: JSON.stringify({ id: item.id, answer: cells.join('') }),
+          })
+          setRes(r)
+          if (r.summary) store.setStats(r.summary)
+        } catch (e) {
+          setError(e.message || '判分失败')
+        } finally {
+          setBusy(false)
+        }
+      }, [item, cells, busy, res])
+
+      const setCell = (i, v) => {
+        const ch = String(v || '').replace(/[^a-zA-Z]/g, '').slice(-1)
+        setCells((prev) => {
+          const next = prev.slice()
+          next[i] = ch
+          return next
+        })
+        if (ch && i < cells.length - 1) {
+          setTimeout(() => {
+            try {
+              if (refs.current[i + 1]) refs.current[i + 1].focus()
+            } catch {
+              /* ignore */
+            }
+          }, 0)
+        }
+      }
+
+      const onKey = (i, e) => {
+        if (e.key === 'Backspace' && !cells[i] && i > 0) {
+          e.preventDefault()
+          setCells((prev) => {
+            const next = prev.slice()
+            next[i - 1] = ''
+            return next
+          })
+          try {
+            if (refs.current[i - 1]) refs.current[i - 1].focus()
+          } catch {
+            /* ignore */
+          }
+        } else if (e.key === 'ArrowLeft' && i > 0) {
+          try {
+            if (refs.current[i - 1]) refs.current[i - 1].focus()
+          } catch {
+            /* ignore */
+          }
+        } else if (e.key === 'ArrowRight' && i < cells.length - 1) {
+          try {
+            if (refs.current[i + 1]) refs.current[i + 1].focus()
+          } catch {
+            /* ignore */
+          }
+        } else if (e.key === 'Enter') {
+          e.preventDefault()
+          submit()
+        }
+      }
+
+      if (!item) {
+        return React.createElement(
+          'div',
+          null,
+          error
+            ? React.createElement('div', { className: 'eg-err' }, error)
+            : React.createElement(
+                'div',
+                { className: 'eg-loading' },
+                React.createElement('span', { className: 'eg-spin' }),
+                '正在取词…',
+              ),
+          error
+            ? React.createElement(
+                'div',
+                { className: 'eg-foot' },
+                React.createElement('button', { className: 'eg-btn primary', onClick: load, disabled: busy }, '重试'),
+              )
+            : null,
+        )
+      }
+
+      const answered = !!res
+      const ok = answered && !!res.correct
+      const target = String((res && res.reference) || '').toLowerCase()
+      const cellsNodes = cells.map((ch, i) => {
+        let cls = 'eg-letter'
+        if (answered) cls += target[i] === String(ch).toLowerCase() ? ' ok' : ' bad'
+        return React.createElement('input', {
+          key: i,
+          ref: (el) => {
+            refs.current[i] = el
+          },
+          className: cls,
+          value: answered ? ch || target[i] || '' : ch,
+          style: { width: cells.length > 12 ? 24 : cells.length > 8 ? 29 : 34 },
+          maxLength: 1,
+          inputMode: 'text',
+          autoCapitalize: 'off',
+          autoComplete: 'off',
+          autoCorrect: 'off',
+          spellCheck: false,
+          disabled: answered || busy,
+          'aria-label': '第 ' + (i + 1) + ' 个字母',
+          onChange: (e) => setCell(i, e.target.value),
+          onKeyDown: (e) => onKey(i, e),
+        })
+      })
+
+      return React.createElement(
+        'div',
+        null,
+        React.createElement('div', { className: 'eg-cap' }, '看中文，拼出下面的英文单词'),
+        React.createElement('div', { className: 'eg-zh' }, item.zh),
+        React.createElement('div', { className: 'eg-letters' + (answered ? ' answered' : '') }, cellsNodes),
+        React.createElement('div', { className: 'eg-lettercount' }, item.letters + ' 个字母'),
+        error ? React.createElement('div', { className: 'eg-err' }, error) : null,
+        answered
+          ? React.createElement(
+              'div',
+              { className: 'eg-fb ' + (ok ? 'ok' : 'bad') },
+              React.createElement(
+                'div',
+                { className: 'eg-fb-top' },
+                React.createElement('span', { className: 'eg-fb-status' }, ok ? '拼对了' : '再试一次'),
+              ),
+              React.createElement(
+                'div',
+                { className: 'eg-fb-ref' },
+                React.createElement('span', { className: 'lbl' }, '正确拼写'),
+                res.reference,
+              ),
+              React.createElement(
+                'div',
+                { className: 'eg-fb-actions' },
+                React.createElement('button', { className: 'eg-btn primary', onClick: load, disabled: busy }, '下一个 →'),
+              ),
+            )
+          : React.createElement(
+              'div',
+              { className: 'eg-foot' },
+              React.createElement(
+                'button',
+                {
+                  className: 'eg-btn primary' + (busy ? ' is-loading' : ''),
+                  onClick: submit,
+                  disabled: busy || cells.some((c) => !c),
+                },
+                '提交',
+              ),
+              React.createElement('button', { className: 'eg-btn ghost', onClick: load, disabled: busy }, '换一个'),
+              React.createElement(
+                'span',
+                { className: 'eg-kbd', title: '回车提交' },
+                React.createElement('kbd', null, '↵'),
+              ),
+            ),
+      )
+    }
+
     // Inline trigger under the composer (compact).
     function EnglishGymPill() {
       useStyle()
@@ -535,7 +758,7 @@ window.__ModuleLoader__.load({
           {
             className: 'eg-pill',
             onClick: () => store.toggle(),
-            title: 'English Gym — 中文造句练习',
+            title: 'English Gym — 短语造句 + 单词拼写',
             'aria-expanded': shared.open ? 'true' : 'false',
           },
           React.createElement('span', { className: 'eg-mono' }, 'EN'),
@@ -795,7 +1018,12 @@ window.__ModuleLoader__.load({
             React.createElement(
               'button',
               { className: 'eg-tab' + (tab === 'drill' ? ' active' : ''), onClick: () => setTab('drill') },
-              '练习',
+              '短语训练',
+            ),
+            React.createElement(
+              'button',
+              { className: 'eg-tab' + (tab === 'word' ? ' active' : ''), onClick: () => setTab('word') },
+              '单词训练',
             ),
             React.createElement(
               'button',
@@ -824,7 +1052,9 @@ window.__ModuleLoader__.load({
                 onSubmit: submit,
                 onNext: next,
               })
-            : React.createElement(Report, {
+            : tab === 'word'
+              ? React.createElement(WordPractice, { key: 'word' })
+              : React.createElement(Report, {
                 report,
                 loading: reportLoading,
                 error,
