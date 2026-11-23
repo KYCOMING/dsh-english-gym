@@ -1,0 +1,6 @@
+- insert:
+    - id: english-gym
+      name: 'dsh-english-gym'
+      config:
+        level: B1
+        reportHour: 9
