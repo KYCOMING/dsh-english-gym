@@ -6,6 +6,7 @@ window.__ModuleLoader__.load({
 
     const API = '/api/english-gym'
     const STYLE_ID = 'eg-dock-style'
+    const GEOM_KEY = 'eg-board-geom'
 
     const CSS = `
 .eg-root { font: 12px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; color: var(--dsw-alias-label-primary, #1f2328); }
@@ -17,49 +18,50 @@ window.__ModuleLoader__.load({
 .eg-chip.warn { background:var(--dsw-alias-state-warn-primary, #bf8700); color:#fff; opacity:.92; }
 .eg-chev { margin-left:auto; opacity:.6; font-size:11px; }
 
-/* Floating board (rendered in shell.overlay) — fixed, never affects layout */
-.eg-panel { position:fixed; left:50%; bottom:150px; transform:translateX(-50%); width:360px; max-width:calc(100vw - 32px); max-height:min(72vh, 580px); display:flex; flex-direction:column; pointer-events:auto; z-index:2147483000; border:1px solid var(--dsw-alias-border-l1, rgba(0,0,0,.12)); border-radius:16px; background:var(--dsw-alias-bg-layer-1, #fff); box-shadow:0 16px 48px rgba(0,0,0,.22); overflow:hidden; font:13px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; color:var(--dsw-alias-label-primary, #1f2328); animation:eg-pop .16s ease-out; }
+/* Small draggable / resizable floating board (shell.overlay) */
+.eg-panel { position:fixed; display:flex; flex-direction:column; pointer-events:auto; z-index:2147483000; border:1px solid var(--dsw-alias-border-l1, rgba(0,0,0,.14)); border-radius:14px; background:var(--dsw-alias-bg-layer-1, #fff); box-shadow:0 14px 44px rgba(0,0,0,.24); overflow:hidden; font:12.5px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; color:var(--dsw-alias-label-primary, #1f2328); transform-origin:bottom center; animation:eg-pop .18s cubic-bezier(.2,.85,.25,1); }
 .eg-panel * { box-sizing:border-box; }
-@keyframes eg-pop { from { opacity:0; transform:translateX(-50%) translateY(10px) scale(.98); } to { opacity:1; transform:translateX(-50%) translateY(0) scale(1); } }
-.eg-head { display:flex; align-items:center; gap:10px; padding:10px 12px 8px; border-bottom:1px solid var(--dsw-alias-border-l1, rgba(0,0,0,.1)); flex:0 0 auto; }
-.eg-tabs { display:flex; gap:4px; }
-.eg-tab { padding:4px 10px; border-radius:8px; border:none; background:transparent; color:var(--dsw-alias-label-secondary,#57606a); cursor:pointer; font-size:12px; }
-.eg-tab.active { background:var(--dsw-alias-bg-layer-2, rgba(0,0,0,.06)); color:var(--dsw-alias-label-primary,#1f2328); font-weight:600; }
-.eg-stats { margin-left:auto; display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
-.eg-close { margin-left:8px; border:none; background:transparent; color:var(--dsw-alias-label-secondary,#57606a); cursor:pointer; font-size:15px; line-height:1; padding:4px 7px; border-radius:8px; flex:0 0 auto; }
-.eg-close:hover { background:var(--dsw-alias-bg-layer-2, rgba(0,0,0,.06)); }
-.eg-body { padding:12px; overflow-y:auto; flex:1 1 auto; }
-.eg-zh { font-size:16px; line-height:1.6; font-weight:600; letter-spacing:.2px; }
-.eg-hint { margin-top:6px; color:var(--dsw-alias-label-secondary,#57606a); font-size:12px; }
+@keyframes eg-pop { from { opacity:0; transform:scale(.93) translateY(10px); } to { opacity:1; transform:scale(1) translateY(0); } }
+.eg-head { display:flex; align-items:center; gap:6px; padding:7px 8px; border-bottom:1px solid var(--dsw-alias-border-l1, rgba(0,0,0,.1)); flex:0 0 auto; cursor:move; user-select:none; background:var(--dsw-alias-bg-layer-2, rgba(0,0,0,.02)); }
+.eg-grip { color:var(--dsw-alias-label-secondary,#57606a); opacity:.5; font-size:12px; letter-spacing:-2px; padding:0 2px 0 1px; flex:0 0 auto; }
+.eg-tabs { display:flex; gap:3px; }
+.eg-tab { padding:3px 9px; border-radius:7px; border:none; background:transparent; color:var(--dsw-alias-label-secondary,#57606a); cursor:pointer; font-size:12px; }
+.eg-tab.active { background:var(--dsw-alias-bg-layer-2, rgba(0,0,0,.08)); color:var(--dsw-alias-label-primary,#1f2328); font-weight:600; }
+.eg-close { margin-left:auto; border:none; background:transparent; color:var(--dsw-alias-label-secondary,#57606a); cursor:pointer; font-size:14px; line-height:1; padding:3px 6px; border-radius:7px; flex:0 0 auto; }
+.eg-close:hover { background:var(--dsw-alias-bg-layer-2, rgba(0,0,0,.08)); }
+.eg-body { padding:10px; overflow-y:auto; flex:1 1 auto; }
+.eg-zh { font-size:15px; line-height:1.55; font-weight:600; letter-spacing:.2px; }
+.eg-hint { margin-top:5px; color:var(--dsw-alias-label-secondary,#57606a); font-size:12px; }
 .eg-hint summary { cursor:pointer; opacity:.85; }
-.eg-input { width:100%; box-sizing:border-box; margin-top:10px; min-height:58px; resize:vertical; padding:8px 10px; border-radius:8px; border:1px solid var(--dsw-alias-border-l2, rgba(0,0,0,.18)); background:var(--dsw-alias-bg-base, #fff); color:var(--dsw-alias-label-primary,#1f2328); font:inherit; outline:none; }
+.eg-input { width:100%; box-sizing:border-box; margin-top:8px; min-height:48px; resize:vertical; padding:7px 9px; border-radius:8px; border:1px solid var(--dsw-alias-border-l2, rgba(0,0,0,.18)); background:var(--dsw-alias-bg-base, #fff); color:var(--dsw-alias-label-primary,#1f2328); font:inherit; outline:none; }
 .eg-input:focus { border-color:var(--dsw-alias-brand-primary,#0969da); }
-.eg-actions { display:flex; gap:8px; margin-top:10px; }
-.eg-btn { padding:6px 12px; border-radius:8px; border:1px solid var(--dsw-alias-border-l2, rgba(0,0,0,.18)); background:var(--dsw-alias-bg-layer-1,#fff); color:var(--dsw-alias-label-primary,#1f2328); cursor:pointer; font-size:12px; }
+.eg-actions { display:flex; gap:7px; margin-top:8px; }
+.eg-btn { padding:5px 11px; border-radius:8px; border:1px solid var(--dsw-alias-border-l2, rgba(0,0,0,.18)); background:var(--dsw-alias-bg-layer-1,#fff); color:var(--dsw-alias-label-primary,#1f2328); cursor:pointer; font-size:12px; }
 .eg-btn:hover { background:var(--dsw-alias-bg-layer-2, rgba(0,0,0,.05)); }
 .eg-btn.primary { background:var(--dsw-alias-brand-primary,#0969da); border-color:transparent; color:#fff; font-weight:600; }
 .eg-btn.primary:disabled { opacity:.55; cursor:default; }
-.eg-btn.ghost { margin-left:auto; }
-.eg-fb { margin-top:10px; padding:10px 12px; border-radius:10px; border:1px solid transparent; }
+.eg-fb { margin-top:8px; padding:8px 10px; border-radius:9px; border:1px solid transparent; }
 .eg-fb.ok { background:color-mix(in srgb, var(--dsw-alias-state-success-primary,#1a7f37) 10%, transparent); border-color:color-mix(in srgb, var(--dsw-alias-state-success-primary,#1a7f37) 35%, transparent); }
 .eg-fb.bad { background:color-mix(in srgb, var(--dsw-alias-state-error-primary,#cf222e) 9%, transparent); border-color:color-mix(in srgb, var(--dsw-alias-state-error-primary,#cf222e) 32%, transparent); }
 .eg-fb-title { font-weight:700; }
 .eg-fb.ok .eg-fb-title { color:var(--dsw-alias-state-success-primary,#1a7f37); }
 .eg-fb.bad .eg-fb-title { color:var(--dsw-alias-state-error-primary,#cf222e); }
-.eg-fb-row { margin-top:6px; }
-.eg-ref { font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:13px; }
+.eg-fb-row { margin-top:5px; }
+.eg-ref { font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:12.5px; }
 .eg-muted { color:var(--dsw-alias-label-secondary,#57606a); }
-.eg-err { color:var(--dsw-alias-state-error-primary,#cf222e); margin-top:8px; }
-.eg-report h3 { margin:0 0 4px; font-size:15px; }
-.eg-report .meta { color:var(--dsw-alias-label-secondary,#57606a); font-size:11px; margin-bottom:8px; }
-.eg-report p { margin:0 0 8px; line-height:1.7; }
-.eg-q { margin-top:8px; padding:8px 10px; border-radius:8px; background:var(--dsw-alias-bg-layer-2, rgba(0,0,0,.04)); }
+.eg-err { color:var(--dsw-alias-state-error-primary,#cf222e); margin-top:6px; }
+.eg-report h3 { margin:0 0 3px; font-size:14px; }
+.eg-report .meta { color:var(--dsw-alias-label-secondary,#57606a); font-size:11px; margin-bottom:6px; }
+.eg-report p { margin:0 0 7px; line-height:1.65; }
+.eg-q { margin-top:7px; padding:7px 9px; border-radius:8px; background:var(--dsw-alias-bg-layer-2, rgba(0,0,0,.04)); }
 .eg-q .en { display:none; margin-top:4px; font-family:ui-monospace, Menlo, monospace; color:var(--dsw-alias-label-primary,#1f2328); }
 .eg-q.reveal .en { display:block; }
 .eg-q-toggle { background:none; border:none; color:var(--dsw-alias-brand-primary,#0969da); cursor:pointer; font-size:11px; padding:0; margin-top:2px; }
-.eg-loading { color:var(--dsw-alias-label-secondary,#57606a); padding:6px 0; }
+.eg-loading { color:var(--dsw-alias-label-secondary,#57606a); padding:4px 0; }
 .eg-spin { display:inline-block; width:12px; height:12px; border:2px solid var(--dsw-alias-border-l2, rgba(0,0,0,.2)); border-top-color:var(--dsw-alias-brand-primary,#0969da); border-radius:50%; animation:eg-rotate .7s linear infinite; vertical-align:-2px; margin-right:6px; }
 @keyframes eg-rotate { to { transform:rotate(360deg); } }
+.eg-resize { position:absolute; right:0; bottom:0; width:16px; height:16px; cursor:nwse-resize; pointer-events:auto; }
+.eg-resize::after { content:""; position:absolute; right:3px; bottom:3px; width:8px; height:8px; border-right:2px solid var(--dsw-alias-border-l2, rgba(0,0,0,.28)); border-bottom:2px solid var(--dsw-alias-border-l2, rgba(0,0,0,.28)); border-bottom-right-radius:3px; opacity:.7; }
 `
 
     function useStyle() {
@@ -92,8 +94,7 @@ window.__ModuleLoader__.load({
       return data
     }
 
-    // Shared state between the inline pill (composer dock) and the floating
-    // board (shell overlay), so opening/closing and stats stay in sync.
+    // Shared state between the inline pill and the floating board.
     const store = {
       open: false,
       stats: null,
@@ -132,6 +133,28 @@ window.__ModuleLoader__.load({
       return store
     }
 
+    const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi)
+
+    function loadGeom() {
+      try {
+        const g = JSON.parse(localStorage.getItem(GEOM_KEY) || 'null')
+        if (g && g.w && g.h) return g
+      } catch {
+        /* ignore */
+      }
+      return null
+    }
+
+    function fitGeom(g) {
+      const vw = window.innerWidth || 1200
+      const vh = window.innerHeight || 800
+      const w = clamp(g.w, 240, vw - 16)
+      const h = clamp(g.h, 170, vh - 60)
+      const x = clamp(g.x, 8, Math.max(8, vw - w - 8))
+      const y = clamp(g.y, 8, Math.max(8, vh - 44))
+      return { x, y, w, h }
+    }
+
     function StatChip({ label, value, warn }) {
       return React.createElement(
         'span',
@@ -160,21 +183,13 @@ window.__ModuleLoader__.load({
               React.createElement('span', { className: 'eg-ref' }, feedback.reference || '—'),
             ),
             feedback.tip
-              ? React.createElement(
-                  'div',
-                  { className: 'eg-fb-row eg-muted' },
-                  '💡 ' + feedback.tip,
-                )
+              ? React.createElement('div', { className: 'eg-fb-row eg-muted' }, '💡 ' + feedback.tip)
               : null,
           ),
           React.createElement(
             'div',
             { className: 'eg-actions' },
-            React.createElement(
-              'button',
-              { className: 'eg-btn primary', onClick: onNext, disabled: busy },
-              '下一题 →',
-            ),
+            React.createElement('button', { className: 'eg-btn primary', onClick: onNext, disabled: busy }, '下一题 →'),
           ),
         )
       }
@@ -189,11 +204,7 @@ window.__ModuleLoader__.load({
       return React.createElement(
         'div',
         null,
-        React.createElement(
-          'div',
-          { className: 'eg-zh' },
-          card.zh,
-        ),
+        React.createElement('div', { className: 'eg-zh' }, card.zh),
         card.hint
           ? React.createElement(
               'details',
@@ -205,7 +216,7 @@ window.__ModuleLoader__.load({
         React.createElement('textarea', {
           className: 'eg-input',
           value: answer,
-          placeholder: '在这里输入英文翻译…（⌘/Ctrl + Enter 提交）',
+          placeholder: '输入英文翻译…（⌘/Ctrl + Enter 提交）',
           onChange: (e) => setAnswer(e.target.value),
           onKeyDown: (e) => {
             if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
@@ -242,11 +253,7 @@ window.__ModuleLoader__.load({
           'div',
           { className: 'eg-loading' },
           '暂无报告。',
-          React.createElement(
-            'button',
-            { className: 'eg-btn', style: { marginLeft: 8 }, onClick: onRefresh },
-            '生成',
-          ),
+          React.createElement('button', { className: 'eg-btn', style: { marginLeft: 8 }, onClick: onRefresh }, '生成'),
         )
       }
       const paragraphs = String(report.body || '').split(/\n{2,}/).filter(Boolean)
@@ -254,20 +261,14 @@ window.__ModuleLoader__.load({
         'div',
         { className: 'eg-report' },
         React.createElement('h3', null, report.title || 'Daily Report'),
-        React.createElement(
-          'div',
-          { className: 'meta' },
-          [report.date, report.level].filter(Boolean).join(' · '),
-        ),
-        report.summary_zh
-          ? React.createElement('p', { className: 'eg-muted' }, report.summary_zh)
-          : null,
+        React.createElement('div', { className: 'meta' }, [report.date, report.level].filter(Boolean).join(' · ')),
+        report.summary_zh ? React.createElement('p', { className: 'eg-muted' }, report.summary_zh) : null,
         paragraphs.map((p, i) => React.createElement('p', { key: i }, p)),
         (report.questions || []).length
           ? React.createElement(
               'div',
-              { style: { marginTop: 10 } },
-              React.createElement('div', { className: 'eg-muted', style: { fontWeight: 600 } }, '练一练（先自己翻译，再点“看参考”）'),
+              { style: { marginTop: 8 } },
+              React.createElement('div', { className: 'eg-muted', style: { fontWeight: 600 } }, '练一练'),
               report.questions.map((q, i) =>
                 React.createElement(
                   'div',
@@ -298,7 +299,7 @@ window.__ModuleLoader__.load({
       )
     }
 
-    // Inline trigger that stays under the composer.
+    // Inline trigger under the composer (compact).
     function EnglishGymPill() {
       useStyle()
       const shared = useShared()
@@ -319,18 +320,15 @@ window.__ModuleLoader__.load({
           },
           React.createElement('span', { className: 'eg-dot' }),
           React.createElement('span', { className: 'eg-pill-title' }, 'English Gym'),
-          stats ? React.createElement('span', { className: 'eg-chip' }, '连续 ' + stats.streakDays + ' 天') : null,
           stats && stats.reviewCount > 0
             ? React.createElement('span', { className: 'eg-chip warn' }, '待复习 ' + stats.reviewCount)
             : null,
-          stats ? React.createElement('span', { className: 'eg-chip' }, stats.accuracy + '% 正确') : null,
           React.createElement('span', { className: 'eg-chev' }, shared.open ? '▾' : '▸'),
         ),
       )
     }
 
-    // Floating board. Lives in shell.overlay (fixed) so opening it never
-    // reflows the conversation.
+    // Small floating board: draggable + resizable, never reflows the chat.
     function EnglishGymBoard() {
       useStyle()
       const shared = useShared()
@@ -343,8 +341,77 @@ window.__ModuleLoader__.load({
       const [report, setReport] = useState(null)
       const [reportLoading, setReportLoading] = useState(false)
       const startedRef = useRef(false)
-      const stats = shared.stats
+      const [geom, setGeom] = useState(() => {
+        const saved = loadGeom()
+        if (saved) return fitGeom(saved)
+        const vw = window.innerWidth || 1200
+        const vh = window.innerHeight || 800
+        return fitGeom({ w: 300, h: 320, x: Math.round((vw - 300) / 2), y: Math.round(vh - 320 - 160) })
+      })
+      const geomRef = useRef(geom)
+      useEffect(() => {
+        geomRef.current = geom
+      }, [geom])
+
       const open = shared.open
+
+      const saveGeom = useCallback(() => {
+        try {
+          localStorage.setItem(GEOM_KEY, JSON.stringify(geomRef.current))
+        } catch {
+          /* ignore */
+        }
+      }, [])
+
+      const onHeaderDown = useCallback(
+        (e) => {
+          if (e.button !== 0) return
+          if (e.target && e.target.closest && e.target.closest('button')) return
+          e.preventDefault()
+          const g0 = geomRef.current
+          const sx = e.clientX
+          const sy = e.clientY
+          const move = (ev) => {
+            const x = clamp(g0.x + (ev.clientX - sx), 0, window.innerWidth - g0.w)
+            const y = clamp(g0.y + (ev.clientY - sy), 0, window.innerHeight - 44)
+            setGeom({ x, y, w: g0.w, h: g0.h })
+          }
+          const up = () => {
+            window.removeEventListener('pointermove', move)
+            window.removeEventListener('pointerup', up)
+            saveGeom()
+          }
+          window.addEventListener('pointermove', move)
+          window.addEventListener('pointerup', up)
+        },
+        [saveGeom],
+      )
+
+      const onResizeDown = useCallback(
+        (e) => {
+          if (e.button !== 0) return
+          e.preventDefault()
+          e.stopPropagation()
+          const g0 = geomRef.current
+          const sx = e.clientX
+          const sy = e.clientY
+          const move = (ev) => {
+            const maxW = window.innerWidth - g0.x - 8
+            const maxH = window.innerHeight - g0.y - 8
+            const w = clamp(g0.w + (ev.clientX - sx), 240, Math.max(240, maxW))
+            const h = clamp(g0.h + (ev.clientY - sy), 170, Math.max(170, maxH))
+            setGeom({ x: g0.x, y: g0.y, w, h })
+          }
+          const up = () => {
+            window.removeEventListener('pointermove', move)
+            window.removeEventListener('pointerup', up)
+            saveGeom()
+          }
+          window.addEventListener('pointermove', move)
+          window.addEventListener('pointerup', up)
+        },
+        [saveGeom],
+      )
 
       const loadNext = useCallback(async (mode) => {
         setBusy(true)
@@ -392,6 +459,15 @@ window.__ModuleLoader__.load({
         }
       }, [open, tab, report, reportLoading, refreshReport])
 
+      useEffect(() => {
+        if (!open) return
+        const onKey = (e) => {
+          if (e.key === 'Escape') store.setOpen(false)
+        }
+        window.addEventListener('keydown', onKey)
+        return () => window.removeEventListener('keydown', onKey)
+      }, [open])
+
       const submit = useCallback(async () => {
         if (!card || busy) return
         setBusy(true)
@@ -426,10 +502,16 @@ window.__ModuleLoader__.load({
 
       return React.createElement(
         'div',
-        { className: 'eg-panel', role: 'dialog', 'aria-label': 'English Gym' },
+        {
+          className: 'eg-panel',
+          role: 'dialog',
+          'aria-label': 'English Gym',
+          style: { left: geom.x, top: geom.y, width: geom.w, height: geom.h },
+        },
         React.createElement(
           'div',
-          { className: 'eg-head' },
+          { className: 'eg-head', onPointerDown: onHeaderDown },
+          React.createElement('span', { className: 'eg-grip', 'aria-hidden': 'true' }, '⠿'),
           React.createElement(
             'div',
             { className: 'eg-tabs' },
@@ -444,20 +526,7 @@ window.__ModuleLoader__.load({
               '今日报告',
             ),
           ),
-          stats
-            ? React.createElement(
-                'div',
-                { className: 'eg-stats' },
-                React.createElement(StatChip, { label: '今日', value: stats.today.answered }),
-                React.createElement(StatChip, { label: '待复习', value: stats.reviewCount, warn: stats.reviewCount > 0 }),
-                React.createElement(StatChip, { label: '正确率', value: stats.accuracy + '%' }),
-              )
-            : null,
-          React.createElement(
-            'button',
-            { className: 'eg-close', onClick: () => store.setOpen(false), title: '收起' },
-            '✕',
-          ),
+          React.createElement('button', { className: 'eg-close', onClick: () => store.setOpen(false), title: '收起' }, '✕'),
         ),
         React.createElement(
           'div',
@@ -483,6 +552,7 @@ window.__ModuleLoader__.load({
                 },
               }),
         ),
+        React.createElement('div', { className: 'eg-resize', onPointerDown: onResizeDown, title: '拖动缩放' }),
       )
     }
 
@@ -491,21 +561,13 @@ window.__ModuleLoader__.load({
       apply(ctx) {
         ctx.slots.inject('conversation.composer.dock', () =>
           ctx.slots.register(
-            {
-              name: 'conversation.composer.dock',
-              id: 'dsh-english-gym.pill',
-              order: 20,
-            },
+            { name: 'conversation.composer.dock', id: 'dsh-english-gym.pill', order: 20 },
             EnglishGymPill,
           ),
         )
         ctx.slots.inject('shell.overlay', () =>
           ctx.slots.register(
-            {
-              name: 'shell.overlay',
-              id: 'dsh-english-gym.board',
-              order: 20,
-            },
+            { name: 'shell.overlay', id: 'dsh-english-gym.board', order: 20 },
             EnglishGymBoard,
           ),
         )
