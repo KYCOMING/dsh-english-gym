@@ -272,33 +272,30 @@ window.__ModuleLoader__.load({
 /* ===== word bank import ===== */
 .eg-import { width: 100%; max-width: 520px; margin: 0 auto; text-align: left; }
 .eg-import-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
-.eg-import-back {
+.eg-import-title { font-size: var(--eg-fs-md); font-weight: 700; color: var(--eg-ink); line-height: 1.3; }
+.eg-import-actions { flex: 0 0 auto; display: flex; align-items: center; gap: 5px; }
+.eg-import-back, .eg-filebtn {
   flex: 0 0 auto; display: inline-flex; align-items: center; min-height: 26px; padding: 3px 9px;
   border: 1px solid var(--eg-line); border-radius: 999px; background: var(--eg-bg);
-  color: var(--eg-ink-2); cursor: pointer; font: 600 var(--eg-fs-xs)/1 var(--eg-font);
+  color: var(--eg-ink-2); cursor: pointer; font: 600 var(--eg-fs-xs)/1 var(--eg-font); white-space: nowrap;
 }
-.eg-import-back:hover { border-color: var(--eg-line-2); color: var(--eg-ink); }
-.eg-import-back:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
+.eg-import-back:hover, .eg-filebtn:hover { border-color: var(--eg-line-2); color: var(--eg-ink); }
+.eg-import-back:focus-visible, .eg-filebtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
 .eg-import-sub { margin-top: 4px; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); line-height: 1.5; }
-.eg-field { margin-top: 13px; }
+.eg-field { margin-top: 8px; }
 .eg-field label { display: block; margin-bottom: 6px; font-size: var(--eg-fs-xs); font-weight: 600; color: var(--eg-ink-2); }
 .eg-text {
-  width: 100%; height: 34px; padding: 0 10px; border: 1px solid var(--eg-line); border-radius: 8px;
+  width: 100%; height: 32px; padding: 0 10px; border: 1px solid var(--eg-line); border-radius: 8px;
   background: var(--eg-bg-2); color: var(--eg-ink); font: var(--eg-fs-sm)/1 var(--eg-font); outline: none;
 }
 .eg-text:focus { border-color: var(--eg-accent); background: var(--eg-bg); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 16%, transparent); }
-.eg-drop {
-  margin-top: 11px; padding: 16px 12px; border: 1px dashed var(--eg-line-2); border-radius: 10px;
-  text-align: center; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); line-height: 1.6;
-  background: var(--eg-bg-2); cursor: pointer; transition: border-color var(--eg-dur) ease, background var(--eg-dur) ease;
-}
-.eg-drop:hover, .eg-drop.over { border-color: var(--eg-accent); background: color-mix(in srgb, var(--eg-accent) 6%, transparent); color: var(--eg-ink); }
-.eg-drop strong { color: var(--eg-ink); font-weight: 650; }
-.eg-or { margin: 12px 0 6px; text-align: center; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); }
+.eg-textarea-wrap { position: relative; margin-top: 10px; }
 .eg-textarea {
-  width: 100%; min-height: 92px; resize: vertical; padding: 9px 10px; border: 1px solid var(--eg-line); border-radius: 9px;
+  width: 100%; min-height: 82px; resize: vertical; padding: 9px 10px; border: 1px solid var(--eg-line); border-radius: 10px;
   background: var(--eg-bg-2); color: var(--eg-ink); font: var(--eg-fs-xs)/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; outline: none;
+  transition: border-color var(--eg-dur) ease, background var(--eg-dur) ease;
 }
+.eg-textarea-wrap.over .eg-textarea, .eg-textarea-wrap:hover .eg-textarea { border-color: var(--eg-accent); background: color-mix(in srgb, var(--eg-accent) 5%, var(--eg-bg-2)); }
 .eg-textarea:focus { border-color: var(--eg-accent); background: var(--eg-bg); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 16%, transparent); }
 .eg-preview { margin-top: 12px; border: 1px solid var(--eg-line); border-radius: 10px; overflow: hidden; }
 .eg-preview-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; background: var(--eg-bg-2); font-size: var(--eg-fs-xs); color: var(--eg-ink-2); }
@@ -308,7 +305,7 @@ window.__ModuleLoader__.load({
 .eg-preview-row .m { flex: 1 1 auto; color: var(--eg-ink-2); overflow-wrap: anywhere; }
 .eg-preview-errors { margin-top: 8px; padding: 8px 10px; border-radius: 8px; background: color-mix(in srgb, var(--eg-bad) 7%, transparent); border: 1px solid color-mix(in srgb, var(--eg-bad) 24%, transparent); }
 .eg-preview-errors .er { font-size: var(--eg-fs-xs); line-height: 1.55; color: var(--eg-bad); }
-.eg-import-foot { display: flex; gap: 8px; margin-top: 12px; }
+.eg-import-foot { display: flex; gap: 8px; margin-top: 8px; }
 
 @media (prefers-reduced-motion: reduce) { .eg-panel { animation: none; } .eg-hintbox { animation: none; } .eg-root *, .eg-panel * { transition: none !important; } }
 `
@@ -701,10 +698,28 @@ window.__ModuleLoader__.load({
           h(
             'div',
             null,
-            h('div', { className: 'eg-ptitle' }, '导入词库'),
-            h('div', { className: 'eg-import-sub' }, '支持 CSV / TSV / TXT / JSON，UTF-8 或 GBK'),
+            h('div', { className: 'eg-import-title' }, '导入词库'),
+            h('div', { className: 'eg-import-sub' }, 'CSV/TSV/TXT/JSON'),
           ),
-          h('button', { className: 'eg-import-back', onClick: onClose }, '← 返回'),
+          h(
+            'div',
+            { className: 'eg-import-actions' },
+            h(
+              'button',
+              {
+                className: 'eg-filebtn',
+                onClick: () => {
+                  try {
+                    if (fileRef.current) fileRef.current.click()
+                  } catch {
+                    /* ignore */
+                  }
+                },
+              },
+              filename ? '换文件' : '选择文件',
+            ),
+            h('button', { className: 'eg-import-back', onClick: onClose }, '← 返回'),
+          ),
         ),
         h(
           'div',
@@ -722,14 +737,7 @@ window.__ModuleLoader__.load({
         h(
           'div',
           {
-            className: 'eg-drop' + (over ? ' over' : ''),
-            onClick: () => {
-              try {
-                if (fileRef.current) fileRef.current.click()
-              } catch {
-                /* ignore */
-              }
-            },
+            className: 'eg-textarea-wrap' + (over ? ' over' : ''),
             onDragEnter: (e) => {
               e.preventDefault()
               setOver(true)
@@ -741,8 +749,16 @@ window.__ModuleLoader__.load({
             onDragLeave: () => setOver(false),
             onDrop,
           },
-          h('div', null, filename ? h('strong', null, filename) : h('strong', null, '拖入文件，或点击选择')),
-          h('div', null, 'CSV / TSV / TXT / JSON'),
+          h('textarea', {
+            className: 'eg-textarea',
+            value: content,
+            placeholder: '把 CSV / TSV / TXT / JSON 内容粘贴到这里，或把文件拖进来…',
+            onChange: (e) => {
+              setContent(e.target.value)
+              setFilename('')
+              setPreview(null)
+            },
+          }),
           h('input', {
             ref: fileRef,
             type: 'file',
@@ -755,17 +771,6 @@ window.__ModuleLoader__.load({
             },
           }),
         ),
-        h('div', { className: 'eg-or' }, '或直接粘贴文本'),
-        h('textarea', {
-          className: 'eg-textarea',
-          value: content,
-          placeholder: 'word,meaning\nabandon,放弃\naccommodate,容纳；适应',
-          onChange: (e) => {
-            setContent(e.target.value)
-            setFilename('')
-            setPreview(null)
-          },
-        }),
         h(
           'div',
           { className: 'eg-import-foot' },
