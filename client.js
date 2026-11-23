@@ -119,6 +119,11 @@ window.__ModuleLoader__.load({
 .eg-hintbox {
   margin-top: 9px; padding: 9px 11px; border-left: 2px solid var(--eg-accent); border-radius: 0 8px 8px 0;
   background: var(--eg-bg-2); color: var(--eg-ink-2); font-size: var(--eg-fs-sm); line-height: 1.6;
+  transform-origin: top left; animation: eg-hint-in .22s cubic-bezier(.2,.8,.25,1) both;
+}
+@keyframes eg-hint-in {
+  from { opacity: 0; transform: translateY(-5px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 .eg-inputwrap { position: relative; margin-top: 13px; }
 .eg-input {
@@ -237,7 +242,7 @@ window.__ModuleLoader__.load({
 .eg-drill .eg-hintbox { text-align: left; }
 .eg-drill .eg-fb { width: 100%; text-align: left; }
 
-@media (prefers-reduced-motion: reduce) { .eg-panel { animation: none; } .eg-root *, .eg-panel * { transition: none !important; } }
+@media (prefers-reduced-motion: reduce) { .eg-panel { animation: none; } .eg-hintbox { animation: none; } .eg-root *, .eg-panel * { transition: none !important; } }
 `
 
     function useStyle() {
