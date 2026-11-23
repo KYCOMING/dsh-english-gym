@@ -98,7 +98,8 @@ window.__ModuleLoader__.load({
 }
 .eg-close:hover { background: var(--eg-bg-2); color: var(--eg-ink); }
 .eg-close:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
-.eg-body { padding: 15px 15px 16px; overflow-y: auto; flex: 1 1 auto; }
+.eg-body { padding: 15px 15px 16px; overflow-y: auto; flex: 1 1 auto; display: flex; flex-direction: column; }
+.eg-body > * { width: 100%; max-width: 620px; margin-left: auto; margin-right: auto; }
 
 /* ===== drill ===== */
 .eg-cap { display: flex; align-items: center; gap: 7px; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); font-weight: 600; }
@@ -219,6 +220,13 @@ window.__ModuleLoader__.load({
 .eg-letter.bad { border-bottom-color: var(--eg-bad); color: var(--eg-bad); }
 .eg-letters.answered .eg-letter { cursor: default; }
 .eg-lettercount { margin-top: 11px; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); }
+/* word training: centred column */
+.eg-word { max-width: 520px; min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.eg-word .eg-cap { justify-content: center; }
+.eg-word .eg-letters { justify-content: center; }
+.eg-word .eg-foot { justify-content: center; width: 100%; }
+.eg-word .eg-foot .eg-kbd { margin-left: 0; }
+.eg-word .eg-fb { width: 100%; text-align: left; }
 
 @media (prefers-reduced-motion: reduce) { .eg-panel { animation: none; } .eg-root *, .eg-panel * { transition: none !important; } }
 `
@@ -693,7 +701,7 @@ window.__ModuleLoader__.load({
 
       return React.createElement(
         'div',
-        null,
+        { className: 'eg-word' },
         React.createElement('div', { className: 'eg-cap' }, '看中文，拼出下面的英文单词'),
         React.createElement('div', { className: 'eg-zh' }, item.zh),
         React.createElement('div', { className: 'eg-letters' + (answered ? ' answered' : '') }, cellsNodes),
