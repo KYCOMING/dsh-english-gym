@@ -6,7 +6,7 @@ window.__ModuleLoader__.load({
 
     const API = '/api/english-gym'
     const STYLE_ID = 'eg-dock-style'
-    const GEOM_KEY = 'eg-board-geom'
+    const GEOM_KEY = 'eg-board-geom-v2'
 
     const CSS = `
 .eg-root { font: 12px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; color: var(--dsw-alias-label-primary, #1f2328); }
@@ -153,6 +153,30 @@ window.__ModuleLoader__.load({
       const x = clamp(g.x, 8, Math.max(8, vw - w - 8))
       const y = clamp(g.y, 8, Math.max(8, vh - 44))
       return { x, y, w, h }
+    }
+
+    // Default placement: sit just above the "English Gym" pill, horizontally
+    // centred on it. Falls back to bottom-centre when the pill isn't mounted.
+    function pillAnchorGeom() {
+      const vw = window.innerWidth || 1200
+      const vh = window.innerHeight || 800
+      const w = 300
+      const h = 320
+      let cx = vw / 2
+      let bottom = vh - 120
+      try {
+        const pill = document.querySelector('.eg-pill')
+        if (pill) {
+          const r = pill.getBoundingClientRect()
+          if (r && r.width) {
+            cx = r.left + r.width / 2
+            bottom = r.top - 10
+          }
+        }
+      } catch {
+        /* ignore */
+      }
+      return fitGeom({ w, h, x: Math.round(cx - w / 2), y: Math.round(bottom - h) })
     }
 
     function StatChip({ label, value, warn }) {
@@ -344,9 +368,7 @@ window.__ModuleLoader__.load({
       const [geom, setGeom] = useState(() => {
         const saved = loadGeom()
         if (saved) return fitGeom(saved)
-        const vw = window.innerWidth || 1200
-        const vh = window.innerHeight || 800
-        return fitGeom({ w: 300, h: 320, x: Math.round((vw - 300) / 2), y: Math.round(vh - 320 - 160) })
+        return pillAnchorGeom()
       })
       const geomRef = useRef(geom)
       useEffect(() => {
@@ -354,6 +376,16 @@ window.__ModuleLoader__.load({
       }, [geom])
 
       const open = shared.open
+
+      // Position just above the pill the first time it opens (unless the user
+      // has already dragged it and we have a remembered geometry).
+      const anchoredRef = useRef(false)
+      useEffect(() => {
+        if (open && !anchoredRef.current) {
+          anchoredRef.current = true
+          if (!loadGeom()) setGeom(pillAnchorGeom())
+        }
+      }, [open])
 
       const saveGeom = useCallback(() => {
         try {
