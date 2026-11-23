@@ -364,6 +364,18 @@ window.__ModuleLoader__.load({
       }
 
       if (!card) {
+        if (error) {
+          return React.createElement(
+            'div',
+            null,
+            React.createElement('div', { className: 'eg-err' }, error),
+            React.createElement(
+              'div',
+              { className: 'eg-foot' },
+              React.createElement('button', { className: 'eg-btn primary', onClick: onNext, disabled: busy }, '重试'),
+            ),
+          )
+        }
         return React.createElement(
           'div',
           { className: 'eg-loading' },
@@ -665,7 +677,13 @@ window.__ModuleLoader__.load({
         [saveGeom],
       )
 
+      const inFlightRef = useRef(false)
       const loadNext = useCallback(async (mode) => {
+        // Guard against a duplicate request: the "reset then reload" flow can
+        // re-enter through the auto-load effect and, before this guard, fired a
+        // second /next whose late response briefly replaced the just-shown card.
+        if (inFlightRef.current) return
+        inFlightRef.current = true
         setBusy(true)
         setError('')
         try {
@@ -679,6 +697,7 @@ window.__ModuleLoader__.load({
         } catch (e) {
           setError(e.message || '出题失败')
         } finally {
+          inFlightRef.current = false
           setBusy(false)
         }
       }, [])
@@ -746,7 +765,9 @@ window.__ModuleLoader__.load({
       const next = useCallback(() => {
         setFeedback(null)
         setCard(null)
-        startedRef.current = false
+        // Keep startedRef true so the auto-load effect does NOT fire a second
+        // /next on top of the one we start here (that double-fetch made the
+        // previous wording flash in for a moment).
         loadNext('new')
       }, [loadNext])
 
