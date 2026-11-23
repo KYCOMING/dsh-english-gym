@@ -131,8 +131,9 @@ window.__ModuleLoader__.load({
 .eg-input:hover { border-color: var(--eg-line-2); }
 .eg-input:focus { border-color: var(--eg-accent); background: var(--eg-bg); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 18%, transparent); }
 .eg-input.error { border-color: var(--eg-bad); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-bad) 15%, transparent); }
-.eg-hintline { display: flex; align-items: center; justify-content: space-between; margin-top: 9px; gap: 8px; min-height: 18px; }
-.eg-err { color: var(--eg-bad); font-size: var(--eg-fs-xs); flex: 1 1 auto; }
+.eg-foot { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+.eg-foot .eg-kbd { margin-left: auto; }
+.eg-err { color: var(--eg-bad); font-size: var(--eg-fs-xs); margin-top: 8px; }
 .eg-kbd { color: var(--eg-ink-2); font-size: var(--eg-fs-xs); white-space: nowrap; }
 .eg-kbd kbd {
   font: 600 12px/1 var(--eg-font); padding: 2px 5px; border: 1px solid var(--eg-line); border-bottom-width: 2px;
@@ -406,22 +407,10 @@ window.__ModuleLoader__.load({
             },
           }),
         ),
+        error ? React.createElement('div', { className: 'eg-err' }, error) : null,
         React.createElement(
           'div',
-          { className: 'eg-hintline' },
-          React.createElement('span', { className: 'eg-err' }, error || ''),
-          React.createElement(
-            'span',
-            { className: 'eg-kbd' },
-            React.createElement('kbd', null, '⌘'),
-            ' ',
-            React.createElement('kbd', null, '↵'),
-            ' 提交',
-          ),
-        ),
-        React.createElement(
-          'div',
-          { className: 'eg-actions' },
+          { className: 'eg-foot' },
           React.createElement(
             'button',
             {
@@ -432,6 +421,13 @@ window.__ModuleLoader__.load({
             '提交',
           ),
           React.createElement('button', { className: 'eg-btn ghost', onClick: onNext, disabled: busy }, '换一题'),
+          React.createElement(
+            'span',
+            { className: 'eg-kbd', title: '⌘/Ctrl + Enter 提交' },
+            React.createElement('kbd', null, '⌘'),
+            ' ',
+            React.createElement('kbd', null, '↵'),
+          ),
         ),
       )
     }

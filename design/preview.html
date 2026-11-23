@@ -148,8 +148,9 @@ body{
 .eg-input:hover{border-color:var(--eg-line-2)}
 .eg-input:focus{border-color:var(--eg-accent);background:var(--eg-bg);box-shadow:0 0 0 3px color-mix(in srgb,var(--eg-accent) 18%,transparent)}
 .eg-input.error{border-color:var(--eg-bad);box-shadow:0 0 0 3px color-mix(in srgb,var(--eg-bad) 15%,transparent)}
-.eg-hintline{display:flex;align-items:center;justify-content:space-between;margin-top:9px;gap:8px;min-height:18px}
-.eg-err{color:var(--eg-bad);font-size:var(--eg-fs-xs);flex:1 1 auto}
+.eg-foot{display:flex;align-items:center;gap:10px;margin-top:12px}
+.eg-foot .eg-kbd{margin-left:auto}
+.eg-err{color:var(--eg-bad);font-size:var(--eg-fs-xs);margin-top:8px}
 .eg-kbd{color:var(--eg-ink-2);font-size:var(--eg-fs-xs);white-space:nowrap}
 .eg-kbd kbd{
   font:600 12px/1 var(--eg-font);padding:2px 5px;border:1px solid var(--eg-line);border-bottom-width:2px;
@@ -262,13 +263,10 @@ body{
             <div class="eg-inputwrap">
               <textarea class="eg-input" placeholder="在这里写下你的英文…"></textarea>
             </div>
-            <div class="eg-hintline">
-              <span class="eg-err"></span>
-              <span class="eg-kbd"><kbd>⌘</kbd> <kbd>↵</kbd> 提交</span>
-            </div>
-            <div class="eg-actions">
+            <div class="eg-foot">
               <button class="eg-btn primary">提交</button>
               <button class="eg-btn ghost">换一题</button>
+              <span class="eg-kbd" title="⌘/Ctrl + Enter 提交"><kbd>⌘</kbd> <kbd>↵</kbd></span>
             </div>
           </div>
           <div class="eg-resize"></div>
@@ -313,7 +311,7 @@ body{
             <div class="eg-cap">把这句话译成英文</div>
             <div class="eg-zh">请把会议纪要发给我一份。</div>
             <div class="eg-inputwrap"><textarea class="eg-input error">Please send me a meeting note.</textarea></div>
-            <div class="eg-hintline"><span class="eg-err">缺少 “copy” 这个词的意味</span></div>
+            <div class="eg-err">缺少 “copy” 这个词的意味</div>
             <div class="eg-fb bad" style="margin-top:12px">
               <div class="eg-fb-top"><span class="eg-score">62<small>分</small></span><span class="eg-fb-status">再试一次</span></div>
               <div class="eg-fb-ref"><span class="lbl">参考</span>Please send me a copy of the meeting minutes.</div>
