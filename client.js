@@ -22,7 +22,7 @@ window.__ModuleLoader__.load({
 .eg-panel { position:fixed; display:flex; flex-direction:column; pointer-events:auto; z-index:2147483000; border:1px solid var(--dsw-alias-border-l1, rgba(0,0,0,.14)); border-radius:14px; background:var(--dsw-alias-bg-layer-1, #fff); box-shadow:0 14px 44px rgba(0,0,0,.24); overflow:hidden; font:12.5px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; color:var(--dsw-alias-label-primary, #1f2328); transform-origin:bottom center; animation:eg-pop .18s cubic-bezier(.2,.85,.25,1); }
 .eg-panel * { box-sizing:border-box; }
 @keyframes eg-pop { from { opacity:0; transform:scale(.93) translateY(10px); } to { opacity:1; transform:scale(1) translateY(0); } }
-.eg-head { display:flex; align-items:center; gap:6px; padding:7px 8px; border-bottom:1px solid var(--dsw-alias-border-l1, rgba(0,0,0,.1)); flex:0 0 auto; cursor:move; user-select:none; background:var(--dsw-alias-bg-layer-2, rgba(0,0,0,.02)); }
+.eg-head { display:flex; align-items:center; gap:6px; padding:7px 8px; border-bottom:1px solid var(--dsw-alias-border-l1, rgba(0,0,0,.1)); flex:0 0 auto; cursor:move; user-select:none; touch-action:none; background:var(--dsw-alias-bg-layer-2, rgba(0,0,0,.02)); }
 .eg-grip { color:var(--dsw-alias-label-secondary,#57606a); opacity:.5; font-size:12px; letter-spacing:-2px; padding:0 2px 0 1px; flex:0 0 auto; }
 .eg-tabs { display:flex; gap:3px; }
 .eg-tab { padding:3px 9px; border-radius:7px; border:none; background:transparent; color:var(--dsw-alias-label-secondary,#57606a); cursor:pointer; font-size:12px; }
@@ -60,7 +60,7 @@ window.__ModuleLoader__.load({
 .eg-loading { color:var(--dsw-alias-label-secondary,#57606a); padding:4px 0; }
 .eg-spin { display:inline-block; width:12px; height:12px; border:2px solid var(--dsw-alias-border-l2, rgba(0,0,0,.2)); border-top-color:var(--dsw-alias-brand-primary,#0969da); border-radius:50%; animation:eg-rotate .7s linear infinite; vertical-align:-2px; margin-right:6px; }
 @keyframes eg-rotate { to { transform:rotate(360deg); } }
-.eg-resize { position:absolute; right:0; bottom:0; width:16px; height:16px; cursor:nwse-resize; pointer-events:auto; }
+.eg-resize { position:absolute; right:0; bottom:0; width:16px; height:16px; cursor:nwse-resize; pointer-events:auto; touch-action:none; }
 .eg-resize::after { content:""; position:absolute; right:3px; bottom:3px; width:8px; height:8px; border-right:2px solid var(--dsw-alias-border-l2, rgba(0,0,0,.28)); border-bottom:2px solid var(--dsw-alias-border-l2, rgba(0,0,0,.28)); border-bottom-right-radius:3px; opacity:.7; }
 `
 
@@ -363,52 +363,85 @@ window.__ModuleLoader__.load({
         }
       }, [])
 
-      const onHeaderDown = useCallback(
+      const dragRef = useRef(null)
+      const resizeRef = useRef(null)
+
+      // Drag via pointer capture: the browser routes all subsequent pointer
+      // events to the element that captured the pointer, even outside it.
+      const onPanelDown = useCallback((e) => {
+        if (e.button !== 0 || dragRef.current) return
+        const t = e.target
+        if (
+          t &&
+          t.closest &&
+          t.closest('button, textarea, input, select, a, summary, [contenteditable="true"], .eg-resize')
+        )
+          return
+        e.preventDefault()
+        dragRef.current = { id: e.pointerId, sx: e.clientX, sy: e.clientY, g0: geomRef.current }
+        try {
+          e.currentTarget.setPointerCapture(e.pointerId)
+        } catch {
+          /* ignore */
+        }
+      }, [])
+
+      const onPanelMove = useCallback((e) => {
+        const d = dragRef.current
+        if (!d || d.id !== e.pointerId) return
+        const x = clamp(d.g0.x + (e.clientX - d.sx), 0, window.innerWidth - d.g0.w)
+        const y = clamp(d.g0.y + (e.clientY - d.sy), 0, window.innerHeight - 44)
+        setGeom({ x, y, w: d.g0.w, h: d.g0.h })
+      }, [])
+
+      const onPanelUp = useCallback(
         (e) => {
-          if (e.button !== 0) return
-          if (e.target && e.target.closest && e.target.closest('button')) return
-          e.preventDefault()
-          const g0 = geomRef.current
-          const sx = e.clientX
-          const sy = e.clientY
-          const move = (ev) => {
-            const x = clamp(g0.x + (ev.clientX - sx), 0, window.innerWidth - g0.w)
-            const y = clamp(g0.y + (ev.clientY - sy), 0, window.innerHeight - 44)
-            setGeom({ x, y, w: g0.w, h: g0.h })
+          const d = dragRef.current
+          if (!d || d.id !== e.pointerId) return
+          dragRef.current = null
+          try {
+            if (e.currentTarget.hasPointerCapture(d.id)) e.currentTarget.releasePointerCapture(d.id)
+          } catch {
+            /* ignore */
           }
-          const up = () => {
-            window.removeEventListener('pointermove', move)
-            window.removeEventListener('pointerup', up)
-            saveGeom()
-          }
-          window.addEventListener('pointermove', move)
-          window.addEventListener('pointerup', up)
+          saveGeom()
         },
         [saveGeom],
       )
 
-      const onResizeDown = useCallback(
+      const onResizeDown = useCallback((e) => {
+        if (e.button !== 0 || resizeRef.current) return
+        e.preventDefault()
+        e.stopPropagation()
+        resizeRef.current = { id: e.pointerId, sx: e.clientX, sy: e.clientY, g0: geomRef.current }
+        try {
+          e.currentTarget.setPointerCapture(e.pointerId)
+        } catch {
+          /* ignore */
+        }
+      }, [])
+
+      const onResizeMove = useCallback((e) => {
+        const d = resizeRef.current
+        if (!d || d.id !== e.pointerId) return
+        const maxW = window.innerWidth - d.g0.x - 8
+        const maxH = window.innerHeight - d.g0.y - 8
+        const w = clamp(d.g0.w + (e.clientX - d.sx), 240, Math.max(240, maxW))
+        const h = clamp(d.g0.h + (e.clientY - d.sy), 170, Math.max(170, maxH))
+        setGeom({ x: d.g0.x, y: d.g0.y, w, h })
+      }, [])
+
+      const onResizeUp = useCallback(
         (e) => {
-          if (e.button !== 0) return
-          e.preventDefault()
-          e.stopPropagation()
-          const g0 = geomRef.current
-          const sx = e.clientX
-          const sy = e.clientY
-          const move = (ev) => {
-            const maxW = window.innerWidth - g0.x - 8
-            const maxH = window.innerHeight - g0.y - 8
-            const w = clamp(g0.w + (ev.clientX - sx), 240, Math.max(240, maxW))
-            const h = clamp(g0.h + (ev.clientY - sy), 170, Math.max(170, maxH))
-            setGeom({ x: g0.x, y: g0.y, w, h })
+          const d = resizeRef.current
+          if (!d || d.id !== e.pointerId) return
+          resizeRef.current = null
+          try {
+            if (e.currentTarget.hasPointerCapture(d.id)) e.currentTarget.releasePointerCapture(d.id)
+          } catch {
+            /* ignore */
           }
-          const up = () => {
-            window.removeEventListener('pointermove', move)
-            window.removeEventListener('pointerup', up)
-            saveGeom()
-          }
-          window.addEventListener('pointermove', move)
-          window.addEventListener('pointerup', up)
+          saveGeom()
         },
         [saveGeom],
       )
@@ -507,10 +540,14 @@ window.__ModuleLoader__.load({
           role: 'dialog',
           'aria-label': 'English Gym',
           style: { left: geom.x, top: geom.y, width: geom.w, height: geom.h },
+          onPointerDown: onPanelDown,
+          onPointerMove: onPanelMove,
+          onPointerUp: onPanelUp,
+          onPointerCancel: onPanelUp,
         },
         React.createElement(
           'div',
-          { className: 'eg-head', onPointerDown: onHeaderDown },
+          { className: 'eg-head' },
           React.createElement('span', { className: 'eg-grip', 'aria-hidden': 'true' }, '⠿'),
           React.createElement(
             'div',
@@ -552,7 +589,14 @@ window.__ModuleLoader__.load({
                 },
               }),
         ),
-        React.createElement('div', { className: 'eg-resize', onPointerDown: onResizeDown, title: '拖动缩放' }),
+        React.createElement('div', {
+          className: 'eg-resize',
+          onPointerDown: onResizeDown,
+          onPointerMove: onResizeMove,
+          onPointerUp: onResizeUp,
+          onPointerCancel: onResizeUp,
+          title: '拖动缩放',
+        }),
       )
     }
 
