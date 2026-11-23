@@ -3,6 +3,7 @@ window.__ModuleLoader__.load({
   factory(require) {
     const React = require('react')
     const { useState, useEffect, useRef, useCallback, useReducer } = React
+    const h = React.createElement
 
     const API = '/api/english-gym'
     const STYLE_ID = 'eg-dock-style'
@@ -244,6 +245,54 @@ window.__ModuleLoader__.load({
 .eg-drill .eg-input { text-align: left; }
 .eg-drill .eg-hintbox { text-align: center; }
 .eg-drill .eg-fb { width: 100%; text-align: left; }
+
+/* ===== word bank bar ===== */
+.eg-bankbar { width: 100%; display: flex; align-items: center; gap: 6px; padding-bottom: 10px; margin-bottom: 12px; border-bottom: 1px solid var(--eg-line); }
+.eg-banklabel { flex: 0 0 auto; font-size: var(--eg-fs-xs); color: var(--eg-ink-2); }
+.eg-select {
+  flex: 1 1 auto; min-width: 0; height: 28px; padding: 0 22px 0 8px; border: 1px solid var(--eg-line);
+  border-radius: 7px; background: var(--eg-bg); color: var(--eg-ink); cursor: pointer;
+  font: 500 var(--eg-fs-xs)/1 var(--eg-font); outline: none; appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--eg-ink-2) 50%), linear-gradient(135deg, var(--eg-ink-2) 50%, transparent 50%);
+  background-position: calc(100% - 11px) 12px, calc(100% - 7px) 12px; background-size: 4px 4px, 4px 4px; background-repeat: no-repeat;
+}
+.eg-select:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
+.eg-bankbtn { flex: 0 0 auto; min-height: 28px; padding: 0 8px; font-size: var(--eg-fs-xs); }
+.eg-notice { margin: 0 0 12px; padding: 8px 10px; border-radius: 8px; background: color-mix(in srgb, var(--eg-ok) 8%, transparent); border: 1px solid color-mix(in srgb, var(--eg-ok) 28%, transparent); color: var(--eg-ink); font-size: var(--eg-fs-xs); line-height: 1.5; }
+
+/* ===== word bank import ===== */
+.eg-import { width: 100%; max-width: 520px; margin: 0 auto; text-align: left; }
+.eg-import-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.eg-import-sub { margin-top: 4px; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); line-height: 1.5; }
+.eg-field { margin-top: 13px; }
+.eg-field label { display: block; margin-bottom: 6px; font-size: var(--eg-fs-xs); font-weight: 600; color: var(--eg-ink-2); }
+.eg-text {
+  width: 100%; height: 34px; padding: 0 10px; border: 1px solid var(--eg-line); border-radius: 8px;
+  background: var(--eg-bg-2); color: var(--eg-ink); font: var(--eg-fs-sm)/1 var(--eg-font); outline: none;
+}
+.eg-text:focus { border-color: var(--eg-accent); background: var(--eg-bg); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 16%, transparent); }
+.eg-drop {
+  margin-top: 11px; padding: 16px 12px; border: 1px dashed var(--eg-line-2); border-radius: 10px;
+  text-align: center; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); line-height: 1.6;
+  background: var(--eg-bg-2); cursor: pointer; transition: border-color var(--eg-dur) ease, background var(--eg-dur) ease;
+}
+.eg-drop:hover, .eg-drop.over { border-color: var(--eg-accent); background: color-mix(in srgb, var(--eg-accent) 6%, transparent); color: var(--eg-ink); }
+.eg-drop strong { color: var(--eg-ink); font-weight: 650; }
+.eg-or { margin: 12px 0 6px; text-align: center; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); }
+.eg-textarea {
+  width: 100%; min-height: 92px; resize: vertical; padding: 9px 10px; border: 1px solid var(--eg-line); border-radius: 9px;
+  background: var(--eg-bg-2); color: var(--eg-ink); font: var(--eg-fs-xs)/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; outline: none;
+}
+.eg-textarea:focus { border-color: var(--eg-accent); background: var(--eg-bg); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 16%, transparent); }
+.eg-preview { margin-top: 12px; border: 1px solid var(--eg-line); border-radius: 10px; overflow: hidden; }
+.eg-preview-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; background: var(--eg-bg-2); font-size: var(--eg-fs-xs); color: var(--eg-ink-2); }
+.eg-preview-top strong { color: var(--eg-ink); }
+.eg-preview-row { display: flex; gap: 10px; padding: 7px 10px; border-top: 1px solid var(--eg-line); font-size: var(--eg-fs-xs); line-height: 1.5; }
+.eg-preview-row .w { flex: 0 0 38%; font-weight: 650; overflow-wrap: anywhere; }
+.eg-preview-row .m { flex: 1 1 auto; color: var(--eg-ink-2); overflow-wrap: anywhere; }
+.eg-preview-errors { margin-top: 8px; padding: 8px 10px; border-radius: 8px; background: color-mix(in srgb, var(--eg-bad) 7%, transparent); border: 1px solid color-mix(in srgb, var(--eg-bad) 24%, transparent); }
+.eg-preview-errors .er { font-size: var(--eg-fs-xs); line-height: 1.55; color: var(--eg-bad); }
+.eg-import-foot { display: flex; gap: 8px; margin-top: 12px; }
 
 @media (prefers-reduced-motion: reduce) { .eg-panel { animation: none; } .eg-hintbox { animation: none; } .eg-root *, .eg-panel * { transition: none !important; } }
 `
@@ -560,6 +609,202 @@ window.__ModuleLoader__.load({
       )
     }
 
+    // Import a user word bank: file picker / drag-and-drop / paste, with a
+    // server-side parse preview (same parser as the real import).
+    function WordBankImport({ onClose, onImported }) {
+      const [name, setName] = useState('')
+      const [filename, setFilename] = useState('')
+      const [content, setContent] = useState('')
+      const [preview, setPreview] = useState(null)
+      const [busy, setBusy] = useState(false)
+      const [error, setError] = useState('')
+      const [over, setOver] = useState(false)
+      const fileRef = useRef(null)
+
+      const readFile = useCallback(async (file) => {
+        if (!file) return
+        setError('')
+        try {
+          const buf = await file.arrayBuffer()
+          let text = ''
+          try {
+            text = new TextDecoder('utf-8', { fatal: true }).decode(buf)
+          } catch {
+            text = new TextDecoder('gbk').decode(buf)
+          }
+          setContent(text)
+          setFilename(file.name || '')
+          setName((prev) => prev || String(file.name || '').replace(/\.[^.]+$/, '').slice(0, 60))
+          setPreview(null)
+        } catch (e) {
+          setError('读取文件失败：' + (e.message || e))
+        }
+      }, [])
+
+      const doPreview = useCallback(async () => {
+        if (!content.trim() || busy) return
+        setBusy(true)
+        setError('')
+        try {
+          setPreview(await api('/wordbanks/preview', { method: 'POST', body: JSON.stringify({ content, filename }) }))
+        } catch (e) {
+          setError(e.message || '解析失败')
+        } finally {
+          setBusy(false)
+        }
+      }, [content, filename, busy])
+
+      const doImport = useCallback(async () => {
+        if (!preview || !preview.valid || busy) return
+        setBusy(true)
+        setError('')
+        try {
+          const res = await api('/wordbanks/import', { method: 'POST', body: JSON.stringify({ name, filename, content }) })
+          if (res.summary) store.setStats(res.summary)
+          onImported(res)
+        } catch (e) {
+          setError(e.message || '导入失败')
+        } finally {
+          setBusy(false)
+        }
+      }, [preview, busy, name, filename, content, onImported])
+
+      const onDrop = (e) => {
+        e.preventDefault()
+        setOver(false)
+        const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]
+        if (file) readFile(file)
+      }
+
+      return h(
+        'div',
+        { className: 'eg-import', 'data-nodrag': 'true' },
+        h(
+          'div',
+          { className: 'eg-import-head' },
+          h(
+            'div',
+            null,
+            h('div', { className: 'eg-ptitle' }, '导入词库'),
+            h('div', { className: 'eg-import-sub' }, '支持 CSV / TSV / TXT / JSON，UTF-8 或 GBK'),
+          ),
+          h('button', { className: 'eg-q-toggle', onClick: onClose }, '← 返回'),
+        ),
+        h(
+          'div',
+          { className: 'eg-field' },
+          h('label', { htmlFor: 'eg-bank-name' }, '词库名称'),
+          h('input', {
+            id: 'eg-bank-name',
+            className: 'eg-text',
+            value: name,
+            maxLength: 60,
+            placeholder: '例如：CET-6 核心词',
+            onChange: (e) => setName(e.target.value),
+          }),
+        ),
+        h(
+          'div',
+          {
+            className: 'eg-drop' + (over ? ' over' : ''),
+            onClick: () => {
+              try {
+                if (fileRef.current) fileRef.current.click()
+              } catch {
+                /* ignore */
+              }
+            },
+            onDragEnter: (e) => {
+              e.preventDefault()
+              setOver(true)
+            },
+            onDragOver: (e) => {
+              e.preventDefault()
+              setOver(true)
+            },
+            onDragLeave: () => setOver(false),
+            onDrop,
+          },
+          h('div', null, filename ? h('strong', null, filename) : h('strong', null, '拖入文件，或点击选择')),
+          h('div', null, 'CSV / TSV / TXT / JSON'),
+          h('input', {
+            ref: fileRef,
+            type: 'file',
+            accept: '.csv,.tsv,.txt,.json,text/csv,text/tab-separated-values,application/json',
+            style: { display: 'none' },
+            onChange: (e) => {
+              const file = e.target.files && e.target.files[0]
+              if (file) readFile(file)
+              e.target.value = ''
+            },
+          }),
+        ),
+        h('div', { className: 'eg-or' }, '或直接粘贴文本'),
+        h('textarea', {
+          className: 'eg-textarea',
+          value: content,
+          placeholder: 'word,meaning\nabandon,放弃\naccommodate,容纳；适应',
+          onChange: (e) => {
+            setContent(e.target.value)
+            setFilename('')
+            setPreview(null)
+          },
+        }),
+        h(
+          'div',
+          { className: 'eg-import-foot' },
+          h(
+            'button',
+            { className: 'eg-btn primary', onClick: doPreview, disabled: busy || !content.trim() },
+            busy ? '解析中…' : '解析预览',
+          ),
+          h(
+            'button',
+            { className: 'eg-btn ghost', onClick: doImport, disabled: busy || !preview || !preview.valid },
+            preview && preview.valid ? '导入 ' + preview.valid + ' 条' : '导入',
+          ),
+        ),
+        error ? h('div', { className: 'eg-err' }, error) : null,
+        preview
+          ? h(
+              'div',
+              null,
+              h(
+                'div',
+                { className: 'eg-preview' },
+                h(
+                  'div',
+                  { className: 'eg-preview-top' },
+                  h('strong', null, '识别到 ' + preview.valid + ' 条'),
+                  h(
+                    'span',
+                    null,
+                    String(preview.format || '').toUpperCase() +
+                      (preview.hasHeader ? ' · 含表头' : '') +
+                      (preview.skippedCount ? ' · 跳过 ' + preview.skippedCount + ' 行' : ''),
+                  ),
+                ),
+                (preview.sample || []).map((item, i) =>
+                  h(
+                    'div',
+                    { className: 'eg-preview-row', key: i },
+                    h('span', { className: 'w' }, item.word),
+                    h('span', { className: 'm' }, item.meaning),
+                  ),
+                ),
+              ),
+              preview.errors && preview.errors.length
+                ? h(
+                    'div',
+                    { className: 'eg-preview-errors' },
+                    preview.errors.map((e, i) => h('div', { className: 'er', key: i }, '第 ' + e.line + ' 行：' + e.reason)),
+                  )
+                : null,
+            )
+          : null,
+      )
+    }
+
     // Static word bank drill: Chinese gloss + one underline per letter.
     function WordPractice() {
       const [item, setItem] = useState(null)
@@ -567,6 +812,11 @@ window.__ModuleLoader__.load({
       const [res, setRes] = useState(null)
       const [busy, setBusy] = useState(false)
       const [error, setError] = useState('')
+      const [banks, setBanks] = useState(null)
+      const [bankId, setBankId] = useState('')
+      const [view, setView] = useState('practice')
+      const [notice, setNotice] = useState('')
+      const [switching, setSwitching] = useState(false)
       const refs = useRef([])
       const inFlight = useRef(false)
 
@@ -598,6 +848,51 @@ window.__ModuleLoader__.load({
       useEffect(() => {
         load()
       }, [load])
+
+      const loadBanks = useCallback(async () => {
+        try {
+          const data = await api('/wordbanks')
+          setBanks(Array.isArray(data.banks) ? data.banks : [])
+          setBankId(data.active || 'builtin')
+        } catch {
+          /* ignore: practice still works with the built-in bank */
+        }
+      }, [])
+
+      useEffect(() => {
+        loadBanks()
+      }, [loadBanks])
+
+      const switchBank = useCallback(
+        async (e) => {
+          const id = e.target.value
+          if (!id || id === bankId) return
+          setSwitching(true)
+          setError('')
+          setNotice('')
+          try {
+            const data = await api('/wordbanks/active', { method: 'POST', body: JSON.stringify({ id }) })
+            setBankId(data.active)
+            if (data.summary) store.setStats(data.summary)
+            await load()
+          } catch (err) {
+            setError(err.message || '切换词库失败')
+          } finally {
+            setSwitching(false)
+          }
+        },
+        [bankId, load],
+      )
+
+      const onImported = useCallback(
+        (result) => {
+          setNotice('已导入「' + result.bank.name + '」' + result.bank.count + ' 条')
+          setView('practice')
+          loadBanks()
+          load()
+        },
+        [loadBanks, load],
+      )
 
       const submit = useCallback(async () => {
         if (!item || busy || res) return
@@ -667,6 +962,10 @@ window.__ModuleLoader__.load({
         }
       }
 
+      if (view === 'import') {
+        return h(WordBankImport, { onClose: () => setView('practice'), onImported })
+      }
+
       if (!item) {
         return React.createElement(
           'div',
@@ -719,6 +1018,30 @@ window.__ModuleLoader__.load({
       return React.createElement(
         'div',
         { className: 'eg-word' },
+        React.createElement(
+          'div',
+          { className: 'eg-bankbar', 'data-nodrag': 'true' },
+          React.createElement('span', { className: 'eg-banklabel' }, '词库'),
+          React.createElement(
+            'select',
+            {
+              className: 'eg-select',
+              value: bankId || '',
+              disabled: switching || !banks,
+              onChange: switchBank,
+              title: '切换单词词库',
+            },
+            (banks || []).map((b) =>
+              React.createElement('option', { key: b.id, value: b.id }, b.name + '（' + b.count + '）'),
+            ),
+          ),
+          React.createElement(
+            'button',
+            { className: 'eg-btn ghost eg-bankbtn', onClick: () => { setNotice(''); setView('import') } },
+            '导入',
+          ),
+        ),
+        notice ? React.createElement('div', { className: 'eg-notice' }, notice) : null,
         React.createElement('div', { className: 'eg-cap' }, '看中文，拼出下面的英文单词'),
         React.createElement('div', { className: 'eg-zh' }, item.zh),
         React.createElement('div', { className: 'eg-letters' + (answered ? ' answered' : '') }, cellsNodes),
@@ -853,7 +1176,7 @@ window.__ModuleLoader__.load({
         if (
           t &&
           t.closest &&
-          t.closest('button, textarea, input, select, a, summary, [contenteditable="true"], .eg-resize')
+          t.closest('button, textarea, input, select, a, summary, [contenteditable="true"], [data-nodrag], .eg-resize')
         )
           return
         e.preventDefault()
