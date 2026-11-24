@@ -25,7 +25,9 @@ export async function generateQuestion(ctx, config, { level, topic } = {}) {
     `CEFR level: ${lvl}.\n` +
     `Theme: ${theme} (the English sentence should be natural, useful workplace / tech English).\n` +
     `Length: 6-16 words. Avoid proper nouns and ambiguity.\n` +
-    `Also give a short Chinese hint (a key word or structure, 2-8 Chinese characters or a short phrase).\n` +
+    `Also give a short ENGLISH hint that genuinely helps a Chinese learner: the 1-3 key English words, ` +
+    `phrases or collocations the answer should use (e.g. "business trip; get to know"), plus optionally ` +
+    `a brief English sentence frame. English only, never the full translation, max ~15 words.\n` +
     'Reply with ONLY this JSON: {"zh": "...", "en": "...", "hint": "..."}'
 
   try {
