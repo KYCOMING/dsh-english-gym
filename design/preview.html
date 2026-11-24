@@ -5,11 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>English Gym · component preview</title>
 <style>
+
 /* Hallmark · component: english-gym panel · genre: editorial · theme: in-place (dsh tokens) · states: 8 · contrast: pass · v2.0.0
  * critique: the drill is a study desk — one sentence set in serif, one writing field, one action; feedback reads like a marked page.
  * waive: none
  */
-:root{
+.eg-root, .eg-panel {
   --eg-font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
   --eg-serif: "Songti SC", "Songti TC", "Georgia", "Times New Roman", serif;
   --eg-ink: var(--dsw-alias-label-primary, #1f2328);
@@ -30,360 +31,331 @@
   --eg-r-sm: 10px;
   --eg-shadow: 0 20px 56px rgba(17, 22, 31, .22), 0 2px 8px rgba(17, 22, 31, .08);
   --eg-dur: .16s;
-  --eg-fs-xs: 12px;
-  --eg-fs-sm: 13px;
-  --eg-fs-md: 15px;
-  --eg-fs-lg: 19px;
-  --eg-fs-xl: 32px;
+  --eg-fs-xs: 12px; --eg-fs-sm: 13px; --eg-fs-md: 15px; --eg-fs-lg: 19px; --eg-fs-xl: 32px;
+  --eg-confetti-1: var(--eg-accent); --eg-confetti-2: var(--eg-bad); --eg-confetti-3: var(--eg-ok);
+  --eg-confetti-4: var(--eg-warn); --eg-confetti-5: #c9407e; --eg-confetti-6: #1b7c83;
 }
-*{box-sizing:border-box}
-html,body{overflow-x:clip;margin:0}
-body{
-  font-family:var(--eg-font);
-  color:var(--eg-ink);
-  background:#eef0f3;
-  padding:28px;
-  -webkit-font-smoothing:antialiased;
-}
-.page{max-width:1360px;margin:0 auto}
-.legend{font:600 13px/1.4 var(--eg-font);color:#4b5563;margin:0 0 14px}
-.row{display:flex;flex-wrap:wrap;gap:26px;align-items:flex-start}
-.frame{display:flex;flex-direction:column;gap:8px}
-.frame > .tag{font:600 12px/1 var(--eg-font);color:#5f6670;letter-spacing:.02em}
-.stage{
-  width:352px;padding:22px 20px;border-radius:20px;
-  background:linear-gradient(180deg,#f6f7f9,#eceef2);
-  display:flex;align-items:flex-end;justify-content:center;
-}
+.eg-root { font: var(--eg-fs-sm)/1.5 var(--eg-font); color: var(--eg-ink); }
+/* place the composer-strip pill at the far right of the dock row (after the context meter) */
+.eg-root.eg-entry { order: 999; flex: 0 0 auto; }
+.eg-root *, .eg-panel * { box-sizing: border-box; }
 
-/* ============ pill (composer strip) ============ */
-.eg-pill{
-  display:flex;align-items:center;gap:9px;width:100%;
-  padding:7px 10px;background:transparent;border:none;border-radius:10px;
-  color:var(--eg-ink-2);font-family:var(--eg-font);font-size:var(--eg-fs-sm);text-align:left;cursor:pointer;
-  transition:background var(--eg-dur) ease;
+/* ===== pill (composer strip) ===== */
+.eg-pill {
+  display: flex; align-items: center; gap: 9px; width: 100%;
+  padding: 7px 10px; background: transparent; border: none; border-radius: 10px;
+  color: var(--eg-ink-2); font-family: var(--eg-font); font-size: var(--eg-fs-sm); text-align: left; cursor: pointer;
+  transition: background var(--eg-dur) ease;
 }
-.eg-pill:hover{background:var(--eg-bg-2)}
-.eg-pill:focus-visible{outline:2px solid var(--eg-accent);outline-offset:2px}
-.eg-mono{
-  width:22px;height:22px;border-radius:7px;flex:0 0 auto;
-  background:var(--eg-accent);color:var(--eg-on-accent);
-  display:flex;align-items:center;justify-content:center;
-  font:700 var(--eg-fs-xs)/1 var(--eg-font);letter-spacing:.02em;
+.eg-pill:hover { background: var(--eg-bg-2); }
+.eg-pill:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }
+.eg-mono {
+  width: 22px; height: 22px; border-radius: 7px; flex: 0 0 auto;
+  background: var(--eg-accent); color: var(--eg-on-accent);
+  display: flex; align-items: center; justify-content: center;
+  font: 700 var(--eg-fs-xs)/1 var(--eg-font); letter-spacing: .02em;
 }
-.eg-wordmark{font-weight:650;color:var(--eg-ink);letter-spacing:.01em}
-.eg-streak{color:var(--eg-ink-2);font-variant-numeric:tabular-nums}
-.eg-chip{
-  display:inline-flex;align-items:center;gap:4px;padding:1px 8px;height:20px;border-radius:10px;
-  background:var(--eg-bg-3);color:var(--eg-ink-2);font-size:var(--eg-fs-xs);font-variant-numeric:tabular-nums;
+.eg-wordmark { font-weight: 650; color: var(--eg-ink); letter-spacing: .01em; }
+.eg-streak { color: var(--eg-ink-2); font-variant-numeric: tabular-nums; }
+.eg-chip {
+  display: inline-flex; align-items: center; gap: 4px; padding: 1px 8px; height: 20px; border-radius: 10px;
+  background: var(--eg-bg-3); color: var(--eg-ink-2); font-size: var(--eg-fs-xs); font-variant-numeric: tabular-nums;
 }
-.eg-chip.warn{background:var(--eg-warn-strong);color:#fff}
-.eg-chev{margin-left:auto;opacity:.7;font-size:var(--eg-fs-xs)}
+.eg-chip.warn { background: var(--eg-warn-strong); color: var(--eg-on-accent); }
+.eg-chev { margin-left: auto; opacity: .7; font-size: var(--eg-fs-xs); }
 
-/* ============ panel ============ */
-.eg-panel{
-  position:relative;width:100%;display:flex;flex-direction:column;
-  background:var(--eg-bg);border:1px solid var(--eg-line);border-radius:var(--eg-r);
-  box-shadow:var(--eg-shadow);overflow:hidden;
-  font:var(--eg-fs-sm)/1.5 var(--eg-font);color:var(--eg-ink);
-  transform-origin:bottom center;animation:eg-pop .18s cubic-bezier(.2,.85,.25,1);
+/* ===== panel ===== */
+.eg-panel {
+  position: fixed; z-index: 2147483000; pointer-events: auto;
+  display: flex; flex-direction: column;
+  background: var(--eg-bg); border: 1px solid var(--eg-line); border-radius: var(--eg-r);
+  box-shadow: var(--eg-shadow); overflow: hidden;
+  font: var(--eg-fs-sm)/1.5 var(--eg-font); color: var(--eg-ink);
+  transform-origin: bottom center; animation: eg-pop .18s cubic-bezier(.2, .85, .25, 1);
 }
-@keyframes eg-pop{from{opacity:0;transform:scale(.94) translateY(10px)}to{opacity:1;transform:none}}
-.eg-head{
-  display:flex;align-items:center;gap:8px;padding:8px 10px 8px 12px;
-  border-bottom:1px solid var(--eg-line);flex:0 0 auto;cursor:move;user-select:none;touch-action:none;
-  background:var(--eg-bg);position:relative;
+@keyframes eg-pop { from { opacity: 0; transform: scale(.94) translateY(10px); } to { opacity: 1; transform: none; } }
+.eg-head {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px 10px 14px;
+  border-bottom: 1px solid var(--eg-line); flex: 0 0 auto; cursor: move; user-select: none; touch-action: none;
+  background: var(--eg-bg); position: relative;
 }
-.eg-grip{color:var(--eg-ink-2);opacity:.9;font-size:var(--eg-fs-xs);letter-spacing:-2px;cursor:grab}
-.eg-tabs{display:flex;gap:2px;margin-left:2px}
-.eg-tab{
-  position:relative;padding:6px 9px;border:none;background:transparent;cursor:pointer;
-  color:var(--eg-ink-2);font:600 var(--eg-fs-sm)/1 var(--eg-font);border-radius:7px;transition:color var(--eg-dur) ease;
+.eg-grip { color: var(--eg-ink-2); opacity: .9; font-size: var(--eg-fs-xs); letter-spacing: -2px; cursor: grab; }
+.eg-tabs { display: flex; flex-wrap: nowrap; gap: 2px; margin-left: 2px; min-width: 0; }
+.eg-tab {
+  position: relative; padding: 8px 10px; border: none; background: transparent; cursor: pointer; white-space: nowrap;
+  color: var(--eg-ink-2); font: 600 var(--eg-fs-sm)/1 var(--eg-font); border-radius: 7px; transition: color var(--eg-dur) ease;
 }
-.eg-tab:hover{color:var(--eg-ink)}
-.eg-tab:focus-visible{outline:2px solid var(--eg-accent);outline-offset:1px}
-.eg-tab.active{color:var(--eg-ink)}
-.eg-tab.active::after{
-  content:"";position:absolute;left:9px;right:9px;bottom:-8px;height:2px;border-radius:2px;background:var(--eg-accent);
+.eg-tab:hover { color: var(--eg-ink); }
+.eg-tab:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
+.eg-tab.active { color: var(--eg-ink); }
+.eg-tab.active::after {
+  content: ""; position: absolute; left: 12px; right: 12px; bottom: -10px; height: 2px; border-radius: 2px; background: var(--eg-accent);
 }
-.eg-head-right{margin-left:auto;display:flex;align-items:center;gap:6px}
-.eg-close{
-  border:none;background:transparent;color:var(--eg-ink-2);cursor:pointer;
-  width:26px;height:26px;border-radius:7px;font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;
-  transition:background var(--eg-dur) ease,color var(--eg-dur) ease;
+.eg-head-right { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+.eg-close {
+  border: none; background: transparent; color: var(--eg-ink-2); cursor: pointer;
+  width: 26px; height: 26px; border-radius: 7px; font-size: 14px; line-height: 1; display: flex; align-items: center; justify-content: center;
+  transition: background var(--eg-dur) ease, color var(--eg-dur) ease;
 }
-.eg-close:hover{background:var(--eg-bg-2);color:var(--eg-ink)}
-.eg-close:focus-visible{outline:2px solid var(--eg-accent);outline-offset:1px}
-.eg-body{padding:15px 15px 16px;overflow-y:auto;flex:1 1 auto}
+.eg-close:hover { background: var(--eg-bg-2); color: var(--eg-ink); }
+.eg-close:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
+.eg-body { padding: 22px 24px 24px; overflow-y: auto; flex: 1 1 auto; display: flex; flex-direction: column; }
+.eg-body > * { width: 100%; max-width: 640px; margin-left: auto; margin-right: auto; }
 
-/* ============ drill ============ */
-.eg-cap{display:flex;align-items:center;gap:7px;color:var(--eg-ink-2);font-size:var(--eg-fs-xs);font-weight:600}
-.eg-cap::before{content:"";width:14px;height:2px;border-radius:2px;background:var(--eg-accent)}
-.eg-zh{
-  margin-top:11px;font-family:var(--eg-serif);font-size:var(--eg-fs-lg);line-height:1.55;font-weight:600;
-  letter-spacing:.01em;color:var(--eg-ink);overflow-wrap:break-word;
+/* ===== drill ===== */
+.eg-cap { color: var(--eg-ink-2); font-size: var(--eg-fs-xs); font-weight: 600; letter-spacing: .01em; }
+.eg-zh {
+  margin-top: 16px; font-family: var(--eg-serif); font-size: var(--eg-fs-lg); line-height: 1.6; font-weight: 600;
+  letter-spacing: .01em; color: var(--eg-ink); overflow-wrap: break-word;
 }
-.eg-hintbtn{
-  margin-top:11px;display:inline-flex;align-items:center;gap:5px;min-height:26px;padding:4px 10px;
-  border:1px solid var(--eg-line);background:var(--eg-bg);border-radius:999px;
-  color:var(--eg-ink-2);font:600 var(--eg-fs-xs)/1 var(--eg-font);cursor:pointer;transition:all var(--eg-dur) ease;
+.eg-hintbtn {
+  margin-top: 14px; display: inline-flex; align-items: center; gap: 5px; min-height: 28px; padding: 5px 11px;
+  border: 1px solid var(--eg-line); background: var(--eg-bg); border-radius: 999px;
+  color: var(--eg-ink-2); font: 600 var(--eg-fs-xs)/1 var(--eg-font); cursor: pointer; transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease;
 }
-.eg-hintbtn:hover{border-color:var(--eg-line-2);color:var(--eg-ink)}
-.eg-hintbtn:focus-visible{outline:2px solid var(--eg-accent);outline-offset:1px}
-.eg-hintbtn .caret{transition:transform var(--eg-dur) ease}
-.eg-hintbtn[aria-expanded="true"] .caret{transform:rotate(90deg)}
-.eg-hintbox{
-  margin-top:9px;padding:9px 11px;border-left:2px solid var(--eg-accent);border-radius:0 8px 8px 0;
-  background:var(--eg-bg-2);color:var(--eg-ink-2);font-size:var(--eg-fs-sm);line-height:1.6;
+.eg-hintbtn:hover { border-color: var(--eg-line-2); color: var(--eg-ink); }
+.eg-hintbtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
+.eg-hintbtn .caret { transition: transform var(--eg-dur) ease; }
+.eg-hintbox {
+  margin-top: 8px; padding: 2px 6px; border: none; border-radius: 8px;
+  background: transparent; color: var(--eg-ink-2); font-size: var(--eg-fs-sm); line-height: 1.6;
+  text-align: center; opacity: .88;
+  transform-origin: top center; animation: eg-hint-in .22s cubic-bezier(.2,.8,.25,1) both;
 }
-.eg-inputwrap{position:relative;margin-top:13px}
-.eg-input{
-  width:100%;min-height:86px;resize:vertical;padding:11px 12px;
-  border:1px solid var(--eg-line);border-radius:var(--eg-r-sm);
-  background:var(--eg-bg-2);color:var(--eg-ink);
-  font:var(--eg-fs-md)/1.55 var(--eg-font);outline:none;
-  transition:border-color var(--eg-dur) ease,box-shadow var(--eg-dur) ease,background var(--eg-dur) ease;
+@keyframes eg-hint-in {
+  from { opacity: 0; transform: translateY(-5px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-.eg-input::placeholder{color:var(--eg-ink-2);opacity:.85}
-.eg-input:hover{border-color:var(--eg-line-2)}
-.eg-input:focus{border-color:var(--eg-accent);background:var(--eg-bg);box-shadow:0 0 0 3px color-mix(in srgb,var(--eg-accent) 18%,transparent)}
-.eg-input.error{border-color:var(--eg-bad);box-shadow:0 0 0 3px color-mix(in srgb,var(--eg-bad) 15%,transparent)}
-.eg-foot{display:flex;align-items:center;gap:10px;margin-top:12px}
-.eg-foot .eg-kbd{margin-left:auto}
-.eg-err{color:var(--eg-bad);font-size:var(--eg-fs-xs);margin-top:8px}
-.eg-kbd{color:var(--eg-ink-2);font-size:var(--eg-fs-xs);white-space:nowrap}
-.eg-kbd kbd{
-  font:600 12px/1 var(--eg-font);padding:2px 5px;border:1px solid var(--eg-line);border-bottom-width:2px;
-  border-radius:4px;background:var(--eg-bg);color:var(--eg-ink-2);
+.eg-inputwrap { position: relative; margin-top: 20px; }
+.eg-input {
+  width: 100%; min-height: 96px; resize: vertical; padding: 12px 14px;
+  border: 1px solid var(--eg-line); border-radius: var(--eg-r-sm);
+  background: var(--eg-bg-2); color: var(--eg-ink);
+  font: var(--eg-fs-md)/1.55 var(--eg-font); outline: none;
+  transition: border-color var(--eg-dur) ease, box-shadow var(--eg-dur) ease, background var(--eg-dur) ease;
 }
-.eg-actions{display:flex;gap:8px;margin-top:11px}
-.eg-btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:6px;
-  min-height:36px;padding:0 15px;border-radius:9px;cursor:pointer;
-  font:600 var(--eg-fs-sm)/1 var(--eg-font);transition:all var(--eg-dur) ease;
-  border:1px solid var(--eg-line-2);background:var(--eg-bg);color:var(--eg-ink);
+.eg-input::placeholder { color: var(--eg-ink-2); opacity: .85; }
+.eg-input:hover { border-color: var(--eg-line-2); }
+.eg-input:focus { border-color: var(--eg-accent); background: var(--eg-bg); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 18%, transparent); }
+.eg-input.error { border-color: var(--eg-bad); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-bad) 15%, transparent); }
+.eg-foot { display: flex; align-items: center; gap: 12px; margin-top: 18px; }
+.eg-foot .eg-kbd { margin-left: auto; }
+.eg-err { color: var(--eg-bad); font-size: var(--eg-fs-xs); margin-top: 8px; }
+.eg-kbd { color: var(--eg-ink-2); font-size: var(--eg-fs-xs); white-space: nowrap; }
+.eg-kbd kbd {
+  font: 600 12px/1 var(--eg-font); padding: 2px 5px; border: 1px solid var(--eg-line); border-bottom-width: 2px;
+  border-radius: 4px; background: var(--eg-bg); color: var(--eg-ink-2);
 }
-.eg-btn:hover{background:var(--eg-bg-2)}
-.eg-btn:focus-visible{outline:2px solid var(--eg-accent);outline-offset:2px}
-.eg-btn:active{transform:translateY(1px)}
-.eg-btn.primary{border-color:transparent;background:var(--eg-accent);color:var(--eg-on-accent)}
-.eg-btn.primary:hover{filter:brightness(1.06)}
-.eg-btn:disabled{opacity:.5;cursor:default;pointer-events:none}
-.eg-btn.primary.is-loading{color:transparent;position:relative}
-.eg-btn.primary.is-loading::after{
-  content:"";position:absolute;width:15px;height:15px;border-radius:50%;
-  border:2px solid rgba(255,255,255,.5);border-top-color:#fff;animation:eg-spin .7s linear infinite;
+.eg-actions { display: flex; gap: 8px; margin-top: 11px; }
+.eg-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: 36px; padding: 0 15px; border-radius: 9px; cursor: pointer;
+  font: 600 var(--eg-fs-sm)/1 var(--eg-font); transition: background var(--eg-dur) ease, filter var(--eg-dur) ease, border-color var(--eg-dur) ease, transform .28s cubic-bezier(.34, 1.56, .64, 1);
+  border: 1px solid var(--eg-line-2); background: var(--eg-bg); color: var(--eg-ink);
 }
-.eg-btn.ghost{border-color:transparent;background:transparent;color:var(--eg-ink-2);padding:0 10px}
-.eg-btn.ghost:hover{background:var(--eg-bg-2);color:var(--eg-ink)}
+.eg-btn:hover { background: var(--eg-bg-2); }
+.eg-btn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }
+.eg-btn:active { transform: scale(.92); transition-duration: .06s; }
+.eg-btn.is-bouncing { animation: eg-btn-bounce .34s cubic-bezier(.34, 1.56, .64, 1); }
+@keyframes eg-btn-bounce {
+  0% { transform: scale(.92); }
+  55% { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+.eg-btn.primary { border-color: transparent; background: var(--eg-accent); color: var(--eg-on-accent); }
+.eg-btn.primary:hover { filter: brightness(1.06); }
+.eg-btn:disabled { opacity: .55; cursor: not-allowed; pointer-events: none; background: var(--eg-bg-2); color: var(--eg-ink-2); border-color: var(--eg-line); }
+.eg-btn.primary.is-loading { color: transparent; position: relative; }
+.eg-btn.primary.is-loading::after {
+  content: ""; position: absolute; width: 15px; height: 15px; border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, .5); border-top-color: #fff; animation: eg-spin .7s linear infinite;
+}
+.eg-btn.ghost { border-color: transparent; background: transparent; color: var(--eg-ink-2); padding: 0 10px; }
+.eg-btn.ghost:hover { background: var(--eg-bg-2); color: var(--eg-ink); }
 
-/* ============ feedback ============ */
-.eg-fb{margin-top:4px;border-radius:12px;padding:14px;border:1px solid transparent}
-.eg-fb.ok{background:color-mix(in srgb,var(--eg-ok) 8%,transparent);border-color:color-mix(in srgb,var(--eg-ok) 30%,transparent)}
-.eg-fb.bad{background:color-mix(in srgb,var(--eg-bad) 7%,transparent);border-color:color-mix(in srgb,var(--eg-bad) 28%,transparent)}
-.eg-fb-top{display:flex;align-items:baseline;gap:9px}
-.eg-score{font:700 var(--eg-fs-xl)/1 var(--eg-font);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
-.eg-fb.ok .eg-score{color:var(--eg-ok)}
-.eg-fb.bad .eg-score{color:var(--eg-bad)}
-.eg-score small{font-size:var(--eg-fs-xs);font-weight:700;opacity:1;color:inherit;margin-left:1px}
-.eg-fb-status{font-weight:700;font-size:var(--eg-fs-md)}
-.eg-fb.ok .eg-fb-status{color:var(--eg-ok)}
-.eg-fb.bad .eg-fb-status{color:var(--eg-bad)}
-.eg-fb-ref{
-  margin-top:11px;padding:10px 12px;border-radius:9px;background:var(--eg-bg);
-  border:1px solid var(--eg-line);font-family:var(--eg-serif);font-size:var(--eg-fs-md);line-height:1.6;color:var(--eg-ink);overflow-wrap:break-word;
+/* ===== confetti ===== */
+.eg-confetti { position: absolute; inset: 0; z-index: 6; pointer-events: none; overflow: hidden; border-radius: inherit; }
+.eg-confetti-piece {
+  position: absolute; display: block; border-radius: 1.5px; opacity: 0;
+  transform: translate(-50%, -50%) rotate(var(--r0, 0deg));
+  animation: eg-confetti-fly var(--dur, 900ms) cubic-bezier(.15, .7, .3, 1) var(--delay, 0ms) forwards;
+  will-change: transform, opacity;
 }
-.eg-fb-ref .lbl{display:block;font:600 var(--eg-fs-xs)/1 var(--eg-font);color:var(--eg-ink-2);letter-spacing:.02em;margin-bottom:5px}
-.eg-fb-tip{margin-top:10px;color:var(--eg-ink-2);font-size:var(--eg-fs-sm);line-height:1.6;display:flex;gap:6px;align-items:flex-start}
-.eg-fb-tip .b{color:var(--eg-accent-ink);font-weight:700;white-space:nowrap;flex:0 0 auto}
-.eg-fb-actions{margin-top:13px;display:flex;gap:8px}
-
-/* ============ report ============ */
-.eg-report .r-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.eg-rtitle{font-family:var(--eg-serif);font-size:var(--eg-fs-lg);line-height:1.35;font-weight:700;margin:0;overflow-wrap:break-word;min-width:0}
-.eg-rmeta{color:var(--eg-ink-2);font-size:var(--eg-fs-xs);margin-top:6px;font-variant-numeric:tabular-nums}
-.eg-rsum{margin:12px 0 0;padding:11px 12px;border-radius:10px;background:var(--eg-bg-2);color:var(--eg-ink-2);font-size:var(--eg-fs-sm);line-height:1.7}
-.eg-rp{margin:13px 0 0;font-size:var(--eg-fs-md);line-height:1.85;color:var(--eg-ink)}
-.eg-practice{margin-top:18px;padding-top:14px;border-top:1px solid var(--eg-line)}
-.eg-ptitle{display:flex;align-items:center;gap:7px;font-size:var(--eg-fs-sm);font-weight:700;color:var(--eg-ink)}
-.eg-q{margin-top:10px;padding:11px 12px;border-radius:10px;background:var(--eg-bg-2)}
-.eg-q-head{display:flex;gap:8px;align-items:baseline}
-.eg-q-n{font:700 var(--eg-fs-sm)/1.4 var(--eg-font);color:var(--eg-accent-ink);font-variant-numeric:tabular-nums;flex:0 0 auto}
-.eg-q-zh{font-size:var(--eg-fs-sm);line-height:1.6}
-.eg-q-en{display:none;margin-top:8px;padding-top:8px;border-top:1px dashed var(--eg-line);font-family:var(--eg-serif);font-size:var(--eg-fs-md);color:var(--eg-ink)}
-.eg-q.reveal .eg-q-en{display:block}
-.eg-q-toggle{margin-top:7px;display:inline-flex;align-items:center;min-height:24px;padding:4px 0;background:none;border:none;color:var(--eg-accent-ink);cursor:pointer;font:600 var(--eg-fs-xs)/1 var(--eg-font)}
-.eg-q-toggle:focus-visible{outline:2px solid var(--eg-accent);outline-offset:2px;border-radius:4px}
-
-/* ============ misc ============ */
-.eg-loading{display:flex;align-items:center;gap:9px;color:var(--eg-ink-2);padding:10px 0;font-size:var(--eg-fs-sm)}
-.eg-spin{display:inline-block;width:15px;height:15px;border:2px solid var(--eg-line-2);border-top-color:var(--eg-accent);border-radius:50%;animation:eg-spin .7s linear infinite}
-@keyframes eg-spin{to{transform:rotate(360deg)}}
-.eg-resize{position:absolute;right:0;bottom:0;width:18px;height:18px;cursor:nwse-resize;touch-action:none}
-.eg-resize::after{content:"";position:absolute;right:4px;bottom:4px;width:9px;height:9px;border-right:2px solid var(--eg-line-2);border-bottom:2px solid var(--eg-line-2);border-bottom-right-radius:3px;opacity:.7}
-@media (prefers-reduced-motion: reduce){
-  .eg-panel{animation:none}
-  *{transition:none!important}
+@keyframes eg-confetti-fly {
+  0%   { opacity: 1; transform: translate(-50%, -50%) rotate(var(--r0, 0deg)) scale(.65); }
+  18%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--dx, 0px)), calc(-50% + var(--dy, 0px))) rotate(calc(var(--r0, 0deg) + var(--rot, 360deg))) scale(1); }
 }
+@media (prefers-reduced-motion: reduce) { .eg-confetti { display: none; } }
+
+/* ===== feedback ===== */
+.eg-fb { margin-top: 28px; padding: 18px 0 0; border: none; border-top: 2px solid var(--eg-line); border-radius: 0; background: transparent; }
+.eg-fb.ok { border-top-color: color-mix(in srgb, var(--eg-ok) 55%, var(--eg-line)); background: transparent; }
+.eg-fb.bad { border-top-color: color-mix(in srgb, var(--eg-bad) 55%, var(--eg-line)); background: transparent; }
+.eg-fb-top { display: flex; align-items: baseline; gap: 10px; }
+.eg-score { font: 700 var(--eg-fs-xl)/1 var(--eg-font); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.eg-fb.ok .eg-score { color: var(--eg-ok); }
+.eg-fb.bad .eg-score { color: var(--eg-bad); }
+.eg-score small { font-size: var(--eg-fs-xs); font-weight: 700; opacity: 1; color: inherit; margin-left: 1px; }
+.eg-fb-status { font-weight: 650; font-size: var(--eg-fs-lg); }
+.eg-fb.ok .eg-fb-status { color: var(--eg-ok); }
+.eg-fb.bad .eg-fb-status { color: var(--eg-bad); }
+.eg-fb-ref {
+  margin-top: 14px; padding: 0; border: none; border-radius: 0; background: transparent;
+  font-family: var(--eg-serif); font-size: var(--eg-fs-lg); line-height: 1.65; color: var(--eg-ink); overflow-wrap: break-word;
+}
+.eg-fb-ref .lbl { display: block; font: 600 var(--eg-fs-xs)/1 var(--eg-font); color: var(--eg-ink-2); letter-spacing: .02em; margin-bottom: 6px; }
+.eg-fb-tip { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--eg-line); color: var(--eg-ink-2); font-size: var(--eg-fs-sm); line-height: 1.7; display: flex; gap: 8px; align-items: flex-start; }
+.eg-fb-tip .b { color: var(--eg-accent-ink); font-weight: 700; white-space: nowrap; flex: 0 0 auto; }
+.eg-fb-actions { margin-top: 18px; display: flex; gap: 10px; }
+
+/* ===== report ===== */
+.eg-report .r-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.eg-rtitle { font-family: var(--eg-serif); font-size: var(--eg-fs-lg); line-height: 1.35; font-weight: 700; margin: 0; overflow-wrap: break-word; min-width: 0; }
+.eg-rmeta { color: var(--eg-ink-2); font-size: var(--eg-fs-xs); margin-top: 6px; font-variant-numeric: tabular-nums; }
+.eg-rsum { margin: 16px 0 0; padding: 0; border-top: 1px solid var(--eg-line); border-radius: 0; background: transparent; color: var(--eg-ink-2); font-size: var(--eg-fs-sm); line-height: 1.75; }
+.eg-rp { margin: 16px 0 0; font-size: var(--eg-fs-md); line-height: 1.9; color: var(--eg-ink); }
+.eg-practice { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--eg-line); }
+.eg-ptitle { display: flex; align-items: center; gap: 7px; font-size: var(--eg-fs-sm); font-weight: 700; color: var(--eg-ink); }
+.eg-q { margin-top: 0; padding: 14px 0; border-top: 1px solid var(--eg-line); border-radius: 0; background: transparent; }
+.eg-q:first-of-type { border-top: none; }
+.eg-q-head { display: flex; gap: 8px; align-items: baseline; }
+.eg-q-n { font: 700 var(--eg-fs-sm)/1.4 var(--eg-font); color: var(--eg-accent-ink); font-variant-numeric: tabular-nums; flex: 0 0 auto; }
+.eg-q-zh { font-size: var(--eg-fs-sm); line-height: 1.6; }
+.eg-q-en { display: none; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--eg-line); font-family: var(--eg-serif); font-size: var(--eg-fs-md); color: var(--eg-ink); }
+.eg-q.reveal .eg-q-en { display: block; }
+.eg-q-toggle { margin-top: 7px; display: inline-flex; align-items: center; min-height: 24px; padding: 4px 0; background: none; border: none; color: var(--eg-accent-ink); cursor: pointer; font: 600 var(--eg-fs-xs)/1 var(--eg-font); }
+.eg-q-toggle:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; border-radius: 4px; }
+
+/* ===== misc ===== */
+.eg-loading { display: flex; align-items: center; gap: 9px; color: var(--eg-ink-2); padding: 10px 0; font-size: var(--eg-fs-sm); }
+.eg-spin { display: inline-block; width: 15px; height: 15px; border: 2px solid var(--eg-line-2); border-top-color: var(--eg-accent); border-radius: 50%; animation: eg-spin .7s linear infinite; }
+@keyframes eg-spin { to { transform: rotate(360deg); } }
+.eg-resize { position: absolute; right: 0; bottom: 0; width: 18px; height: 18px; cursor: nwse-resize; touch-action: none; }
+.eg-resize::after { content: ""; position: absolute; right: 4px; bottom: 4px; width: 9px; height: 9px; border-right: 2px solid var(--eg-line-2); border-bottom: 2px solid var(--eg-line-2); border-bottom-right-radius: 3px; opacity: .7; }
+/* ===== word training ===== */
+.eg-letters { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+.eg-letter {
+  width: 38px; height: 50px; padding: 0; text-align: center;
+  border: none; border-bottom: 2px solid var(--eg-line-2); border-radius: 5px 5px 0 0;
+  background: transparent; color: var(--eg-ink);
+  font: 600 22px/1 var(--eg-font); text-transform: lowercase; outline: none;
+  transition: border-color var(--eg-dur) ease, background var(--eg-dur) ease, color var(--eg-dur) ease;
+}
+.eg-letter:hover { border-bottom-color: var(--eg-line-2); background: var(--eg-bg-2); }
+.eg-letter:focus { border-bottom-color: var(--eg-accent); background: var(--eg-bg); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 16%, transparent); }
+.eg-letter.ok { border-bottom-color: var(--eg-ok); color: var(--eg-ok); }
+.eg-letter.bad { border-bottom-color: var(--eg-bad); color: var(--eg-bad); }
+.eg-letters.answered .eg-letter { cursor: default; }
+.eg-lettercount { display: none; }
+/* word training: centred column */
+.eg-word { max-width: 640px; min-height: 100%; display: flex; flex-direction: column; align-items: stretch; text-align: center; }
+.eg-word-main { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; min-height: 0; padding: 12px 0 2px; }
+.eg-word-head { width: 100%; display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+.eg-word-head .eg-cap { text-align: left; }
+.eg-count { flex: 0 0 auto; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); font-variant-numeric: tabular-nums; }
+.eg-word .eg-zh { font-size: 28px; line-height: 1.4; margin-top: 14px; }
+.eg-word .eg-letters { justify-content: center; }
+.eg-word .eg-foot { justify-content: center; width: 100%; margin-top: 26px; }
+.eg-word .eg-foot .eg-kbd { margin-left: 0; }
+.eg-word .eg-fb { width: 100%; text-align: left; margin-top: 32px; }
+.eg-word .eg-fb-ref { font-size: 26px; }
+/* phrase drill: centred column */
+.eg-drill { max-width: 640px; min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; padding-top: 12px; }
+.eg-drill .eg-cap { justify-content: center; }
+.eg-drill .eg-foot { justify-content: center; width: 100%; }
+.eg-drill .eg-foot .eg-kbd { margin-left: 0; }
+.eg-drill .eg-inputwrap { width: 100%; }
+.eg-drill .eg-input { text-align: left; }
+.eg-drill .eg-hintbox { text-align: center; }
+.eg-drill .eg-fb { width: 100%; text-align: left; }
+
+/* ===== word bank bar ===== */
+.eg-bankbar { width: 100%; display: flex; align-items: center; gap: 10px; padding: 0 0 16px; margin: 0 0 20px; border-bottom: 1px solid var(--eg-line); }
+.eg-banklabel { flex: 0 0 auto; font-size: var(--eg-fs-sm); font-weight: 500; color: var(--eg-ink-2); }
+.eg-select {
+  flex: 1 1 auto; min-width: 0; max-width: 260px; height: 34px; padding: 0 25px 0 12px; border: 1px solid var(--eg-line);
+  border-radius: 999px; background: var(--eg-bg-2); color: var(--eg-ink); cursor: pointer;
+  font: 600 var(--eg-fs-xs)/1 var(--eg-font); outline: none; appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--eg-ink-2) 50%), linear-gradient(135deg, var(--eg-ink-2) 50%, transparent 50%);
+  background-position: calc(100% - 13px) 13px, calc(100% - 9px) 13px; background-size: 4px 4px, 4px 4px; background-repeat: no-repeat;
+}
+.eg-select:hover { border-color: var(--eg-line-2); }
+.eg-select:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
+.eg-bankbtn {
+  flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: 3px;
+  min-height: 34px; padding: 0 12px; border: 1px solid var(--eg-line-2); border-radius: 999px;
+  background: var(--eg-bg); color: var(--eg-ink-2); cursor: pointer;
+  font: 600 var(--eg-fs-xs)/1 var(--eg-font);
+}
+.eg-bankbtn:hover { border-color: var(--eg-accent); color: var(--eg-accent-ink); background: color-mix(in srgb, var(--eg-accent) 5%, var(--eg-bg)); }
+.eg-bankbtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
+.eg-notice { margin: 0 0 12px; padding: 8px 10px; border-radius: 8px; background: color-mix(in srgb, var(--eg-ok) 8%, transparent); border: 1px solid color-mix(in srgb, var(--eg-ok) 28%, transparent); color: var(--eg-ink); font-size: var(--eg-fs-xs); line-height: 1.5; }
+
+/* ===== word bank import ===== */
+.eg-import { width: 100%; max-width: 520px; margin: 0 auto; text-align: left; }
+.eg-import-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.eg-import-title { font-size: var(--eg-fs-md); font-weight: 700; color: var(--eg-ink); line-height: 1.3; }
+.eg-import-actions { flex: 0 0 auto; display: flex; align-items: center; gap: 5px; }
+.eg-import-back, .eg-filebtn {
+  flex: 0 0 auto; display: inline-flex; align-items: center; min-height: 26px; padding: 3px 9px;
+  border: 1px solid var(--eg-line); border-radius: 999px; background: var(--eg-bg);
+  color: var(--eg-ink-2); cursor: pointer; font: 600 var(--eg-fs-xs)/1 var(--eg-font); white-space: nowrap;
+}
+.eg-import-back:hover, .eg-filebtn:hover { border-color: var(--eg-line-2); color: var(--eg-ink); }
+.eg-import-back:focus-visible, .eg-filebtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
+.eg-import-sub { margin-top: 4px; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); line-height: 1.5; }
+.eg-field { margin-top: 8px; }
+.eg-field label { display: block; margin-bottom: 6px; font-size: var(--eg-fs-xs); font-weight: 600; color: var(--eg-ink-2); }
+.eg-text {
+  width: 100%; height: 32px; padding: 0 10px; border: 1px solid var(--eg-line); border-radius: 8px;
+  background: var(--eg-bg-2); color: var(--eg-ink); font: var(--eg-fs-sm)/1 var(--eg-font); outline: none;
+}
+.eg-text:focus { border-color: var(--eg-accent); background: var(--eg-bg); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 16%, transparent); }
+.eg-textarea-wrap { position: relative; margin-top: 10px; }
+.eg-textarea {
+  width: 100%; min-height: 82px; resize: vertical; padding: 9px 10px; border: 1px solid var(--eg-line); border-radius: 10px;
+  background: var(--eg-bg-2); color: var(--eg-ink); font: var(--eg-fs-xs)/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; outline: none;
+  transition: border-color var(--eg-dur) ease, background var(--eg-dur) ease;
+}
+.eg-textarea-wrap.over .eg-textarea, .eg-textarea-wrap:hover .eg-textarea { border-color: var(--eg-accent); background: color-mix(in srgb, var(--eg-accent) 5%, var(--eg-bg-2)); }
+.eg-textarea:focus { border-color: var(--eg-accent); background: var(--eg-bg); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 16%, transparent); }
+.eg-preview { margin-top: 12px; border: 1px solid var(--eg-line); border-radius: 10px; overflow: hidden; }
+.eg-preview-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; background: var(--eg-bg-2); font-size: var(--eg-fs-xs); color: var(--eg-ink-2); }
+.eg-preview-top strong { color: var(--eg-ink); }
+.eg-preview-row { display: flex; gap: 10px; padding: 7px 10px; border-top: 1px solid var(--eg-line); font-size: var(--eg-fs-xs); line-height: 1.5; }
+.eg-preview-row .w { flex: 0 0 38%; font-weight: 650; overflow-wrap: anywhere; }
+.eg-preview-row .m { flex: 1 1 auto; color: var(--eg-ink-2); overflow-wrap: anywhere; }
+.eg-preview-errors { margin-top: 8px; padding: 8px 10px; border-radius: 8px; background: color-mix(in srgb, var(--eg-bad) 7%, transparent); border: 1px solid color-mix(in srgb, var(--eg-bad) 24%, transparent); }
+.eg-preview-errors .er { font-size: var(--eg-fs-xs); line-height: 1.55; color: var(--eg-bad); }
+.eg-import-foot { display: flex; gap: 8px; margin-top: 8px; }
+
+@media (prefers-reduced-motion: reduce) { .eg-panel { animation: none; } .eg-hintbox { animation: none; } .eg-root *, .eg-panel * { transition: none !important; } }
+
+* { box-sizing: border-box; }
+html, body { overflow-x: clip; margin: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; color: #1f2328; background: #eef0f3; padding: 26px; }
+.page { max-width: 1420px; margin: 0 auto; }
+.legend { font: 600 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #4b5563; margin: 0 0 16px; }
+.row { display: flex; flex-wrap: wrap; gap: 28px; align-items: flex-start; }
+.frame { display: flex; flex-direction: column; gap: 8px; }
+.frame > .tag { font: 600 12px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #5f6670; }
+.stage { width: 352px; padding: 22px 20px; border-radius: 20px; background: linear-gradient(180deg,#f6f7f9,#eceef2); display: flex; align-items: flex-start; justify-content: center; }
+.stage.wide { width: 900px; }
+.eg-panel.demo { height: 420px; }
+.eg-panel.demo, .eg-panel.tall, .eg-panel.wide-panel { position: relative; animation: none; }
+.eg-panel.wide-panel { width: 860px; height: 680px; }
 </style>
 </head>
 <body>
 <div class="page">
-  <p class="legend">English Gym · 组件预览（练习 / 反馈 / 错误 / 报告 / 状态）</p>
+  <p class="legend">English Gym · component preview（短语训练 / 单词训练 / 今日报告）</p>
   <div class="row">
-
-    <!-- F1: pill -->
-    <div class="frame">
-      <div class="tag">入口挂件</div>
-      <div class="stage" style="align-items:center">
-        <button class="eg-pill">
-          <span class="eg-mono">EN</span>
-          <span class="eg-wordmark">English Gym</span>
-          <span class="eg-streak">连续 3 天</span>
-          <span class="eg-chip warn">待复习 2</span>
-          <span class="eg-chev">▸</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- F2: drill default -->
-    <div class="frame">
-      <div class="tag">练习 · 默认</div>
-      <div class="stage">
-        <div class="eg-panel">
-          <div class="eg-head">
-            <span class="eg-grip">⠿</span>
-            <div class="eg-tabs"><button class="eg-tab active">练习</button><button class="eg-tab">今日报告</button></div>
-            <div class="eg-head-right"><button class="eg-close">✕</button></div>
-          </div>
-          <div class="eg-body">
-            <div class="eg-cap">把这句话译成英文</div>
-            <div class="eg-zh">我们需要确保这个新系统不会影响我们的日常工作。</div>
-            <button class="eg-hintbtn" aria-expanded="false"><span class="caret">▸</span>提示</button>
-            <div class="eg-inputwrap">
-              <textarea class="eg-input" placeholder="在这里写下你的英文…"></textarea>
-            </div>
-            <div class="eg-foot">
-              <button class="eg-btn primary">提交</button>
-              <button class="eg-btn ghost">换一题</button>
-              <span class="eg-kbd" title="⌘/Ctrl + Enter 提交"><kbd>⌘</kbd> <kbd>↵</kbd></span>
-            </div>
-          </div>
-          <div class="eg-resize"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- F3: feedback ok -->
-    <div class="frame">
-      <div class="tag">反馈 · 正确</div>
-      <div class="stage">
-        <div class="eg-panel">
-          <div class="eg-head">
-            <span class="eg-grip">⠿</span>
-            <div class="eg-tabs"><button class="eg-tab active">练习</button><button class="eg-tab">今日报告</button></div>
-            <div class="eg-head-right"><button class="eg-close">✕</button></div>
-          </div>
-          <div class="eg-body">
-            <div class="eg-fb ok">
-              <div class="eg-fb-top"><span class="eg-score">96<small>分</small></span><span class="eg-fb-status">很好</span></div>
-              <div class="eg-fb-ref"><span class="lbl">参考</span>We need to make sure this new system doesn’t affect our daily work.</div>
-              <div class="eg-fb-tip"><span class="b">提示</span><span>“make sure” 比 “ensure” 更口语；daily work 自然。</span></div>
-              <div class="eg-fb-actions"><button class="eg-btn primary">下一题 →</button></div>
-            </div>
-          </div>
-          <div class="eg-resize"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- F4: feedback bad + input error -->
-    <div class="frame">
-      <div class="tag">反馈 · 错误 + 输入错误态</div>
-      <div class="stage">
-        <div class="eg-panel">
-          <div class="eg-head">
-            <span class="eg-grip">⠿</span>
-            <div class="eg-tabs"><button class="eg-tab active">练习</button><button class="eg-tab">今日报告</button></div>
-            <div class="eg-head-right"><button class="eg-close">✕</button></div>
-          </div>
-          <div class="eg-body">
-            <div class="eg-cap">把这句话译成英文</div>
-            <div class="eg-zh">请把会议纪要发给我一份。</div>
-            <div class="eg-inputwrap"><textarea class="eg-input error">Please send me a meeting note.</textarea></div>
-            <div class="eg-err">缺少 “copy” 这个词的意味</div>
-            <div class="eg-fb bad" style="margin-top:12px">
-              <div class="eg-fb-top"><span class="eg-score">62<small>分</small></span><span class="eg-fb-status">再试一次</span></div>
-              <div class="eg-fb-ref"><span class="lbl">参考</span>Please send me a copy of the meeting minutes.</div>
-              <div class="eg-fb-tip"><span class="b">提示</span><span>“会议纪要” = meeting minutes；“一份” = a copy。</span></div>
-              <div class="eg-fb-actions"><button class="eg-btn primary">下一题 →</button><button class="eg-btn ghost">重写</button></div>
-            </div>
-          </div>
-          <div class="eg-resize"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- F5: report -->
-    <div class="frame">
-      <div class="tag">今日报告</div>
-      <div class="stage">
-        <div class="eg-panel">
-          <div class="eg-head">
-            <span class="eg-grip">⠿</span>
-            <div class="eg-tabs"><button class="eg-tab">练习</button><button class="eg-tab active">今日报告</button></div>
-            <div class="eg-head-right"><button class="eg-close">✕</button></div>
-          </div>
-          <div class="eg-body">
-            <div class="eg-report">
-              <div class="r-top"><h2 class="eg-rtitle">AI Helps Small Teams Work Smarter</h2></div>
-              <div class="eg-rmeta">2026-11-23 · B1</div>
-              <p class="eg-rsum">AI 工具正在改变小团队的协作方式：把重复工作交给模型，人专注判断与沟通。</p>
-              <p class="eg-rp">Small teams are using AI tools to take over repetitive work. Instead of spending hours on drafts and summaries, people now review what the model produces and spend more time on decisions.</p>
-              <p class="eg-rp">The change is not about replacing people. It is about giving each person a little more room to think, while the routine tasks move faster in the background.</p>
-              <div class="eg-practice">
-                <div class="eg-ptitle">练一练</div>
-                <div class="eg-q reveal">
-                  <div class="eg-q-head"><span class="eg-q-n">1</span><span class="eg-q-zh">小团队正在用 AI 工具处理重复工作。</span></div>
-                  <button class="eg-q-toggle">收起参考</button>
-                  <div class="eg-q-en">Small teams are using AI tools to handle repetitive work.</div>
-                </div>
-                <div class="eg-q">
-                  <div class="eg-q-head"><span class="eg-q-n">2</span><span class="eg-q-zh">这不是要取代人，而是让人有更多思考的空间。</span></div>
-                  <button class="eg-q-toggle">看参考</button>
-                  <div class="eg-q-en">This is not about replacing people, but giving them more room to think.</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="eg-resize"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- F6: loading + disabled states -->
-    <div class="frame">
-      <div class="tag">状态 · 加载 / 禁用</div>
-      <div class="stage">
-        <div class="eg-panel">
-          <div class="eg-head">
-            <span class="eg-grip">⠿</span>
-            <div class="eg-tabs"><button class="eg-tab active">练习</button><button class="eg-tab">今日报告</button></div>
-            <div class="eg-head-right"><button class="eg-close">✕</button></div>
-          </div>
-          <div class="eg-body">
-            <div class="eg-loading"><span class="eg-spin"></span>正在出题…</div>
-            <div class="eg-actions" style="margin-top:14px">
-              <button class="eg-btn primary is-loading">提交</button>
-              <button class="eg-btn" disabled>换一题</button>
-              <button class="eg-btn primary" disabled>提交</button>
-            </div>
-          </div>
-          <div class="eg-resize"></div>
-        </div>
-      </div>
-    </div>
-
+    <div class="frame"><div class="tag">单词训练 · 输入</div><div class="stage"><div class="eg-panel demo" style="width:352px"><div class="eg-head"><span class="eg-grip">⠿</span><div class="eg-tabs"><button class="eg-tab">短语训练</button><button class="eg-tab active">单词训练</button><button class="eg-tab">今日报告</button></div><div class="eg-head-right"><button class="eg-close">✕</button></div></div><div class="eg-body"><div class="eg-word"><div class="eg-bankbar" data-nodrag="true"><span class="eg-banklabel">词库</span><select class="eg-select"><option>内置 · CET4（4535）</option></select><button class="eg-bankbtn"><span class="eg-plus">+</span>导入</button></div><div class="eg-word-main"><div class="eg-word-head"><div class="eg-cap">看中文，拼出下面的英文单词</div><span class="eg-count">4 个字母</span></div><div class="eg-zh">煤，煤块</div><div class="eg-letters"><input class="eg-letter" value="c"><input class="eg-letter" value="o"><input class="eg-letter" value="a"><input class="eg-letter" value="l"></div><div class="eg-foot"><button class="eg-btn primary">提交</button><button class="eg-btn ghost">换一个</button><span class="eg-kbd"><kbd>↵</kbd></span></div></div></div></div><div class="eg-resize"></div></div></div></div>
+    <div class="frame"><div class="tag">单词训练 · 答对</div><div class="stage"><div class="eg-panel demo" style="width:352px"><div class="eg-head"><span class="eg-grip">⠿</span><div class="eg-tabs"><button class="eg-tab">短语训练</button><button class="eg-tab active">单词训练</button><button class="eg-tab">今日报告</button></div><div class="eg-head-right"><button class="eg-close">✕</button></div></div><div class="eg-body"><div class="eg-word"><div class="eg-bankbar" data-nodrag="true"><span class="eg-banklabel">词库</span><select class="eg-select"><option>内置 · CET4（4535）</option></select><button class="eg-bankbtn"><span class="eg-plus">+</span>导入</button></div><div class="eg-word-main"><div class="eg-word-head"><div class="eg-cap">看中文，拼出下面的英文单词</div><span class="eg-count">4 个字母</span></div><div class="eg-zh">煤，煤块</div><div class="eg-letters answered"><input class="eg-letter ok" value="c"><input class="eg-letter ok" value="o"><input class="eg-letter ok" value="a"><input class="eg-letter ok" value="l"></div><div class="eg-fb ok"><div class="eg-fb-top"><span class="eg-fb-status">拼对了</span></div><div class="eg-fb-ref"><span class="lbl">正确拼写</span>coal</div><div class="eg-fb-actions"><button class="eg-btn primary">下一个</button></div></div></div></div></div><div class="eg-resize"></div></div></div></div>
+    <div class="frame"><div class="tag">短语训练 · 默认</div><div class="stage"><div class="eg-panel demo" style="width:352px"><div class="eg-head"><span class="eg-grip">⠿</span><div class="eg-tabs"><button class="eg-tab active">短语训练</button><button class="eg-tab">单词训练</button><button class="eg-tab">今日报告</button></div><div class="eg-head-right"><button class="eg-close">✕</button></div></div><div class="eg-body"><div class="eg-drill"><div class="eg-cap">把这句话译成英文</div><div class="eg-zh">我们需要确保这个新系统不会影响我们的日常工作。</div><button class="eg-hintbtn"><span class="caret">▸</span>提示</button><div class="eg-inputwrap"><textarea class="eg-input" placeholder="在这里写下你的英文…"></textarea></div><div class="eg-foot"><button class="eg-btn primary">提交</button><button class="eg-btn ghost">换一题</button><span class="eg-kbd" title="⌘/Ctrl + Enter 提交"><kbd>⌘</kbd> <kbd>↵</kbd></span></div></div></div><div class="eg-resize"></div></div></div></div>
+    <div class="frame"><div class="tag">今日报告</div><div class="stage"><div class="eg-panel tall" style="width:352px"><div class="eg-head"><span class="eg-grip">⠿</span><div class="eg-tabs"><button class="eg-tab">短语训练</button><button class="eg-tab">单词训练</button><button class="eg-tab active">今日报告</button></div><div class="eg-head-right"><button class="eg-close">✕</button></div></div><div class="eg-body"><div class="eg-report"><div class="r-top"><h2 class="eg-rtitle">AI Helps Small Teams Work Smarter</h2></div><div class="eg-rmeta">2026-11-23 · B1</div><p class="eg-rsum">AI 工具正在改变小团队的协作方式：把重复工作交给模型，人专注判断与沟通。</p><p class="eg-rp">Small teams are using AI tools to take over repetitive work. Instead of spending hours on drafts and summaries, people now review what the model produces and spend more time on decisions.</p><p class="eg-rp">The change is not about replacing people. It is about giving each person a little more room to think, while the routine tasks move faster in the background.</p><div class="eg-practice"><div class="eg-ptitle">练一练</div><div class="eg-q reveal"><div class="eg-q-head"><span class="eg-q-n">1</span><span class="eg-q-zh">小团队正在用 AI 工具处理重复工作。</span></div><button class="eg-q-toggle">收起参考</button><div class="eg-q-en">Small teams are using AI tools to handle repetitive work.</div></div><div class="eg-q"><div class="eg-q-head"><span class="eg-q-n">2</span><span class="eg-q-zh">这不是要取代人，而是让人有更多思考的空间。</span></div><button class="eg-q-toggle">看参考</button><div class="eg-q-en">This is not about replacing people, but giving them more room to think.</div></div></div></div></div><div class="eg-resize"></div></div></div></div>
+    <div class="frame"><div class="tag">单词训练 · 宽面板</div><div class="stage wide"><div class="eg-panel wide-panel"><div class="eg-head"><span class="eg-grip">⠿</span><div class="eg-tabs"><button class="eg-tab">短语训练</button><button class="eg-tab active">单词训练</button><button class="eg-tab">今日报告</button></div><div class="eg-head-right"><button class="eg-close">✕</button></div></div><div class="eg-body"><div class="eg-word"><div class="eg-bankbar" data-nodrag="true"><span class="eg-banklabel">词库</span><select class="eg-select"><option>内置 · CET4（4535）</option></select><button class="eg-bankbtn"><span class="eg-plus">+</span>导入</button></div><div class="eg-word-main"><div class="eg-word-head"><div class="eg-cap">看中文，拼出下面的英文单词</div><span class="eg-count">4 个字母</span></div><div class="eg-zh">煤，煤块</div><div class="eg-letters"><input class="eg-letter" value="c"><input class="eg-letter" value="o"><input class="eg-letter" value="a"><input class="eg-letter" value="l"></div><div class="eg-foot"><button class="eg-btn primary">提交</button><button class="eg-btn ghost">换一个</button><span class="eg-kbd"><kbd>↵</kbd></span></div></div></div></div><div class="eg-resize"></div></div></div></div>
   </div>
 </div>
 </body>
