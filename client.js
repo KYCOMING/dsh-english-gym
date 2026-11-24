@@ -230,19 +230,22 @@ window.__ModuleLoader__.load({
 .eg-fb-actions { margin-top: 18px; display: flex; gap: 10px; }
 
 /* ===== report ===== */
-.eg-report .r-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.eg-rtitle { font-family: var(--eg-serif); font-size: var(--eg-fs-lg); line-height: 1.35; font-weight: 700; margin: 0; overflow-wrap: break-word; min-width: 0; }
-.eg-rmeta { color: var(--eg-ink-2); font-size: var(--eg-fs-xs); margin-top: 6px; font-variant-numeric: tabular-nums; }
-.eg-rsum { margin: 16px 0 0; padding: 0; border-top: 1px solid var(--eg-line); border-radius: 0; background: transparent; color: var(--eg-ink-2); font-size: var(--eg-fs-sm); line-height: 1.75; }
+.eg-report .r-top { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.eg-rtitle { font-family: var(--eg-serif); font-size: var(--eg-fs-lg); line-height: 1.35; font-weight: 700; margin: 0; overflow-wrap: break-word; min-width: 0; text-align: center; }
+.eg-rmeta { color: var(--eg-ink-2); font-size: var(--eg-fs-xs); margin-top: 6px; font-variant-numeric: tabular-nums; text-align: center; }
+.eg-rsum { margin: 16px 0 0; padding: 0; border-top: 1px solid var(--eg-line); border-radius: 0; background: transparent; color: var(--eg-ink-2); font-size: var(--eg-fs-sm); line-height: 1.75; text-align: center; }
 .eg-rp { margin: 16px 0 0; font-size: var(--eg-fs-md); line-height: 1.9; color: var(--eg-ink); }
 .eg-practice { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--eg-line); }
-.eg-ptitle { display: flex; align-items: center; gap: 7px; font-size: var(--eg-fs-sm); font-weight: 700; color: var(--eg-ink); }
+.eg-report .eg-ptitle { text-align: center; }
+.eg-report .eg-actions { justify-content: center; }
+.eg-report .eg-q-toggle { width: 100%; justify-content: center; }
+.eg-ptitle { display: flex; align-items: center; justify-content: center; gap: 7px; font-size: var(--eg-fs-sm); font-weight: 700; color: var(--eg-ink); }
 .eg-q { margin-top: 0; padding: 14px 0; border-top: 1px solid var(--eg-line); border-radius: 0; background: transparent; }
 .eg-q:first-of-type { border-top: none; }
-.eg-q-head { display: flex; gap: 8px; align-items: baseline; }
+.eg-q-head { display: flex; gap: 8px; align-items: baseline; justify-content: center; text-align: center; }
 .eg-q-n { font: 700 var(--eg-fs-sm)/1.4 var(--eg-font); color: var(--eg-accent-ink); font-variant-numeric: tabular-nums; flex: 0 0 auto; }
-.eg-q-zh { font-size: var(--eg-fs-sm); line-height: 1.6; }
-.eg-q-en { display: none; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--eg-line); font-family: var(--eg-serif); font-size: var(--eg-fs-md); color: var(--eg-ink); }
+.eg-q-zh { font-size: var(--eg-fs-sm); line-height: 1.6; text-align: center; }
+.eg-q-en { display: none; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--eg-line); font-family: var(--eg-serif); font-size: var(--eg-fs-md); color: var(--eg-ink); text-align: center; }
 .eg-q.reveal .eg-q-en { display: block; }
 .eg-q-toggle { margin-top: 7px; display: inline-flex; align-items: center; min-height: 24px; padding: 4px 0; background: none; border: none; color: var(--eg-accent-ink); cursor: pointer; font: 600 var(--eg-fs-xs)/1 var(--eg-font); }
 .eg-q-toggle:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; border-radius: 4px; }
@@ -291,7 +294,11 @@ window.__ModuleLoader__.load({
 .eg-drill .eg-inputwrap { width: 100%; }
 .eg-drill .eg-input { text-align: left; }
 .eg-drill .eg-hintbox { text-align: center; }
-.eg-drill .eg-fb { width: 100%; text-align: left; }
+.eg-drill .eg-fb { width: 100%; text-align: center; }
+.eg-drill .eg-fb-top { justify-content: center; }
+.eg-drill .eg-fb-actions { justify-content: center; }
+.eg-drill .eg-fb-tip { justify-content: center; align-items: center; text-align: center; }
+.eg-drill .eg-err { text-align: center; }
 
 /* ===== word bank bar ===== */
 .eg-bankbar { width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; padding: 0 0 10px; margin: 0 0 12px; border-bottom: 1px solid var(--eg-line); }
