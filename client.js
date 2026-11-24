@@ -212,6 +212,9 @@ window.__ModuleLoader__.load({
 .eg-fb-tip { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--eg-line); color: var(--eg-ink-2); font-size: var(--eg-fs-sm); line-height: 1.7; display: flex; gap: 8px; align-items: flex-start; }
 .eg-fb-tip .b { color: var(--eg-accent-ink); font-weight: 700; white-space: nowrap; flex: 0 0 auto; }
 .eg-fb-actions { margin-top: 18px; display: flex; gap: 10px; }
+.eg-reveal { margin-top: 10px; padding: 6px 12px; border: 1px solid var(--eg-line); border-radius: 999px; background: transparent; color: var(--eg-ink-2); font: 600 var(--eg-fs-sm)/1.2 var(--eg-font); cursor: pointer; }
+.eg-reveal:hover { color: var(--eg-ink); border-color: var(--eg-line-2); }
+.eg-reveal:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }
 
 /* ===== report ===== */
 .eg-report .r-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
@@ -936,6 +939,7 @@ window.__ModuleLoader__.load({
       const [item, setItem] = useState(null)
       const [cells, setCells] = useState([])
       const [res, setRes] = useState(null)
+      const [revealed, setRevealed] = useState(false)
       const [busy, setBusy] = useState(false)
       const [error, setError] = useState('')
       const [banks, setBanks] = useState(null)
@@ -952,6 +956,7 @@ window.__ModuleLoader__.load({
         setBusy(true)
         setError('')
         setRes(null)
+        setRevealed(false)
         try {
           const data = await api('/word/next', { method: 'POST', body: '{}' })
           setItem(data)
@@ -1025,6 +1030,7 @@ window.__ModuleLoader__.load({
         if (cells.some((c) => !c)) return
         setBusy(true)
         setError('')
+        setRevealed(false)
         try {
           const r = await api('/word/check', {
             method: 'POST',
@@ -1044,6 +1050,7 @@ window.__ModuleLoader__.load({
         if (!item || busy) return
         setRes(null)
         setError('')
+        setRevealed(false)
         setCells(new Array(Math.max(0, item.letters || 0)).fill(''))
         setTimeout(() => {
           try {
@@ -1222,11 +1229,23 @@ window.__ModuleLoader__.load({
                   React.createElement('button', { className: 'eg-btn', onClick: load, disabled: busy }, '下一个'),
                 ),
                 React.createElement(
-                  'div',
-                  { className: 'eg-fb-ref' },
-                  React.createElement('span', { className: 'lbl' }, '正确拼写'),
-                  res.reference,
+                  'button',
+                  {
+                    className: 'eg-reveal',
+                    onClick: () => setRevealed((v) => !v),
+                    disabled: busy,
+                    'aria-expanded': revealed ? 'true' : 'false',
+                  },
+                  revealed ? '收起正确答案' : '显示正确答案',
                 ),
+                revealed
+                  ? React.createElement(
+                      'div',
+                      { className: 'eg-fb-ref' },
+                      React.createElement('span', { className: 'lbl' }, '正确拼写'),
+                      res.reference,
+                    )
+                  : null,
               )
           : React.createElement(
               'div',
