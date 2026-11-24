@@ -194,8 +194,8 @@ window.__ModuleLoader__.load({
 
 /* ===== feedback ===== */
 .eg-fb { margin-top: 28px; padding: 18px 0 0; border: none; border-top: 2px solid var(--eg-line); border-radius: 0; background: transparent; }
-.eg-fb.ok { border-top-color: color-mix(in srgb, var(--eg-ok) 55%, var(--eg-line)); background: transparent; }
-.eg-fb.bad { border-top-color: color-mix(in srgb, var(--eg-bad) 55%, var(--eg-line)); background: transparent; }
+.eg-fb.ok { border-top-color: color-mix(in srgb, var(--eg-ok) 55%, var(--eg-line)); }
+.eg-fb.bad { border-top-color: color-mix(in srgb, var(--eg-bad) 55%, var(--eg-line)); }
 .eg-fb-top { display: flex; align-items: baseline; gap: 10px; }
 .eg-score { font: 700 var(--eg-fs-xl)/1 var(--eg-font); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
 .eg-fb.ok .eg-score { color: var(--eg-ok); }
@@ -240,7 +240,7 @@ window.__ModuleLoader__.load({
 /* ===== word training ===== */
 .eg-letters { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
 .eg-letter {
-  width: 38px; height: 50px; padding: 0; text-align: center;
+  flex: 1 1 0; min-width: 8px; max-width: 38px; width: auto; height: 50px; padding: 0; text-align: center;
   border: none; border-bottom: 2px solid var(--eg-line-2); border-radius: 5px 5px 0 0;
   background: transparent; color: var(--eg-ink);
   font: 600 22px/1 var(--eg-font); text-transform: lowercase; outline: none;
@@ -261,7 +261,8 @@ window.__ModuleLoader__.load({
 .eg-word .eg-letters { justify-content: center; }
 .eg-word .eg-foot { justify-content: center; width: 100%; margin-top: 26px; }
 .eg-word .eg-foot .eg-kbd { margin-left: 0; }
-.eg-word .eg-fb { width: 100%; text-align: left; margin-top: 32px; }
+.eg-word .eg-fb { width: 100%; text-align: left; margin-top: 32px; padding-top: 0; border-top: none; }
+.eg-word .eg-fb > .eg-fb-actions:first-child { margin-top: 0; }
 .eg-word .eg-fb-ref { font-size: 26px; }
 /* phrase drill: centred column */
 .eg-drill { max-width: 640px; min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; padding-top: 12px; }
@@ -1042,6 +1043,20 @@ window.__ModuleLoader__.load({
         }
       }, [item, cells, busy, res])
 
+      const retry = useCallback(() => {
+        if (!item || busy) return
+        setRes(null)
+        setError('')
+        setCells(new Array(Math.max(0, item.letters || 0)).fill(''))
+        setTimeout(() => {
+          try {
+            if (refs.current[0]) refs.current[0].focus()
+          } catch {
+            /* ignore */
+          }
+        }, 0)
+      }, [item, busy])
+
       const setCell = (i, v) => {
         const ch = String(v || '').replace(/[^a-zA-Z]/g, '').slice(-1)
         setCells((prev) => {
@@ -1120,9 +1135,11 @@ window.__ModuleLoader__.load({
       const answered = !!res
       const ok = answered && !!res.correct
       const target = String((res && res.reference) || '').toLowerCase()
+      const letterGap = cells.length > 7 ? 8 : 10
+      const letterFont = cells.length > 12 ? 15 : cells.length > 9 ? 17 : 22
       const cellsNodes = cells.map((ch, i) => {
         let cls = 'eg-letter'
-        if (answered) cls += target[i] === String(ch).toLowerCase() ? ' ok' : ' bad'
+        if (answered) cls += ok ? ' ok' : ' bad'
         return React.createElement('input', {
           key: i,
           ref: (el) => {
@@ -1130,7 +1147,7 @@ window.__ModuleLoader__.load({
           },
           className: cls,
           value: answered ? ch || target[i] || '' : ch,
-          style: { width: cells.length > 12 ? 24 : cells.length > 8 ? 29 : 34 },
+          style: { fontSize: letterFont },
           maxLength: 1,
           inputMode: 'text',
           autoCapitalize: 'off',
@@ -1178,29 +1195,46 @@ window.__ModuleLoader__.load({
           React.createElement('span', { className: 'eg-count' }, item.letters + ' 个字母'),
         ),
         React.createElement('div', { className: 'eg-zh' }, item.zh),
-        React.createElement('div', { className: 'eg-letters' + (answered ? ' answered' : '') }, cellsNodes),
+        React.createElement('div', { className: 'eg-letters' + (answered ? ' answered' : ''), style: { gap: letterGap } }, cellsNodes),
         error ? React.createElement('div', { className: 'eg-err' }, error) : null,
         answered
-          ? React.createElement(
-              'div',
-              { className: 'eg-fb ' + (ok ? 'ok' : 'bad') },
-              React.createElement(
+          ? ok
+            ? React.createElement(
                 'div',
-                { className: 'eg-fb-top' },
-                React.createElement('span', { className: 'eg-fb-status' }, ok ? '拼对了' : '再试一次'),
-              ),
-              React.createElement(
+                { className: 'eg-fb ok' },
+                React.createElement(
+                  'div',
+                  { className: 'eg-fb-top' },
+                  React.createElement('span', { className: 'eg-fb-status' }, '拼对了'),
+                ),
+                React.createElement(
+                  'div',
+                  { className: 'eg-fb-ref' },
+                  React.createElement('span', { className: 'lbl' }, '正确拼写'),
+                  res.reference,
+                ),
+                React.createElement(
+                  'div',
+                  { className: 'eg-fb-actions' },
+                  React.createElement('button', { className: 'eg-btn primary', onClick: load, disabled: busy }, '下一个'),
+                ),
+              )
+            : React.createElement(
                 'div',
-                { className: 'eg-fb-ref' },
-                React.createElement('span', { className: 'lbl' }, '正确拼写'),
-                res.reference,
-              ),
-              React.createElement(
-                'div',
-                { className: 'eg-fb-actions' },
-                React.createElement('button', { className: 'eg-btn primary', onClick: load, disabled: busy }, '下一个'),
-              ),
-            )
+                { className: 'eg-fb bad' },
+                React.createElement(
+                  'div',
+                  { className: 'eg-fb-actions' },
+                  React.createElement('button', { className: 'eg-btn primary', onClick: retry, disabled: busy }, '再试一次'),
+                  React.createElement('button', { className: 'eg-btn', onClick: load, disabled: busy }, '下一个'),
+                ),
+                React.createElement(
+                  'div',
+                  { className: 'eg-fb-ref' },
+                  React.createElement('span', { className: 'lbl' }, '正确拼写'),
+                  res.reference,
+                ),
+              )
           : React.createElement(
               'div',
               { className: 'eg-foot' },
