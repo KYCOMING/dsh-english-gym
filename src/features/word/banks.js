@@ -1,10 +1,10 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { ensureDir, readJson, writeJson } from './store.js'
-import { CET4_WORD_BANK } from './wordbank-cet4.js'
-import { CET6_WORD_BANK } from './wordbank-cet6.js'
-import { IELTS_WORD_BANK } from './wordbank-ielts.js'
-import { TOEFL_WORD_BANK } from './wordbank-toefl.js'
+import { ensureDir, readJson, writeJson } from '../../core/store.js'
+import { CET4_WORD_BANK } from './data/cet4.js'
+import { CET6_WORD_BANK } from './data/cet6.js'
+import { IELTS_WORD_BANK } from './data/ielts.js'
+import { TOEFL_WORD_BANK } from './data/toefl.js'
 
 export const BUILTIN_BANK_ID = 'builtin'
 

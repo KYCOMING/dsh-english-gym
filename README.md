@@ -67,10 +67,26 @@ accommodate,容纳；适应,v,əˈkɒmədeɪt,The room can accommodate six peopl
 
 ## 工作原理
 
-- **宿主一半**（`index.js` + `lib/`）：用 `ctx.webServer` 在 `/api/english-gym` 下挂一组 JSON 路由；用 `ctx.llm` 出题、判分、写报告；用 `node:fs` 持久化。
+- **宿主一半**（`index.js` + `src/`）：用 `ctx.webServer` 在 `/api/english-gym` 下挂一组 JSON 路由；用 `ctx.llm` 出题、判分、写报告；用 `node:fs` 持久化。
 - **前端一半**（`client.js`）：注册两个座位——`English Gym` 触发条放在 `conversation.composer.dock`（输入框下方，常驻）；点开后那块**看板**放在 `shell.overlay`（根作用域浮层，整层默认点击穿透、面板自己 `pointer-events:auto`），`position:fixed` 浮在输入框上方，**不参与正文布局、不会把对话撑开**。两者用同一个模块内 store 同步开关与统计。用同源 `fetch()` 调上面的路由。样式只用主题变量（`--dsw-alias-*`），明暗自动适配。
 
 这样客户端完全不需要 `harness`/动态包沙箱，也不需要额外依赖，纯 bundle 即可。
+
+### 目录结构
+
+```
+src/
+  core/                 # 基础设施：JSON 持久化、LLM 调用封装
+  shared/               # 跨业务共用的纯函数（答案归一化等）
+  host/                 # 插件装配：HTTP 路由、tools、生命周期
+  features/
+    phrase/             # 短语训练：出题、判分、错题复习
+    word/               # 单词训练：词库管理、导入解析
+      data/             # 内置 CET4/CET6/雅思/托福静态词库
+    report/             # 每日 AI/科技英文报告
+client.js               # 前端挂件（composer.dock 触发条 + shell.overlay 看板）
+index.js                # DSH 插件入口，只负责把 host 装进 ctx
+```
 
 ### HTTP 路由
 
@@ -100,4 +116,4 @@ accommodate,容纳；适应,v,əˈkɒmədeɪt,The room can accommodate six peopl
 
 ## License
 
-MIT。内置单词库（`lib/wordbank*.js`）取自 [KyleBing/english-vocabulary](https://github.com/KyleBing/english-vocabulary) 的 CET4、英语六级、雅思和托福词表（BSD-3-Clause），详见 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)。
+MIT。内置单词库（`src/features/word/data/*.js`）取自 [KyleBing/english-vocabulary](https://github.com/KyleBing/english-vocabulary) 的 CET4、英语六级、雅思和托福词表（BSD-3-Clause），详见 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)。

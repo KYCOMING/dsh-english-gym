@@ -1,4 +1,4 @@
-import { createEnglishGym } from './lib/host.js'
+import { createEnglishGym } from './src/host/plugin.js'
 
 // host half needs the HTTP carrier; everything else is reached lazily via ctx.get()
 export const inject = ['webServer']

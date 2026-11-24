@@ -1,6 +1,6 @@
 # Third-party notices
 
-## English word banks (`lib/wordbank*.js`)
+## English word banks (`src/features/word/data/*.js`)
 
 The static vocabulary used by 单词训练 is derived from the **CET4, CET6, IELTS,
 and TOEFL** word lists in:
@@ -11,10 +11,10 @@ and TOEFL** word lists in:
 
 | Bundled file | Word list |
 | --- | --- |
-| `lib/wordbank-cet4.js` | CET4 |
-| `lib/wordbank-cet6.js` | 六级 (`full_line_jsonl/simple/正序/六级.jsonl`) |
-| `lib/wordbank-ielts.js` | 雅思 (`full_line_jsonl/simple/正序/雅思.jsonl`) |
-| `lib/wordbank-toefl.js` | 托福 (`full_line_jsonl/simple/正序/托福.jsonl`) |
+| `src/features/word/data/cet4.js` | CET4 |
+| `src/features/word/data/cet6.js` | 六级 (`full_line_jsonl/simple/正序/六级.jsonl`) |
+| `src/features/word/data/ielts.js` | 雅思 (`full_line_jsonl/simple/正序/雅思.jsonl`) |
+| `src/features/word/data/toefl.js` | 托福 (`full_line_jsonl/simple/正序/托福.jsonl`) |
 
 The CET4 list was trimmed to single English words with a concise Chinese gloss,
 and a small number of AI/tech terms were added by hand. The CET6, IELTS, and
