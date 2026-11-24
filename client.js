@@ -982,6 +982,21 @@ window.__ModuleLoader__.load({
         load()
       }, [load])
 
+      // After a correct spelling, Enter acts as “next word” — the primary action is
+      // always one keystroke away, even when the letter inputs are disabled.
+      useEffect(() => {
+        if (!res || !res.correct || view !== 'practice') return undefined
+        const onKeyDown = (e) => {
+          if (e.key !== 'Enter' || e.isComposing) return
+          const el = e.target
+          if (el && el.closest && el.closest('textarea, input:not([disabled]), select, button')) return
+          e.preventDefault()
+          load()
+        }
+        window.addEventListener('keydown', onKeyDown)
+        return () => window.removeEventListener('keydown', onKeyDown)
+      }, [res, view, load])
+
       const loadBanks = useCallback(async () => {
         try {
           const data = await api('/wordbanks')
@@ -1172,7 +1187,7 @@ window.__ModuleLoader__.load({
             'div',
             { className: 'eg-word-foot' },
             ok
-              ? React.createElement('button', { className: 'eg-btn primary', onClick: load, disabled: busy }, '下一个')
+              ? React.createElement('button', { className: 'eg-btn primary', onClick: load, disabled: busy, title: '回车继续', 'aria-keyshortcuts': 'Enter' }, '下一个')
               : [
                   React.createElement('button', { key: 'retry', className: 'eg-btn primary', onClick: retry, disabled: busy }, '再试一次'),
                   React.createElement(

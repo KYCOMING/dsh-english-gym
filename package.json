@@ -1,6 +1,6 @@
 {
   "name": "dsh-english-gym",
-  "version": "0.3.13",
+  "version": "0.3.14",
   "private": true,
   "type": "module",
   "description": "English Gym — a lightweight, in-DSH English practice widget: phrase translation (中文→英文) + static/custom word-bank spelling drill + an AI/tech daily report. No voice.",
