@@ -1167,7 +1167,7 @@ window.__ModuleLoader__.load({
         })
       })
 
-      const feedbackActions = answered
+      const footerActions = answered
         ? React.createElement(
             'div',
             { className: 'eg-word-foot' },
@@ -1189,7 +1189,28 @@ window.__ModuleLoader__.load({
                   React.createElement('button', { key: 'next', className: 'eg-btn', onClick: load, disabled: busy }, '下一个'),
                 ],
           )
-        : null
+        : item
+          ? React.createElement(
+              'div',
+              { className: 'eg-word-foot' },
+              React.createElement(
+                'button',
+                {
+                  className: 'eg-btn primary' + (busy ? ' is-loading' : ''),
+                  onClick: submit,
+                  onPointerDown: bounceButton,
+                  disabled: busy || cells.some((c) => !c),
+                },
+                '提交',
+              ),
+              React.createElement('button', { className: 'eg-btn ghost', onClick: load, disabled: busy }, '换一个'),
+              React.createElement(
+                'span',
+                { className: 'eg-kbd', title: '回车提交' },
+                React.createElement('kbd', null, '↵'),
+              ),
+            )
+          : null
 
       return React.createElement(
         'div',
@@ -1252,28 +1273,9 @@ window.__ModuleLoader__.load({
                     )
                   : null,
               )
-          : React.createElement(
-              'div',
-              { className: 'eg-foot' },
-              React.createElement(
-                'button',
-                {
-                  className: 'eg-btn primary' + (busy ? ' is-loading' : ''),
-                  onClick: submit,
-                  onPointerDown: bounceButton,
-                  disabled: busy || cells.some((c) => !c),
-                },
-                '提交',
-              ),
-              React.createElement('button', { className: 'eg-btn ghost', onClick: load, disabled: busy }, '换一个'),
-              React.createElement(
-                'span',
-                { className: 'eg-kbd', title: '回车提交' },
-                React.createElement('kbd', null, '↵'),
-              ),
-            ),
+          : null,
         ),
-        feedbackActions,
+        footerActions,
       )
     }
 
