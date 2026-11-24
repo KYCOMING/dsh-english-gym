@@ -248,16 +248,16 @@
 .eg-letter.bad { border-bottom-color: var(--eg-bad); color: var(--eg-bad); }
 .eg-letters.answered .eg-letter { cursor: default; }
 /* word training: centred column */
-.eg-word { max-width: 640px; min-height: 100%; display: flex; flex-direction: column; align-items: stretch; text-align: center; }
+.eg-word { width: 100%; max-width: 640px; margin-left: auto; margin-right: auto; min-height: 100%; display: flex; flex-direction: column; align-items: stretch; text-align: center; }
 .eg-word-main { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; min-height: 0; padding: 12px 0 2px; }
 .eg-word .eg-zh { font-size: 28px; line-height: 1.4; margin-top: 14px; }
 .eg-word .eg-letters { justify-content: center; }
 .eg-word .eg-foot { justify-content: center; width: 100%; margin-top: 26px; }
 .eg-word .eg-foot .eg-kbd { margin-left: 0; }
-.eg-word .eg-fb { width: 100%; text-align: left; margin-top: 32px; padding-top: 0; border-top: none; }
-.eg-word .eg-fb > .eg-fb-actions:first-child { margin-top: 0; gap: 8px; flex-wrap: wrap; }
+.eg-word .eg-fb { width: 100%; text-align: center; margin-top: 32px; padding-top: 0; border-top: none; }
+.eg-word .eg-fb > .eg-fb-actions:first-child { margin-top: 0; gap: 8px; flex-wrap: wrap; justify-content: center; }
 .eg-word .eg-fb-actions .eg-btn { padding: 0 10px; }
-.eg-word .eg-fb-ref { font-size: 26px; }
+.eg-word .eg-fb-ref { font-size: 26px; text-align: center; }
 /* phrase drill: centred column */
 .eg-drill { max-width: 640px; min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; padding-top: 12px; }
 .eg-drill .eg-cap { justify-content: center; }
@@ -269,7 +269,7 @@
 .eg-drill .eg-fb { width: 100%; text-align: left; }
 
 /* ===== word bank bar ===== */
-.eg-bankbar { width: 100%; display: flex; align-items: center; gap: 10px; padding: 0 0 16px; margin: 0 0 20px; border-bottom: 1px solid var(--eg-line); }
+.eg-bankbar { width: 100%; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; padding: 0 0 16px; margin: 0 0 20px; border-bottom: 1px solid var(--eg-line); }
 .eg-banklabel { flex: 0 0 auto; font-size: var(--eg-fs-sm); font-weight: 500; color: var(--eg-ink-2); }
 .eg-select {
   flex: 1 1 auto; min-width: 0; max-width: 260px; height: 34px; padding: 0 25px 0 12px; border: 1px solid var(--eg-line);
