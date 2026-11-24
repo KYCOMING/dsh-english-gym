@@ -95,15 +95,15 @@ window.__ModuleLoader__.load({
 }
 @keyframes eg-pop { from { opacity: 0; transform: scale(.94) translateY(10px); } to { opacity: 1; transform: none; } }
 .eg-head {
-  display: flex; align-items: center; gap: 10px; padding: 10px 12px 10px 14px;
+  display: flex; align-items: center; gap: 6px; padding: 10px 10px 10px 12px;
   border-bottom: 1px solid var(--eg-line); flex: 0 0 auto; cursor: move; user-select: none; touch-action: none;
   background: var(--eg-bg); position: relative;
 }
-.eg-grip { color: var(--eg-ink-2); opacity: .9; font-size: var(--eg-fs-xs); letter-spacing: -2px; cursor: grab; }
-.eg-tabs { display: flex; flex-wrap: nowrap; gap: 2px; margin-left: 2px; min-width: 0; }
+.eg-grip { color: var(--eg-ink-2); opacity: .9; font-size: var(--eg-fs-xs); letter-spacing: -2px; cursor: grab; width: 10px; flex: 0 0 auto; }
+.eg-tabs { display: flex; flex-wrap: nowrap; gap: 0; margin-left: 0; min-width: 0; flex: 0 1 auto; }
 .eg-tab {
-  position: relative; padding: 8px 10px; border: none; background: transparent; cursor: pointer; white-space: nowrap;
-  color: var(--eg-ink-2); font: 600 var(--eg-fs-sm)/1 var(--eg-font); border-radius: 7px; transition: color var(--eg-dur) ease;
+  position: relative; padding: 5px 5px; border: none; background: transparent; cursor: pointer; white-space: nowrap;
+  color: var(--eg-ink-2); font: 600 var(--eg-fs-xs)/1.2 var(--eg-font); border-radius: 7px; transition: color var(--eg-dur) ease;
 }
 .eg-tab:hover { color: var(--eg-ink); }
 .eg-tab:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
@@ -363,6 +363,53 @@ window.__ModuleLoader__.load({
 .eg-preview-errors .er { font-size: var(--eg-fs-xs); line-height: 1.55; color: var(--eg-bad); }
 .eg-import-foot { display: flex; gap: 8px; margin-top: 8px; }
 
+/* ===== settings ===== */
+.eg-settings { display: flex; flex-direction: column; gap: 20px; }
+.eg-setting-block { padding-bottom: 20px; border-bottom: 1px solid var(--eg-line); }
+.eg-setting-block:last-child { padding-bottom: 0; border-bottom: none; }
+.eg-setting-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.eg-setting-title { font-size: var(--eg-fs-md); font-weight: 650; color: var(--eg-ink); line-height: 1.35; }
+.eg-setting-desc { margin-top: 4px; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); line-height: 1.6; }
+.eg-switch {
+  appearance: none; -webkit-appearance: none; position: relative; flex: 0 0 auto;
+  width: 42px; height: 24px; padding: 2px; border: 1px solid var(--eg-line-2); border-radius: 999px;
+  background: var(--eg-bg-2); cursor: pointer; transition: background var(--eg-dur) ease, border-color var(--eg-dur) ease;
+}
+.eg-switch::after {
+  content: ''; display: block; width: 18px; height: 18px; border-radius: 50%;
+  background: var(--eg-bg); box-shadow: 0 1px 3px rgba(17, 22, 31, .22);
+  transition: transform var(--eg-dur) ease;
+}
+.eg-switch[aria-checked="true"] { background: var(--eg-accent); border-color: var(--eg-accent); }
+.eg-switch[aria-checked="true"]::after { transform: translateX(18px); background: var(--eg-on-accent); }
+.eg-switch:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }
+.eg-direction-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+.eg-direction {
+  appearance: none; -webkit-appearance: none; text-align: left; min-height: 36px; padding: 8px 10px;
+  border: 1px solid var(--eg-line); border-radius: var(--eg-r-sm); background: transparent;
+  color: var(--eg-ink-2); font: 500 var(--eg-fs-sm)/1.35 var(--eg-font); cursor: pointer;
+  transition: background var(--eg-dur) ease, border-color var(--eg-dur) ease, color var(--eg-dur) ease;
+}
+.eg-direction:hover { background: var(--eg-bg-2); color: var(--eg-ink); }
+.eg-direction.active { border-color: var(--eg-accent); background: color-mix(in srgb, var(--eg-accent) 9%, transparent); color: var(--eg-accent-ink); font-weight: 650; }
+.eg-direction:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
+.eg-custom-list { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+.eg-custom-item { display: flex; align-items: center; gap: 8px; min-height: 34px; padding: 6px 8px 6px 10px; border: 1px solid var(--eg-line); border-radius: var(--eg-r-sm); background: var(--eg-bg-2); }
+.eg-custom-name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--eg-fs-sm); color: var(--eg-ink); }
+.eg-iconbtn {
+  appearance: none; -webkit-appearance: none; flex: 0 0 auto; width: 24px; height: 24px; padding: 0;
+  border: 1px solid transparent; border-radius: 7px; background: transparent; color: var(--eg-ink-2);
+  font: 600 var(--eg-fs-md)/1 var(--eg-font); cursor: pointer;
+}
+.eg-iconbtn:hover { border-color: var(--eg-line); background: var(--eg-bg); color: var(--eg-bad); }
+.eg-iconbtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
+.eg-addrow { display: flex; gap: 8px; margin-top: 12px; }
+.eg-addrow .eg-text { flex: 1 1 auto; min-width: 0; }
+.eg-addrow .eg-btn { min-width: 64px; }
+.eg-settings-note { margin-top: 10px; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); line-height: 1.55; }
+.eg-settings-error { margin-top: 10px; color: var(--eg-bad); font-size: var(--eg-fs-xs); line-height: 1.55; }
+.eg-settings-loading { color: var(--eg-ink-2); font-size: var(--eg-fs-sm); }
+
 @media (prefers-reduced-motion: reduce) { .eg-panel { animation: none; } .eg-hintbox { animation: none; } .eg-root *, .eg-panel * { transition: none !important; } }
 `
 
@@ -405,6 +452,7 @@ window.__ModuleLoader__.load({
     const store = {
       open: false,
       stats: null,
+      settings: { confetti: true, topicId: 'ai', customTopics: [] },
       burst: 0,
       listeners: new Set(),
       emit() {
@@ -425,7 +473,14 @@ window.__ModuleLoader__.load({
         this.stats = s
         this.emit()
       },
+      setSettings(s) {
+        if (s && typeof s === 'object') {
+          this.settings = { ...this.settings, ...s }
+          this.emit()
+        }
+      },
       celebrate() {
+        if (this.settings && this.settings.confetti === false) return
         this.burst += 1
         this.emit()
       },
@@ -1322,6 +1377,198 @@ window.__ModuleLoader__.load({
       )
     }
 
+    // Settings tab: celebration toggle + content directions.
+    function SettingsPanel({ onTopicChange }) {
+      const shared = useShared()
+      const [data, setData] = useState(null)
+      const [busy, setBusy] = useState(false)
+      const [error, setError] = useState('')
+      const [draft, setDraft] = useState('')
+      const [loading, setLoading] = useState(true)
+
+      const load = useCallback(async () => {
+        setLoading(true)
+        try {
+          const result = await api('/settings')
+          setData(result)
+          store.setSettings(result.settings)
+          setError('')
+        } catch (e) {
+          setError(e.message || '设置加载失败')
+        } finally {
+          setLoading(false)
+        }
+      }, [])
+
+      useEffect(() => {
+        load()
+      }, [load])
+
+      const save = useCallback(
+        async (patch, topicChanged) => {
+          if (busy) return false
+          setBusy(true)
+          setError('')
+          try {
+            const result = await api('/settings', {
+              method: 'POST',
+              body: JSON.stringify(patch),
+            })
+            setData(result)
+            store.setSettings(result.settings)
+            if (topicChanged && typeof onTopicChange === 'function') onTopicChange()
+            return true
+          } catch (e) {
+            setError(e.message || '设置保存失败')
+            return false
+          } finally {
+            setBusy(false)
+          }
+        },
+        [busy, onTopicChange],
+      )
+
+      const settings = data ? data.settings : shared.settings
+      const directions = data ? data.directions : []
+      const customTopics = settings.customTopics || []
+      const activeId = settings.topicId
+
+      const chooseDirection = (id) => {
+        if (busy || id === activeId) return
+        save({ topicId: id }, true)
+      }
+
+      const addCustom = async () => {
+        const label = draft.trim()
+        if (!label || busy) return
+        const ok = await save({ customTopics: customTopics.concat({ label }) }, true)
+        if (ok) setDraft('')
+      }
+
+      const removeCustom = (id) => {
+        if (busy) return
+        save({ customTopics: customTopics.filter((item) => item.id !== id) }, true)
+      }
+
+      if (loading && !data) {
+        return React.createElement(
+          'div',
+          { className: 'eg-settings' },
+          React.createElement('div', { className: 'eg-settings-loading' }, '正在加载设置…'),
+          error ? React.createElement('div', { className: 'eg-settings-error' }, error) : null,
+        )
+      }
+
+      return React.createElement(
+        'div',
+        { className: 'eg-settings' },
+        React.createElement(
+          'div',
+          { className: 'eg-setting-block' },
+          React.createElement(
+            'div',
+            { className: 'eg-setting-head' },
+            React.createElement(
+              'div',
+              null,
+              React.createElement('div', { className: 'eg-setting-title' }, '庆祝效果'),
+              React.createElement('div', { className: 'eg-setting-desc' }, '答对时从四周喷射彩带。'),
+            ),
+            React.createElement('button', {
+              className: 'eg-switch',
+              role: 'switch',
+              'aria-checked': settings.confetti ? 'true' : 'false',
+              'aria-label': '彩带庆祝',
+              disabled: busy,
+              onClick: () => save({ confetti: !settings.confetti }, false),
+            }),
+          ),
+        ),
+        React.createElement(
+          'div',
+          { className: 'eg-setting-block' },
+          React.createElement('div', { className: 'eg-setting-title' }, '内容方向'),
+          React.createElement(
+            'div',
+            { className: 'eg-setting-desc' },
+            '用于生成短语和今日报告；切换后下一题、下一篇生效。',
+          ),
+          React.createElement(
+            'div',
+            { className: 'eg-direction-list' },
+            directions.map((item) =>
+              React.createElement(
+                'button',
+                {
+                  key: item.id,
+                  className: 'eg-direction' + (item.id === activeId ? ' active' : ''),
+                  'aria-pressed': item.id === activeId ? 'true' : 'false',
+                  disabled: busy,
+                  onClick: () => chooseDirection(item.id),
+                },
+                item.label,
+              ),
+            ),
+          ),
+        ),
+        React.createElement(
+          'div',
+          { className: 'eg-setting-block' },
+          React.createElement('div', { className: 'eg-setting-title' }, '自定义方向'),
+          React.createElement(
+            'div',
+            { className: 'eg-setting-desc' },
+            '添加你自己的主题，会和上面 12 个内置方向一起用于生成内容。',
+          ),
+          customTopics.length
+            ? React.createElement(
+                'div',
+                { className: 'eg-custom-list' },
+                customTopics.map((item) =>
+                  React.createElement(
+                    'div',
+                    { className: 'eg-custom-item', key: item.id },
+                    React.createElement('span', { className: 'eg-custom-name' }, item.label),
+                    React.createElement(
+                      'button',
+                      {
+                        className: 'eg-iconbtn',
+                        title: '删除方向',
+                        'aria-label': '删除 ' + item.label,
+                        disabled: busy,
+                        onClick: () => removeCustom(item.id),
+                      },
+                      '×',
+                    ),
+                  ),
+                ),
+              )
+            : React.createElement('div', { className: 'eg-settings-note' }, '还没有自定义方向。'),
+          React.createElement(
+            'div',
+            { className: 'eg-addrow' },
+            React.createElement('input', {
+              className: 'eg-text',
+              value: draft,
+              maxLength: 40,
+              placeholder: '例如：摄影与视觉',
+              'aria-label': '自定义方向名称',
+              onChange: (e) => setDraft(e.target.value),
+              onKeyDown: (e) => {
+                if (e.key === 'Enter') addCustom()
+              },
+            }),
+            React.createElement(
+              'button',
+              { className: 'eg-btn primary', disabled: busy || !draft.trim(), onClick: addCustom },
+              '添加',
+            ),
+          ),
+        ),
+        error ? React.createElement('div', { className: 'eg-settings-error' }, error) : null,
+      )
+    }
+
     // Inline trigger under the composer (compact).
     function EnglishGymPill() {
       useStyle()
@@ -1367,6 +1614,7 @@ window.__ModuleLoader__.load({
       const [report, setReport] = useState(null)
       const [reportLoading, setReportLoading] = useState(false)
       const startedRef = useRef(false)
+      const settingsLoadedRef = useRef(false)
       const [geom, setGeom] = useState(() => {
         const saved = loadGeom()
         if (saved) return fitGeom(saved)
@@ -1380,6 +1628,18 @@ window.__ModuleLoader__.load({
       const open = shared.open
       const [confettiKey, setConfettiKey] = useState(0)
       const lastBurstRef = useRef(shared.burst || 0)
+
+      // Load persisted settings as soon as the board opens so the celebration
+      // switch applies before the user answers anything.
+      useEffect(() => {
+        if (!open || settingsLoadedRef.current) return
+        settingsLoadedRef.current = true
+        api('/settings')
+          .then((result) => store.setSettings(result.settings))
+          .catch(() => {
+            settingsLoadedRef.current = false
+          })
+      }, [open])
 
       // Consume each celebrate() event once.  Keeping the burst counter in the
       // store is useful for the pill, but the board must not replay the
@@ -1626,6 +1886,11 @@ window.__ModuleLoader__.load({
               { className: 'eg-tab' + (tab === 'report' ? ' active' : ''), onClick: () => setTab('report') },
               '今日报告',
             ),
+            React.createElement(
+              'button',
+              { className: 'eg-tab' + (tab === 'settings' ? ' active' : ''), onClick: () => setTab('settings') },
+              '设置',
+            ),
           ),
           React.createElement(
             'div',
@@ -1654,15 +1919,25 @@ window.__ModuleLoader__.load({
               )
             : tab === 'word'
               ? React.createElement(WordPractice, { key: 'word' })
-              : React.createElement(Report, {
-                report,
-                loading: reportLoading,
-                error,
-                onRefresh: () => {
-                  setReport(null)
-                  refreshReport()
-                },
-              }),
+              : tab === 'report'
+                ? React.createElement(Report, {
+                  report,
+                  loading: reportLoading,
+                  error,
+                  onRefresh: () => {
+                    setReport(null)
+                    refreshReport()
+                  },
+                })
+                : React.createElement(SettingsPanel, {
+                  onTopicChange: () => {
+                    setCard(null)
+                    setFeedback(null)
+                    setAnswer('')
+                    setReport(null)
+                    startedRef.current = false
+                  },
+                }),
         ),
         confettiKey ? React.createElement(Confetti, { key: confettiKey }) : null,
         React.createElement('div', {

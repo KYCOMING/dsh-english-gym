@@ -5,6 +5,7 @@ import { generateQuestion } from '../features/phrase/generate.js'
 import { createPhraseService } from '../features/phrase/service.js'
 import { createWordService } from '../features/word/service.js'
 import { createReportService } from '../features/report/service.js'
+import { createSettingsService } from '../features/settings/service.js'
 import { resolveActiveBank } from '../features/word/banks.js'
 import { readBody, sendJson } from './http.js'
 
@@ -49,9 +50,11 @@ function summarize(state, conf, dir) {
 export function createEnglishGym(ctx, rawConfig) {
   const conf = { ...DEFAULTS, ...(rawConfig || {}) }
   const dir = resolveDataDir(conf)
-  const phrase = createPhraseService({ ctx, conf, dir })
+  const settings = createSettingsService({ dir, conf })
+  const getTopic = () => settings.getTopic()
+  const phrase = createPhraseService({ ctx, conf, dir, getTopic })
   const word = createWordService({ dir })
-  const report = createReportService({ ctx, conf, dir })
+  const report = createReportService({ ctx, conf, dir, getTopic })
 
   async function handler(req, res) {
     const url = new URL(req.url || '/', 'http://localhost')
@@ -63,6 +66,13 @@ export function createEnglishGym(ctx, rawConfig) {
       }
       if (req.method === 'GET' && sub === '/state') {
         return sendJson(res, 200, summarize(loadState(dir), conf, dir))
+      }
+      if (req.method === 'GET' && sub === '/settings') {
+        return sendJson(res, 200, settings.get())
+      }
+      if (req.method === 'POST' && sub === '/settings') {
+        const body = await readBody(req)
+        return sendJson(res, 200, settings.update(body || {}))
       }
       if (req.method === 'GET' && sub === '/report') {
         return sendJson(res, 200, await report.getReport(false))
@@ -155,7 +165,7 @@ export function createEnglishGym(ctx, rawConfig) {
             },
           },
           async execute(args) {
-            const q = await generateQuestion(ctx, conf, { level: (args && args.level) || conf.level, topic: conf.topic })
+            const q = await generateQuestion(ctx, conf, { level: (args && args.level) || conf.level, topic: settings.getTopic() })
             return { zh: q.zh, hint: q.hint }
           },
         },

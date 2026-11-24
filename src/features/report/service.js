@@ -2,7 +2,7 @@ import { dayKey, loadReport, saveReport } from '../../core/store.js'
 import { generateReport } from './generate.js'
 
 /** Daily AI/tech report: cache per day, generate on demand, warm in the background. */
-export function createReportService({ ctx, conf, dir }) {
+export function createReportService({ ctx, conf, dir, getTopic }) {
   const reportInflight = new Map()
 
   async function getReport(force) {
@@ -13,7 +13,8 @@ export function createReportService({ ctx, conf, dir }) {
     }
     if (reportInflight.has(day)) return reportInflight.get(day)
     const job = (async () => {
-      const report = await generateReport(ctx, conf, { level: conf.level, date: day, topic: conf.topic })
+      const topic = typeof getTopic === 'function' ? getTopic() : conf.topic
+      const report = await generateReport(ctx, conf, { level: conf.level, date: day, topic })
       saveReport(dir, day, report)
       return report
     })()

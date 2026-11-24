@@ -34,7 +34,7 @@ function recordAnswer(state, correct) {
 }
 
 /** Phrase translation drill: generate one prompt, grade one answer. */
-export function createPhraseService({ ctx, conf, dir }) {
+export function createPhraseService({ ctx, conf, dir, getTopic }) {
   async function nextQuestion(mode) {
     const state = loadState(dir)
     let picked
@@ -43,7 +43,8 @@ export function createPhraseService({ ctx, conf, dir }) {
       const item = state.review[0]
       picked = { zh: item.zh, en: item.en, hint: item.hint || '', mode: 'review' }
     } else {
-      const q = await generateQuestion(ctx, conf, { level: conf.level, topic: conf.topic })
+      const topic = typeof getTopic === 'function' ? getTopic() : conf.topic
+      const q = await generateQuestion(ctx, conf, { level: conf.level, topic })
       picked = { zh: q.zh, en: q.en, hint: q.hint || '', mode: 'new' }
     }
     const id = randomUUID()

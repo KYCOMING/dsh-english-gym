@@ -59,6 +59,7 @@ export function defaultState() {
     wordPending: {}, // id -> { en, zh, createdAt }
     wordRecent: [], // recently served words, to avoid immediate repeats
     wordBankId: 'builtin', // active word bank (builtin or an imported bank id)
+    settings: { confetti: true, topicId: 'ai', customTopics: [] },
   }
 }
 
@@ -78,6 +79,7 @@ export function loadState(dir) {
     wordPending: state.wordPending && typeof state.wordPending === 'object' ? state.wordPending : {},
     wordRecent: Array.isArray(state.wordRecent) ? state.wordRecent : [],
     wordBankId: typeof state.wordBankId === 'string' && state.wordBankId ? state.wordBankId : 'builtin',
+    settings: { ...base.settings, ...(state.settings && typeof state.settings === 'object' ? state.settings : {}) },
   }
 }
 
