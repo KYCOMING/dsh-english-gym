@@ -1378,6 +1378,21 @@ window.__ModuleLoader__.load({
       }, [geom])
 
       const open = shared.open
+      const [confettiKey, setConfettiKey] = useState(0)
+      const lastBurstRef = useRef(shared.burst || 0)
+
+      // Consume each celebrate() event once.  Keeping the burst counter in the
+      // store is useful for the pill, but the board must not replay the
+      // animation merely because the host re-mounted the overlay (e.g. after
+      // the window is resized).
+      useEffect(() => {
+        const burst = shared.burst || 0
+        if (!burst || burst === lastBurstRef.current) return
+        lastBurstRef.current = burst
+        setConfettiKey(burst)
+        const timer = setTimeout(() => setConfettiKey(0), 1400)
+        return () => clearTimeout(timer)
+      }, [shared.burst])
 
       // Position just above the pill the first time it opens (unless the user
       // has already dragged it and we have a remembered geometry).
@@ -1649,7 +1664,7 @@ window.__ModuleLoader__.load({
                 },
               }),
         ),
-        shared.burst ? React.createElement(Confetti, { key: shared.burst }) : null,
+        confettiKey ? React.createElement(Confetti, { key: confettiKey }) : null,
         React.createElement('div', {
           className: 'eg-resize',
           onPointerDown: onResizeDown,
