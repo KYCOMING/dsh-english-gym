@@ -1355,7 +1355,7 @@ window.__ModuleLoader__.load({
     function EnglishGymBoard() {
       useStyle()
       const shared = useShared()
-      const [tab, setTab] = useState('drill')
+      const [tab, setTab] = useState('word')
       const [card, setCard] = useState(null)
       const [answer, setAnswer] = useState('')
       const [feedback, setFeedback] = useState(null)
@@ -1595,13 +1595,13 @@ window.__ModuleLoader__.load({
             { className: 'eg-tabs' },
             React.createElement(
               'button',
-              { className: 'eg-tab' + (tab === 'drill' ? ' active' : ''), onClick: () => setTab('drill') },
-              '短语训练',
+              { className: 'eg-tab' + (tab === 'word' ? ' active' : ''), onClick: () => setTab('word') },
+              '单词训练',
             ),
             React.createElement(
               'button',
-              { className: 'eg-tab' + (tab === 'word' ? ' active' : ''), onClick: () => setTab('word') },
-              '单词训练',
+              { className: 'eg-tab' + (tab === 'drill' ? ' active' : ''), onClick: () => setTab('drill') },
+              '短语训练',
             ),
             React.createElement(
               'button',
