@@ -1,14 +1,26 @@
 # Third-party notices
 
-## English word bank (`lib/wordbank.js`)
+## English word banks (`lib/wordbank*.js`)
 
-The static vocabulary used by 单词训练 is derived from the **CET4** word list in:
+The static vocabulary used by 单词训练 is derived from the **CET4, CET6, IELTS,
+and TOEFL** word lists in:
 
 - **KyleBing/english-vocabulary** — https://github.com/KyleBing/english-vocabulary
+- Pinned revision for the CET6, IELTS, and TOEFL source lists: [`731240a848dca14e2cf17510f384312b788863c1`](https://github.com/KyleBing/english-vocabulary/tree/731240a848dca14e2cf17510f384312b788863c1)
 - License: **BSD 3-Clause** (`BSD-3-Clause`)
 
-It was trimmed to single English words with a concise Chinese gloss (phrases and
-extra fields dropped), and a small number of AI/tech terms were added by hand.
+| Bundled file | Word list |
+| --- | --- |
+| `lib/wordbank-cet4.js` | CET4 |
+| `lib/wordbank-cet6.js` | 六级 (`full_line_jsonl/simple/正序/六级.jsonl`) |
+| `lib/wordbank-ielts.js` | 雅思 (`full_line_jsonl/simple/正序/雅思.jsonl`) |
+| `lib/wordbank-toefl.js` | 托福 (`full_line_jsonl/simple/正序/托福.jsonl`) |
+
+The CET4 list was trimmed to single English words with a concise Chinese gloss,
+and a small number of AI/tech terms were added by hand. The CET6, IELTS, and
+TOEFL lists were filtered to single ASCII English words; duplicate entries were
+merged with their Chinese glosses and normalized parts of speech. These are
+study vocabulary lists, not official examination word lists.
 
 ```
 BSD 3-Clause License
