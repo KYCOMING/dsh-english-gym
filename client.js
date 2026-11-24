@@ -9,6 +9,22 @@ window.__ModuleLoader__.load({
     const STYLE_ID = 'eg-dock-style'
     const GEOM_KEY = 'eg-board-geom-v3'
 
+    const POS_LABELS = {
+      n: '名词', v: '动词', adj: '形容词', adv: '副词', prep: '介词', pron: '代词',
+      conj: '连词', num: '数词', art: '冠词', aux: '助动词', int: '感叹词',
+    }
+    function formatPos(pos) {
+      const parts = String(pos || '')
+        .toLowerCase()
+        .split(/[\/,&\s]+/)
+        .map((p) => p.replace(/\.+$/, ''))
+        .filter(Boolean)
+        .map((p) => (p === 'vt' || p === 'vi' ? 'v' : p))
+      const unique = [...new Set(parts)]
+      if (!unique.length) return ''
+      return unique.map((p) => (POS_LABELS[p] ? POS_LABELS[p] + ' ' + p + '.' : p)).join(' / ')
+    }
+
     const CSS = `
 /* Hallmark · component: english-gym panel · genre: editorial · theme: in-place (dsh tokens) · states: 8 · contrast: pass · v2.0.0
  * critique: the drill is a study desk — one sentence set in serif, one writing field, one action; feedback reads like a marked page.
@@ -254,18 +270,19 @@ window.__ModuleLoader__.load({
 /* word training: centred column */
 .eg-word { width: 100%; max-width: 640px; margin-left: auto; margin-right: auto; height: 100%; min-height: 0; display: flex; flex-direction: column; align-items: stretch; text-align: center; }
 .eg-word-main { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; min-height: 0; overflow-y: auto; padding: 8px 0 4px; }
-.eg-word .eg-zh { font-size: 28px; line-height: 1.4; margin-top: 10px; }
-.eg-word .eg-letters { justify-content: center; margin-top: 22px; }
+.eg-word .eg-pos { margin: 0 0 -2px; display: inline-flex; align-items: center; padding: 2px 8px; border: 1px solid var(--eg-line); border-radius: 999px; background: var(--eg-bg-2); color: var(--eg-ink-2); font: 600 var(--eg-fs-xs)/1.2 var(--eg-font); }
+.eg-word .eg-zh { font-size: 28px; line-height: 1.4; margin-top: 8px; }
+.eg-word .eg-letters { justify-content: center; margin-top: 16px; }
 .eg-word .eg-foot { justify-content: center; width: 100%; margin-top: 26px; }
 .eg-word .eg-foot .eg-kbd { margin-left: 0; }
-.eg-word .eg-fb { width: 100%; text-align: center; margin-top: 20px; padding-top: 0; border-top: none; }
+.eg-word .eg-fb { width: 100%; text-align: center; margin-top: 14px; padding-top: 0; border-top: none; }
 .eg-word .eg-fb-top { justify-content: center; }
 .eg-word .eg-fb-actions { justify-content: center; }
 .eg-word .eg-fb > .eg-fb-actions:first-child { margin-top: 0; gap: 8px; flex-wrap: wrap; justify-content: center; }
 .eg-word .eg-fb-actions .eg-btn { padding: 0 10px; }
 .eg-word-foot { flex: 0 0 auto; display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 6px; padding-top: 10px; border-top: 1px solid var(--eg-line); }
 .eg-word-foot .eg-btn { padding: 0 10px; }
-.eg-word .eg-fb-ref { margin-top: 10px; font-size: 26px; text-align: center; }
+.eg-word .eg-fb-ref { margin-top: 6px; font-size: 26px; text-align: center; }
 /* phrase drill: centred column */
 .eg-drill { max-width: 640px; min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; padding-top: 12px; }
 .eg-drill .eg-cap { justify-content: center; }
@@ -1256,6 +1273,7 @@ window.__ModuleLoader__.load({
         ),
         notice ? React.createElement('div', { className: 'eg-notice' }, notice) : null,
         React.createElement('div', { className: 'eg-word-main' },
+        item.pos ? React.createElement('div', { className: 'eg-pos', title: '词性提示' }, '词性 · ' + formatPos(item.pos)) : null,
         React.createElement('div', { className: 'eg-zh' }, item.zh),
         React.createElement('div', { className: 'eg-letters' + (answered ? ' answered' : ''), style: { gap: letterGap } }, cellsNodes),
         error ? React.createElement('div', { className: 'eg-err' }, error) : null,

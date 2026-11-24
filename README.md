@@ -3,7 +3,8 @@
 > 把英语学习嵌进 DSH 的工作流，而不是再做一个英语 App。一行常驻在**输入框下方**的小挂件（`English Gym`），点它时在**浮层**里弹出一块看板——**看板是浮动的，不会把对话内容撑开/顶上去**。看板里分三个标签：**短语训练**（给你一句中文，你写出英文）、**单词训练**（看中文，按字母格拼出单词）、**今日报告**（每天一篇 AI / 科技英文小短文）。立刻判对错、给参考与提示。**全程不做语音。**
 
 - 🎯 **短语训练（看中写英）**：AI 按你的等级（默认 B1）出题，判分 + 参考译文 + 一句提示。
-- 🔤 **单词训练（拼写）**：内置 **4535 词**静态词库（CET4 精简 + AI 术语），看中文、按下方**字母空格**逐字拼出英文单词；纯本地判分、不耗模型，字母格会标出每个字母对错。
+- 🔤 **单词训练（拼写）**：内置 **4535 词**静态词库（CET4 精简 + AI 术语），看中文 + 词性提示，按下方**字母空格**逐字拼出英文单词；纯本地判分、不耗模型，字母格会标出每个字母对错。
+- 🏷️ **词性提示**：单词训练的题目上方显示词性（名词 / 动词 / 形容词…），不再只看中文释义盲拼。
 - 🔁 **错词重试**：答错时单词会标红，并直接给出「再试一次」按钮，可原地重拼；「下一个」也放在反馈顶部，正确答案默认隐藏、点按钮才显示。
 - ⌨️ **回车继续**：单词拼写正确后直接按 Enter 进入下一个。
 - 📌 **固定操作栏**：单词训练输入时「提交 / 换一个」、答完后「再试一次 / 显示答案 / 下一个」都固定在面板底部；答案区再长也不用滚动去找按钮。
@@ -50,15 +51,15 @@ plugin_manager install_bundle --target /绝对路径/dsh-english-learn
 首选 **CSV / TSV**（UTF-8，兼容 BOM；Excel 另存为「CSV UTF-8」即可）：
 
 ```csv
-word,meaning,phonetic,example
-abandon,放弃,əˈbændən,He abandoned his car.
-accommodate,容纳；适应,əˈkɒmədeɪt,The room can accommodate six people.
+word,meaning,pos,phonetic,example
+abandon,放弃,v,əˈbændən,He abandoned his car.
+accommodate,容纳；适应,v,əˈkɒmədeɪt,The room can accommodate six people.
 ```
 
-- 必填列：`word`（英文单词）、`meaning`（中文释义）；`phonetic`、`example` 可选。
-- 表头可省略（默认前两列为单词、释义），也接受中文表头 `单词,释义,音标,例句`。
+- 必填列：`word`（英文单词）、`meaning`（中文释义）；`pos`（词性，如 `n` / `v` / `adj`）、`phonetic`、`example` 可选。
+- 表头可省略（默认前两列为单词、释义），也接受中文表头 `单词,释义,词性,音标,例句`。
 - **TXT**：一行一条，`abandon<TAB>放弃` 或 `abandon 放弃`。
-- **JSON**：`[{"word":"abandon","meaning":"放弃"}]`，也兼容 `[["abandon","放弃"]]` 和 qwerty-learner 的 `{name, trans:[...]}`。
+- **JSON**：`[{"word":"abandon","meaning":"放弃","pos":"v"}]`，也兼容 `[["abandon","放弃"]]` 和 qwerty-learner 的 `{name, trans:[...]}`。
 - 单词训练按字母拼写，因此词条必须是**单个英文单词**（允许 `-` 和 `'`）；短语行会被跳过并提示。
 
 导入的词库保存在 `$DSH_HOME/english-gym/wordbanks/`，每个词库一个 JSON 文件，不会修改内置词库。
