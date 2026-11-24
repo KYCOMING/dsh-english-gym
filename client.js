@@ -212,9 +212,6 @@ window.__ModuleLoader__.load({
 .eg-fb-tip { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--eg-line); color: var(--eg-ink-2); font-size: var(--eg-fs-sm); line-height: 1.7; display: flex; gap: 8px; align-items: flex-start; }
 .eg-fb-tip .b { color: var(--eg-accent-ink); font-weight: 700; white-space: nowrap; flex: 0 0 auto; }
 .eg-fb-actions { margin-top: 18px; display: flex; gap: 10px; }
-.eg-reveal { margin-top: 10px; padding: 6px 12px; border: 1px solid var(--eg-line); border-radius: 999px; background: transparent; color: var(--eg-ink-2); font: 600 var(--eg-fs-sm)/1.2 var(--eg-font); cursor: pointer; }
-.eg-reveal:hover { color: var(--eg-ink); border-color: var(--eg-line-2); }
-.eg-reveal:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }
 
 /* ===== report ===== */
 .eg-report .r-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
@@ -262,7 +259,8 @@ window.__ModuleLoader__.load({
 .eg-word .eg-foot { justify-content: center; width: 100%; margin-top: 26px; }
 .eg-word .eg-foot .eg-kbd { margin-left: 0; }
 .eg-word .eg-fb { width: 100%; text-align: left; margin-top: 32px; padding-top: 0; border-top: none; }
-.eg-word .eg-fb > .eg-fb-actions:first-child { margin-top: 0; }
+.eg-word .eg-fb > .eg-fb-actions:first-child { margin-top: 0; gap: 8px; flex-wrap: wrap; }
+.eg-word .eg-fb-actions .eg-btn { padding: 0 10px; }
 .eg-word .eg-fb-ref { font-size: 26px; }
 /* phrase drill: centred column */
 .eg-drill { max-width: 640px; min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; padding-top: 12px; }
@@ -1226,17 +1224,17 @@ window.__ModuleLoader__.load({
                   'div',
                   { className: 'eg-fb-actions' },
                   React.createElement('button', { className: 'eg-btn primary', onClick: retry, disabled: busy }, '再试一次'),
+                  React.createElement(
+                    'button',
+                    {
+                      className: 'eg-btn',
+                      onClick: () => setRevealed((v) => !v),
+                      disabled: busy,
+                      'aria-expanded': revealed ? 'true' : 'false',
+                    },
+                    revealed ? '收起答案' : '显示答案',
+                  ),
                   React.createElement('button', { className: 'eg-btn', onClick: load, disabled: busy }, '下一个'),
-                ),
-                React.createElement(
-                  'button',
-                  {
-                    className: 'eg-reveal',
-                    onClick: () => setRevealed((v) => !v),
-                    disabled: busy,
-                    'aria-expanded': revealed ? 'true' : 'false',
-                  },
-                  revealed ? '收起正确答案' : '显示正确答案',
                 ),
                 revealed
                   ? React.createElement(
