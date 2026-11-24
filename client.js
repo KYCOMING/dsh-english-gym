@@ -252,18 +252,20 @@ window.__ModuleLoader__.load({
 .eg-letter.bad { border-bottom-color: var(--eg-bad); color: var(--eg-bad); }
 .eg-letters.answered .eg-letter { cursor: default; }
 /* word training: centred column */
-.eg-word { width: 100%; max-width: 640px; margin-left: auto; margin-right: auto; min-height: 100%; display: flex; flex-direction: column; align-items: stretch; text-align: center; }
-.eg-word-main { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; min-height: 0; padding: 12px 0 2px; }
-.eg-word .eg-zh { font-size: 28px; line-height: 1.4; margin-top: 14px; }
-.eg-word .eg-letters { justify-content: center; }
+.eg-word { width: 100%; max-width: 640px; margin-left: auto; margin-right: auto; height: 100%; min-height: 0; display: flex; flex-direction: column; align-items: stretch; text-align: center; }
+.eg-word-main { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; min-height: 0; overflow-y: auto; padding: 8px 0 4px; }
+.eg-word .eg-zh { font-size: 28px; line-height: 1.4; margin-top: 10px; }
+.eg-word .eg-letters { justify-content: center; margin-top: 22px; }
 .eg-word .eg-foot { justify-content: center; width: 100%; margin-top: 26px; }
 .eg-word .eg-foot .eg-kbd { margin-left: 0; }
-.eg-word .eg-fb { width: 100%; text-align: center; margin-top: 32px; padding-top: 0; border-top: none; }
+.eg-word .eg-fb { width: 100%; text-align: center; margin-top: 20px; padding-top: 0; border-top: none; }
 .eg-word .eg-fb-top { justify-content: center; }
 .eg-word .eg-fb-actions { justify-content: center; }
 .eg-word .eg-fb > .eg-fb-actions:first-child { margin-top: 0; gap: 8px; flex-wrap: wrap; justify-content: center; }
 .eg-word .eg-fb-actions .eg-btn { padding: 0 10px; }
-.eg-word .eg-fb-ref { font-size: 26px; text-align: center; }
+.eg-word-foot { flex: 0 0 auto; display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 6px; padding-top: 10px; border-top: 1px solid var(--eg-line); }
+.eg-word-foot .eg-btn { padding: 0 10px; }
+.eg-word .eg-fb-ref { margin-top: 10px; font-size: 26px; text-align: center; }
 /* phrase drill: centred column */
 .eg-drill { max-width: 640px; min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; padding-top: 12px; }
 .eg-drill .eg-cap { justify-content: center; }
@@ -275,7 +277,7 @@ window.__ModuleLoader__.load({
 .eg-drill .eg-fb { width: 100%; text-align: left; }
 
 /* ===== word bank bar ===== */
-.eg-bankbar { width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; padding: 0 0 16px; margin: 0 0 20px; border-bottom: 1px solid var(--eg-line); }
+.eg-bankbar { width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; padding: 0 0 10px; margin: 0 0 12px; border-bottom: 1px solid var(--eg-line); }
 .eg-banklabel { flex: 0 0 auto; font-size: var(--eg-fs-sm); font-weight: 500; color: var(--eg-ink-2); }
 .eg-select {
   flex: 1 1 auto; min-width: 0; max-width: 260px; height: 34px; padding: 0 25px 0 12px; border: 1px solid var(--eg-line);
@@ -1165,6 +1167,30 @@ window.__ModuleLoader__.load({
         })
       })
 
+      const feedbackActions = answered
+        ? React.createElement(
+            'div',
+            { className: 'eg-word-foot' },
+            ok
+              ? React.createElement('button', { className: 'eg-btn primary', onClick: load, disabled: busy }, '下一个')
+              : [
+                  React.createElement('button', { key: 'retry', className: 'eg-btn primary', onClick: retry, disabled: busy }, '再试一次'),
+                  React.createElement(
+                    'button',
+                    {
+                      key: 'reveal',
+                      className: 'eg-btn',
+                      onClick: () => setRevealed((v) => !v),
+                      disabled: busy,
+                      'aria-expanded': revealed ? 'true' : 'false',
+                    },
+                    revealed ? '收起答案' : '显示答案',
+                  ),
+                  React.createElement('button', { key: 'next', className: 'eg-btn', onClick: load, disabled: busy }, '下一个'),
+                ],
+          )
+        : null
+
       return React.createElement(
         'div',
         { className: 'eg-word' },
@@ -1213,31 +1239,10 @@ window.__ModuleLoader__.load({
                   React.createElement('span', { className: 'lbl' }, '正确拼写'),
                   res.reference,
                 ),
-                React.createElement(
-                  'div',
-                  { className: 'eg-fb-actions' },
-                  React.createElement('button', { className: 'eg-btn primary', onClick: load, disabled: busy }, '下一个'),
-                ),
               )
             : React.createElement(
                 'div',
                 { className: 'eg-fb bad' },
-                React.createElement(
-                  'div',
-                  { className: 'eg-fb-actions' },
-                  React.createElement('button', { className: 'eg-btn primary', onClick: retry, disabled: busy }, '再试一次'),
-                  React.createElement(
-                    'button',
-                    {
-                      className: 'eg-btn',
-                      onClick: () => setRevealed((v) => !v),
-                      disabled: busy,
-                      'aria-expanded': revealed ? 'true' : 'false',
-                    },
-                    revealed ? '收起答案' : '显示答案',
-                  ),
-                  React.createElement('button', { className: 'eg-btn', onClick: load, disabled: busy }, '下一个'),
-                ),
                 revealed
                   ? React.createElement(
                       'div',
@@ -1268,6 +1273,7 @@ window.__ModuleLoader__.load({
               ),
             ),
         ),
+        feedbackActions,
       )
     }
 
