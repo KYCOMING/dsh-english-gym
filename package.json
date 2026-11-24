@@ -1,10 +1,22 @@
 {
   "name": "dsh-english-gym",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "private": true,
   "type": "module",
   "description": "English Gym — a lightweight, in-DSH English practice widget: phrase translation + static/custom word-bank spelling drill + daily report with selectable content directions. No voice.",
   "license": "MIT",
+  "author": "KYCOMING",
+  "homepage": "https://github.com/KYCOMING/dsh-english-gym#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KYCOMING/dsh-english-gym.git"
+  },
+  "bugs": {
+    "url": "https://github.com/KYCOMING/dsh-english-gym/issues"
+  },
+  "engines": {
+    "dsh": ">=0.2.3-alpha.2"
+  },
   "keywords": [
     "dsh",
     "deepseek-harness",

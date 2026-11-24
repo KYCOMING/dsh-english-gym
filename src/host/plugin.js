@@ -56,7 +56,10 @@ export function createEnglishGym(ctx, rawConfig) {
   const word = createWordService({ dir })
   const report = createReportService({ ctx, conf, dir, getTopic })
 
-  async function handler(req, res) {
+  async function handler(req, res, peer) {
+    // Defense in depth: with route auth 'required' the webServer only invokes this
+    // handler after a live owner Peer is verified; refuse if that ever changes.
+    if (!peer) return sendJson(res, 401, { error: 'unauthorized' })
     const url = new URL(req.url || '/', 'http://localhost')
     let sub = url.pathname.slice(API_PREFIX.length) || '/'
     if (sub.length > 1 && sub.endsWith('/')) sub = sub.slice(0, -1)
@@ -128,10 +131,15 @@ export function createEnglishGym(ctx, rawConfig) {
     }
   }
 
+  // Host authentication is enforced by the webServer + connection before this
+  // handler runs: the Host/Origin fence plus a live owner Peer (the desktop
+  // session cookie) must verify, and the route fails closed otherwise. This route
+  // reads/writes progress files and can trigger host model calls, so it must
+  // never be anonymous.
   const route = {
     kind: 'prefix',
     path: API_PREFIX,
-    auth: 'anonymous',
+    auth: 'required',
     handler,
   }
 
