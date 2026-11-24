@@ -1613,6 +1613,7 @@ window.__ModuleLoader__.load({
       const [error, setError] = useState('')
       const [report, setReport] = useState(null)
       const [reportLoading, setReportLoading] = useState(false)
+      const reportStaleRef = useRef(false)
       const startedRef = useRef(false)
       const settingsLoadedRef = useRef(false)
       const [geom, setGeom] = useState(() => {
@@ -1780,10 +1781,10 @@ window.__ModuleLoader__.load({
         }
       }, [])
 
-      const refreshReport = useCallback(async () => {
+      const refreshReport = useCallback(async (force) => {
         setReportLoading(true)
         try {
-          setReport(await api('/report'))
+          setReport(force ? await api('/report/refresh', { method: 'POST' }) : await api('/report'))
         } catch (e) {
           setError(e.message || '报告加载失败')
         } finally {
@@ -1804,7 +1805,9 @@ window.__ModuleLoader__.load({
 
       useEffect(() => {
         if (open && tab === 'report' && !report && !reportLoading) {
-          refreshReport()
+          const force = reportStaleRef.current
+          reportStaleRef.current = false
+          refreshReport(force)
         }
       }, [open, tab, report, reportLoading, refreshReport])
 
@@ -1926,7 +1929,7 @@ window.__ModuleLoader__.load({
                   error,
                   onRefresh: () => {
                     setReport(null)
-                    refreshReport()
+                    refreshReport(true)
                   },
                 })
                 : React.createElement(SettingsPanel, {
@@ -1935,6 +1938,7 @@ window.__ModuleLoader__.load({
                     setFeedback(null)
                     setAnswer('')
                     setReport(null)
+                    reportStaleRef.current = true
                     startedRef.current = false
                   },
                 }),
