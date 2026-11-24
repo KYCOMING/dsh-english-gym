@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { loadState, saveState } from '../../core/store.js'
 import { normalize } from '../../shared/text.js'
+import { recordStudy } from '../activity/service.js'
 import {
   BUILTIN_BANK_ID,
   deleteWordBank,
@@ -72,6 +73,7 @@ export function createWordService({ dir }) {
     const correct = typed === target && typed.length > 0
     state.word.answered = (state.word.answered || 0) + 1
     if (correct) state.word.correct = (state.word.correct || 0) + 1
+    recordStudy(state, 'word', { en: pending.en, zh: pending.zh, pos: pending.pos || '', ok: correct })
     // Keep a missed word pending so “再试一次” can re-check the same word.
     if (correct) delete state.wordPending[id]
     saveState(dir, state)

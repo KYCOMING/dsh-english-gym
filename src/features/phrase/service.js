@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto'
 import { dayKey, loadState, saveState, yesterdayKey } from '../../core/store.js'
 import { gradeAnswer } from './grade.js'
 import { generateQuestion } from './generate.js'
+import { recordStudy } from '../activity/service.js'
 
 function prunePending(state) {
   const entries = Object.entries(state.pending || {})
@@ -87,6 +88,13 @@ export function createPhraseService({ ctx, conf, dir, getTopic }) {
       else state.review.push(entry)
     }
     delete state.pending[id]
+    recordStudy(state, 'phrase', {
+      zh: pending.zh,
+      en: pending.en,
+      answer: answer || '',
+      ok: result.correct,
+      score: result.score,
+    })
     pruneDaily(state)
     saveState(dir, state)
 

@@ -6,6 +6,7 @@ import { createPhraseService } from '../features/phrase/service.js'
 import { createWordService } from '../features/word/service.js'
 import { createReportService } from '../features/report/service.js'
 import { createSettingsService } from '../features/settings/service.js'
+import { buildDashboard } from '../features/activity/service.js'
 import { resolveActiveBank } from '../features/word/banks.js'
 import { readBody, sendJson } from './http.js'
 
@@ -69,6 +70,9 @@ export function createEnglishGym(ctx, rawConfig) {
       }
       if (req.method === 'GET' && sub === '/state') {
         return sendJson(res, 200, summarize(loadState(dir), conf, dir))
+      }
+      if (req.method === 'GET' && sub === '/dashboard') {
+        return sendJson(res, 200, buildDashboard(loadState(dir)))
       }
       if (req.method === 'GET' && sub === '/settings') {
         return sendJson(res, 200, settings.get())

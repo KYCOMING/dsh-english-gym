@@ -243,12 +243,12 @@ window.__ModuleLoader__.load({
 .eg-report .eg-actions { justify-content: center; }
 .eg-report .eg-q-toggle { appearance: none; -webkit-appearance: none; width: 100%; justify-content: center; }
 .eg-ptitle { display: flex; align-items: center; justify-content: center; gap: 7px; font-size: var(--eg-fs-sm); font-weight: 700; color: var(--eg-ink); }
-.eg-q { margin-top: 0; padding: 14px 0; border-top: 1px solid var(--eg-line); border-radius: 0; background: transparent; }
-.eg-q:first-of-type { border-top: none; }
+.eg-q { margin: 0; padding: 0; border: none; border-radius: 0; background: transparent; }
+.eg-q + .eg-q { margin-top: 20px; }
 .eg-q-head { display: flex; gap: 8px; align-items: baseline; justify-content: center; text-align: center; }
 .eg-q-n { font: 700 var(--eg-fs-sm)/1.4 var(--eg-font); color: var(--eg-accent-ink); font-variant-numeric: tabular-nums; flex: 0 0 auto; }
 .eg-q-zh { font-size: var(--eg-fs-sm); line-height: 1.6; text-align: center; }
-.eg-q-en { display: none; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--eg-line); font-family: var(--eg-serif); font-size: var(--eg-fs-md); color: var(--eg-ink); text-align: center; }
+.eg-q-en { display: none; margin-top: 10px; padding: 10px 12px; border-top: none; border-radius: 10px; background: var(--eg-bg-2); font-family: var(--eg-serif); font-size: var(--eg-fs-md); color: var(--eg-ink); text-align: center; }
 .eg-q.reveal .eg-q-en { display: block; }
 .eg-q-toggle { margin-top: 7px; display: inline-flex; align-items: center; min-height: 24px; padding: 4px 0; background: none; border: none; color: var(--eg-accent-ink); cursor: pointer; font: 600 var(--eg-fs-xs)/1 var(--eg-font); }
 .eg-q-toggle:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; border-radius: 4px; }
@@ -276,7 +276,7 @@ window.__ModuleLoader__.load({
 /* word training: centred column */
 .eg-word { width: 100%; max-width: 640px; margin-left: auto; margin-right: auto; height: 100%; min-height: 0; display: flex; flex-direction: column; align-items: stretch; text-align: center; }
 .eg-word-main { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; min-height: 0; overflow-y: auto; padding: 8px 0 4px; }
-.eg-word .eg-pos { margin: 0 0 -2px; display: inline-flex; align-items: center; padding: 2px 8px; border: 1px solid var(--eg-line); border-radius: 999px; background: var(--eg-bg-2); color: var(--eg-ink-2); font: 600 var(--eg-fs-xs)/1.2 var(--eg-font); }
+.eg-word .eg-pos { margin: 0 0 2px; color: var(--eg-ink-2); font: 600 var(--eg-fs-xs)/1.2 var(--eg-font); opacity: .85; }
 .eg-word .eg-zh { font-size: 28px; line-height: 1.4; margin-top: 8px; }
 .eg-word .eg-letters { justify-content: center; margin-top: 16px; }
 .eg-word .eg-foot { justify-content: center; width: 100%; margin-top: 26px; }
@@ -409,6 +409,70 @@ window.__ModuleLoader__.load({
 .eg-settings-note { margin-top: 10px; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); line-height: 1.55; }
 .eg-settings-error { margin-top: 10px; color: var(--eg-bad); font-size: var(--eg-fs-xs); line-height: 1.55; }
 .eg-settings-loading { color: var(--eg-ink-2); font-size: var(--eg-fs-sm); }
+
+/* ===== dashboard ===== */
+.eg-dash { display: flex; flex-direction: column; }
+.eg-dash-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.eg-dash-title { font: 700 var(--eg-fs-md)/1.2 var(--eg-font); color: var(--eg-ink); white-space: nowrap; }
+.eg-dash-nav { display: flex; align-items: center; justify-content: center; gap: 4px; flex: 1 1 100%; }
+.eg-navbtn { appearance: none; -webkit-appearance: none; width: 30px; height: 30px; padding: 0; border: 1px solid var(--eg-line); border-radius: 8px; background: var(--eg-bg); color: var(--eg-ink-2); cursor: pointer; font: 600 15px/1 var(--eg-font); display: inline-flex; align-items: center; justify-content: center; }
+.eg-navbtn:hover { border-color: var(--eg-line-2); color: var(--eg-ink); }
+.eg-navbtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
+.eg-month { min-width: 88px; text-align: center; font: 600 var(--eg-fs-sm)/1 var(--eg-font); font-variant-numeric: tabular-nums; color: var(--eg-ink); }
+.eg-todaybtn { appearance: none; -webkit-appearance: none; height: 30px; padding: 0 9px; border: 1px solid var(--eg-line); border-radius: 8px; background: var(--eg-bg); color: var(--eg-ink-2); cursor: pointer; font: 600 var(--eg-fs-xs)/1 var(--eg-font); }
+.eg-todaybtn:hover { border-color: var(--eg-line-2); color: var(--eg-ink); }
+.eg-todaybtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
+.eg-dash-sum { display: flex; gap: 8px; margin: 14px 0 2px; }
+.eg-stat { flex: 1 1 0; min-width: 0; border: 1px solid var(--eg-line); border-radius: 10px; padding: 8px 6px; text-align: center; background: var(--eg-bg); }
+.eg-stat b { display: block; font: 700 var(--eg-fs-lg)/1.1 var(--eg-font); font-variant-numeric: tabular-nums; color: var(--eg-ink); }
+.eg-stat span { display: block; margin-top: 2px; font-size: var(--eg-fs-xs); color: var(--eg-ink-2); }
+.eg-cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; margin-top: 14px; }
+.eg-cal .dow { text-align: center; font: 600 var(--eg-fs-xs)/1 var(--eg-font); color: var(--eg-ink-2); padding: 0 0 2px; }
+.eg-day { position: relative; aspect-ratio: 1 / 1; border-radius: 8px; border: 1px solid transparent; background: color-mix(in srgb, var(--eg-ink-2) 6%, transparent); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; font: 600 var(--eg-fs-xs)/1 var(--eg-font); color: var(--eg-ink-2); font-variant-numeric: tabular-nums; }
+.eg-day.blank { background: transparent; border-color: transparent; }
+.eg-day .cnt { font-size: 9px; font-weight: 600; opacity: .9; letter-spacing: .02em; }
+.eg-day.l1 { background: #9be9a8; color: #14532d; }
+.eg-day.l2 { background: #40c463; color: #0b3d1f; }
+.eg-day.l3 { background: #30a14e; color: #052e16; }
+.eg-day.l4 { background: #216e39; color: #ffffff; }
+.eg-day.today { border-color: #1a7f37; box-shadow: inset 0 0 0 1px #1a7f37; }
+.eg-day.has { cursor: pointer; }
+.eg-day.has:hover { outline: 2px solid #1a7f37; outline-offset: -1px; }
+.eg-dash-legend { display: flex; align-items: center; justify-content: flex-end; gap: 5px; margin-top: 8px; font-size: var(--eg-fs-xs); color: var(--eg-ink-2); }
+.eg-dash-legend i { width: 11px; height: 11px; border-radius: 3px; background: color-mix(in srgb, var(--eg-ink-2) 6%, transparent); display: inline-block; }
+.eg-dash-legend i.l1 { background: #9be9a8; }
+.eg-dash-legend i.l2 { background: #40c463; }
+.eg-dash-legend i.l3 { background: #30a14e; }
+.eg-dash-legend i.l4 { background: #216e39; }
+.eg-hist-title { margin: 22px 0 2px; padding-top: 14px; border-top: 1px solid var(--eg-line); font: 700 var(--eg-fs-sm)/1.3 var(--eg-font); color: var(--eg-ink); }
+.eg-hist { display: flex; flex-direction: column; gap: 14px; margin-top: 6px; }
+.eg-hist-day { padding-top: 12px; border-top: 1px dashed var(--eg-line); }
+.eg-hist-day:first-child { border-top: none; padding-top: 0; }
+.eg-hist-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+.eg-hist-date { font: 700 var(--eg-fs-sm)/1.3 var(--eg-font); color: var(--eg-ink); }
+.eg-hist-date .wd { margin-left: 6px; font-weight: 500; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); }
+.eg-hist-count { flex: 0 0 auto; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); font-variant-numeric: tabular-nums; }
+.eg-hist-sub { margin: 12px 0 6px; font: 600 var(--eg-fs-xs)/1 var(--eg-font); color: var(--eg-ink-2); letter-spacing: .02em; }
+.eg-wchips { display: flex; flex-wrap: wrap; gap: 6px; }
+.eg-wchip { display: inline-flex; align-items: baseline; gap: 5px; padding: 3px 9px; border-radius: 999px; background: var(--eg-bg-2); border: 1px solid var(--eg-line); font-size: var(--eg-fs-xs); max-width: 100%; }
+.eg-wchip .w { font-weight: 650; color: var(--eg-ink); }
+.eg-wchip .m { color: var(--eg-ink-2); overflow-wrap: anywhere; }
+.eg-wchip.ok { border-color: color-mix(in srgb, var(--eg-ok) 40%, var(--eg-line)); }
+.eg-wchip.bad { border-color: color-mix(in srgb, var(--eg-bad) 40%, var(--eg-line)); }
+.eg-sents { display: flex; flex-direction: column; }
+.eg-more { align-self: flex-start; margin: 8px 0 2px; padding: 4px 10px; border: 1px solid var(--eg-line); border-radius: 999px; background: var(--eg-bg); color: var(--eg-ink-2); cursor: pointer; font: 600 var(--eg-fs-xs)/1 var(--eg-font); }
+.eg-more:hover { border-color: var(--eg-line-2); color: var(--eg-ink); }
+.eg-more:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
+.eg-sent { display: flex; gap: 8px; padding: 7px 0; border-top: 1px dashed var(--eg-line); }
+.eg-sent:first-child { border-top: none; }
+.eg-sent .mark { flex: 0 0 auto; width: 14px; font-weight: 700; font-size: var(--eg-fs-sm); line-height: 1.5; }
+.eg-sent.ok .mark { color: var(--eg-ok); }
+.eg-sent.bad .mark { color: var(--eg-bad); }
+.eg-sent .body { flex: 1 1 auto; min-width: 0; }
+.eg-sent .zh { font-size: var(--eg-fs-sm); line-height: 1.5; color: var(--eg-ink); }
+.eg-sent .en { margin-top: 2px; font-family: var(--eg-serif); font-size: var(--eg-fs-sm); line-height: 1.5; color: var(--eg-ink-2); overflow-wrap: break-word; }
+.eg-dash-empty { padding: 30px 0; text-align: center; color: var(--eg-ink-2); font-size: var(--eg-fs-sm); line-height: 1.7; }
+.eg-dash-error { margin-top: 10px; color: var(--eg-bad); font-size: var(--eg-fs-xs); }
 
 @media (prefers-reduced-motion: reduce) { .eg-panel { animation: none; } .eg-hintbox { animation: none; } .eg-root *, .eg-panel * { transition: none !important; } }
 `
@@ -1338,7 +1402,7 @@ window.__ModuleLoader__.load({
         ),
         notice ? React.createElement('div', { className: 'eg-notice' }, notice) : null,
         React.createElement('div', { className: 'eg-word-main' },
-        item.pos ? React.createElement('div', { className: 'eg-pos', title: '词性提示' }, '词性 · ' + formatPos(item.pos)) : null,
+        item.pos ? React.createElement('div', { className: 'eg-pos', title: '词性提示' }, formatPos(item.pos)) : null,
         React.createElement('div', { className: 'eg-zh' }, item.zh),
         React.createElement('div', { className: 'eg-letters' + (answered ? ' answered' : ''), style: { gap: letterGap } }, cellsNodes),
         error ? React.createElement('div', { className: 'eg-err' }, error) : null,
@@ -1566,6 +1630,256 @@ window.__ModuleLoader__.load({
           ),
         ),
         error ? React.createElement('div', { className: 'eg-settings-error' }, error) : null,
+      )
+    }
+
+    // Data dashboard: a calendar of study activity + each day's words & sentences.
+    const WEEKDAYS = ['日', '一', '二', '三', '四', '五', '六']
+    function pad2(n) {
+      return String(n).padStart(2, '0')
+    }
+
+    function Dashboard() {
+      const [data, setData] = useState(null)
+      const [loading, setLoading] = useState(true)
+      const [error, setError] = useState('')
+      const [cursor, setCursor] = useState(() => {
+        const d = new Date()
+        return { y: d.getFullYear(), m: d.getMonth() }
+      })
+      const [expanded, setExpanded] = useState({})
+      const toggleGroup = (key) => setExpanded((prev) => ({ ...prev, [key]: !prev[key] }))
+      const WORD_LIMIT = 10
+      const PHRASE_LIMIT = 5
+
+      const load = useCallback(async () => {
+        setLoading(true)
+        setError('')
+        try {
+          setData(await api('/dashboard'))
+        } catch (e) {
+          setError(e.message || '看板加载失败')
+        } finally {
+          setLoading(false)
+        }
+      }, [])
+
+      useEffect(() => {
+        load()
+      }, [load])
+
+      const activity = {}
+      if (data && Array.isArray(data.activity)) {
+        for (const a of data.activity) activity[a.day] = a
+      }
+      const records = data && Array.isArray(data.days) ? data.days : []
+      const today = data ? data.today : null
+      const streak = data ? data.streak || 0 : 0
+      const totals = data && data.totals ? data.totals : { days: 0, words: 0, phrases: 0 }
+
+      const { y, m } = cursor
+      const startDow = (new Date(y, m, 1).getDay() + 6) % 7 // Monday-first
+      const daysInMonth = new Date(y, m + 1, 0).getDate()
+      const cells = []
+      for (let i = 0; i < startDow; i += 1) cells.push(null)
+      for (let d = 1; d <= daysInMonth; d += 1) cells.push(d)
+      while (cells.length % 7 !== 0) cells.push(null)
+      const dayStr = (d) => y + '-' + pad2(m + 1) + '-' + pad2(d)
+      const levelOf = (n) => (n > 60 ? 4 : n >= 31 ? 3 : n >= 11 ? 2 : n >= 1 ? 1 : 0)
+
+      const goMonth = (delta) =>
+        setCursor((c) => {
+          let mm = c.m + delta
+          let yy = c.y
+          if (mm < 0) {
+            mm = 11
+            yy -= 1
+          }
+          if (mm > 11) {
+            mm = 0
+            yy += 1
+          }
+          return { y: yy, m: mm }
+        })
+      const goToday = () => {
+        const d = new Date()
+        setCursor({ y: d.getFullYear(), m: d.getMonth() })
+      }
+      const jumpTo = (day) => {
+        try {
+          const el = document.getElementById('eg-hist-' + day)
+          if (el && el.scrollIntoView) el.scrollIntoView({ block: 'start', behavior: 'smooth' })
+        } catch {
+          /* ignore */
+        }
+      }
+
+      const dowNodes = ['一', '二', '三', '四', '五', '六', '日'].map((w, i) =>
+        React.createElement('div', { className: 'dow', key: 'dow' + i }, w),
+      )
+      const cellNodes = cells.map((d, i) => {
+        if (!d) return React.createElement('div', { className: 'eg-day blank', key: 'b' + i })
+        const key = dayStr(d)
+        const a = activity[key]
+        const lv = a ? levelOf(a.total) : 0
+        const cls = ['eg-day']
+        if (lv) cls.push('l' + lv, 'has')
+        if (key === today) cls.push('today')
+        return React.createElement(
+          'div',
+          {
+            key,
+            className: cls.join(' '),
+            title: a ? key + ' · 单词 ' + a.words + ' · 句子 ' + a.phrases : key,
+            onClick: a ? () => jumpTo(key) : undefined,
+            role: a ? 'button' : undefined,
+            tabIndex: a ? 0 : undefined,
+            onKeyDown: a
+              ? (e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    jumpTo(key)
+                  }
+                }
+              : undefined,
+          },
+          React.createElement('span', { className: 'n' }, d),
+          a ? React.createElement('span', { className: 'cnt' }, a.total) : null,
+        )
+      })
+
+      const recordNodes = records.map((rec) => {
+        const dt = new Date(rec.day + 'T00:00:00')
+        const wd = WEEKDAYS[dt.getDay()]
+        const t = rec.totals || {}
+        const allWords = rec.words || []
+        const allPhrases = rec.phrases || []
+        const wKey = rec.day + ':w'
+        const pKey = rec.day + ':p'
+        const words = expanded[wKey] ? allWords : allWords.slice(0, WORD_LIMIT)
+        const phrases = expanded[pKey] ? allPhrases : allPhrases.slice(0, PHRASE_LIMIT)
+        const moreBtn = (key, total, limit, open) =>
+          total > limit
+            ? React.createElement(
+                'button',
+                { className: 'eg-more', key: 'more', onClick: () => toggleGroup(key) },
+                open ? '收起' : '展开全部 · 共 ' + total + ' 条',
+              )
+            : null
+        return React.createElement(
+          'div',
+          { className: 'eg-hist-day', id: 'eg-hist-' + rec.day, key: rec.day },
+          React.createElement(
+            'div',
+            { className: 'eg-hist-head' },
+            React.createElement(
+              'div',
+              { className: 'eg-hist-date' },
+              dt.getMonth() + 1 + '月' + dt.getDate() + '日',
+              React.createElement('span', { className: 'wd' }, '周' + wd),
+            ),
+            React.createElement('div', { className: 'eg-hist-count' }, '单词 ' + (t.words || 0) + ' · 句子 ' + (t.phrases || 0)),
+          ),
+          allWords.length
+            ? React.createElement(
+                'div',
+                null,
+                React.createElement('div', { className: 'eg-hist-sub' }, '单词'),
+                React.createElement(
+                  'div',
+                  { className: 'eg-wchips' },
+                  words.map((w, i) =>
+                    React.createElement(
+                      'span',
+                      { className: 'eg-wchip ' + (w.ok ? 'ok' : 'bad'), key: 'w' + i, title: w.ok ? '拼对了' : '没拼对' },
+                      React.createElement('span', { className: 'w' }, w.en),
+                      w.zh ? React.createElement('span', { className: 'm' }, w.zh) : null,
+                    ),
+                  ),
+                ),
+                moreBtn(wKey, allWords.length, WORD_LIMIT, !!expanded[wKey]),
+              )
+            : null,
+          allPhrases.length
+            ? React.createElement(
+                'div',
+                null,
+                React.createElement('div', { className: 'eg-hist-sub' }, '句子'),
+                React.createElement(
+                  'div',
+                  { className: 'eg-sents' },
+                  phrases.map((p, i) =>
+                    React.createElement(
+                      'div',
+                      { className: 'eg-sent ' + (p.ok ? 'ok' : 'bad'), key: 'p' + i },
+                      React.createElement('span', { className: 'mark' }, p.ok ? '✓' : '✗'),
+                      React.createElement(
+                        'div',
+                        { className: 'body' },
+                        React.createElement('div', { className: 'zh' }, p.zh),
+                        p.en ? React.createElement('div', { className: 'en' }, p.en) : null,
+                      ),
+                    ),
+                  ),
+                ),
+                moreBtn(pKey, allPhrases.length, PHRASE_LIMIT, !!expanded[pKey]),
+              )
+            : null,
+        )
+      })
+
+      if (loading && !data) {
+        return React.createElement(
+          'div',
+          { className: 'eg-dash' },
+          React.createElement('div', { className: 'eg-loading' }, React.createElement('span', { className: 'eg-spin' }), '正在加载看板…'),
+        )
+      }
+
+      return React.createElement(
+        'div',
+        { className: 'eg-dash' },
+        React.createElement(
+          'div',
+          { className: 'eg-dash-top' },
+          React.createElement('div', { className: 'eg-dash-title' }, '学习看板'),
+          React.createElement(
+            'div',
+            { className: 'eg-dash-nav' },
+            React.createElement('button', { className: 'eg-navbtn', onClick: () => goMonth(-1), 'aria-label': '上个月', title: '上个月' }, '‹'),
+            React.createElement('span', { className: 'eg-month' }, y + ' 年 ' + (m + 1) + ' 月'),
+            React.createElement('button', { className: 'eg-navbtn', onClick: () => goMonth(1), 'aria-label': '下个月', title: '下个月' }, '›'),
+            React.createElement('button', { className: 'eg-todaybtn', onClick: goToday, title: '回到今天' }, '今天'),
+          ),
+        ),
+        React.createElement(
+          'div',
+          { className: 'eg-dash-sum' },
+          React.createElement('div', { className: 'eg-stat' }, React.createElement('b', null, streak), React.createElement('span', { title: '连续学习天数' }, '连续')),
+          React.createElement('div', { className: 'eg-stat' }, React.createElement('b', null, totals.words || 0), React.createElement('span', { title: '累计单词' }, '单词')),
+          React.createElement('div', { className: 'eg-stat' }, React.createElement('b', null, totals.phrases || 0), React.createElement('span', { title: '累计句子' }, '句子')),
+          React.createElement('div', { className: 'eg-stat' }, React.createElement('b', null, totals.days || 0), React.createElement('span', { title: '累计学习天数' }, '累计')),
+        ),
+        React.createElement('div', { className: 'eg-cal' }, dowNodes.concat(cellNodes)),
+        React.createElement(
+          'div',
+          { className: 'eg-dash-legend' },
+          '少',
+          React.createElement('i', { className: 'l1' }),
+          React.createElement('i', { className: 'l2' }),
+          React.createElement('i', { className: 'l3' }),
+          React.createElement('i', { className: 'l4' }),
+          '多',
+        ),
+        error ? React.createElement('div', { className: 'eg-dash-error' }, error) : null,
+        records.length
+          ? React.createElement(
+              'div',
+              null,
+              React.createElement('div', { className: 'eg-hist-title' }, '每日学习记录'),
+              React.createElement('div', { className: 'eg-hist' }, recordNodes),
+            )
+          : React.createElement('div', { className: 'eg-dash-empty' }, loading ? '正在加载…' : '还没有学习记录，去练几题吧。'),
       )
     }
 
@@ -1891,6 +2205,11 @@ window.__ModuleLoader__.load({
             ),
             React.createElement(
               'button',
+              { className: 'eg-tab' + (tab === 'dashboard' ? ' active' : ''), onClick: () => setTab('dashboard') },
+              '看板',
+            ),
+            React.createElement(
+              'button',
               { className: 'eg-tab' + (tab === 'settings' ? ' active' : ''), onClick: () => setTab('settings') },
               '设置',
             ),
@@ -1932,7 +2251,9 @@ window.__ModuleLoader__.load({
                     refreshReport(true)
                   },
                 })
-                : React.createElement(SettingsPanel, {
+                : tab === 'dashboard'
+                  ? React.createElement(Dashboard, { key: 'dashboard' })
+                  : React.createElement(SettingsPanel, {
                   onTopicChange: () => {
                     setCard(null)
                     setFeedback(null)

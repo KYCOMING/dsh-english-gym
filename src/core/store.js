@@ -60,6 +60,9 @@ export function defaultState() {
     wordRecent: [], // recently served words, to avoid immediate repeats
     wordBankId: 'builtin', // active word bank (builtin or an imported bank id)
     settings: { confetti: true, topicId: 'ai', customTopics: [] },
+    // Per-day study log used by the dashboard:
+    // dayKey -> { words: [{ en, zh, pos, ok, at }], phrases: [{ zh, en, answer, ok, score, at }] }
+    log: {},
   }
 }
 
@@ -80,6 +83,7 @@ export function loadState(dir) {
     wordRecent: Array.isArray(state.wordRecent) ? state.wordRecent : [],
     wordBankId: typeof state.wordBankId === 'string' && state.wordBankId ? state.wordBankId : 'builtin',
     settings: { ...base.settings, ...(state.settings && typeof state.settings === 'object' ? state.settings : {}) },
+    log: state.log && typeof state.log === 'object' ? state.log : {},
   }
 }
 
