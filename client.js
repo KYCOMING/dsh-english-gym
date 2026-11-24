@@ -129,9 +129,9 @@ window.__ModuleLoader__.load({
   letter-spacing: .01em; color: var(--eg-ink); overflow-wrap: break-word;
 }
 .eg-hintbtn {
-  margin-top: 14px; display: inline-flex; align-items: center; gap: 5px; min-height: 28px; padding: 5px 11px;
-  border: 1px solid var(--eg-line); background: var(--eg-bg); border-radius: 999px;
-  color: var(--eg-ink-2); font: 600 var(--eg-fs-xs)/1 var(--eg-font); cursor: pointer; transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease;
+  margin-top: 14px; display: inline-flex; align-items: center; gap: 5px; min-height: 30px; padding: 5px 10px;
+  border: 1px solid var(--eg-line); background: var(--eg-bg); border-radius: var(--eg-r-sm);
+  color: var(--eg-ink-2); font: 600 var(--eg-fs-sm)/1 var(--eg-font); cursor: pointer; transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease;
 }
 .eg-hintbtn:hover { border-color: var(--eg-line-2); color: var(--eg-ink); }
 .eg-hintbtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
@@ -169,7 +169,7 @@ window.__ModuleLoader__.load({
 .eg-actions { display: flex; gap: 8px; margin-top: 11px; }
 .eg-btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  min-height: 36px; padding: 0 15px; border-radius: 9px; cursor: pointer;
+  min-height: 36px; padding: 0 15px; border-radius: var(--eg-r-sm); cursor: pointer;
   font: 600 var(--eg-fs-sm)/1 var(--eg-font); transition: background var(--eg-dur) ease, filter var(--eg-dur) ease, border-color var(--eg-dur) ease, transform .28s cubic-bezier(.34, 1.56, .64, 1);
   border: 1px solid var(--eg-line-2); background: var(--eg-bg); color: var(--eg-ink);
 }
@@ -314,9 +314,9 @@ window.__ModuleLoader__.load({
 .eg-select:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
 .eg-bankbtn {
   flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: 3px;
-  min-height: 34px; padding: 0 12px; border: 1px solid var(--eg-line-2); border-radius: 999px;
+  min-height: 34px; padding: 0 12px; border: 1px solid var(--eg-line-2); border-radius: var(--eg-r-sm);
   background: var(--eg-bg); color: var(--eg-ink-2); cursor: pointer;
-  font: 600 var(--eg-fs-xs)/1 var(--eg-font);
+  font: 600 var(--eg-fs-sm)/1 var(--eg-font);
 }
 .eg-bankbtn:hover { border-color: var(--eg-accent); color: var(--eg-accent-ink); background: color-mix(in srgb, var(--eg-accent) 5%, var(--eg-bg)); }
 .eg-bankbtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
@@ -328,9 +328,9 @@ window.__ModuleLoader__.load({
 .eg-import-title { font-size: var(--eg-fs-md); font-weight: 700; color: var(--eg-ink); line-height: 1.3; }
 .eg-import-actions { flex: 0 0 auto; display: flex; align-items: center; gap: 5px; }
 .eg-import-back, .eg-filebtn {
-  flex: 0 0 auto; display: inline-flex; align-items: center; min-height: 26px; padding: 3px 9px;
-  border: 1px solid var(--eg-line); border-radius: 999px; background: var(--eg-bg);
-  color: var(--eg-ink-2); cursor: pointer; font: 600 var(--eg-fs-xs)/1 var(--eg-font); white-space: nowrap;
+  flex: 0 0 auto; display: inline-flex; align-items: center; min-height: 30px; padding: 4px 10px;
+  border: 1px solid var(--eg-line); border-radius: var(--eg-r-sm); background: var(--eg-bg);
+  color: var(--eg-ink-2); cursor: pointer; font: 600 var(--eg-fs-sm)/1 var(--eg-font); white-space: nowrap;
 }
 .eg-import-back:hover, .eg-filebtn:hover { border-color: var(--eg-line-2); color: var(--eg-ink); }
 .eg-import-back:focus-visible, .eg-filebtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
