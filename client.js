@@ -161,6 +161,12 @@ window.__ModuleLoader__.load({
 .eg-btn:hover { background: var(--eg-bg-2); }
 .eg-btn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }
 .eg-btn:active { transform: scale(.92); transition-duration: .06s; }
+.eg-btn.is-bouncing { animation: eg-btn-bounce .34s cubic-bezier(.34, 1.56, .64, 1); }
+@keyframes eg-btn-bounce {
+  0% { transform: scale(.92); }
+  55% { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
 .eg-btn.primary { border-color: transparent; background: var(--eg-accent); color: var(--eg-on-accent); }
 .eg-btn.primary:hover { filter: brightness(1.06); }
 .eg-btn:disabled { opacity: .5; cursor: default; pointer-events: none; }
@@ -408,6 +414,22 @@ window.__ModuleLoader__.load({
 
     const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi)
 
+    // Small springy "tap" on the submit button: add a class for one animation
+    // cycle so the button compresses and bounces back even after pointer-up.
+    function bounceButton(e) {
+      const el = e && e.currentTarget
+      if (!el || !el.classList) return
+      try {
+        el.classList.remove('is-bouncing')
+        void el.offsetWidth
+        el.classList.add('is-bouncing')
+        clearTimeout(el.__egBounceTimer)
+        el.__egBounceTimer = setTimeout(() => el.classList.remove('is-bouncing'), 360)
+      } catch {
+        /* ignore */
+      }
+    }
+
     function loadGeom() {
       try {
         const g = JSON.parse(localStorage.getItem(GEOM_KEY) || 'null')
@@ -612,6 +634,7 @@ window.__ModuleLoader__.load({
             {
               className: 'eg-btn primary' + (busy ? ' is-loading' : ''),
               onClick: onSubmit,
+              onPointerDown: bounceButton,
               disabled: busy || !answer.trim(),
             },
             '提交',
@@ -1181,6 +1204,7 @@ window.__ModuleLoader__.load({
                 {
                   className: 'eg-btn primary' + (busy ? ' is-loading' : ''),
                   onClick: submit,
+                  onPointerDown: bounceButton,
                   disabled: busy || cells.some((c) => !c),
                 },
                 '提交',
