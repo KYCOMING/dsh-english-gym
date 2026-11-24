@@ -27,7 +27,7 @@
 
 ```bash
 # 在能调用 plugin_manager 的会话里：
-plugin_manager install_bundle --target /绝对路径/dsh-english-learn
+plugin_manager install_bundle --target /绝对路径/dsh-english-gym
 ```
 
 或用 `set_plugin(enabled: true)` 重新组合使其在当前会话生效。安装后重启 DSH 也可。
