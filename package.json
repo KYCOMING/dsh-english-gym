@@ -1,6 +1,6 @@
 {
   "name": "dsh-english-gym",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "private": true,
   "type": "module",
   "description": "English Gym — a lightweight, in-DSH English practice widget: phrase translation + static/custom word-bank spelling drill + daily report with selectable content directions. No voice.",
@@ -27,6 +27,7 @@
     "icon.svg",
     "cordis.patch.yml",
     "README.md",
+    "docs",
     "LICENSE",
     "THIRD-PARTY-NOTICES.md"
   ],
