@@ -1,16 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="English Gym">
-  <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#3b82f6"/>
-      <stop offset="1" stop-color="#1d4ed8"/>
-    </linearGradient>
-  </defs>
-  <rect x="4" y="4" width="56" height="56" rx="14" fill="url(#g)"/>
-  <g fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round">
-    <path d="M16 32h6"/>
-    <path d="M42 32h6"/>
-  </g>
-  <rect x="20" y="14" width="6" height="36" rx="3" fill="#ffffff"/>
-  <rect x="38" y="14" width="6" height="36" rx="3" fill="#ffffff"/>
-  <path d="M16 19v10M48 19v10" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="English Gym (EG)">
+  <rect width="64" height="64" rx="16" fill="#131316"/>
+  <text
+    x="32" y="42"
+    text-anchor="middle"
+    font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+    font-size="26"
+    font-weight="800"
+    letter-spacing="0.5"
+    fill="#ffffff"
+  >EG</text>
 </svg>

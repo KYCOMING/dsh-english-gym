@@ -1959,7 +1959,7 @@ window.__ModuleLoader__.load({
             title: 'English Gym — 短语造句 + 单词拼写',
             'aria-expanded': shared.open ? 'true' : 'false',
           },
-          React.createElement('span', { className: 'eg-mono' }, 'EN'),
+          React.createElement('span', { className: 'eg-mono' }, 'EG'),
           React.createElement('span', { className: 'eg-wordmark' }, 'English Gym'),
           stats && stats.streakDays > 0
             ? React.createElement('span', { className: 'eg-streak' }, '连续 ' + stats.streakDays + ' 天')
