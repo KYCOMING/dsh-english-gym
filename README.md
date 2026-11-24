@@ -128,3 +128,7 @@ index.js                # DSH 插件入口，只负责把 host 装进 ctx
 ## License
 
 MIT。内置单词库（`src/features/word/data/*.js`）取自 [KyleBing/english-vocabulary](https://github.com/KyleBing/english-vocabulary) 的 CET4、英语六级、雅思和托福词表（BSD-3-Clause），详见 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)。
+
+---
+
+[![](https://img.shields.io/badge/powered_by-dsh-4D6BFE?style=flat-square&logo=deepseek&logoColor=white)](https://github.com/deepseek-ai/deepseek-harness)
