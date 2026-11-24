@@ -21,6 +21,20 @@
 - ⚙️ **设置**：看板里的「设置」标签可开关彩带，并从 **12 个内置内容方向**（AI 与技术、软件开发、数据与算法、产品与设计、职场沟通、商业与创业、科学探索、健康与生活、环境与能源、教育与学习、金融与经济、文化与旅行）中选择生成主题；也可以添加自己的方向（最多 40 个），用于短语出题和每日报告。
 - 🔒 **本地优先**：进度与报告以纯 JSON 存在 `$DSH_HOME/english-gym/`，不依赖任何第三方包。
 
+## 截图
+
+**短语训练（看中文，写英文）**
+
+![短语训练](docs/screenshots/phrase-training.webp)
+
+**单词训练（看中文，按字母格拼出单词）**
+
+![单词训练](docs/screenshots/word-training.webp)
+
+**设置（12 个内置内容方向 + 自定义方向）**
+
+![设置](docs/screenshots/settings.webp)
+
 ## 安装
 
 这是一个 DSH 插件（bundle）。作者目录直接安装，装完属于整个 profile：
@@ -76,7 +90,7 @@ accommodate,容纳；适应,v,əˈkɒmədeɪt,The room can accommodate six peopl
 
 ## 工作原理
 
-- **宿主一半**（`index.js` + `src/`）：用 `ctx.webServer` 在 `/api/english-gym` 下挂一组 JSON 路由；用 `ctx.llm` 出题、判分、写报告；用 `node:fs` 持久化。
+- **宿主一半**（`index.js` + `src/`）：用 `ctx.webServer` 提供一组内部 JSON 接口；用 `ctx.llm` 出题、判分、写报告；用 `node:fs` 持久化。
 - **前端一半**（`client.js`）：注册两个座位——`English Gym` 触发条放在 `conversation.composer.dock`（输入框下方，常驻）；点开后那块**看板**放在 `shell.overlay`（根作用域浮层，整层默认点击穿透、面板自己 `pointer-events:auto`），`position:fixed` 浮在输入框上方，**不参与正文布局、不会把对话撑开**。两者用同一个模块内 store 同步开关与统计。用同源 `fetch()` 调上面的路由。样式只用主题变量（`--dsw-alias-*`），明暗自动适配。
 
 这样客户端完全不需要 `harness`/动态包沙箱，也不需要额外依赖，纯 bundle 即可。
@@ -87,7 +101,7 @@ accommodate,容纳；适应,v,əˈkɒmədeɪt,The room can accommodate six peopl
 src/
   core/                 # 基础设施：JSON 持久化、LLM 调用封装
   shared/               # 跨业务共用的纯函数（答案归一化等）
-  host/                 # 插件装配：HTTP 路由、tools、生命周期
+  host/                 # 插件装配：内部接口、tools、生命周期
   features/
     phrase/             # 短语训练：出题、判分、错题复习
     word/               # 单词训练：词库管理、导入解析
@@ -96,26 +110,6 @@ src/
 client.js               # 前端挂件（composer.dock 触发条 + shell.overlay 看板）
 index.js                # DSH 插件入口，只负责把 host 装进 ctx
 ```
-
-### HTTP 路由
-
-| 方法 | 路径 | 作用 |
-| --- | --- | --- |
-| GET | `/api/english-gym/health` | 存活 + 是否有可用 LLM |
-| GET | `/api/english-gym/state` | 统计摘要（连续/正确率/待复习/今日） |
-| GET | `/api/english-gym/settings` | 读取彩带开关、当前内容方向和方向列表 |
-| POST | `/api/english-gym/settings` | 保存设置（`{confetti,topicId,customTopics}`，均可选） |
-| POST | `/api/english-gym/next` | 出一道题（`{mode:'new'\|'review'}`，不返回答案） |
-| POST | `/api/english-gym/check` | 判分（`{id,answer}`），返回对错/分数/参考/提示 |
-| GET | `/api/english-gym/wordbanks` | 词库列表（内置 + 导入）与当前启用词库 |
-| POST | `/api/english-gym/wordbanks/preview` | 解析预览（`{content,filename}`），返回识别条数、样例、错误行 |
-| POST | `/api/english-gym/wordbanks/import` | 导入词库（`{name,filename,content}`），成功后自动启用 |
-| POST | `/api/english-gym/wordbanks/active` | 切换当前词库（`{id}`） |
-| POST | `/api/english-gym/wordbanks/delete` | 删除导入词库（`{id}`；内置词库不可删） |
-| POST | `/api/english-gym/word/next` | 从当前词库取一个词（返回 `{id,zh,letters,bankId,bankName}`，`letters` = 字母空格数，不返回答案） |
-| POST | `/api/english-gym/word/check` | 单词拼写判分（`{id,answer}`），返回对错/正确拼写/每个字母 |
-| GET | `/api/english-gym/report` | 今日报告（有缓存则直接给） |
-| POST | `/api/english-gym/report/refresh` | 强制重新生成 |
 
 ## 开发
 
