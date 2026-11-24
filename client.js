@@ -254,9 +254,6 @@ window.__ModuleLoader__.load({
 /* word training: centred column */
 .eg-word { max-width: 640px; min-height: 100%; display: flex; flex-direction: column; align-items: stretch; text-align: center; }
 .eg-word-main { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; min-height: 0; padding: 12px 0 2px; }
-.eg-word-head { width: 100%; display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
-.eg-word-head .eg-cap { text-align: left; }
-.eg-count { flex: 0 0 auto; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); font-variant-numeric: tabular-nums; }
 .eg-word .eg-zh { font-size: 28px; line-height: 1.4; margin-top: 14px; }
 .eg-word .eg-letters { justify-content: center; }
 .eg-word .eg-foot { justify-content: center; width: 100%; margin-top: 26px; }
@@ -1190,10 +1187,6 @@ window.__ModuleLoader__.load({
         ),
         notice ? React.createElement('div', { className: 'eg-notice' }, notice) : null,
         React.createElement('div', { className: 'eg-word-main' },
-        React.createElement('div', { className: 'eg-word-head' },
-          React.createElement('div', { className: 'eg-cap' }, '看中文，拼出下面的英文单词'),
-          React.createElement('span', { className: 'eg-count' }, item.letters + ' 个字母'),
-        ),
         React.createElement('div', { className: 'eg-zh' }, item.zh),
         React.createElement('div', { className: 'eg-letters' + (answered ? ' answered' : ''), style: { gap: letterGap } }, cellsNodes),
         error ? React.createElement('div', { className: 'eg-err' }, error) : null,
