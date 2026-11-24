@@ -169,7 +169,7 @@ window.__ModuleLoader__.load({
 .eg-actions { display: flex; gap: 8px; margin-top: 11px; }
 .eg-btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  min-height: 36px; padding: 0 15px; border-radius: var(--eg-r-sm); cursor: pointer;
+  min-height: 36px; min-width: 76px; padding: 0 15px; border-radius: var(--eg-r-sm); cursor: pointer;
   appearance: none; -webkit-appearance: none;
   font: 600 var(--eg-fs-sm)/1 var(--eg-font); transition: background var(--eg-dur) ease, filter var(--eg-dur) ease, border-color var(--eg-dur) ease, transform .28s cubic-bezier(.34, 1.56, .64, 1);
   border: 1px solid var(--eg-line-2); background: var(--eg-bg); color: var(--eg-ink);
@@ -317,7 +317,7 @@ window.__ModuleLoader__.load({
 .eg-select:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
 .eg-bankbtn { appearance: none; -webkit-appearance: none;
   flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: 3px;
-  min-height: 34px; padding: 0 12px; border: 1px solid var(--eg-line-2); border-radius: var(--eg-r-sm);
+  min-height: 34px; min-width: 76px; padding: 0 12px; border: 1px solid var(--eg-line-2); border-radius: var(--eg-r-sm);
   background: var(--eg-bg); color: var(--eg-ink-2); cursor: pointer;
   font: 600 var(--eg-fs-sm)/1 var(--eg-font);
 }
