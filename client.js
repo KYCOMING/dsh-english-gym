@@ -36,6 +36,8 @@ window.__ModuleLoader__.load({
   --eg-shadow: 0 20px 56px rgba(17, 22, 31, .22), 0 2px 8px rgba(17, 22, 31, .08);
   --eg-dur: .16s;
   --eg-fs-xs: 12px; --eg-fs-sm: 13px; --eg-fs-md: 15px; --eg-fs-lg: 19px; --eg-fs-xl: 32px;
+  --eg-confetti-1: var(--eg-accent); --eg-confetti-2: var(--eg-bad); --eg-confetti-3: var(--eg-ok);
+  --eg-confetti-4: var(--eg-warn); --eg-confetti-5: #c9407e; --eg-confetti-6: #1b7c83;
 }
 .eg-root { font: var(--eg-fs-sm)/1.5 var(--eg-font); color: var(--eg-ink); }
 /* place the composer-strip pill at the far right of the dock row (after the context meter) */
@@ -153,12 +155,12 @@ window.__ModuleLoader__.load({
 .eg-btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
   min-height: 36px; padding: 0 15px; border-radius: 9px; cursor: pointer;
-  font: 600 var(--eg-fs-sm)/1 var(--eg-font); transition: background var(--eg-dur) ease, filter var(--eg-dur) ease, border-color var(--eg-dur) ease;
+  font: 600 var(--eg-fs-sm)/1 var(--eg-font); transition: background var(--eg-dur) ease, filter var(--eg-dur) ease, border-color var(--eg-dur) ease, transform .28s cubic-bezier(.34, 1.56, .64, 1);
   border: 1px solid var(--eg-line-2); background: var(--eg-bg); color: var(--eg-ink);
 }
 .eg-btn:hover { background: var(--eg-bg-2); }
 .eg-btn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }
-.eg-btn:active { transform: translateY(1px); }
+.eg-btn:active { transform: scale(.92); transition-duration: .06s; }
 .eg-btn.primary { border-color: transparent; background: var(--eg-accent); color: var(--eg-on-accent); }
 .eg-btn.primary:hover { filter: brightness(1.06); }
 .eg-btn:disabled { opacity: .5; cursor: default; pointer-events: none; }
@@ -169,6 +171,21 @@ window.__ModuleLoader__.load({
 }
 .eg-btn.ghost { border-color: transparent; background: transparent; color: var(--eg-ink-2); padding: 0 10px; }
 .eg-btn.ghost:hover { background: var(--eg-bg-2); color: var(--eg-ink); }
+
+/* ===== confetti ===== */
+.eg-confetti { position: absolute; inset: 0; z-index: 6; pointer-events: none; overflow: hidden; border-radius: inherit; }
+.eg-confetti-piece {
+  position: absolute; display: block; border-radius: 1.5px; opacity: 0;
+  transform: translate(-50%, -50%) rotate(var(--r0, 0deg));
+  animation: eg-confetti-fly var(--dur, 900ms) cubic-bezier(.15, .7, .3, 1) var(--delay, 0ms) forwards;
+  will-change: transform, opacity;
+}
+@keyframes eg-confetti-fly {
+  0%   { opacity: 1; transform: translate(-50%, -50%) rotate(var(--r0, 0deg)) scale(.65); }
+  18%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--dx, 0px)), calc(-50% + var(--dy, 0px))) rotate(calc(var(--r0, 0deg) + var(--rot, 360deg))) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) { .eg-confetti { display: none; } }
 
 /* ===== feedback ===== */
 .eg-fb { margin-top: 4px; border-radius: 12px; padding: 14px; border: 1px solid transparent; }
@@ -349,6 +366,7 @@ window.__ModuleLoader__.load({
     const store = {
       open: false,
       stats: null,
+      burst: 0,
       listeners: new Set(),
       emit() {
         for (const l of Array.from(this.listeners)) l()
@@ -366,6 +384,10 @@ window.__ModuleLoader__.load({
       },
       setStats(s) {
         this.stats = s
+        this.emit()
+      },
+      celebrate() {
+        this.burst += 1
         this.emit()
       },
     }
@@ -428,6 +450,65 @@ window.__ModuleLoader__.load({
         /* ignore */
       }
       return fitGeom({ w, h, x: Math.round(cx - w / 2), y: Math.round(bottom - h) })
+    }
+
+    function makeConfettiPieces() {
+      const colors = ['var(--eg-confetti-1)', 'var(--eg-confetti-2)', 'var(--eg-confetti-3)', 'var(--eg-confetti-4)', 'var(--eg-confetti-5)', 'var(--eg-confetti-6)']
+      const pieces = []
+      for (let i = 0; i < 64; i += 1) {
+        const side = i % 4
+        let x = 0
+        let y = 0
+        let dx = 0
+        let dy = 0
+        if (side === 0) {
+          x = 0
+          y = 6 + Math.random() * 88
+          dx = 70 + Math.random() * 110
+          dy = (Math.random() - 0.5) * 90
+        } else if (side === 1) {
+          x = 100
+          y = 6 + Math.random() * 88
+          dx = -(70 + Math.random() * 110)
+          dy = (Math.random() - 0.5) * 90
+        } else if (side === 2) {
+          x = 6 + Math.random() * 88
+          y = 0
+          dx = (Math.random() - 0.5) * 90
+          dy = 70 + Math.random() * 110
+        } else {
+          x = 6 + Math.random() * 88
+          y = 100
+          dx = (Math.random() - 0.5) * 90
+          dy = -(70 + Math.random() * 110)
+        }
+        pieces.push({
+          key: i,
+          style: {
+            left: x + '%',
+            top: y + '%',
+            width: 4 + Math.random() * 4 + 'px',
+            height: 8 + Math.random() * 10 + 'px',
+            backgroundColor: colors[i % colors.length],
+            '--dx': dx.toFixed(1) + 'px',
+            '--dy': dy.toFixed(1) + 'px',
+            '--r0': Math.round(Math.random() * 360) + 'deg',
+            '--rot': Math.round((Math.random() - 0.5) * 720) + 'deg',
+            '--delay': Math.round(Math.random() * 110) + 'ms',
+            '--dur': Math.round(720 + Math.random() * 420) + 'ms',
+          },
+        })
+      }
+      return pieces
+    }
+
+    function Confetti() {
+      const [pieces] = useState(makeConfettiPieces)
+      return React.createElement(
+        'div',
+        { className: 'eg-confetti', 'aria-hidden': 'true' },
+        pieces.map((piece) => React.createElement('span', { key: piece.key, className: 'eg-confetti-piece', style: piece.style })),
+      )
     }
 
     function Drill({ card, answer, setAnswer, feedback, busy, error, onSubmit, onNext }) {
@@ -926,6 +1007,7 @@ window.__ModuleLoader__.load({
             body: JSON.stringify({ id: item.id, answer: cells.join('') }),
           })
           setRes(r)
+          if (r.correct) store.celebrate()
           if (r.summary) store.setStats(r.summary)
         } catch (e) {
           setError(e.message || '判分失败')
@@ -1344,6 +1426,7 @@ window.__ModuleLoader__.load({
             body: JSON.stringify({ id: card.id, answer }),
           })
           setFeedback(res)
+          if (res.correct) store.celebrate()
           if (res.summary) store.setStats(res.summary)
         } catch (e) {
           setError(e.message || '判分失败')
@@ -1440,6 +1523,7 @@ window.__ModuleLoader__.load({
                 },
               }),
         ),
+        shared.burst ? React.createElement(Confetti, { key: shared.burst }) : null,
         React.createElement('div', {
           className: 'eg-resize',
           onPointerDown: onResizeDown,
