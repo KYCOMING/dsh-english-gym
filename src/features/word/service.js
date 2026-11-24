@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { loadState, saveState } from '../../core/store.js'
-import { normalize } from '../../shared/text.js'
+import { normalize, scrubExample } from '../../shared/text.js'
 import { recordStudy } from '../activity/service.js'
 import {
   BUILTIN_BANK_ID,
@@ -36,12 +36,19 @@ export function createWordService({ dir }) {
   function nextWord() {
     const state = loadState(dir)
     const bank = resolveActiveBank(dir, state)
+    if (!bank || !Array.isArray(bank.entries) || !bank.entries.length) {
+      const error = new Error('词库数据缺失或为空，请检查词库文件或重新安装插件。')
+      error.status = 500
+      throw error
+    }
     const picked = pickWord(state, bank.entries)
     const id = randomUUID()
     state.wordPending[id] = {
       en: picked.word,
       zh: picked.meaning,
       pos: picked.pos || '',
+      example: picked.example || '',
+      exampleZh: picked.exampleZh || '',
       bankId: bank.id,
       createdAt: new Date().toISOString(),
     }
@@ -54,6 +61,8 @@ export function createWordService({ dir }) {
       zh: picked.meaning,
       pos: picked.pos || '',
       letters: letterCount(picked.word),
+      // The full sentence stays server-side until the answer is checked.
+      example: scrubExample(picked.word, picked.example || ''),
       bankSize: bank.entries.length,
       bankId: bank.id,
       bankName: bank.name,
@@ -83,6 +92,8 @@ export function createWordService({ dir }) {
       zh: pending.zh,
       pos: pending.pos || '',
       letters: letterCount(pending.en),
+      example: pending.example || '',
+      exampleZh: pending.exampleZh || '',
     }
   }
 

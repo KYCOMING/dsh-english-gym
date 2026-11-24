@@ -27,6 +27,7 @@ function summarize(state, conf, dir) {
   const correct = state.totals.correct
   const word = state.word || { answered: 0, correct: 0 }
   const bank = resolveActiveBank(dir, state)
+  const bankCount = bank && Array.isArray(bank.entries) ? bank.entries.length : 0
   return {
     level: conf.level,
     streakDays: state.streak.count || 0,
@@ -39,8 +40,8 @@ function summarize(state, conf, dir) {
       correct: word.correct || 0,
       accuracy: word.answered ? Math.round((word.correct / word.answered) * 100) : 0,
     },
-    wordBankSize: bank.entries.length,
-    wordBank: { id: bank.id, name: bank.name, count: bank.entries.length },
+    wordBankSize: bankCount,
+    wordBank: { id: (bank && bank.id) || 'builtin', name: (bank && bank.name) || '单词', count: bankCount },
   }
 }
 

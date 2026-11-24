@@ -3,7 +3,9 @@ node_modules/
 *.log
 *.tmp
 dist/
-data/
+/data/
+scripts/example-failures.jsonl
+scripts/.gen.lock
 .env
 
 .openidea/

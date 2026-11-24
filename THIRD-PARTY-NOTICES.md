@@ -1,6 +1,6 @@
 # Third-party notices
 
-## English word banks (`src/features/word/data/*.js`)
+## English word banks (`src/features/word/data/*.json`)
 
 The static vocabulary used by 单词训练 is derived from the **CET4, CET6, IELTS,
 and TOEFL** word lists in:
@@ -11,16 +11,20 @@ and TOEFL** word lists in:
 
 | Bundled file | Word list |
 | --- | --- |
-| `src/features/word/data/cet4.js` | CET4 |
-| `src/features/word/data/cet6.js` | 六级 (`full_line_jsonl/simple/正序/六级.jsonl`) |
-| `src/features/word/data/ielts.js` | 雅思 (`full_line_jsonl/simple/正序/雅思.jsonl`) |
-| `src/features/word/data/toefl.js` | 托福 (`full_line_jsonl/simple/正序/托福.jsonl`) |
+| `src/features/word/data/cet4.json` | CET4 |
+| `src/features/word/data/cet6.json` | 六级 (`full_line_jsonl/simple/正序/六级.jsonl`) |
+| `src/features/word/data/ielts.json` | 雅思 (`full_line_jsonl/simple/正序/雅思.jsonl`) |
+| `src/features/word/data/toefl.json` | 托福 (`full_line_jsonl/simple/正序/托福.jsonl`) |
 
 The CET4 list was trimmed to single English words with a concise Chinese gloss,
 and a small number of AI/tech terms were added by hand. The CET6, IELTS, and
 TOEFL lists were filtered to single ASCII English words; duplicate entries were
 merged with their Chinese glosses and normalized parts of speech. These are
 study vocabulary lists, not official examination word lists.
+
+The `example` and `exampleZh` fields were generated for this project with an
+LLM; they are not part of the upstream word lists and are not covered by the
+BSD-3-Clause license above.
 
 ```
 BSD 3-Clause License

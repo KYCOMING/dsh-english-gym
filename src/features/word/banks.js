@@ -1,30 +1,53 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { ensureDir, readJson, writeJson } from '../../core/store.js'
-import { CET4_WORD_BANK } from './data/cet4.js'
-import { CET6_WORD_BANK } from './data/cet6.js'
-import { IELTS_WORD_BANK } from './data/ielts.js'
-import { TOEFL_WORD_BANK } from './data/toefl.js'
 
 export const BUILTIN_BANK_ID = 'builtin'
 
-function toEntries(bank) {
-  return bank.map(([en, zh, pos]) => ({ word: en, meaning: zh, pos: pos || '' }))
-}
-
-const BUILTIN_BANKS = [
-  { id: BUILTIN_BANK_ID, name: '内置 · CET4', entries: toEntries(CET4_WORD_BANK) },
-  { id: 'builtin-cet6', name: '内置 · 英语六级', entries: toEntries(CET6_WORD_BANK) },
-  { id: 'builtin-ielts', name: '内置 · 雅思', entries: toEntries(IELTS_WORD_BANK) },
-  { id: 'builtin-toefl', name: '内置 · 托福', entries: toEntries(TOEFL_WORD_BANK) },
+const BUILTIN_FILES = [
+  { id: BUILTIN_BANK_ID, name: '内置 · CET4', file: './data/cet4.json' },
+  { id: 'builtin-cet6', name: '内置 · 英语六级', file: './data/cet6.json' },
+  { id: 'builtin-ielts', name: '内置 · 雅思', file: './data/ielts.json' },
+  { id: 'builtin-toefl', name: '内置 · 托福', file: './data/toefl.json' },
 ]
 
-function getBuiltinBank(id) {
-  return BUILTIN_BANKS.find((bank) => bank.id === id)
+const builtinCache = new Map()
+
+function normalizeEntry(row) {
+  if (!row || typeof row !== 'object') return null
+  const word = String(row.word || '').trim()
+  const meaning = String(row.meaning || '').trim()
+  if (!word || !meaning) return null
+  return {
+    word,
+    meaning,
+    pos: String(row.pos || '').trim(),
+    example: String(row.example || '').trim(),
+    exampleZh: String(row.exampleZh || row.example_zh || '').trim(),
+  }
+}
+
+function loadBuiltin(meta) {
+  const cached = builtinCache.get(meta.id)
+  if (cached) return cached
+  const data = readJson(new URL(meta.file, import.meta.url), null)
+  const rows = data && Array.isArray(data.entries) ? data.entries : []
+  const bank = {
+    id: meta.id,
+    name: (data && typeof data.name === 'string' && data.name) || meta.name,
+    source: (data && typeof data.source === 'string' && data.source) || 'builtin',
+    entries: rows.map(normalizeEntry).filter(Boolean),
+  }
+  builtinCache.set(meta.id, bank)
+  return bank
+}
+
+function getBuiltinMeta(id) {
+  return BUILTIN_FILES.find((meta) => meta.id === id)
 }
 
 export function isBuiltinBankId(id) {
-  return Boolean(getBuiltinBank(id))
+  return Boolean(getBuiltinMeta(id))
 }
 
 export function wordbanksDir(dir) {
@@ -40,14 +63,17 @@ export function isValidBankId(id) {
 }
 
 export function listWordBanks(dir) {
-  const banks = BUILTIN_BANKS.map((bank) => ({
-    id: bank.id,
-    name: bank.name,
-    count: bank.entries.length,
-    source: 'builtin',
-    createdAt: null,
-    builtin: true,
-  }))
+  const banks = BUILTIN_FILES.map((meta) => {
+    const bank = loadBuiltin(meta)
+    return {
+      id: bank.id,
+      name: bank.name,
+      count: bank.entries.length,
+      source: 'builtin',
+      createdAt: null,
+      builtin: true,
+    }
+  })
   const folder = wordbanksDir(dir)
   let files = []
   try {
@@ -77,8 +103,8 @@ export function listWordBanks(dir) {
 }
 
 export function loadWordBank(dir, id) {
-  const builtin = getBuiltinBank(id || BUILTIN_BANK_ID)
-  if (builtin) return builtin
+  const meta = getBuiltinMeta(id || BUILTIN_BANK_ID)
+  if (meta) return loadBuiltin(meta)
   if (!isValidBankId(id)) return null
   const data = readJson(bankFile(dir, id), null)
   if (!data || !Array.isArray(data.entries)) return null

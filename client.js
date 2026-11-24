@@ -25,6 +25,18 @@ window.__ModuleLoader__.load({
       return unique.map((p) => (POS_LABELS[p] ? POS_LABELS[p] + ' ' + p + '.' : p)).join(' / ')
     }
 
+    function escapeRegExp(text) {
+      return String(text || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    }
+
+    /** Split a sentence around the target word for highlighting after grading. */
+    function splitByWord(text, word) {
+      const source = String(text || '')
+      const target = String(word || '')
+      if (!target) return [source]
+      return source.split(new RegExp('(' + escapeRegExp(target) + ')', 'gi'))
+    }
+
     const CSS = `
 /* Hallmark · component: english-gym panel · genre: editorial · theme: in-place (dsh tokens) · states: 8 · contrast: pass · v2.0.0
  * critique: the drill is a study desk — one sentence set in serif, one writing field, one action; feedback reads like a marked page.
@@ -289,6 +301,10 @@ window.__ModuleLoader__.load({
 .eg-word-foot { flex: 0 0 auto; display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 6px; padding-top: 10px; border-top: 1px solid var(--eg-line); }
 .eg-word-foot .eg-btn { padding: 0 10px; }
 .eg-word .eg-fb-ref { margin-top: 6px; font-size: 26px; text-align: center; }
+.eg-word .eg-eg { width: 100%; max-width: 520px; margin: 12px auto 0; padding: 10px 14px; border-radius: 10px; background: var(--eg-bg-2); text-align: center; }
+.eg-word .eg-eg-en { font: var(--eg-fs-md)/1.6 var(--eg-serif); color: var(--eg-ink); overflow-wrap: anywhere; }
+.eg-word .eg-eg-zh { margin-top: 4px; font-size: var(--eg-fs-sm); line-height: 1.6; color: var(--eg-ink-2); }
+.eg-eg-hit { background: none; color: var(--eg-accent-ink); font-weight: 700; }
 /* phrase drill: centred column */
 .eg-drill { max-width: 640px; min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; padding-top: 12px; }
 .eg-drill .eg-cap { justify-content: center; }
@@ -356,9 +372,10 @@ window.__ModuleLoader__.load({
 .eg-preview { margin-top: 12px; border: 1px solid var(--eg-line); border-radius: 10px; overflow: hidden; }
 .eg-preview-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; background: var(--eg-bg-2); font-size: var(--eg-fs-xs); color: var(--eg-ink-2); }
 .eg-preview-top strong { color: var(--eg-ink); }
-.eg-preview-row { display: flex; gap: 10px; padding: 7px 10px; border-top: 1px solid var(--eg-line); font-size: var(--eg-fs-xs); line-height: 1.5; }
+.eg-preview-row { display: flex; flex-wrap: wrap; gap: 10px; padding: 7px 10px; border-top: 1px solid var(--eg-line); font-size: var(--eg-fs-xs); line-height: 1.5; }
 .eg-preview-row .w { flex: 0 0 38%; font-weight: 650; overflow-wrap: anywhere; }
 .eg-preview-row .m { flex: 1 1 auto; color: var(--eg-ink-2); overflow-wrap: anywhere; }
+.eg-preview-row .ex { flex: 1 0 100%; color: var(--eg-ink-2); font-family: var(--eg-serif); font-style: italic; overflow-wrap: anywhere; }
 .eg-preview-errors { margin-top: 8px; padding: 8px 10px; border-radius: 8px; background: color-mix(in srgb, var(--eg-bad) 7%, transparent); border: 1px solid color-mix(in srgb, var(--eg-bad) 24%, transparent); }
 .eg-preview-errors .er { font-size: var(--eg-fs-xs); line-height: 1.55; color: var(--eg-bad); }
 .eg-import-foot { display: flex; gap: 8px; margin-top: 8px; }
@@ -1067,6 +1084,7 @@ window.__ModuleLoader__.load({
                     { className: 'eg-preview-row', key: i },
                     h('span', { className: 'w' }, item.word),
                     h('span', { className: 'm' }, item.meaning),
+                    item.example ? h('span', { className: 'ex' }, item.example) : null,
                   ),
                 ),
               ),
@@ -1079,6 +1097,28 @@ window.__ModuleLoader__.load({
                 : null,
             )
           : null,
+      )
+    }
+
+    // Blanked before answering; full sentence with the target highlighted after.
+    function ExampleBlock({ example, exampleZh, word, highlight }) {
+      const en = String(example || '')
+      const zh = String(exampleZh || '')
+      if (!en && !zh) return null
+      const parts = en && highlight && word ? splitByWord(en, word) : [en]
+      return h(
+        'div',
+        { className: 'eg-eg' + (highlight ? ' done' : '') },
+        en
+          ? h(
+              'div',
+              { className: 'eg-eg-en' },
+              parts.map((part, i) =>
+                i % 2 ? h('mark', { className: 'eg-eg-hit', key: i }, part) : h('span', { key: i }, part),
+              ),
+            )
+          : null,
+        zh ? h('div', { className: 'eg-eg-zh' }, zh) : null,
       )
     }
 
@@ -1404,6 +1444,7 @@ window.__ModuleLoader__.load({
         React.createElement('div', { className: 'eg-word-main' },
         item.pos ? React.createElement('div', { className: 'eg-pos', title: '词性提示' }, formatPos(item.pos)) : null,
         React.createElement('div', { className: 'eg-zh' }, item.zh),
+        !answered ? React.createElement(ExampleBlock, { example: item.example }) : null,
         React.createElement('div', { className: 'eg-letters' + (answered ? ' answered' : ''), style: { gap: letterGap } }, cellsNodes),
         error ? React.createElement('div', { className: 'eg-err' }, error) : null,
         answered
@@ -1422,16 +1463,32 @@ window.__ModuleLoader__.load({
                   React.createElement('span', { className: 'lbl' }, '正确拼写'),
                   res.reference,
                 ),
+                React.createElement(ExampleBlock, {
+                  example: res.example,
+                  exampleZh: res.exampleZh,
+                  word: res.reference,
+                  highlight: true,
+                }),
               )
             : React.createElement(
                 'div',
                 { className: 'eg-fb bad' },
                 revealed
                   ? React.createElement(
-                      'div',
-                      { className: 'eg-fb-ref' },
-                      React.createElement('span', { className: 'lbl' }, '正确拼写'),
-                      res.reference,
+                      React.Fragment,
+                      null,
+                      React.createElement(
+                        'div',
+                        { className: 'eg-fb-ref' },
+                        React.createElement('span', { className: 'lbl' }, '正确拼写'),
+                        res.reference,
+                      ),
+                      React.createElement(ExampleBlock, {
+                        example: res.example,
+                        exampleZh: res.exampleZh,
+                        word: res.reference,
+                        highlight: true,
+                      }),
                     )
                   : null,
               )

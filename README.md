@@ -4,7 +4,7 @@ DSH（DeepSeek Harness）的英语练习挂件，常驻在对话输入框下方�
 
 ## 功能
 
-- **单词训练**：内置 CET4、英语六级、雅思、托福四套静态词库（共 24,120 词，默认 CET4）。看中文释义和词性提示按字母格拼写，纯本地判分、不消耗模型；拼错会标红对应字母并支持原地重试，拼对后按 `Enter` 直接下一题。
+- **单词训练**：内置 CET4、英语六级、雅思、托福四套静态词库（共 24,120 词，默认 CET4）。看中文释义和词性提示按字母格拼写，纯本地判分、不消耗模型；答题前会显示一条目标词挖空的英文例句（`____`），判分后展示完整例句、目标词高亮和中文翻译；拼错会标红对应字母并支持原地重试，拼对后按 `Enter` 直接下一题。
 - **自定义词库**：支持导入自己的词表（CSV / TSV / TXT / JSON），导入前可预览解析结果与报错行号，并在单词训练顶部随时切换。
 - **短语训练**：由模型按设定难度（默认 CEFR B1）和内容方向出中文句子，你写英文翻译，提交后给出评分、参考译文和简短提示。答错的句子会自动进入复习队列，答对后移出。
 - **今日报告**：每天在设定时间后自动生成一篇 180–240 词的英文短文，附带 3 道翻译小题，支持手动刷新换一篇。
@@ -65,18 +65,49 @@ plugin_manager install_bundle --target /绝对路径/dsh-english-gym
 推荐使用 **CSV / TSV**（UTF-8，兼容 BOM，Excel 另存为「CSV UTF-8」即可）：
 
 ```csv
-word,meaning,pos,phonetic,example
-abandon,放弃,v,əˈbændən,He abandoned his car.
-accommodate,容纳；适应,v,əˈkɒmədeɪt,The room can accommodate six people.
+word,meaning,pos,example,exampleZh
+abandon,放弃,v,They had to abandon the plan.,他们不得不放弃这个计划。
+accommodate,容纳；适应,v,The room can accommodate six people.,这个房间可以容纳六个人。
 ```
 
-- 必填列为 `word`（英文单词）和 `meaning`（中文释义）；`pos`（词性，如 `n` / `v` / `adj`）、`phonetic`、`example` 均为可选。
-- 表头可省略（默认前两列为单词、释义），也兼容中文表头 `单词,释义,词性,音标,例句`。
+- 必填列为 `word`（英文单词）和 `meaning`（中文释义）；`pos`（词性，如 `n` / `v` / `adj`）、`example`（英文例句）、`exampleZh`（例句中文翻译）均为可选。
+- 例句会用于练习：答题前只显示目标词挖空的英文句（挖空不安全时不显示），判分后显示完整例句和翻译。
+- 表头可省略（默认前两列为单词、释义），也兼容中文表头 `单词,释义,词性,例句,例句翻译`。
 - **TXT**：每行一条，`abandon<TAB>放弃` 或 `abandon 放弃`。
-- **JSON**：支持 `[{"word":"abandon","meaning":"放弃","pos":"v"}]`，也兼容 `[["abandon","放弃"]]` 以及 qwerty-learner 的 `{name, trans:[...]}` 格式。
+- **JSON**：支持 `[{"word":"abandon","meaning":"放弃","pos":"v","example":"...","exampleZh":"..."}]`，也兼容 `[["abandon","放弃","v","例句","例句翻译"]]`（第 4/5 位为例句/翻译）以及 qwerty-learner 的 `{name, trans:[...]}` 格式。
 - 由于采用逐字母拼写，词条须为单个英文单词（允许包含 `-` 和 `'`）；短语或非法行会自动跳过并在预览中提示。
 
 导入的词库按独立 JSON 文件存放在 `$DSH_HOME/english-gym/wordbanks/`，不影响内置词库。
+
+## 内置词库与例句数据
+
+内置词库以 JSON 保存在 `src/features/word/data/*.json`，每个文件为 `{name, source, entries}`，条目形如：
+
+```json
+{"word":"abandon","meaning":"放弃","pos":"v","example":"They had to abandon the plan.","exampleZh":"他们不得不放弃这个计划。"}
+```
+
+`example` / `exampleZh` 可缺省；缺失时界面自动省略例句，不影响练习。
+
+例句由开发者用脚本批量生成（运行时完全离线，不调用模型）：
+
+```bash
+# 先小批量试跑，确认接口与质量
+EXAMPLE_LLM_BASE_URL=https://api.deepseek.com/v1 \
+EXAMPLE_LLM_API_KEY=sk-... \
+EXAMPLE_LLM_MODEL=deepseek-chat \
+npm run gen:examples -- --bank cet4 --limit 20
+
+# 全量生成；中断后可重跑，只补缺失项
+npm run gen:examples
+
+# 校验结构与覆盖率
+npm run verify:data -- --min-coverage 95
+```
+
+- 接口需兼容 OpenAI `POST /chat/completions`；脚本支持 `--batch`、`--concurrency`、`--retry-failed`、`--force`，失败词写入 `scripts/example-failures.jsonl`。
+- 极短功能词（如 `be` / `in`）可用 `scripts/overrides.json` 手工兜底，格式：`{"cet4":{"be":{"example":"...","exampleZh":"..."}}}`。
+- 修改内置数据后需要重载宿主（`set_plugin(enabled: true)`）。
 
 ## 实现与目录结构
 
@@ -93,10 +124,11 @@ src/
   features/
     phrase/             # 短语训练：出题、判分、错题复习
     word/               # 单词训练：词库管理、导入解析
-      data/             # 内置 CET4 / 六级 / 雅思 / 托福静态词库
+      data/             # 内置词库 JSON（CET4 / 六级 / 雅思 / 托福，含例句）
     report/             # 每日英文报告生成与兜底
     activity/           # 数据看板：按天汇总学习记录、日历热力图数据
     settings/           # 看板设置与内容方向管理
+scripts/                # 开发者脚本：批量生成例句、词库校验
 client.js               # 前端挂件（dock 入口 + overlay 浮窗）
 index.js                # DSH 插件入口
 ```
@@ -107,7 +139,7 @@ index.js                # DSH 插件入口
 
 ## License
 
-MIT。内置词库（`src/features/word/data/*.js`）基于 [KyleBing/english-vocabulary](https://github.com/KyleBing/english-vocabulary) 的 CET4、英语六级、雅思和托福词表（BSD-3-Clause），详见 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)。
+MIT。内置词库（`src/features/word/data/*.json`）基于 [KyleBing/english-vocabulary](https://github.com/KyleBing/english-vocabulary) 的 CET4、英语六级、雅思和托福词表（BSD-3-Clause），例句与中文翻译由本项目生成，详见 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)。
 
 ---
 

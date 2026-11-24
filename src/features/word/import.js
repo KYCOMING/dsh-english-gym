@@ -19,7 +19,8 @@ const HEADER_ALIASES = {
   word: ['word', 'en', 'english', 'term', 'spelling', '单词', '英文', '英语', '词汇'],
   meaning: ['meaning', 'zh', 'cn', 'chinese', 'definition', 'translation', 'trans', '释义', '中文', '翻译', '意思', '词义'],
   phonetic: ['phonetic', 'ipa', 'pronunciation', '音标', '发音'],
-  example: ['example', 'sentence', '例句'],
+  example: ['example', 'sentence', 'example_en', 'en_example', '英文例句', '例句'],
+  exampleZh: ['examplezh', 'example_zh', 'example zh', 'zh_example', 'sentencezh', 'sentence_zh', 'sentence zh', '例句翻译', '例句中文', '句意'],
   pos: ['pos', 'type', 'partofspeech', 'part of speech', '词性', '词类'],
 }
 
@@ -81,7 +82,13 @@ function looksLikeHeader(fields) {
 function headerMapping(fields) {
   const normalized = fields.map((f) => normalizeWord(f).toLowerCase())
   const find = (key) => normalized.findIndex((f) => HEADER_ALIASES[key].includes(f))
-  return { word: find('word'), meaning: find('meaning'), pos: find('pos') }
+  return {
+    word: find('word'),
+    meaning: find('meaning'),
+    pos: find('pos'),
+    example: find('example'),
+    exampleZh: find('exampleZh'),
+  }
 }
 
 /** Choose a delimiter from the first meaningful line: tab wins over comma. */
@@ -119,15 +126,21 @@ function parseJson(content) {
     let word = ''
     let meaning = ''
     let pos = ''
+    let example = ''
+    let exampleZh = ''
     if (Array.isArray(row)) {
       word = normalizeWord(row[0])
       meaning = normalizeMeaning(row[1])
       pos = normalizeWord(row[2] || '')
+      example = normalizeMeaning(row[3] || '').slice(0, 300)
+      exampleZh = normalizeMeaning(row[4] || '').slice(0, 160)
     } else if (row && typeof row === 'object') {
       word = normalizeWord(row.word ?? row.en ?? row.name ?? row.term ?? '')
       const rawMeaning = row.meaning ?? row.zh ?? row.trans ?? row.definition ?? row.translation ?? ''
       meaning = normalizeMeaning(Array.isArray(rawMeaning) ? rawMeaning.join('；') : rawMeaning)
       pos = normalizeWord(row.pos ?? row.type ?? row.partOfSpeech ?? row.part_of_speech ?? '')
+      example = normalizeMeaning(row.example ?? row.sentence ?? row.example_en ?? '').slice(0, 300)
+      exampleZh = normalizeMeaning(row.exampleZh ?? row.example_zh ?? row.zhExample ?? row.sentenceZh ?? '').slice(0, 160)
     }
     if (!word || !meaning) {
       skipped.push({ line: index + 1, reason: '缺少单词或释义', raw: JSON.stringify(row).slice(0, 120) })
@@ -137,7 +150,7 @@ function parseJson(content) {
       skipped.push({ line: index + 1, reason: '不是单个英文单词', raw: word.slice(0, 60) })
       return
     }
-    entries.push({ word, meaning: meaning.slice(0, 300), pos: pos.slice(0, 24) })
+    entries.push({ word, meaning: meaning.slice(0, 300), pos: pos.slice(0, 24), example, exampleZh })
   })
   return { format: 'json', delimiter: '', hasHeader: false, entries, skipped }
 }
@@ -148,7 +161,7 @@ function parseText(content) {
   const entries = []
   const skipped = []
   let hasHeader = false
-  let mapping = { word: 0, meaning: 1, pos: -1 }
+  let mapping = { word: 0, meaning: 1, pos: -1, example: -1, exampleZh: -1 }
   let firstDataLineSeen = false
 
   lines.forEach((line, index) => {
@@ -169,7 +182,7 @@ function parseText(content) {
         hasHeader = true
         mapping = headerMapping(fields)
         if (mapping.word < 0 || mapping.meaning < 0) {
-          mapping = { word: 0, meaning: 1, pos: -1 }
+          mapping = { word: 0, meaning: 1, pos: -1, example: -1, exampleZh: -1 }
         }
         return
       }
@@ -178,6 +191,8 @@ function parseText(content) {
     const word = normalizeWord(fields[mapping.word] ?? '')
     const meaning = normalizeMeaning(fields[mapping.meaning] ?? '')
     const pos = mapping.pos >= 0 ? normalizeWord(fields[mapping.pos] ?? '').slice(0, 24) : ''
+    const example = mapping.example >= 0 ? normalizeMeaning(fields[mapping.example] ?? '').slice(0, 300) : ''
+    const exampleZh = mapping.exampleZh >= 0 ? normalizeMeaning(fields[mapping.exampleZh] ?? '').slice(0, 160) : ''
     if (!word || !meaning) {
       skipped.push({ line: index + 1, reason: '缺少单词或释义', raw: line.slice(0, 120) })
       return
@@ -186,7 +201,7 @@ function parseText(content) {
       skipped.push({ line: index + 1, reason: '不是单个英文单词', raw: word.slice(0, 60) })
       return
     }
-    entries.push({ word, meaning: meaning.slice(0, 300), pos })
+    entries.push({ word, meaning: meaning.slice(0, 300), pos, example, exampleZh })
   })
 
   return {

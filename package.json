@@ -1,7 +1,11 @@
 {
   "name": "dsh-english-gym",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "type": "module",
+  "scripts": {
+    "gen:examples": "node scripts/gen-examples.mjs",
+    "verify:data": "node scripts/verify-data.mjs"
+  },
   "description": "English Gym — a lightweight, in-DSH English practice widget: phrase translation + static/custom word-bank spelling drill + daily report with selectable content directions. No voice.",
   "license": "MIT",
   "author": "KYCOMING",
