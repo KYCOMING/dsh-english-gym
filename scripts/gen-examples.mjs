@@ -17,7 +17,7 @@ import { isCleanExample } from '../src/shared/text.js'
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const DATA_DIR = path.join(ROOT, 'src/features/word/data')
 const FAILURE_FILE = path.join(ROOT, 'scripts/example-failures.jsonl')
-const LOCK_FILE = path.join(ROOT, 'scripts/.gen.lock')
+const LOCK_DIR = path.join(ROOT, 'scripts')
 const OVERRIDES_FILE = path.join(ROOT, 'scripts/overrides.json')
 
 const BANKS = {
@@ -39,11 +39,12 @@ let jsonMode = true
 let halted = false
 let batchesDone = 0
 let consecutiveBatchErrors = 0
+const heldLocks = new Set()
 
 main().catch((error) => {
   console.error((error && error.stack) || error)
   flushAll()
-  releaseLock()
+  releaseAllLocks()
   process.exit(1)
 })
 
@@ -52,27 +53,32 @@ async function main() {
   for (const name of names) {
     if (!BANKS[name]) fail(`unknown bank: ${name} (use cet4|cet6|ielts|toefl|all)`)
   }
-  if (!args.dryRun) {
-    if (!API_KEY || !MODEL) fail('set EXAMPLE_LLM_API_KEY and EXAMPLE_LLM_MODEL (or use --dry-run)')
-    acquireLock()
+  if (!args.dryRun && (!API_KEY || !MODEL)) {
+    fail('set EXAMPLE_LLM_API_KEY and EXAMPLE_LLM_MODEL (or use --dry-run)')
   }
   process.on('SIGINT', () => {
     console.log('\ninterrupted, flushing…')
     flushAll()
-    releaseLock()
+    releaseAllLocks()
     process.exit(130)
   })
-  process.on('exit', releaseLock)
+  process.on('exit', releaseAllLocks)
 
   const totals = { ok: 0, failed: 0 }
   for (const name of names) {
-    const stats = await processBank(name)
-    totals.ok += stats.ok
-    totals.failed += stats.failed
+    // One lock per bank: separate processes can generate cet6, ielts and toefl
+    // in parallel without touching the same JSON file.
+    if (!args.dryRun) acquireLock(name)
+    try {
+      const stats = await processBank(name)
+      totals.ok += stats.ok
+      totals.failed += stats.failed
+    } finally {
+      if (!args.dryRun) releaseLock(name)
+    }
     if (halted) break
   }
   flushAll()
-  releaseLock()
   console.log(`done: ok=${totals.ok} failed=${totals.failed}${args.dryRun ? ' (dry-run)' : ''}`)
   if (halted) process.exit(1)
 }
@@ -374,38 +380,52 @@ function readFailureWords(bank) {
   return words
 }
 
-function acquireLock() {
+function lockFile(name) {
+  return path.join(LOCK_DIR, `.gen-${name}.lock`)
+}
+
+function acquireLock(name) {
+  const file = lockFile(name)
   for (let attempt = 0; attempt < 2; attempt += 1) {
     try {
-      const fd = fs.openSync(LOCK_FILE, 'wx')
+      const fd = fs.openSync(file, 'wx')
       fs.writeFileSync(fd, String(process.pid))
       fs.closeSync(fd)
+      heldLocks.add(name)
       return
     } catch (error) {
       if (error.code !== 'EEXIST') throw error
       let pid = 0
       try {
-        pid = Number(fs.readFileSync(LOCK_FILE, 'utf8').trim())
+        pid = Number(fs.readFileSync(file, 'utf8').trim())
       } catch {
         pid = 0
       }
-      if (pid && isProcessAlive(pid)) fail(`another run is active (pid ${pid}); remove ${LOCK_FILE} if stale`)
+      if (pid && isProcessAlive(pid)) {
+        fail(`another run is active for ${name} (pid ${pid}); remove ${file} if stale`)
+      }
       try {
-        fs.unlinkSync(LOCK_FILE)
+        fs.unlinkSync(file)
       } catch {
         /* ignore */
       }
     }
   }
-  throw new Error('could not acquire generation lock')
+  throw new Error(`could not acquire generation lock for ${name}`)
 }
 
-function releaseLock() {
+function releaseLock(name) {
+  if (!name) return
+  heldLocks.delete(name)
   try {
-    fs.unlinkSync(LOCK_FILE)
+    fs.unlinkSync(lockFile(name))
   } catch {
     /* ignore */
   }
+}
+
+function releaseAllLocks() {
+  for (const name of [...heldLocks]) releaseLock(name)
 }
 
 function isProcessAlive(pid) {

@@ -105,7 +105,8 @@ npm run gen:examples
 npm run verify:data -- --min-coverage 95
 ```
 
-- 接口需兼容 OpenAI `POST /chat/completions`；脚本支持 `--batch`、`--concurrency`、`--retry-failed`、`--force`，失败词写入 `scripts/example-failures.jsonl`。
+- 接口需兼容 OpenAI `POST /chat/completions`；脚本支持 `--bank cet6,ielts,toefl`、`--batch`、`--concurrency`、`--retry-failed`、`--force`，失败词写入 `scripts/example-failures.jsonl`。
+- 每个词库使用独立锁，可以直接起多个进程并行生成（例如分别跑 `--bank cet6` / `--bank ielts` / `--bank toefl`）。
 - 极短功能词（如 `be` / `in`）可用 `scripts/overrides.json` 手工兜底，格式：`{"cet4":{"be":{"example":"...","exampleZh":"..."}}}`。
 - 修改内置数据后需要重载宿主（`set_plugin(enabled: true)`）。
 
