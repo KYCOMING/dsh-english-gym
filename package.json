@@ -1,7 +1,6 @@
 {
   "name": "dsh-english-gym",
   "version": "0.5.0",
-  "private": true,
   "type": "module",
   "description": "English Gym — a lightweight, in-DSH English practice widget: phrase translation + static/custom word-bank spelling drill + daily report with selectable content directions. No voice.",
   "license": "MIT",
@@ -13,6 +12,10 @@
   },
   "bugs": {
     "url": "https://github.com/KYCOMING/dsh-english-gym/issues"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
   },
   "engines": {
     "dsh": ">=0.2.3-alpha.2"
