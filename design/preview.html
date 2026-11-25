@@ -190,63 +190,161 @@
   100% { opacity: 0; transform: translate(calc(-50% + var(--dx, 0px)), calc(-50% + var(--dy, 0px))) rotate(calc(var(--r0, 0deg) + var(--rot, 360deg))) scale(1); }
 }
 /* ===== settings ===== */
-.eg-settings { display: flex; flex-direction: column; gap: 20px; }
-.eg-setting-block { padding-bottom: 20px; border-bottom: 1px solid var(--eg-line); }
-.eg-setting-block:last-child { padding-bottom: 0; border-bottom: none; }
-.eg-setting-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
-.eg-setting-title { font-size: var(--eg-fs-md); font-weight: 650; color: var(--eg-ink); line-height: 1.35; }
-.eg-setting-desc { margin-top: 4px; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); line-height: 1.6; }
+.eg-settings {
+  container-type: inline-size;
+  display: flex; flex-direction: column; gap: 18px;
+}
+.eg-setting-section { display: flex; flex-direction: column; gap: 8px; }
+.eg-section-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 0 2px; min-height: 20px;
+}
+.eg-section-label {
+  font-size: var(--eg-fs-xs); font-weight: 650; color: var(--eg-ink-2);
+  letter-spacing: .03em; line-height: 1.2;
+}
+.eg-active-badge {
+  display: inline-flex; align-items: center; gap: 6px; min-width: 0; max-width: 68%;
+  padding: 2px 9px; border-radius: 999px;
+  background: var(--eg-bg-2); border: 1px solid var(--eg-line);
+  font-size: 11px; font-weight: 600; color: var(--eg-ink); line-height: 1.4;
+}
+.eg-active-badge::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%; flex: 0 0 auto;
+  background: var(--eg-accent);
+}
+.eg-active-badge span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.eg-setting-card {
+  border: 1px solid var(--eg-line); border-radius: 12px; background: var(--eg-bg);
+  overflow: hidden;
+}
+.eg-setting-row { padding: 14px 16px; }
+.eg-setting-row + .eg-setting-row { border-top: 1px solid var(--eg-line); }
+.eg-setting-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.eg-setting-info { min-width: 0; flex: 1 1 auto; }
+.eg-setting-title { font-size: 14px; font-weight: 600; color: var(--eg-ink); line-height: 1.35; }
+.eg-setting-desc { margin-top: 3px; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); line-height: 1.55; }
+.eg-setting-desc.eg-lead { margin-top: 0; }
 .eg-switch {
   appearance: none; -webkit-appearance: none; position: relative; flex: 0 0 auto;
-  width: 42px; height: 24px; padding: 2px; border: 1px solid var(--eg-line-2); border-radius: 999px;
-  background: var(--eg-bg-2); cursor: pointer; transition: background var(--eg-dur) ease, border-color var(--eg-dur) ease;
+  width: 40px; height: 22px; padding: 2px; border: 1px solid var(--eg-line-2); border-radius: 999px;
+  background: var(--eg-bg-2); cursor: pointer;
+  transition: background var(--eg-dur) ease, border-color var(--eg-dur) ease;
 }
 .eg-switch::after {
-  content: ''; display: block; width: 18px; height: 18px; border-radius: 50%;
-  background: var(--eg-bg); box-shadow: 0 1px 3px rgba(17, 22, 31, .22);
+  content: ''; display: block; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--eg-bg); box-shadow: 0 1px 2px rgba(17, 22, 31, .24);
   transition: transform var(--eg-dur) ease;
 }
 .eg-switch[aria-checked="true"] { background: var(--eg-accent); border-color: var(--eg-accent); }
 .eg-switch[aria-checked="true"]::after { transform: translateX(18px); background: var(--eg-on-accent); }
+.eg-switch:disabled { opacity: .55; cursor: not-allowed; }
 .eg-switch:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }
-.eg-retry-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 14px; }
-.eg-retry-name { font-size: var(--eg-fs-md); font-weight: 650; color: var(--eg-ink); line-height: 1.35; }
-.eg-stepper { display: flex; align-items: center; gap: 4px; flex: 0 0 auto; }
-.eg-stepbtn {
-  appearance: none; -webkit-appearance: none; width: 30px; height: 30px; padding: 0;
-  border: 1px solid var(--eg-line); border-radius: 8px; background: var(--eg-bg-2);
-  color: var(--eg-ink); font: 600 16px/1 var(--eg-font); cursor: pointer;
+.eg-setting-sub {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  margin-top: 12px; padding: 10px 12px; border-radius: 9px; background: var(--eg-bg-2);
 }
-.eg-stepbtn:hover:not(:disabled) { border-color: var(--eg-accent); color: var(--eg-accent-ink); }
-.eg-stepbtn:disabled { opacity: .4; cursor: default; }
-.eg-stepbtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
-.eg-stepper-value { min-width: 24px; text-align: center; font: 700 var(--eg-fs-sm)/1 var(--eg-font); color: var(--eg-ink); }
-.eg-direction-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+.eg-sub-title { font-size: var(--eg-fs-sm); font-weight: 600; color: var(--eg-ink); line-height: 1.35; }
+.eg-stepper {
+  display: inline-flex; align-items: center; flex: 0 0 auto;
+  border: 1px solid var(--eg-line); border-radius: 8px; background: var(--eg-bg); overflow: hidden;
+}
+.eg-stepbtn {
+  appearance: none; -webkit-appearance: none; width: 28px; height: 28px; padding: 0;
+  border: none; background: transparent; color: var(--eg-ink);
+  font: 600 15px/1 var(--eg-font); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background var(--eg-dur) ease, color var(--eg-dur) ease;
+}
+.eg-stepbtn:hover:not(:disabled) { background: var(--eg-bg-2); }
+.eg-stepbtn:disabled { opacity: .35; cursor: default; }
+.eg-stepbtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: -2px; }
+.eg-stepper-value {
+  min-width: 28px; height: 28px; padding: 0 4px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-left: 1px solid var(--eg-line); border-right: 1px solid var(--eg-line);
+  font: 650 var(--eg-fs-sm)/1 var(--eg-font); font-variant-numeric: tabular-nums; color: var(--eg-ink);
+}
+.eg-direction-list {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; margin-top: 12px;
+}
+@container (min-width: 440px) {
+  .eg-direction-list { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+}
+@container (max-width: 279px) {
+  .eg-direction-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 .eg-direction {
-  appearance: none; -webkit-appearance: none; text-align: left; min-height: 36px; padding: 8px 10px;
-  border: 1px solid var(--eg-line); border-radius: var(--eg-r-sm); background: transparent;
-  color: var(--eg-ink-2); font: 500 var(--eg-fs-sm)/1.35 var(--eg-font); cursor: pointer;
+  appearance: none; -webkit-appearance: none; text-align: center;
+  min-height: 34px; padding: 6px 8px;
+  border: 1px solid var(--eg-line); border-radius: 8px; background: var(--eg-bg);
+  color: var(--eg-ink-2); font: 500 12.5px/1.3 var(--eg-font); cursor: pointer;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   transition: background var(--eg-dur) ease, border-color var(--eg-dur) ease, color var(--eg-dur) ease;
 }
-.eg-direction:hover { background: var(--eg-bg-2); color: var(--eg-ink); }
-.eg-direction.active { border-color: var(--eg-accent); background: color-mix(in srgb, var(--eg-accent) 9%, transparent); color: var(--eg-accent-ink); font-weight: 650; }
-.eg-direction:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
-.eg-custom-list { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
-.eg-custom-item { display: flex; align-items: center; gap: 8px; min-height: 34px; padding: 6px 8px 6px 10px; border: 1px solid var(--eg-line); border-radius: var(--eg-r-sm); background: var(--eg-bg-2); }
-.eg-custom-name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--eg-fs-sm); color: var(--eg-ink); }
-.eg-iconbtn {
-  appearance: none; -webkit-appearance: none; flex: 0 0 auto; width: 24px; height: 24px; padding: 0;
-  border: 1px solid transparent; border-radius: 7px; background: transparent; color: var(--eg-ink-2);
-  font: 600 var(--eg-fs-md)/1 var(--eg-font); cursor: pointer;
+.eg-direction:hover:not(.active):not(:disabled) {
+  background: var(--eg-bg-2); border-color: var(--eg-line-2); color: var(--eg-ink);
 }
-.eg-iconbtn:hover { border-color: var(--eg-line); background: var(--eg-bg); color: var(--eg-bad); }
-.eg-iconbtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
-.eg-addrow { display: flex; gap: 8px; margin-top: 12px; }
-.eg-addrow .eg-text { flex: 1 1 auto; min-width: 0; }
-.eg-addrow .eg-btn { min-width: 64px; }
-.eg-settings-note { margin-top: 10px; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); line-height: 1.55; }
-.eg-settings-error { margin-top: 10px; color: var(--eg-bad); font-size: var(--eg-fs-xs); line-height: 1.55; }
-.eg-settings-loading { color: var(--eg-ink-2); font-size: var(--eg-fs-sm); }
+.eg-direction.active {
+  border-color: var(--eg-accent); background: var(--eg-accent);
+  color: var(--eg-on-accent); font-weight: 600;
+}
+.eg-direction:disabled { opacity: .6; cursor: not-allowed; }
+.eg-direction:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }
+.eg-custom-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.eg-custom-count {
+  font-size: 11px; color: var(--eg-ink-2); font-variant-numeric: tabular-nums; flex: 0 0 auto;
+}
+.eg-custom-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+.eg-custom-chip {
+  display: inline-flex; align-items: stretch; max-width: 100%;
+  border: 1px solid var(--eg-line); border-radius: 8px; background: var(--eg-bg-2);
+  color: var(--eg-ink); overflow: hidden;
+  transition: background var(--eg-dur) ease, border-color var(--eg-dur) ease, color var(--eg-dur) ease;
+}
+.eg-custom-chip:hover { border-color: var(--eg-line-2); }
+.eg-custom-chip.active {
+  background: var(--eg-accent); border-color: var(--eg-accent); color: var(--eg-on-accent);
+}
+.eg-custom-select {
+  appearance: none; -webkit-appearance: none; min-width: 0;
+  padding: 6px 9px 6px 10px; border: none; background: transparent; color: inherit;
+  font: 500 12.5px/1.3 var(--eg-font); cursor: pointer;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.eg-custom-chip.active .eg-custom-select { font-weight: 600; }
+.eg-custom-select:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: -2px; }
+.eg-custom-remove {
+  appearance: none; -webkit-appearance: none; flex: 0 0 auto;
+  width: 26px; padding: 0; border: none; border-left: 1px solid var(--eg-line);
+  background: transparent; color: var(--eg-ink-2);
+  font: 600 14px/1 var(--eg-font); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background var(--eg-dur) ease, color var(--eg-dur) ease;
+}
+.eg-custom-remove:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--eg-bad) 10%, transparent); color: var(--eg-bad);
+}
+.eg-custom-chip.active .eg-custom-remove {
+  border-left-color: color-mix(in srgb, var(--eg-on-accent) 22%, transparent);
+  color: color-mix(in srgb, var(--eg-on-accent) 80%, transparent);
+}
+.eg-custom-chip.active .eg-custom-remove:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--eg-on-accent) 16%, transparent); color: var(--eg-on-accent);
+}
+.eg-custom-remove:disabled, .eg-custom-select:disabled { opacity: .6; cursor: not-allowed; }
+.eg-custom-remove:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: -2px; }
+.eg-addrow { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+.eg-addrow .eg-text { flex: 1 1 auto; min-width: 0; height: 34px; padding: 0 11px; border-radius: 8px; }
+.eg-addrow .eg-btn { min-height: 34px; height: 34px; min-width: 64px; padding: 0 14px; border-radius: 8px; }
+.eg-addrow .eg-btn:disabled { opacity: .4; }
+.eg-settings-error {
+  padding: 9px 12px; border-radius: 9px;
+  background: color-mix(in srgb, var(--eg-bad) 7%, transparent);
+  border: 1px solid color-mix(in srgb, var(--eg-bad) 24%, transparent);
+  color: var(--eg-bad); font-size: var(--eg-fs-xs); line-height: 1.55;
+}
+.eg-settings-loading { display: flex; align-items: center; gap: 9px; color: var(--eg-ink-2); font-size: var(--eg-fs-sm); padding: 8px 0; }
 
 @media (prefers-reduced-motion: reduce) { .eg-confetti { display: none; } }
 
@@ -492,7 +590,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC"
     <div class="frame"><div class="tag">今日报告</div><div class="stage"><div class="eg-panel tall" style="width:352px"><div class="eg-head"><span class="eg-grip">⠿</span><div class="eg-tabs"><button class="eg-tab">单词训练</button><button class="eg-tab">短语训练</button><button class="eg-tab active">今日报告</button><button class="eg-tab">看板</button><button class="eg-tab">设置</button></div><div class="eg-head-right"><button class="eg-close">✕</button></div></div><div class="eg-body"><div class="eg-report"><div class="r-top"><h2 class="eg-rtitle">AI Helps Small Teams Work Smarter</h2></div><div class="eg-rmeta">2026-11-23 · B1</div><p class="eg-rsum">AI 工具正在改变小团队的协作方式：把重复工作交给模型，人专注判断与沟通。</p><p class="eg-rp">Small teams are using AI tools to take over repetitive work. Instead of spending hours on drafts and summaries, people now review what the model produces and spend more time on decisions.</p><p class="eg-rp">The change is not about replacing people. It is about giving each person a little more room to think, while the routine tasks move faster in the background.</p><div class="eg-practice"><div class="eg-ptitle">练一练</div><div class="eg-q reveal"><div class="eg-q-head"><span class="eg-q-n">1</span><span class="eg-q-zh">小团队正在用 AI 工具处理重复工作。</span></div><button class="eg-q-toggle">收起参考</button><div class="eg-q-en">Small teams are using AI tools to handle repetitive work.</div></div><div class="eg-q"><div class="eg-q-head"><span class="eg-q-n">2</span><span class="eg-q-zh">这不是要取代人，而是让人有更多思考的空间。</span></div><button class="eg-q-toggle">看参考</button><div class="eg-q-en">This is not about replacing people, but giving them more room to think.</div></div></div></div></div><div class="eg-resize"></div></div></div></div>
     <div class="frame"><div class="tag">单词训练 · 宽面板</div><div class="stage wide"><div class="eg-panel wide-panel"><div class="eg-head"><span class="eg-grip">⠿</span><div class="eg-tabs"><button class="eg-tab active">单词训练</button><button class="eg-tab">短语训练</button><button class="eg-tab">今日报告</button><button class="eg-tab">看板</button><button class="eg-tab">设置</button></div><div class="eg-head-right"><button class="eg-close">✕</button></div></div><div class="eg-body"><div class="eg-word"><div class="eg-bankbar" data-nodrag="true"><span class="eg-banklabel">词库</span><select class="eg-select"><option>内置 · CET4（4535）</option><option>内置 · 英语六级（3990）</option><option>内置 · 雅思（5238）</option><option>内置 · 托福（10357）</option></select><button class="eg-bankbtn"><span class="eg-plus">+</span>导入</button></div><div class="eg-word-main"><div class="eg-pos">名词 n.</div><div class="eg-zh">煤，煤块</div><div class="eg-letters"><input class="eg-letter" value="c"><input class="eg-letter" value="o"><input class="eg-letter" value="a"><input class="eg-letter" value="l"></div></div><div class="eg-word-foot"><button class="eg-btn primary">提交</button><button class="eg-btn ghost">换一个</button><span class="eg-kbd"><kbd>↵</kbd></span></div></div></div></div><div class="eg-resize"></div></div></div></div>
     <div class="frame"><div class="tag">单词训练 · 答错</div><div class="stage"><div class="eg-panel demo" style="width:352px"><div class="eg-head"><span class="eg-grip">⠿</span><div class="eg-tabs"><button class="eg-tab active">单词训练</button><button class="eg-tab">短语训练</button><button class="eg-tab">今日报告</button><button class="eg-tab">看板</button><button class="eg-tab">设置</button></div><div class="eg-head-right"><button class="eg-close">✕</button></div></div><div class="eg-body"><div class="eg-word"><div class="eg-bankbar" data-nodrag="true"><span class="eg-banklabel">词库</span><select class="eg-select"><option>内置 · CET4（4535）</option><option>内置 · 英语六级（3990）</option><option>内置 · 雅思（5238）</option><option>内置 · 托福（10357）</option></select><button class="eg-bankbtn"><span class="eg-plus">+</span>导入</button></div><div class="eg-word-main"><div class="eg-pos">形容词 adj.</div><div class="eg-zh">明显的</div><div class="eg-letters answered"><input class="eg-letter bad" value="o"><input class="eg-letter bad" value="b"><input class="eg-letter bad" value="v"><input class="eg-letter bad" value="e"><input class="eg-letter bad" value="r"><input class="eg-letter bad" value="l"><input class="eg-letter bad" value="s"></div><div class="eg-fb bad"></div></div><div class="eg-word-foot"><button class="eg-btn primary">再试一次</button><button class="eg-btn">显示答案</button><button class="eg-btn">下一个</button></div></div></div><div class="eg-resize"></div></div></div></div>
-    <div class="frame" id="frame-settings"><div class="tag">设置</div><div class="stage"><div class="eg-panel tall" style="width:352px;height:1000px"><div class="eg-head"><span class="eg-grip">⠿</span><div class="eg-tabs"><button class="eg-tab">单词训练</button><button class="eg-tab">短语训练</button><button class="eg-tab">今日报告</button><button class="eg-tab">看板</button><button class="eg-tab active">设置</button></div><div class="eg-head-right"><button class="eg-close">✕</button></div></div><div class="eg-body"><div class="eg-settings"><div class="eg-setting-block"><div class="eg-setting-head"><div><div class="eg-setting-title">庆祝效果</div><div class="eg-setting-desc">答对时从四周喷射彩带。</div></div><button class="eg-switch" role="switch" aria-checked="true" aria-label="彩带庆祝"></button></div></div><div class="eg-setting-block"><div class="eg-setting-head"><div><div class="eg-setting-title">词库关联</div><div class="eg-setting-desc">开启后，短语出题和今日报告会从当前词库挑词，自然融入句子和文章（不硬塞）。</div></div><button class="eg-switch" role="switch" aria-checked="true" aria-label="词库关联"></button></div><div class="eg-retry-row"><div><div class="eg-retry-name">重试次数</div><div class="eg-setting-desc">生成的句子或文章没用到词库词时，再试几次（0–5）。</div></div><div class="eg-stepper"><button class="eg-stepbtn" aria-label="减少重试次数">−</button><span class="eg-stepper-value">1</span><button class="eg-stepbtn" aria-label="增加重试次数">+</button></div></div></div><div class="eg-setting-block"><div class="eg-setting-title">内容方向</div><div class="eg-setting-desc">用于生成短语和今日报告；切换后下一题、下一篇生效。</div><div class="eg-direction-list"><button class="eg-direction active">AI 与技术</button><button class="eg-direction">软件开发</button><button class="eg-direction">数据与算法</button><button class="eg-direction">产品与设计</button><button class="eg-direction">职场沟通</button><button class="eg-direction">商业与创业</button><button class="eg-direction">科学探索</button><button class="eg-direction">健康与生活</button><button class="eg-direction">环境与能源</button><button class="eg-direction">教育与学习</button><button class="eg-direction">金融与经济</button><button class="eg-direction">文化与旅行</button></div></div><div class="eg-setting-block"><div class="eg-setting-title">自定义方向</div><div class="eg-setting-desc">添加你自己的主题，会和上面 12 个内置方向一起用于生成内容。</div><div class="eg-custom-list"><div class="eg-custom-item"><span class="eg-custom-name">摄影与视觉</span><button class="eg-iconbtn" aria-label="删除 摄影与视觉">×</button></div></div><div class="eg-addrow"><input class="eg-text" placeholder="例如：摄影与视觉"><button class="eg-btn primary">添加</button></div></div></div></div><div class="eg-resize"></div></div></div></div>
+    <div class="frame" id="frame-settings"><div class="tag">设置 · 默认宽</div><div class="stage"><div class="eg-panel tall" style="width:352px"><div class="eg-head"><span class="eg-grip">⠿</span><div class="eg-tabs"><button class="eg-tab">单词训练</button><button class="eg-tab">短语训练</button><button class="eg-tab">今日报告</button><button class="eg-tab">看板</button><button class="eg-tab active">设置</button></div><div class="eg-head-right"><button class="eg-close">✕</button></div></div><div class="eg-body"><div class="eg-settings"><div class="eg-setting-section"><div class="eg-section-head"><div class="eg-section-label">练习偏好</div></div><div class="eg-setting-card"><div class="eg-setting-row"><div class="eg-setting-head"><div class="eg-setting-info"><div class="eg-setting-title">庆祝效果</div><div class="eg-setting-desc">答对时从四周喷射彩带。</div></div><button type="button" class="eg-switch" role="switch" aria-checked="true" aria-label="彩带庆祝"></button></div></div><div class="eg-setting-row"><div class="eg-setting-head"><div class="eg-setting-info"><div class="eg-setting-title">词库关联</div><div class="eg-setting-desc">开启后，短语出题和今日报告会从当前词库挑词，自然融入句子和文章（不硬塞）。</div></div><button type="button" class="eg-switch" role="switch" aria-checked="true" aria-label="词库关联"></button></div><div class="eg-setting-sub"><div class="eg-setting-info"><div class="eg-sub-title">重试次数</div><div class="eg-setting-desc">生成的句子或文章没用到词库词时，再试几次（0–5）。</div></div><div class="eg-stepper"><button type="button" class="eg-stepbtn" aria-label="减少重试次数">−</button><span class="eg-stepper-value">1</span><button type="button" class="eg-stepbtn" aria-label="增加重试次数">+</button></div></div></div></div></div><div class="eg-setting-section"><div class="eg-section-head"><div class="eg-section-label">内容方向</div><div class="eg-active-badge"><span>AI 与技术</span></div></div><div class="eg-setting-card"><div class="eg-setting-row"><div class="eg-setting-desc eg-lead">用于生成短语和今日报告；切换后下一题、下一篇生效。</div><div class="eg-direction-list"><button type="button" class="eg-direction active">AI 与技术</button><button type="button" class="eg-direction">软件开发</button><button type="button" class="eg-direction">数据与算法</button><button type="button" class="eg-direction">产品与设计</button><button type="button" class="eg-direction">职场沟通</button><button type="button" class="eg-direction">商业与创业</button><button type="button" class="eg-direction">科学探索</button><button type="button" class="eg-direction">健康与生活</button><button type="button" class="eg-direction">环境与能源</button><button type="button" class="eg-direction">教育与学习</button><button type="button" class="eg-direction">金融与经济</button><button type="button" class="eg-direction">文化与旅行</button></div></div><div class="eg-setting-row"><div class="eg-custom-head"><div class="eg-sub-title">自定义方向</div><span class="eg-custom-count">1 / 40</span></div><div class="eg-setting-desc">添加你自己的主题，点击即可切换，与内置方向一样用于生成内容。</div><div class="eg-custom-chips"><div class="eg-custom-chip"><button type="button" class="eg-custom-select">摄影与视觉</button><button type="button" class="eg-custom-remove" aria-label="删除 摄影与视觉">×</button></div></div><div class="eg-addrow"><input class="eg-text" placeholder="例如：摄影与视觉"><button type="button" class="eg-btn primary" disabled>添加</button></div></div></div></div></div></div><div class="eg-resize"></div></div></div></div>
+    <div class="frame" id="frame-settings-wide"><div class="tag">设置 · 宽面板（DSH 主题）</div><div class="stage wide" style="width:min(680px, calc(100vw - 52px))"><div class="eg-panel tall" style="width:640px;--eg-accent:#131316;--eg-on-accent:#ffffff"><div class="eg-head"><span class="eg-grip">⠿</span><div class="eg-tabs"><button class="eg-tab">单词训练</button><button class="eg-tab">短语训练</button><button class="eg-tab">今日报告</button><button class="eg-tab">看板</button><button class="eg-tab active">设置</button></div><div class="eg-head-right"><button class="eg-close">✕</button></div></div><div class="eg-body"><div class="eg-settings"><div class="eg-setting-section"><div class="eg-section-head"><div class="eg-section-label">练习偏好</div></div><div class="eg-setting-card"><div class="eg-setting-row"><div class="eg-setting-head"><div class="eg-setting-info"><div class="eg-setting-title">庆祝效果</div><div class="eg-setting-desc">答对时从四周喷射彩带。</div></div><button type="button" class="eg-switch" role="switch" aria-checked="true" aria-label="彩带庆祝"></button></div></div><div class="eg-setting-row"><div class="eg-setting-head"><div class="eg-setting-info"><div class="eg-setting-title">词库关联</div><div class="eg-setting-desc">开启后，短语出题和今日报告会从当前词库挑词，自然融入句子和文章（不硬塞）。</div></div><button type="button" class="eg-switch" role="switch" aria-checked="true" aria-label="词库关联"></button></div><div class="eg-setting-sub"><div class="eg-setting-info"><div class="eg-sub-title">重试次数</div><div class="eg-setting-desc">生成的句子或文章没用到词库词时，再试几次（0–5）。</div></div><div class="eg-stepper"><button type="button" class="eg-stepbtn" aria-label="减少重试次数">−</button><span class="eg-stepper-value">1</span><button type="button" class="eg-stepbtn" aria-label="增加重试次数">+</button></div></div></div></div></div><div class="eg-setting-section"><div class="eg-section-head"><div class="eg-section-label">内容方向</div><div class="eg-active-badge"><span>文化与旅行</span></div></div><div class="eg-setting-card"><div class="eg-setting-row"><div class="eg-setting-desc eg-lead">用于生成短语和今日报告；切换后下一题、下一篇生效。</div><div class="eg-direction-list"><button type="button" class="eg-direction">AI 与技术</button><button type="button" class="eg-direction">软件开发</button><button type="button" class="eg-direction">数据与算法</button><button type="button" class="eg-direction">产品与设计</button><button type="button" class="eg-direction">职场沟通</button><button type="button" class="eg-direction">商业与创业</button><button type="button" class="eg-direction">科学探索</button><button type="button" class="eg-direction">健康与生活</button><button type="button" class="eg-direction">环境与能源</button><button type="button" class="eg-direction">教育与学习</button><button type="button" class="eg-direction">金融与经济</button><button type="button" class="eg-direction active">文化与旅行</button></div></div><div class="eg-setting-row"><div class="eg-custom-head"><div class="eg-sub-title">自定义方向</div><span class="eg-custom-count">2 / 40</span></div><div class="eg-setting-desc">添加你自己的主题，点击即可切换，与内置方向一样用于生成内容。</div><div class="eg-custom-chips"><div class="eg-custom-chip"><button type="button" class="eg-custom-select">摄影与视觉</button><button type="button" class="eg-custom-remove" aria-label="删除 摄影与视觉">×</button></div><div class="eg-custom-chip"><button type="button" class="eg-custom-select">咖啡烘焙</button><button type="button" class="eg-custom-remove" aria-label="删除 咖啡烘焙">×</button></div></div><div class="eg-addrow"><input class="eg-text" placeholder="例如：摄影与视觉"><button type="button" class="eg-btn primary" disabled>添加</button></div></div></div></div></div></div><div class="eg-resize"></div></div></div></div>
     <div class="frame" id="frame-dashboard"><div class="tag">数据看板 · 日历</div><div class="stage"><div class="eg-panel tall" style="width:352px;height:880px"><div class="eg-head"><span class="eg-grip">⠿</span><div class="eg-tabs"><button class="eg-tab">单词训练</button><button class="eg-tab">短语训练</button><button class="eg-tab">今日报告</button><button class="eg-tab active">看板</button><button class="eg-tab">设置</button></div><div class="eg-head-right"><button class="eg-close">✕</button></div></div><div class="eg-body"><div class="eg-dash"><div class="eg-dash-top"><div class="eg-dash-title">学习看板</div><div class="eg-dash-nav"><button class="eg-navbtn">‹</button><span class="eg-month">2026 年 11 月</span><button class="eg-navbtn">›</button><button class="eg-todaybtn">今天</button></div></div><div class="eg-dash-sum"><div class="eg-stat"><b>5</b><span title="连续学习天数">连续</span></div><div class="eg-stat"><b>48</b><span title="累计单词">单词</span></div><div class="eg-stat"><b>17</b><span title="累计句子">句子</span></div><div class="eg-stat"><b>8</b><span title="累计学习天数">累计</span></div></div><div class="eg-cal"><div class="dow">一</div><div class="dow">二</div><div class="dow">三</div><div class="dow">四</div><div class="dow">五</div><div class="dow">六</div><div class="dow">日</div><div class="eg-day blank"></div><div class="eg-day blank"></div><div class="eg-day blank"></div><div class="eg-day blank"></div><div class="eg-day blank"></div><div class="eg-day blank"></div><div class="eg-day"><span class="n">1</span></div><div class="eg-day"><span class="n">2</span></div><div class="eg-day l1 has"><span class="n">3</span><span class="cnt">6</span></div><div class="eg-day l1 has"><span class="n">4</span><span class="cnt">3</span></div><div class="eg-day"><span class="n">5</span></div><div class="eg-day"><span class="n">6</span></div><div class="eg-day"><span class="n">7</span></div><div class="eg-day"><span class="n">8</span></div><div class="eg-day"><span class="n">9</span></div><div class="eg-day l2 has"><span class="n">10</span><span class="cnt">11</span></div><div class="eg-day"><span class="n">11</span></div><div class="eg-day"><span class="n">12</span></div><div class="eg-day"><span class="n">13</span></div><div class="eg-day"><span class="n">14</span></div><div class="eg-day"><span class="n">15</span></div><div class="eg-day"><span class="n">16</span></div><div class="eg-day l1 has"><span class="n">17</span><span class="cnt">4</span></div><div class="eg-day l1 has"><span class="n">18</span><span class="cnt">6</span></div><div class="eg-day"><span class="n">19</span></div><div class="eg-day l2 has"><span class="n">20</span><span class="cnt">14</span></div><div class="eg-day"><span class="n">21</span></div><div class="eg-day"><span class="n">22</span></div><div class="eg-day l1 has"><span class="n">23</span><span class="cnt">8</span></div><div class="eg-day l1 has today"><span class="n">24</span><span class="cnt">4</span></div><div class="eg-day"><span class="n">25</span></div><div class="eg-day"><span class="n">26</span></div><div class="eg-day"><span class="n">27</span></div><div class="eg-day"><span class="n">28</span></div><div class="eg-day"><span class="n">29</span></div><div class="eg-day"><span class="n">30</span></div><div class="eg-day blank"></div><div class="eg-day blank"></div><div class="eg-day blank"></div><div class="eg-day blank"></div><div class="eg-day blank"></div><div class="eg-day blank"></div></div><div class="eg-dash-legend">少<i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i>多</div><div class="eg-hist-title">每日学习记录</div><div class="eg-hist"><div class="eg-hist-day"><div class="eg-hist-head"><div class="eg-hist-date">11月24日<span class="wd">周一</span></div><div class="eg-hist-count">单词 2 · 句子 2</div></div><div><div class="eg-hist-sub">单词</div><div class="eg-wchips"><span class="eg-wchip ok"><span class="w">apple</span><span class="m">苹果</span></span><span class="eg-wchip ok"><span class="w">banana</span><span class="m">香蕉</span></span></div></div><div><div class="eg-hist-sub">句子</div><div class="eg-sents"><div class="eg-sent ok"><span class="mark">✓</span><div class="body"><div class="zh">我喜欢学习英语。</div><div class="en">I like learning English.</div></div></div><div class="eg-sent bad"><span class="mark">✗</span><div class="body"><div class="zh">今天天气很好。</div><div class="en">The weather is nice today.</div></div></div></div></div></div><div class="eg-hist-day"><div class="eg-hist-head"><div class="eg-hist-date">11月23日<span class="wd">周日</span></div><div class="eg-hist-count">单词 6 · 句子 2</div></div><div><div class="eg-hist-sub">单词</div><div class="eg-wchips"><span class="eg-wchip ok"><span class="w">efficient</span><span class="m">高效的</span></span><span class="eg-wchip ok"><span class="w">budget</span><span class="m">预算</span></span><span class="eg-wchip bad"><span class="w">negotiate</span><span class="m">谈判</span></span><span class="eg-wchip ok"><span class="w">schedule</span><span class="m">日程</span></span></div></div></div></div></div></div><div class="eg-resize"></div></div></div></div>
     <div class="frame" id="frame-dashboard-more"><div class="tag">数据看板 · 展开全部</div><div class="stage"><div class="eg-panel tall" style="width:352px;height:1040px"><div class="eg-head"><span class="eg-grip">⠿</span><div class="eg-tabs"><button class="eg-tab">单词训练</button><button class="eg-tab">短语训练</button><button class="eg-tab">今日报告</button><button class="eg-tab active">看板</button><button class="eg-tab">设置</button></div><div class="eg-head-right"><button class="eg-close">✕</button></div></div><div class="eg-body"><div class="eg-dash"><div class="eg-dash-top"><div class="eg-dash-title">学习看板</div><div class="eg-dash-nav"><button class="eg-navbtn">‹</button><span class="eg-month">2026 年 11 月</span><button class="eg-navbtn">›</button><button class="eg-todaybtn">今天</button></div></div><div class="eg-dash-sum"><div class="eg-stat"><b>9</b><span title="连续学习天数">连续</span></div><div class="eg-stat"><b>126</b><span title="累计单词">单词</span></div><div class="eg-stat"><b>34</b><span title="累计句子">句子</span></div><div class="eg-stat"><b>12</b><span title="累计学习天数">累计</span></div></div><div class="eg-dash-legend">少<i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i>多</div><div class="eg-hist-title">每日学习记录</div><div class="eg-hist"><div class="eg-hist-day"><div class="eg-hist-head"><div class="eg-hist-date">11月24日<span class="wd">周一</span></div><div class="eg-hist-count">单词 18 · 句子 7</div></div><div><div class="eg-hist-sub">单词</div><div class="eg-wchips"><span class="eg-wchip ok"><span class="w">efficient</span><span class="m">高效的</span></span><span class="eg-wchip ok"><span class="w">budget</span><span class="m">预算</span></span><span class="eg-wchip bad"><span class="w">negotiate</span><span class="m">谈判</span></span><span class="eg-wchip ok"><span class="w">schedule</span><span class="m">日程</span></span><span class="eg-wchip ok"><span class="w">priority</span><span class="m">优先</span></span><span class="eg-wchip ok"><span class="w">deadline</span><span class="m">截止日期</span></span><span class="eg-wchip bad"><span class="w">proposal</span><span class="m">提案</span></span><span class="eg-wchip ok"><span class="w">revenue</span><span class="m">收入</span></span><span class="eg-wchip ok"><span class="w">strategy</span><span class="m">策略</span></span><span class="eg-wchip ok"><span class="w">resource</span><span class="m">资源</span></span></div><button class="eg-more">展开全部 · 共 18 条</button></div><div><div class="eg-hist-sub">句子</div><div class="eg-sents"><div class="eg-sent ok"><span class="mark">✓</span><div class="body"><div class="zh">我们需要确保这个新系统不会影响日常工作。</div><div class="en">We need to make sure the new system will not affect our daily work.</div></div></div><div class="eg-sent ok"><span class="mark">✓</span><div class="body"><div class="zh">会议因为某人缺席而推迟到了下午。</div><div class="en">The meeting was put off until the afternoon because someone was absent.</div></div></div><div class="eg-sent bad"><span class="mark">✗</span><div class="body"><div class="zh">这个方案在预算和进度之间取得了平衡。</div><div class="en">This proposal strikes a balance between budget and schedule.</div></div></div><div class="eg-sent ok"><span class="mark">✓</span><div class="body"><div class="zh">请在周五之前把报告发给我。</div><div class="en">Please send me the report before Friday.</div></div></div><div class="eg-sent ok"><span class="mark">✓</span><div class="body"><div class="zh">我们正在评估几个不同的选择。</div><div class="en">We are evaluating several different options.</div></div></div></div><button class="eg-more">展开全部 · 共 7 条</button></div></div></div></div></div><div class="eg-resize"></div></div></div></div>
   </div>

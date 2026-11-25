@@ -381,63 +381,161 @@ window.__ModuleLoader__.load({
 .eg-import-foot { display: flex; gap: 8px; margin-top: 8px; }
 
 /* ===== settings ===== */
-.eg-settings { display: flex; flex-direction: column; gap: 20px; }
-.eg-setting-block { padding-bottom: 20px; border-bottom: 1px solid var(--eg-line); }
-.eg-setting-block:last-child { padding-bottom: 0; border-bottom: none; }
-.eg-setting-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
-.eg-setting-title { font-size: var(--eg-fs-md); font-weight: 650; color: var(--eg-ink); line-height: 1.35; }
-.eg-setting-desc { margin-top: 4px; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); line-height: 1.6; }
+.eg-settings {
+  container-type: inline-size;
+  display: flex; flex-direction: column; gap: 18px;
+}
+.eg-setting-section { display: flex; flex-direction: column; gap: 8px; }
+.eg-section-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 0 2px; min-height: 20px;
+}
+.eg-section-label {
+  font-size: var(--eg-fs-xs); font-weight: 650; color: var(--eg-ink-2);
+  letter-spacing: .03em; line-height: 1.2;
+}
+.eg-active-badge {
+  display: inline-flex; align-items: center; gap: 6px; min-width: 0; max-width: 68%;
+  padding: 2px 9px; border-radius: 999px;
+  background: var(--eg-bg-2); border: 1px solid var(--eg-line);
+  font-size: 11px; font-weight: 600; color: var(--eg-ink); line-height: 1.4;
+}
+.eg-active-badge::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%; flex: 0 0 auto;
+  background: var(--eg-accent);
+}
+.eg-active-badge span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.eg-setting-card {
+  border: 1px solid var(--eg-line); border-radius: 12px; background: var(--eg-bg);
+  overflow: hidden;
+}
+.eg-setting-row { padding: 14px 16px; }
+.eg-setting-row + .eg-setting-row { border-top: 1px solid var(--eg-line); }
+.eg-setting-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.eg-setting-info { min-width: 0; flex: 1 1 auto; }
+.eg-setting-title { font-size: 14px; font-weight: 600; color: var(--eg-ink); line-height: 1.35; }
+.eg-setting-desc { margin-top: 3px; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); line-height: 1.55; }
+.eg-setting-desc.eg-lead { margin-top: 0; }
 .eg-switch {
   appearance: none; -webkit-appearance: none; position: relative; flex: 0 0 auto;
-  width: 42px; height: 24px; padding: 2px; border: 1px solid var(--eg-line-2); border-radius: 999px;
-  background: var(--eg-bg-2); cursor: pointer; transition: background var(--eg-dur) ease, border-color var(--eg-dur) ease;
+  width: 40px; height: 22px; padding: 2px; border: 1px solid var(--eg-line-2); border-radius: 999px;
+  background: var(--eg-bg-2); cursor: pointer;
+  transition: background var(--eg-dur) ease, border-color var(--eg-dur) ease;
 }
 .eg-switch::after {
-  content: ''; display: block; width: 18px; height: 18px; border-radius: 50%;
-  background: var(--eg-bg); box-shadow: 0 1px 3px rgba(17, 22, 31, .22);
+  content: ''; display: block; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--eg-bg); box-shadow: 0 1px 2px rgba(17, 22, 31, .24);
   transition: transform var(--eg-dur) ease;
 }
 .eg-switch[aria-checked="true"] { background: var(--eg-accent); border-color: var(--eg-accent); }
 .eg-switch[aria-checked="true"]::after { transform: translateX(18px); background: var(--eg-on-accent); }
+.eg-switch:disabled { opacity: .55; cursor: not-allowed; }
 .eg-switch:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }
-.eg-direction-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+.eg-setting-sub {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  margin-top: 12px; padding: 10px 12px; border-radius: 9px; background: var(--eg-bg-2);
+}
+.eg-sub-title { font-size: var(--eg-fs-sm); font-weight: 600; color: var(--eg-ink); line-height: 1.35; }
+.eg-stepper {
+  display: inline-flex; align-items: center; flex: 0 0 auto;
+  border: 1px solid var(--eg-line); border-radius: 8px; background: var(--eg-bg); overflow: hidden;
+}
+.eg-stepbtn {
+  appearance: none; -webkit-appearance: none; width: 28px; height: 28px; padding: 0;
+  border: none; background: transparent; color: var(--eg-ink);
+  font: 600 15px/1 var(--eg-font); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background var(--eg-dur) ease, color var(--eg-dur) ease;
+}
+.eg-stepbtn:hover:not(:disabled) { background: var(--eg-bg-2); }
+.eg-stepbtn:disabled { opacity: .35; cursor: default; }
+.eg-stepbtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: -2px; }
+.eg-stepper-value {
+  min-width: 28px; height: 28px; padding: 0 4px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-left: 1px solid var(--eg-line); border-right: 1px solid var(--eg-line);
+  font: 650 var(--eg-fs-sm)/1 var(--eg-font); font-variant-numeric: tabular-nums; color: var(--eg-ink);
+}
+.eg-direction-list {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; margin-top: 12px;
+}
+@container (min-width: 440px) {
+  .eg-direction-list { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+}
+@container (max-width: 279px) {
+  .eg-direction-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 .eg-direction {
-  appearance: none; -webkit-appearance: none; text-align: left; min-height: 36px; padding: 8px 10px;
-  border: 1px solid var(--eg-line); border-radius: var(--eg-r-sm); background: transparent;
-  color: var(--eg-ink-2); font: 500 var(--eg-fs-sm)/1.35 var(--eg-font); cursor: pointer;
+  appearance: none; -webkit-appearance: none; text-align: center;
+  min-height: 34px; padding: 6px 8px;
+  border: 1px solid var(--eg-line); border-radius: 8px; background: var(--eg-bg);
+  color: var(--eg-ink-2); font: 500 12.5px/1.3 var(--eg-font); cursor: pointer;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   transition: background var(--eg-dur) ease, border-color var(--eg-dur) ease, color var(--eg-dur) ease;
 }
-.eg-direction:hover { background: var(--eg-bg-2); color: var(--eg-ink); }
-.eg-direction.active { border-color: var(--eg-accent); background: color-mix(in srgb, var(--eg-accent) 9%, transparent); color: var(--eg-accent-ink); font-weight: 650; }
-.eg-direction:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
-.eg-custom-list { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
-.eg-custom-item { display: flex; align-items: center; gap: 8px; min-height: 34px; padding: 6px 8px 6px 10px; border: 1px solid var(--eg-line); border-radius: var(--eg-r-sm); background: var(--eg-bg-2); }
-.eg-custom-name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--eg-fs-sm); color: var(--eg-ink); }
-.eg-iconbtn {
-  appearance: none; -webkit-appearance: none; flex: 0 0 auto; width: 24px; height: 24px; padding: 0;
-  border: 1px solid transparent; border-radius: 7px; background: transparent; color: var(--eg-ink-2);
-  font: 600 var(--eg-fs-md)/1 var(--eg-font); cursor: pointer;
+.eg-direction:hover:not(.active):not(:disabled) {
+  background: var(--eg-bg-2); border-color: var(--eg-line-2); color: var(--eg-ink);
 }
-.eg-iconbtn:hover { border-color: var(--eg-line); background: var(--eg-bg); color: var(--eg-bad); }
-.eg-iconbtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
-.eg-addrow { display: flex; gap: 8px; margin-top: 12px; }
-.eg-addrow .eg-text { flex: 1 1 auto; min-width: 0; }
-.eg-addrow .eg-btn { min-width: 64px; }
-.eg-settings-note { margin-top: 10px; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); line-height: 1.55; }
-.eg-settings-error { margin-top: 10px; color: var(--eg-bad); font-size: var(--eg-fs-xs); line-height: 1.55; }
-.eg-settings-loading { color: var(--eg-ink-2); font-size: var(--eg-fs-sm); }
-.eg-retry-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 14px; }
-.eg-retry-name { font-size: var(--eg-fs-md); font-weight: 650; color: var(--eg-ink); line-height: 1.35; }
-.eg-stepper { display: flex; align-items: center; gap: 4px; flex: 0 0 auto; }
-.eg-stepbtn {
-  appearance: none; -webkit-appearance: none; width: 30px; height: 30px; padding: 0;
+.eg-direction.active {
+  border-color: var(--eg-accent); background: var(--eg-accent);
+  color: var(--eg-on-accent); font-weight: 600;
+}
+.eg-direction:disabled { opacity: .6; cursor: not-allowed; }
+.eg-direction:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }
+.eg-custom-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.eg-custom-count {
+  font-size: 11px; color: var(--eg-ink-2); font-variant-numeric: tabular-nums; flex: 0 0 auto;
+}
+.eg-custom-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+.eg-custom-chip {
+  display: inline-flex; align-items: stretch; max-width: 100%;
   border: 1px solid var(--eg-line); border-radius: 8px; background: var(--eg-bg-2);
-  color: var(--eg-ink); font: 600 16px/1 var(--eg-font); cursor: pointer;
+  color: var(--eg-ink); overflow: hidden;
+  transition: background var(--eg-dur) ease, border-color var(--eg-dur) ease, color var(--eg-dur) ease;
 }
-.eg-stepbtn:hover:not(:disabled) { border-color: var(--eg-accent); color: var(--eg-accent-ink); }
-.eg-stepbtn:disabled { opacity: .4; cursor: default; }
-.eg-stepbtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
-.eg-stepper-value { min-width: 24px; text-align: center; font: 700 var(--eg-fs-sm)/1 var(--eg-font); color: var(--eg-ink); }
+.eg-custom-chip:hover { border-color: var(--eg-line-2); }
+.eg-custom-chip.active {
+  background: var(--eg-accent); border-color: var(--eg-accent); color: var(--eg-on-accent);
+}
+.eg-custom-select {
+  appearance: none; -webkit-appearance: none; min-width: 0;
+  padding: 6px 9px 6px 10px; border: none; background: transparent; color: inherit;
+  font: 500 12.5px/1.3 var(--eg-font); cursor: pointer;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.eg-custom-chip.active .eg-custom-select { font-weight: 600; }
+.eg-custom-select:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: -2px; }
+.eg-custom-remove {
+  appearance: none; -webkit-appearance: none; flex: 0 0 auto;
+  width: 26px; padding: 0; border: none; border-left: 1px solid var(--eg-line);
+  background: transparent; color: var(--eg-ink-2);
+  font: 600 14px/1 var(--eg-font); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background var(--eg-dur) ease, color var(--eg-dur) ease;
+}
+.eg-custom-remove:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--eg-bad) 10%, transparent); color: var(--eg-bad);
+}
+.eg-custom-chip.active .eg-custom-remove {
+  border-left-color: color-mix(in srgb, var(--eg-on-accent) 22%, transparent);
+  color: color-mix(in srgb, var(--eg-on-accent) 80%, transparent);
+}
+.eg-custom-chip.active .eg-custom-remove:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--eg-on-accent) 16%, transparent); color: var(--eg-on-accent);
+}
+.eg-custom-remove:disabled, .eg-custom-select:disabled { opacity: .6; cursor: not-allowed; }
+.eg-custom-remove:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: -2px; }
+.eg-addrow { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+.eg-addrow .eg-text { flex: 1 1 auto; min-width: 0; height: 34px; padding: 0 11px; border-radius: 8px; }
+.eg-addrow .eg-btn { min-height: 34px; height: 34px; min-width: 64px; padding: 0 14px; border-radius: 8px; }
+.eg-addrow .eg-btn:disabled { opacity: .4; }
+.eg-settings-error {
+  padding: 9px 12px; border-radius: 9px;
+  background: color-mix(in srgb, var(--eg-bad) 7%, transparent);
+  border: 1px solid color-mix(in srgb, var(--eg-bad) 24%, transparent);
+  color: var(--eg-bad); font-size: var(--eg-fs-xs); line-height: 1.55;
+}
+.eg-settings-loading { display: flex; align-items: center; gap: 9px; color: var(--eg-ink-2); font-size: var(--eg-fs-sm); padding: 8px 0; }
 
 /* ===== dashboard ===== */
 .eg-dash { display: flex; flex-direction: column; }
@@ -1594,181 +1692,257 @@ window.__ModuleLoader__.load({
         return React.createElement(
           'div',
           { className: 'eg-settings' },
-          React.createElement('div', { className: 'eg-settings-loading' }, '正在加载设置…'),
+          React.createElement(
+            'div',
+            { className: 'eg-settings-loading' },
+            React.createElement('span', { className: 'eg-spin' }),
+            '正在加载设置…',
+          ),
           error ? React.createElement('div', { className: 'eg-settings-error' }, error) : null,
         )
       }
+
+      const builtinDirections = directions.filter((item) => item.builtin !== false)
+      const customDirections = directions.filter((item) => item.builtin === false)
+      const activeDirection = directions.find((item) => item.id === activeId)
 
       return React.createElement(
         'div',
         { className: 'eg-settings' },
         React.createElement(
           'div',
-          { className: 'eg-setting-block' },
+          { className: 'eg-setting-section' },
           React.createElement(
             'div',
-            { className: 'eg-setting-head' },
-            React.createElement(
-              'div',
-              null,
-              React.createElement('div', { className: 'eg-setting-title' }, '庆祝效果'),
-              React.createElement('div', { className: 'eg-setting-desc' }, '答对时从四周喷射彩带。'),
-            ),
-            React.createElement('button', {
-              className: 'eg-switch',
-              role: 'switch',
-              'aria-checked': settings.confetti ? 'true' : 'false',
-              'aria-label': '彩带庆祝',
-              disabled: busy,
-              onClick: () => save({ confetti: !settings.confetti }, false),
-            }),
+            { className: 'eg-section-head' },
+            React.createElement('div', { className: 'eg-section-label' }, '练习偏好'),
           ),
-        ),
-        React.createElement(
-          'div',
-          { className: 'eg-setting-block' },
           React.createElement(
             'div',
-            { className: 'eg-setting-head' },
+            { className: 'eg-setting-card' },
             React.createElement(
               'div',
-              null,
-              React.createElement('div', { className: 'eg-setting-title' }, '词库关联'),
+              { className: 'eg-setting-row' },
               React.createElement(
                 'div',
-                { className: 'eg-setting-desc' },
-                '开启后，短语出题和今日报告会从当前词库挑词，自然融入句子和文章（不硬塞）。',
-              ),
-            ),
-            React.createElement('button', {
-              className: 'eg-switch',
-              role: 'switch',
-              'aria-checked': settings.bankLink ? 'true' : 'false',
-              'aria-label': '词库关联',
-              disabled: busy,
-              onClick: () => save({ bankLink: !settings.bankLink }, false),
-            }),
-          ),
-          settings.bankLink
-            ? React.createElement(
-                'div',
-                { className: 'eg-retry-row' },
+                { className: 'eg-setting-head' },
                 React.createElement(
                   'div',
-                  null,
-                  React.createElement('div', { className: 'eg-retry-name' }, '重试次数'),
+                  { className: 'eg-setting-info' },
+                  React.createElement('div', { className: 'eg-setting-title' }, '庆祝效果'),
+                  React.createElement('div', { className: 'eg-setting-desc' }, '答对时从四周喷射彩带。'),
+                ),
+                React.createElement('button', {
+                  type: 'button',
+                  className: 'eg-switch',
+                  role: 'switch',
+                  'aria-checked': settings.confetti ? 'true' : 'false',
+                  'aria-label': '彩带庆祝',
+                  disabled: busy,
+                  onClick: () => save({ confetti: !settings.confetti }, false),
+                }),
+              ),
+            ),
+            React.createElement(
+              'div',
+              { className: 'eg-setting-row' },
+              React.createElement(
+                'div',
+                { className: 'eg-setting-head' },
+                React.createElement(
+                  'div',
+                  { className: 'eg-setting-info' },
+                  React.createElement('div', { className: 'eg-setting-title' }, '词库关联'),
                   React.createElement(
                     'div',
                     { className: 'eg-setting-desc' },
-                    '生成的句子或文章没用到词库词时，再试几次（0–5）。',
+                    '开启后，短语出题和今日报告会从当前词库挑词，自然融入句子和文章（不硬塞）。',
                   ),
                 ),
-                React.createElement(
-                  'div',
-                  { className: 'eg-stepper' },
-                  React.createElement(
-                    'button',
-                    {
-                      className: 'eg-stepbtn',
-                      'aria-label': '减少重试次数',
-                      disabled: busy || settings.bankRetries <= 0,
-                      onClick: () => setRetries(settings.bankRetries - 1),
-                    },
-                    '−',
-                  ),
-                  React.createElement('span', { className: 'eg-stepper-value' }, String(settings.bankRetries)),
-                  React.createElement(
-                    'button',
-                    {
-                      className: 'eg-stepbtn',
-                      'aria-label': '增加重试次数',
-                      disabled: busy || settings.bankRetries >= 5,
-                      onClick: () => setRetries(settings.bankRetries + 1),
-                    },
-                    '+',
-                  ),
-                ),
-              )
-            : null,
-        ),
-        React.createElement(
-          'div',
-          { className: 'eg-setting-block' },
-          React.createElement('div', { className: 'eg-setting-title' }, '内容方向'),
-          React.createElement(
-            'div',
-            { className: 'eg-setting-desc' },
-            '用于生成短语和今日报告；切换后下一题、下一篇生效。',
-          ),
-          React.createElement(
-            'div',
-            { className: 'eg-direction-list' },
-            directions.map((item) =>
-              React.createElement(
-                'button',
-                {
-                  key: item.id,
-                  className: 'eg-direction' + (item.id === activeId ? ' active' : ''),
-                  'aria-pressed': item.id === activeId ? 'true' : 'false',
+                React.createElement('button', {
+                  type: 'button',
+                  className: 'eg-switch',
+                  role: 'switch',
+                  'aria-checked': settings.bankLink ? 'true' : 'false',
+                  'aria-label': '词库关联',
                   disabled: busy,
-                  onClick: () => chooseDirection(item.id),
-                },
-                item.label,
+                  onClick: () => save({ bankLink: !settings.bankLink }, false),
+                }),
               ),
+              settings.bankLink
+                ? React.createElement(
+                    'div',
+                    { className: 'eg-setting-sub' },
+                    React.createElement(
+                      'div',
+                      { className: 'eg-setting-info' },
+                      React.createElement('div', { className: 'eg-sub-title' }, '重试次数'),
+                      React.createElement(
+                        'div',
+                        { className: 'eg-setting-desc' },
+                        '生成的句子或文章没用到词库词时，再试几次（0–5）。',
+                      ),
+                    ),
+                    React.createElement(
+                      'div',
+                      { className: 'eg-stepper' },
+                      React.createElement(
+                        'button',
+                        {
+                          type: 'button',
+                          className: 'eg-stepbtn',
+                          'aria-label': '减少重试次数',
+                          disabled: busy || settings.bankRetries <= 0,
+                          onClick: () => setRetries(settings.bankRetries - 1),
+                        },
+                        '−',
+                      ),
+                      React.createElement('span', { className: 'eg-stepper-value' }, String(settings.bankRetries)),
+                      React.createElement(
+                        'button',
+                        {
+                          type: 'button',
+                          className: 'eg-stepbtn',
+                          'aria-label': '增加重试次数',
+                          disabled: busy || settings.bankRetries >= 5,
+                          onClick: () => setRetries(settings.bankRetries + 1),
+                        },
+                        '+',
+                      ),
+                    ),
+                  )
+                : null,
             ),
           ),
         ),
         React.createElement(
           'div',
-          { className: 'eg-setting-block' },
-          React.createElement('div', { className: 'eg-setting-title' }, '自定义方向'),
+          { className: 'eg-setting-section' },
           React.createElement(
             'div',
-            { className: 'eg-setting-desc' },
-            '添加你自己的主题，会和上面 12 个内置方向一起用于生成内容。',
+            { className: 'eg-section-head' },
+            React.createElement('div', { className: 'eg-section-label' }, '内容方向'),
+            activeDirection
+              ? React.createElement(
+                  'div',
+                  { className: 'eg-active-badge', title: '当前方向：' + activeDirection.label },
+                  React.createElement('span', null, activeDirection.label),
+                )
+              : null,
           ),
-          customTopics.length
-            ? React.createElement(
+          React.createElement(
+            'div',
+            { className: 'eg-setting-card' },
+            React.createElement(
+              'div',
+              { className: 'eg-setting-row' },
+              React.createElement(
                 'div',
-                { className: 'eg-custom-list' },
-                customTopics.map((item) =>
+                { className: 'eg-setting-desc eg-lead' },
+                '用于生成短语和今日报告；切换后下一题、下一篇生效。',
+              ),
+              React.createElement(
+                'div',
+                { className: 'eg-direction-list' },
+                builtinDirections.map((item) =>
                   React.createElement(
-                    'div',
-                    { className: 'eg-custom-item', key: item.id },
-                    React.createElement('span', { className: 'eg-custom-name' }, item.label),
-                    React.createElement(
-                      'button',
-                      {
-                        className: 'eg-iconbtn',
-                        title: '删除方向',
-                        'aria-label': '删除 ' + item.label,
-                        disabled: busy,
-                        onClick: () => removeCustom(item.id),
-                      },
-                      '×',
-                    ),
+                    'button',
+                    {
+                      type: 'button',
+                      key: item.id,
+                      className: 'eg-direction' + (item.id === activeId ? ' active' : ''),
+                      'aria-pressed': item.id === activeId ? 'true' : 'false',
+                      disabled: busy,
+                      title: item.label,
+                      onClick: () => chooseDirection(item.id),
+                    },
+                    item.label,
                   ),
                 ),
-              )
-            : React.createElement('div', { className: 'eg-settings-note' }, '还没有自定义方向。'),
-          React.createElement(
-            'div',
-            { className: 'eg-addrow' },
-            React.createElement('input', {
-              className: 'eg-text',
-              value: draft,
-              maxLength: 40,
-              placeholder: '例如：摄影与视觉',
-              'aria-label': '自定义方向名称',
-              onChange: (e) => setDraft(e.target.value),
-              onKeyDown: (e) => {
-                if (e.key === 'Enter') addCustom()
-              },
-            }),
+              ),
+            ),
             React.createElement(
-              'button',
-              { className: 'eg-btn primary', disabled: busy || !draft.trim(), onClick: addCustom },
-              '添加',
+              'div',
+              { className: 'eg-setting-row' },
+              React.createElement(
+                'div',
+                { className: 'eg-custom-head' },
+                React.createElement('div', { className: 'eg-sub-title' }, '自定义方向'),
+                React.createElement(
+                  'span',
+                  { className: 'eg-custom-count' },
+                  customTopics.length ? customTopics.length + ' / 40' : '最多 40 个',
+                ),
+              ),
+              React.createElement(
+                'div',
+                { className: 'eg-setting-desc' },
+                '添加你自己的主题，点击即可切换，与内置方向一样用于生成内容。',
+              ),
+              customDirections.length
+                ? React.createElement(
+                    'div',
+                    { className: 'eg-custom-chips' },
+                    customDirections.map((item) =>
+                      React.createElement(
+                        'div',
+                        {
+                          className: 'eg-custom-chip' + (item.id === activeId ? ' active' : ''),
+                          key: item.id,
+                        },
+                        React.createElement(
+                          'button',
+                          {
+                            type: 'button',
+                            className: 'eg-custom-select',
+                            'aria-pressed': item.id === activeId ? 'true' : 'false',
+                            disabled: busy,
+                            title: item.label,
+                            onClick: () => chooseDirection(item.id),
+                          },
+                          item.label,
+                        ),
+                        React.createElement(
+                          'button',
+                          {
+                            type: 'button',
+                            className: 'eg-custom-remove',
+                            title: '删除方向',
+                            'aria-label': '删除 ' + item.label,
+                            disabled: busy,
+                            onClick: () => removeCustom(item.id),
+                          },
+                          '×',
+                        ),
+                      ),
+                    ),
+                  )
+                : null,
+              React.createElement(
+                'div',
+                { className: 'eg-addrow' },
+                React.createElement('input', {
+                  className: 'eg-text',
+                  value: draft,
+                  maxLength: 40,
+                  placeholder: '例如：摄影与视觉',
+                  'aria-label': '自定义方向名称',
+                  onChange: (e) => setDraft(e.target.value),
+                  onKeyDown: (e) => {
+                    if (e.key === 'Enter') addCustom()
+                  },
+                }),
+                React.createElement(
+                  'button',
+                  {
+                    type: 'button',
+                    className: 'eg-btn primary',
+                    disabled: busy || !draft.trim(),
+                    onClick: addCustom,
+                  },
+                  '添加',
+                ),
+              ),
             ),
           ),
         ),
