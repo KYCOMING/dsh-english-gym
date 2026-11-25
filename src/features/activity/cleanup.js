@@ -86,6 +86,33 @@ export function previewCleanup(dir, { range = '30d', clearMemory = false, now = 
   }
 }
 
+function recomputeStreak(state) {
+  const activeDays = new Set()
+  for (const [day, bucket] of Object.entries(state.log || {})) {
+    if (!bucket || typeof bucket !== 'object') continue
+    const w = Array.isArray(bucket.words) ? bucket.words.length : 0
+    const p = Array.isArray(bucket.phrases) ? bucket.phrases.length : 0
+    if (w > 0 || p > 0) activeDays.add(day)
+  }
+  for (const [day, rec] of Object.entries(state.daily || {})) {
+    if (rec && Number(rec.answered) > 0) activeDays.add(day)
+  }
+  if (!activeDays.size) {
+    state.streak = { count: 0, lastActiveDay: null }
+    return
+  }
+  const sorted = Array.from(activeDays).sort()
+  const latest = sorted[sorted.length - 1]
+  const parts = latest.split('-').map(Number)
+  const cursor = new Date(parts[0], parts[1] - 1, parts[2])
+  let count = 0
+  while (activeDays.has(dayKey(cursor))) {
+    count += 1
+    cursor.setDate(cursor.getDate() - 1)
+  }
+  state.streak = { count, lastActiveDay: latest }
+}
+
 /**
  * Remove study records and cached reports matching the chosen time range.
  * Settings and custom word banks are never touched; `wordMemory` is preserved
@@ -99,17 +126,14 @@ export function executeCleanup(dir, { range = '30d', clearMemory = false, now = 
   for (const k of m.dailyKeys) delete state.daily[k]
 
   if (m.range === 'all') {
-    state.review = []
     state.pending = {}
     state.wordPending = {}
     state.wordRecent = []
     state.wordReviewStreak = 0
     state.totals = { answered: 0, correct: 0 }
     state.word = { answered: 0, correct: 0 }
-    state.streak = { count: 0, lastActiveDay: null }
-  } else if (state.streak && state.streak.lastActiveDay && m.cutoff && state.streak.lastActiveDay < m.cutoff) {
-    state.streak = { count: 0, lastActiveDay: null }
   }
+  recomputeStreak(state)
 
   if (clearMemory === true) {
     for (const k of m.memoryKeys) delete state.wordMemory[k]

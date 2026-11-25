@@ -22,7 +22,8 @@ import {
   summarizeBankMemory,
 } from './srs.js'
 
-const letterCount = (en) => String(en).replace(/[^a-zA-Z]/g, '').length
+const spellingKey = (en) => normalize(en).replace(/[^a-z]/g, '')
+const letterCount = (en) => spellingKey(en).length
 
 function pruneWordPending(state) {
   const entries = Object.entries(state.wordPending || {})
@@ -115,8 +116,8 @@ export function createWordService({ dir }) {
       error.status = 409
       throw error
     }
-    const typed = normalize(answer || '').replace(/\s+/g, '')
-    const target = normalize(pending.en).replace(/\s+/g, '')
+    const typed = spellingKey(answer || '')
+    const target = spellingKey(pending.en)
     const correct = typed === target && typed.length > 0
     const now = Date.now()
     const key = normalizeWordKey(pending.en)

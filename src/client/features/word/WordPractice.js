@@ -385,7 +385,7 @@ export function WordPractice({ bankRev = 0 } = {}) {
 
   const answered = !!res
   const ok = answered && !!res.correct
-  const target = String((res && res.reference) || '').toLowerCase()
+  const target = String((res && res.reference) || '').toLowerCase().replace(/[^a-z]/g, '')
   const letterGap = cells.length > 7 ? 8 : 10
   const letterFont = cells.length > 12 ? 15 : cells.length > 9 ? 17 : 22
   const cellsNodes = cells.map((ch, i) => {

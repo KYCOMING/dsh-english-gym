@@ -94,6 +94,69 @@ test('createReportService reuses cached report when level matches and regenerate
     assert.equal(third.level, 'C1')
     assert.equal(third.title, 'Article for C1')
     assert.equal(calls, 2)
+
+    // Same level & same topic -> reuses cache; changing topic -> regenerates cleanly.
+    const sameTopic = await reportSvc.getReport(false)
+    assert.equal(sameTopic.title, 'Article for C1')
+    assert.equal(calls, 2)
+
+    settings.update({ topicId: 'science' })
+    const newTopic = await reportSvc.getReport(false)
+    assert.equal(newTopic.topic, 'science and discovery')
+    assert.equal(calls, 3)
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true })
+  }
+})
+
+test('createReportService does not cache fallback report on LLM failure and retries cleanly on recovery', async () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'eg-report-fallback-'))
+  try {
+    let available = false
+    let calls = 0
+    const mockCtx = {
+      get(name) {
+        if (name === 'llm') {
+          return {
+            async *stream() {
+              calls += 1
+              if (!available) throw new Error('temporary network outage')
+              const payload = JSON.stringify({
+                title: 'Recovered Article',
+                body: 'Recovered body text.\n\nSecond paragraph.\n\nThird paragraph.',
+                summary_zh: '恢复成功',
+                highlights: [],
+                questions: [{ zh: '测试句子。', en: 'Test sentence.' }],
+              })
+              yield { type: 'text-delta', text: payload }
+              yield { type: 'finish', reason: { kind: 'stop' } }
+            },
+          }
+        }
+        return null
+      },
+    }
+    const conf = { level: 'B1', topic: 'AI and technology', provider: 'mock', model: 'mock-model' }
+    const settings = createSettingsService({ dir, conf })
+    settings.update({ bankLink: false })
+    const reportSvc = createReportService({
+      ctx: mockCtx,
+      conf,
+      dir,
+      getTopic: () => settings.getTopic(),
+      getReportLevel: () => settings.getReportLevel(),
+    })
+
+    const fb = await reportSvc.getReport(false)
+    assert.equal(fb.fallback, true)
+    assert.equal(calls, 1)
+    assert.equal(fs.existsSync(path.join(dir, 'reports')), false)
+
+    available = true
+    const real = await reportSvc.getReport(false)
+    assert.ok(!real.fallback)
+    assert.equal(real.title, 'Recovered Article')
+    assert.equal(calls, 2)
   } finally {
     fs.rmSync(dir, { recursive: true, force: true })
   }

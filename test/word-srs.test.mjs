@@ -216,3 +216,30 @@ test('formatMeaning normalizes punctuation, deduplicates glosses, and preserves 
   assert.equal(formatMeaning('吸收（液体、气体等）'), '吸收（液体、气体等）')
   assert.equal(formatPos('n/v'), '名词 n. / 动词 v.')
 })
+
+test('createWordService accepts letters-only answers for hyphenated and apostrophe words', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'eg-word-punct-'))
+  try {
+    const svc = createWordService({ dir })
+    svc.importBank({
+      name: 'Punctuation Bank',
+      content: "e-mail\t电子邮件\no'clock\t点钟\n",
+    })
+
+    for (let i = 0; i < 2; i += 1) {
+      const q = svc.nextWord({ mode: 'new' })
+      if (q.letters === 5) {
+        const res = svc.checkWord({ id: q.id, answer: 'email' })
+        assert.equal(res.correct, true)
+        assert.equal(res.reference, 'e-mail')
+      } else {
+        assert.equal(q.letters, 6)
+        const res = svc.checkWord({ id: q.id, answer: 'oclock' })
+        assert.equal(res.correct, true)
+        assert.equal(res.reference, "o'clock")
+      }
+    }
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true })
+  }
+})

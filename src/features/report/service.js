@@ -15,11 +15,12 @@ export function createReportService({ ctx, conf, dir, getTopic, getReportLevel }
     const bankLink = opts.bankLink !== false
     const bankId = bankLink ? state.wordBankId || 'builtin' : null
     const level = typeof getReportLevel === 'function' ? getReportLevel() : conf.level
+    const topic = typeof getTopic === 'function' ? getTopic() : conf.topic
 
     if (!force) {
       const cached = loadReport(dir, day)
-      if (cached && cached.body && cached.level === level) {
-        // Reuse today's report only if it was generated for the same difficulty and word-bank mode.
+      if (cached && cached.body && !cached.fallback && cached.level === level && cached.topic === topic) {
+        // Reuse today's report only if it was generated for the same difficulty, topic, and word-bank mode.
         if (bankLink) {
           if (cached.bankLink === true && cached.bankId === bankId) return cached
         } else if (cached.bankLink !== true) {
@@ -28,10 +29,9 @@ export function createReportService({ ctx, conf, dir, getTopic, getReportLevel }
       }
     }
 
-    const key = `${day}|${level}|${bankLink ? bankId : 'off'}`
+    const key = `${day}|${level}|${topic}|${bankLink ? bankId : 'off'}`
     if (reportInflight.has(key)) return reportInflight.get(key)
     const job = (async () => {
-      const topic = typeof getTopic === 'function' ? getTopic() : conf.topic
       const words = bankLink ? pickBankCandidates(dir, state, 30) : []
       const retries = bankLink ? opts.bankRetries : 0
       let report = null
@@ -41,14 +41,17 @@ export function createReportService({ ctx, conf, dir, getTopic, getReportLevel }
         const used = Array.isArray(report.bankWords) ? report.bankWords : []
         if (!words.length || used.length >= 2) break
       }
+      report.topic = topic
       report.bankLink = bankLink
       report.bankId = bankId
       if (!Array.isArray(report.bankWords)) report.bankWords = []
-      saveReport(dir, day, report)
-      try {
-        pruneOldReports(dir, 90)
-      } catch {
-        /* ignore */
+      if (!report.fallback) {
+        saveReport(dir, day, report)
+        try {
+          pruneOldReports(dir, 90)
+        } catch {
+          /* ignore */
+        }
       }
       return report
     })()

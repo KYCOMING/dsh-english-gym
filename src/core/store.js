@@ -53,8 +53,7 @@ export function defaultState() {
     streak: { count: 0, lastActiveDay: null },
     totals: { answered: 0, correct: 0 },
     daily: {}, // dayKey -> { answered, correct }
-    review: [], // [{ id, zh, en, hint, missedAt, misses }]
-    pending: {}, // id -> { zh, en, hint, createdAt, mode }
+    pending: {}, // id -> { zh, en, hint, createdAt, bankWords, source }
     word: { answered: 0, correct: 0 }, // 单词训练 totals
     wordPending: {}, // id -> { en, zh, createdAt }
     wordRecent: [], // recently served words, to avoid immediate repeats
@@ -78,7 +77,6 @@ export function loadState(dir) {
     streak: { ...base.streak, ...(state.streak || {}) },
     totals: { ...base.totals, ...(state.totals || {}) },
     daily: state.daily && typeof state.daily === 'object' ? state.daily : {},
-    review: Array.isArray(state.review) ? state.review : [],
     pending: state.pending && typeof state.pending === 'object' ? state.pending : {},
     word: { ...base.word, ...(state.word || {}) },
     wordPending: state.wordPending && typeof state.wordPending === 'object' ? state.wordPending : {},

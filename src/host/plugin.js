@@ -6,7 +6,7 @@ import { createPhraseService } from '../features/phrase/service.js'
 import { createWordService } from '../features/word/service.js'
 import { createReportService } from '../features/report/service.js'
 import { createSettingsService } from '../features/settings/service.js'
-import { buildDashboard } from '../features/activity/service.js'
+import { buildDashboard, currentStreak } from '../features/activity/service.js'
 import { executeCleanup, previewCleanup } from '../features/activity/cleanup.js'
 import { resolveActiveBank } from '../features/word/banks.js'
 import { summarizeBankMemory } from '../features/word/srs.js'
@@ -34,7 +34,7 @@ function summarize(state, conf, dir) {
   const wordSrs = summarizeBankMemory(bankEntries, state.wordMemory, Date.now())
   return {
     level: conf.level,
-    streakDays: state.streak.count || 0,
+    streakDays: currentStreak(state),
     totals: { answered, correct },
     accuracy: answered ? Math.round((correct / answered) * 100) : 0,
     reviewCount: wordSrs.due,
@@ -105,7 +105,7 @@ export function createEnglishGym(ctx, rawConfig) {
       }
       if (req.method === 'POST' && sub === '/next') {
         const body = await readBody(req)
-        return sendJson(res, 200, await phrase.nextQuestion({ mode: body && body.mode, sessionId: body && body.sessionId }))
+        return sendJson(res, 200, await phrase.nextQuestion({ sessionId: body && body.sessionId }))
       }
       if (req.method === 'POST' && sub === '/check') {
         const body = await readBody(req)

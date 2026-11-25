@@ -152,7 +152,7 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportCon
     if (!label || adding) return
     setAdding(true)
     try {
-      const ok = await save({ customTopics: customTopics.concat({ label }) }, true)
+      const ok = await save({ customTopics: customTopics.concat({ label }) }, false)
       if (ok) setDraft('')
     } finally {
       setAdding(false)
@@ -160,7 +160,7 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportCon
   }
 
   const removeCustom = (id) => {
-    save({ customTopics: customTopics.filter((item) => item.id !== id) }, true)
+    save({ customTopics: customTopics.filter((item) => item.id !== id) }, id === activeId)
   }
 
   const setRetries = (value) => {
@@ -219,6 +219,7 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportCon
   }
 
   const removeBank = async (id) => {
+    const wasActive = id === activeBankId
     setError('')
     setBankNotice('')
     try {
@@ -227,7 +228,7 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportCon
       cachedBanks = next
       setBankData(next)
       if (res.summary) store.setStats(res.summary)
-      if (typeof onWordBankChange === 'function') onWordBankChange()
+      if (wasActive && typeof onWordBankChange === 'function') onWordBankChange()
     } catch (e) {
       setError(e.message || '删除词库失败')
     }
@@ -382,7 +383,7 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportCon
               role: 'switch',
               'aria-checked': settings.bankLink ? 'true' : 'false',
               'aria-label': '词库关联',
-              onClick: () => save({ bankLink: !settings.bankLink }, false),
+              onClick: () => save({ bankLink: !settings.bankLink }, true),
             }),
           ),
           settings.sessionLink

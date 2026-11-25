@@ -39,6 +39,9 @@ function normalizeHighlights(raw) {
  */
 export async function gradeAnswer(ctx, config, { zh, reference, answer }) {
   const local = localGrade(answer, reference)
+  if (!normalize(answer)) {
+    return { correct: false, exact: false, score: 0, reference, tip: '请先输入你的英文译文再提交。', corrected: reference, highlights: [] }
+  }
   if (local.exact) {
     return { correct: true, exact: true, score: 100, reference, tip: '与参考译文完全一致，表达准确自然。', corrected: reference, highlights: [] }
   }

@@ -1,6 +1,25 @@
-import { dayKey } from '../../core/store.js'
+import { dayKey, yesterdayKey } from '../../core/store.js'
 
 const MAX_DAYS = 400
+
+/** Advance the daily study streak when a study event happens today. */
+export function touchStreak(state, now = new Date()) {
+  const day = dayKey(now)
+  if (!state.streak || typeof state.streak !== 'object') state.streak = { count: 0, lastActiveDay: null }
+  if (state.streak.lastActiveDay === day) return
+  state.streak.count = state.streak.lastActiveDay === yesterdayKey(now) ? (Number(state.streak.count) || 0) + 1 : 1
+  state.streak.lastActiveDay = day
+}
+
+/** Return the active streak count, or 0 if the streak has expired (missed yesterday & today). */
+export function currentStreak(state, now = new Date()) {
+  const streak = state && state.streak
+  if (!streak || !streak.lastActiveDay) return 0
+  const today = dayKey(now)
+  const yesterday = yesterdayKey(now)
+  if (streak.lastActiveDay !== today && streak.lastActiveDay !== yesterday) return 0
+  return Math.max(0, Number(streak.count) || 0)
+}
 
 /** Keep only the most recent MAX_DAYS day buckets. */
 function pruneLog(state) {
@@ -24,9 +43,10 @@ function bucketFor(state, day) {
  * record, so each day lists every distinct item once with its latest result.
  */
 export function recordStudy(state, kind, entry) {
-  const day = dayKey()
+  const now = new Date()
+  const day = dayKey(now)
   const bucket = bucketFor(state, day)
-  const at = new Date().toISOString()
+  const at = now.toISOString()
   if (kind === 'word') {
     const key = String(entry.en || '').toLowerCase()
     if (!key) return
@@ -69,6 +89,7 @@ export function recordStudy(state, kind, entry) {
   } else {
     return
   }
+  touchStreak(state, now)
   pruneLog(state)
 }
 
@@ -121,7 +142,7 @@ export function buildDashboard(state) {
 
   return {
     today: dayKey(),
-    streak: (state.streak && state.streak.count) || 0,
+    streak: currentStreak(state),
     totals: { days: activity.length, words: wordTotal, phrases: phraseTotal },
     activity,
     days,

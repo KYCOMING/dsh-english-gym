@@ -91,6 +91,28 @@ test('previewCleanup and executeCleanup remove old logs/reports while preserving
   }
 })
 
+test('executeCleanup recomputes streak accurately after partial date-range deletion', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'eg-cleanup-streak-'))
+  try {
+    const now = new Date('2026-11-25T15:00:00')
+    const state = loadState(dir)
+    // 10 consecutive days from 2026-11-16 through 2026-11-25
+    for (let d = 16; d <= 25; d += 1) {
+      const key = `2026-11-${d}`
+      state.log[key] = { words: [{ en: 'test', zh: '测试', ok: true }], phrases: [] }
+    }
+    state.streak = { count: 10, lastActiveDay: '2026-11-25' }
+    saveState(dir, state)
+
+    // Clearing older than 7d (cutoff 2026-11-18) removes 11-16 and 11-17 -> 8 consecutive days remain
+    const res = executeCleanup(dir, { range: '7d', clearMemory: false, now })
+    assert.equal(res.removed.recordDays, 2)
+    assert.deepEqual(loadState(dir).streak, { count: 8, lastActiveDay: '2026-11-25' })
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true })
+  }
+})
+
 test('pruneOldReports removes reports older than 90 days and retains recent ones', () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'eg-prune-reports-'))
   try {

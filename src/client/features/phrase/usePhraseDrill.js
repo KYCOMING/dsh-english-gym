@@ -16,7 +16,7 @@ export function usePhraseDrill({ open, active }) {
   const startedRef = useRef(false)
   const inFlightRef = useRef(false)
 
-  const loadNext = useCallback(async (mode) => {
+  const loadNext = useCallback(async () => {
     // Guard against a duplicate request: the "reset then reload" flow can
     // re-enter through the auto-load effect and, before this guard, fired a
     // second /next whose late response briefly replaced the just-shown card.
@@ -27,7 +27,7 @@ export function usePhraseDrill({ open, active }) {
     try {
       const data = await api('/next', {
         method: 'POST',
-        body: JSON.stringify({ mode: mode || 'new', sessionId: store.sessionId || '' }),
+        body: JSON.stringify({ sessionId: store.sessionId || '' }),
       })
       setCard(data)
       setAnswer('')
@@ -48,12 +48,12 @@ export function usePhraseDrill({ open, active }) {
   useEffect(() => {
     if (open && active && !card && !feedback && !startedRef.current) {
       startedRef.current = true
-      loadNext('new')
+      loadNext()
     }
   }, [open, active, card, feedback, loadNext])
 
   const submit = useCallback(async () => {
-    if (!card || busy) return
+    if (!card || busy || !String(answer || '').trim()) return
     const currentAnswer = answer
     setBusy(true)
     setError('')
@@ -102,7 +102,7 @@ export function usePhraseDrill({ open, active }) {
     // Keep startedRef true so the auto-load effect does NOT fire a second
     // /next on top of the one we start here (that double-fetch made the
     // previous wording flash in for a moment).
-    loadNext('new')
+    loadNext()
   }, [loadNext])
 
   const reset = useCallback(() => {

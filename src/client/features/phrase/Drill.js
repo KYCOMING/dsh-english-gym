@@ -384,7 +384,7 @@ export function Drill({
         onKeyDown: (e) => {
           if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
             e.preventDefault()
-            onSubmit()
+            if (answer.trim()) onSubmit()
           }
         },
       }),

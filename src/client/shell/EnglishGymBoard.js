@@ -235,7 +235,10 @@ export function EnglishGymBoard() {
                     onDataCleared: ({ range, clearMemory } = {}) => {
                       invalidateDashboardCache()
                       if (clearMemory || range === 'all') setWordBankRev((n) => n + 1)
-                      if (range === 'all') dailyReport.invalidate()
+                      if (range === 'all') {
+                        drill.reset()
+                        dailyReport.invalidate()
+                      }
                       refreshStats()
                     },
                     onTopicChange: () => {

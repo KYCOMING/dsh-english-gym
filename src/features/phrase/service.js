@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { dayKey, loadState, saveState, yesterdayKey } from '../../core/store.js'
+import { dayKey, loadState, saveState } from '../../core/store.js'
 import { gradeAnswer } from './grade.js'
 import { generateQuestion } from './generate.js'
 import { readSessionExcerpt } from './session.js'
@@ -30,11 +30,6 @@ function recordAnswer(state, correct) {
 
   state.totals.answered += 1
   if (correct) state.totals.correct += 1
-
-  if (state.streak.lastActiveDay !== day) {
-    state.streak.count = state.streak.lastActiveDay === yesterdayKey() ? (state.streak.count || 0) + 1 : 1
-    state.streak.lastActiveDay = day
-  }
 }
 
 function recentPrompts(state, limit = 6) {
@@ -64,58 +59,50 @@ function recentPrompts(state, limit = 6) {
 /** Phrase translation drill: generate one prompt, grade one answer. */
 export function createPhraseService({ ctx, conf, dir, getTopic }) {
   async function nextQuestion(input) {
-    const mode = typeof input === 'string' ? input : input && input.mode
     const sessionId = typeof input === 'object' && input ? input.sessionId : ''
-    const state = loadState(dir)
+    const snapshot = loadState(dir)
+    const opts = normalizeSettings(snapshot.settings)
+    const sessionExcerpt = opts.sessionLink && sessionId ? await readSessionExcerpt(ctx, sessionId) : ''
     let picked
-    if (mode === 'review' && state.review.length) {
-      state.review.sort((a, b) => String(a.missedAt || '').localeCompare(String(b.missedAt || '')))
-      const item = state.review[0]
-      picked = { zh: item.zh, en: item.en, hint: item.hint || '', mode: 'review', bankWords: [], source: 'review' }
+    if (sessionExcerpt) {
+      // Session-linked mode ignores topic and word-bank coupling so the sentence stays focused on the active conversation.
+      const q = await generateQuestion(ctx, conf, {
+        level: conf.level,
+        sessionContext: sessionExcerpt,
+        avoid: recentPrompts(snapshot, 6),
+      })
+      picked = {
+        zh: q.zh,
+        en: q.en,
+        hint: q.hint || '',
+        bankWords: [],
+        source: q.fallback ? 'fallback' : 'session',
+      }
     } else {
-      const opts = normalizeSettings(state.settings)
-      const sessionExcerpt = opts.sessionLink && sessionId ? await readSessionExcerpt(ctx, sessionId) : ''
-      if (sessionExcerpt) {
-        // Session-linked mode ignores topic and word-bank coupling so the sentence stays focused on the active conversation.
-        const q = await generateQuestion(ctx, conf, {
-          level: conf.level,
-          sessionContext: sessionExcerpt,
-          avoid: recentPrompts(state, 6),
-        })
-        picked = {
-          zh: q.zh,
-          en: q.en,
-          hint: q.hint || '',
-          mode: 'new',
-          bankWords: [],
-          source: q.fallback ? 'fallback' : 'session',
-        }
-      } else {
-        const topic = typeof getTopic === 'function' ? getTopic() : conf.topic
-        const words = opts.bankLink ? pickBankCandidates(dir, state, 24) : []
-        const retries = opts.bankLink ? opts.bankRetries : 0
-        let q = null
-        for (let attempt = 0; attempt <= retries; attempt += 1) {
-          q = await generateQuestion(ctx, conf, { level: conf.level, topic, words })
-          if (!q || q.fallback) break
-          if (!words.length || (Array.isArray(q.used) && q.used.length)) break
-        }
-        picked = {
-          zh: q.zh,
-          en: q.en,
-          hint: q.hint || '',
-          mode: 'new',
-          bankWords: q.used || [],
-          source: q.fallback ? 'fallback' : 'topic',
-        }
+      const topic = typeof getTopic === 'function' ? getTopic() : conf.topic
+      const words = opts.bankLink ? pickBankCandidates(dir, snapshot, 24) : []
+      const retries = opts.bankLink ? opts.bankRetries : 0
+      let q = null
+      for (let attempt = 0; attempt <= retries; attempt += 1) {
+        q = await generateQuestion(ctx, conf, { level: conf.level, topic, words })
+        if (!q || q.fallback) break
+        if (!words.length || (Array.isArray(q.used) && q.used.length)) break
+      }
+      picked = {
+        zh: q.zh,
+        en: q.en,
+        hint: q.hint || '',
+        bankWords: q.used || [],
+        source: q.fallback ? 'fallback' : 'topic',
       }
     }
     const id = randomUUID()
+    // Re-read state after async LLM calls so concurrent word/settings writes are never overwritten.
+    const state = loadState(dir)
     state.pending[id] = {
       zh: picked.zh,
       en: picked.en,
       hint: picked.hint,
-      mode: picked.mode,
       bankWords: picked.bankWords || [],
       source: picked.source || 'topic',
       createdAt: new Date().toISOString(),
@@ -126,48 +113,40 @@ export function createPhraseService({ ctx, conf, dir, getTopic }) {
       id,
       zh: picked.zh,
       hint: picked.hint,
-      mode: picked.mode,
       bankWords: picked.bankWords || [],
       source: picked.source || 'topic',
     }
   }
 
   async function checkAnswer({ id, answer }) {
-    const state = loadState(dir)
-    const pending = id ? state.pending[id] : null
+    if (!String(answer || '').trim()) {
+      const error = new Error('请先输入英文译文。')
+      error.status = 400
+      throw error
+    }
+    const snapshot = loadState(dir)
+    const pending = id ? snapshot.pending[id] : null
     if (!pending) {
       const error = new Error('题目已过期，请点“下一题”重新开始。')
       error.status = 409
       throw error
     }
-    const result = await gradeAnswer(ctx, conf, { zh: pending.zh, reference: pending.en, answer: answer || '' })
-    recordAnswer(state, result.correct)
-
-    const idx = state.review.findIndex((r) => r.zh === pending.zh)
-    if (result.correct) {
-      if (idx >= 0) state.review.splice(idx, 1)
-    } else {
-      const entry = {
-        id: idx >= 0 ? state.review[idx].id : randomUUID(),
+    const result = await gradeAnswer(ctx, conf, { zh: pending.zh, reference: pending.en, answer })
+    // Reload state after awaiting the grader so concurrent updates to state.json survive.
+    const state = loadState(dir)
+    if (state.pending[id]) {
+      recordAnswer(state, result.correct)
+      // Keep the prompt pending (capped by prunePending) so “再试一次” can re-check the same sentence.
+      recordStudy(state, 'phrase', {
         zh: pending.zh,
         en: pending.en,
-        hint: pending.hint || '',
-        missedAt: new Date().toISOString(),
-        misses: idx >= 0 ? (state.review[idx].misses || 1) + 1 : 1,
-      }
-      if (idx >= 0) state.review[idx] = entry
-      else state.review.push(entry)
+        answer,
+        ok: result.correct,
+        score: result.score,
+      })
+      pruneDaily(state)
+      saveState(dir, state)
     }
-    // Keep the prompt pending (capped by prunePending) so “再试一次” can re-check the same sentence.
-    recordStudy(state, 'phrase', {
-      zh: pending.zh,
-      en: pending.en,
-      answer: answer || '',
-      ok: result.correct,
-      score: result.score,
-    })
-    pruneDaily(state)
-    saveState(dir, state)
 
     return {
       correct: result.correct,
