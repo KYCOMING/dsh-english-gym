@@ -20,6 +20,9 @@
   --eg-bad: var(--dsw-alias-state-error-primary, #cf222e);
   --eg-warn: var(--dsw-alias-state-warn-primary, #bf8700);
   --eg-warn-strong: var(--eg-warn);
+  --eg-hl-bg: color-mix(in srgb, #f5c518 28%, transparent);
+  --eg-hl-bg-active: color-mix(in srgb, #f5c518 46%, transparent);
+  --eg-hl-line: color-mix(in srgb, var(--eg-warn) 58%, transparent);
   --eg-r: 16px;
   --eg-r-sm: 10px;
   --eg-shadow: 0 20px 56px rgba(17, 22, 31, .22), 0 2px 8px rgba(17, 22, 31, .08);

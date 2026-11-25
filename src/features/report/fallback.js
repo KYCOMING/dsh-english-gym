@@ -14,4 +14,13 @@ export const FALLBACK_REPORT = {
     { zh: '紧凑的模型可以运行在笔记本电脑或手机上。', en: 'A compact model can run on a laptop or inside a phone.' },
     { zh: '未来的 AI 很可能是一种混合模式。', en: 'The future of AI is likely to be a hybrid.' },
   ],
+  highlights: [
+    { word: 'parameters', lemma: 'parameter', pos: 'n', zh: '参数' },
+    { word: 'compact', pos: 'adj', zh: '紧凑的；小巧的' },
+    { word: 'autocomplete', pos: 'n', zh: '自动补全' },
+    { word: 'burning through', lemma: 'burn through', pos: 'phrase', zh: '迅速耗尽（预算等）' },
+    { word: 'reasoning', pos: 'n', zh: '推理；逻辑思考' },
+    { word: 'open-ended', pos: 'adj', zh: '开放式的；无固定答案的' },
+    { word: 'specialised', lemma: 'specialise', pos: 'adj', zh: '专门化的；专用的' },
+  ],
 }

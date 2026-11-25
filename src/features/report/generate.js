@@ -1,5 +1,6 @@
 import { completeText, extractJson } from '../../core/llm.js'
 import { FALLBACK_REPORT } from './fallback.js'
+import { normalizeReportHighlights } from './highlights.js'
 import { formatCandidateList, usedBankWords } from '../word/sample.js'
 
 function pickLevel(level, fallback) {
@@ -24,14 +25,20 @@ export async function generateReport(ctx, config, { level, date, topic, words } 
     '- A catchy English title (4-8 words).\n' +
     '- A 180-240 word English article in 3 short paragraphs. Clear, natural, informative, level-appropriate.\n' +
     '- 3 Chinese sentences based on the article, each with its natural English reference sentence (for translation practice).\n' +
-    '- A one-line summary in Simplified Chinese.\n'
+    '- A one-line summary in Simplified Chinese.\n' +
+    '- 6-8 key vocabulary highlights from the article (about 2-3 per paragraph — keep it selective, never over-highlight). ' +
+    'Prefer single words plus at most 1-2 high-value short phrases/collocations useful for a CEFR ' + lvl + ' Chinese learner; ' +
+    'skip ultra-basic words, numbers, and proper nouns. Each "word" MUST be the exact substring as written in "body"; ' +
+    'give a concise in-context Simplified Chinese gloss in "zh" (<= 20 chars), short "pos" (n, v, adj, adv, phrase), and optional "lemma" when inflected.\n'
   if (candidates.length) {
     prompt +=
       `Optional vocabulary from the learner's current word bank. Naturally incorporate 4-6 of these where they ` +
-      `fit the topic; skip any that feel forced, never mention or list them, keep the article level-appropriate:\n` +
+      `fit the topic; skip any that feel forced, never mention or list them, keep the article level-appropriate. ` +
+      `Include the incorporated word-bank words among the 6-8 "highlights" first, then fill the rest up to 6-8 total:\n` +
       `${formatCandidateList(candidates)}\n`
   }
-  prompt += 'Reply with ONLY this JSON: {"title":"...","body":"...","summary_zh":"...","questions":[{"zh":"...","en":"..."}]}'
+  prompt +=
+    'Reply with ONLY this JSON: {"title":"...","body":"...","summary_zh":"...","highlights":[{"word":"...","lemma":"...","pos":"...","zh":"..."}],"questions":[{"zh":"...","en":"..."}]}'
 
   try {
     const text = await completeText(ctx, config, {
@@ -42,6 +49,7 @@ export async function generateReport(ctx, config, { level, date, topic, words } 
     })
     const parsed = extractJson(text)
     if (parsed && parsed.title && parsed.body) {
+      const body = String(parsed.body).trim()
       const questions = Array.isArray(parsed.questions)
         ? parsed.questions
             .filter((q) => q && q.zh && q.en)
@@ -52,10 +60,11 @@ export async function generateReport(ctx, config, { level, date, topic, words } 
         date: day,
         level: lvl,
         title: String(parsed.title).trim(),
-        body: String(parsed.body).trim(),
+        body,
         summary_zh: parsed.summary_zh ? String(parsed.summary_zh).trim() : '',
+        highlights: normalizeReportHighlights(parsed.highlights, body, candidates),
         questions: questions.length ? questions : FALLBACK_REPORT.questions,
-        bankWords: usedBankWords(String(parsed.body), candidates),
+        bankWords: usedBankWords(body, candidates),
       }
     }
   } catch {
@@ -67,6 +76,7 @@ export async function generateReport(ctx, config, { level, date, topic, words } 
     title: FALLBACK_REPORT.title,
     body: FALLBACK_REPORT.body,
     summary_zh: FALLBACK_REPORT.summary_zh,
+    highlights: Array.isArray(FALLBACK_REPORT.highlights) ? FALLBACK_REPORT.highlights : [],
     questions: FALLBACK_REPORT.questions,
     bankWords: [],
     fallback: true,

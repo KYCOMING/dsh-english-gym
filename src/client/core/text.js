@@ -1,6 +1,7 @@
 export const POS_LABELS = {
   n: '名词', v: '动词', adj: '形容词', adv: '副词', prep: '介词', pron: '代词',
   conj: '连词', num: '数词', art: '冠词', aux: '助动词', int: '感叹词',
+  phrase: '短语', idiom: '习语',
 }
 
 export function formatPos(pos) {
@@ -12,7 +13,12 @@ export function formatPos(pos) {
     .map((p) => (p === 'vt' || p === 'vi' ? 'v' : p))
   const unique = [...new Set(parts)]
   if (!unique.length) return ''
-  return unique.map((p) => (POS_LABELS[p] ? POS_LABELS[p] + ' ' + p + '.' : p)).join(' / ')
+  return unique
+    .map((p) => {
+      if (p === 'phrase' || p === 'idiom') return POS_LABELS[p]
+      return POS_LABELS[p] ? POS_LABELS[p] + ' ' + p + '.' : p
+    })
+    .join(' / ')
 }
 
 export function escapeRegExp(text) {

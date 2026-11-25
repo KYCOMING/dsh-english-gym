@@ -122,7 +122,7 @@ export function EnglishGymBoard() {
   useEffect(() => {
     if (!open) return
     const onKey = (e) => {
-      if (e.key === 'Escape') store.setOpen(false)
+      if (e.key === 'Escape' && !e.defaultPrevented) store.setOpen(false)
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
