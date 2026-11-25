@@ -1,8 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { copyToClipboard, normalizeEnglish, splitByTerms } from '../../core/text.js'
 import { bounceButton, clamp, useCountUp } from '../../components/motion.js'
 import { ScoreRing } from '../../components/ScoreRing.js'
 import { phraseVerdict } from './verdict.js'
+
+const useIsoLayoutEffect = React.useLayoutEffect || useEffect
+const INPUT_LINE_HEIGHT = 40
 
 export function Drill({
   card,
@@ -29,6 +32,27 @@ export function Drill({
     setCopied(false)
     return () => clearTimeout(copyTimerRef.current)
   }, [feedback])
+
+  const syncInputHeight = useCallback(() => {
+    const el = inputRef.current
+    if (!el) return
+    el.style.height = INPUT_LINE_HEIGHT + 'px'
+    const lines = Math.max(1, Math.min(6, Math.ceil((el.scrollHeight - 2) / INPUT_LINE_HEIGHT)))
+    el.style.height = lines * INPUT_LINE_HEIGHT + 'px'
+    el.style.overflowY = lines >= 6 ? 'auto' : 'hidden'
+  }, [])
+
+  useIsoLayoutEffect(() => {
+    syncInputHeight()
+  }, [answer, card, feedback, syncInputHeight])
+
+  useEffect(() => {
+    const el = inputRef.current
+    if (!el || typeof ResizeObserver !== 'function') return undefined
+    const ro = new ResizeObserver(syncInputHeight)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [card, feedback, syncInputHeight])
 
   // Focus and select the previous draft when returning from “再试一次”.
   useEffect(() => {
@@ -307,7 +331,7 @@ export function Drill({
 
   return React.createElement(
     'div',
-    null,
+    { className: 'eg-drill-stage' },
     React.createElement(
       'div',
       { className: 'eg-cap eg-cap-row' },
@@ -352,6 +376,7 @@ export function Drill({
       { className: 'eg-inputwrap' },
       React.createElement('textarea', {
         ref: inputRef,
+        rows: 1,
         className: 'eg-input' + (error ? ' error' : ''),
         value: answer,
         placeholder: '在这里写下你的英文…',
@@ -378,7 +403,7 @@ export function Drill({
         },
         '提交',
       ),
-      React.createElement('button', { className: 'eg-btn ghost', onClick: onNext, disabled: busy }, '换一题'),
+      React.createElement('button', { className: 'eg-btn', onClick: onNext, disabled: busy }, '换一题'),
       React.createElement(
         'span',
         { className: 'eg-kbd', title: '⌘/Ctrl + Enter 提交' },

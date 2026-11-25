@@ -53,13 +53,13 @@ var tokens_default = '/* Hallmark · component: english-gym panel · genre: edit
 var shell_default = '/* ===== pill (composer strip) ===== */\n.eg-pill {\n  display: flex; align-items: center; gap: 9px; width: 100%;\n  padding: 7px 10px; background: transparent; border: none; border-radius: 10px;\n  color: var(--eg-ink-2); font-family: var(--eg-font); font-size: var(--eg-fs-sm); text-align: left; cursor: pointer;\n  transition: background var(--eg-dur) ease, transform .12s ease;\n}\n.eg-pill:hover { background: var(--eg-bg-2); }\n.eg-pill:active { transform: scale(.985); }\n.eg-pill:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }\n.eg-mono {\n  width: 22px; height: 22px; border-radius: 7px; flex: 0 0 auto;\n  background: var(--eg-accent); color: var(--eg-on-accent);\n  display: flex; align-items: center; justify-content: center;\n  font: 700 var(--eg-fs-xs)/1 var(--eg-font); letter-spacing: .02em;\n}\n.eg-wordmark { font-weight: 650; color: var(--eg-ink); letter-spacing: .01em; }\n.eg-streak { color: var(--eg-ink-2); font-variant-numeric: tabular-nums; }\n.eg-chip {\n  display: inline-flex; align-items: center; gap: 4px; padding: 1px 8px; height: 20px; border-radius: 999px;\n  background: var(--eg-bg-3); color: var(--eg-ink-2); font-size: 11.5px; font-weight: 600; font-variant-numeric: tabular-nums;\n}\n.eg-chip.warn {\n  background: color-mix(in srgb, var(--eg-warn) 14%, transparent);\n  border: 1px solid color-mix(in srgb, var(--eg-warn) 32%, transparent);\n  color: var(--eg-warn);\n}\n.eg-chev { margin-left: auto; opacity: .7; font-size: var(--eg-fs-xs); transition: transform .2s var(--eg-ease); }\n.eg-pill[aria-expanded="true"] .eg-chev { transform: rotate(90deg); }\n\n/* ===== panel ===== */\n.eg-panel {\n  position: fixed; z-index: 2147483000; pointer-events: auto;\n  -webkit-app-region: no-drag; app-region: no-drag;\n  display: flex; flex-direction: column;\n  background: var(--eg-bg); border: 1px solid var(--eg-line); border-radius: var(--eg-r);\n  box-shadow: var(--eg-shadow); overflow: hidden;\n  font: var(--eg-fs-sm)/1.5 var(--eg-font); color: var(--eg-ink);\n  transform-origin: bottom center; animation: eg-pop .2s var(--eg-ease) both;\n}\n.eg-panel.is-closing {\n  animation: eg-pop-out .14s cubic-bezier(.4, 0, 1, 1) forwards;\n  pointer-events: none;\n}\n@keyframes eg-pop { from { opacity: 0; transform: scale(.95) translateY(8px); } to { opacity: 1; transform: none; } }\n@keyframes eg-pop-out { from { opacity: 1; transform: none; } to { opacity: 0; transform: scale(.96) translateY(6px); } }\n.eg-head {\n  display: flex; align-items: center; gap: 5px; padding: 9px 8px 9px 10px;\n  border-bottom: 1px solid var(--eg-line); flex: 0 0 auto; cursor: move; user-select: none; touch-action: none;\n  background: var(--eg-bg); position: relative;\n}\n.eg-grip { color: var(--eg-ink-2); opacity: .7; font-size: var(--eg-fs-xs); letter-spacing: -2px; cursor: grab; width: 10px; flex: 0 0 auto; transition: opacity var(--eg-dur) ease; }\n.eg-head:hover .eg-grip { opacity: 1; }\n.eg-tabs { position: relative; display: flex; flex-wrap: nowrap; align-items: center; gap: 0; margin-left: 0; min-width: 0; flex: 0 1 auto; }\n.eg-tab {\n  position: relative; padding: 5px 5px; border: none; background: transparent; cursor: pointer; white-space: nowrap;\n  color: var(--eg-ink-2); font: 600 var(--eg-fs-xs)/1.2 var(--eg-font); border-radius: 7px;\n  transition: color var(--eg-dur) ease, background var(--eg-dur) ease;\n}\n.eg-tab:hover { color: var(--eg-ink); background: var(--eg-bg-2); }\n.eg-tab:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-tab.active { color: var(--eg-ink); }\n.eg-tabs:not(.has-slider) .eg-tab.active::after {\n  content: ""; position: absolute; left: 5px; right: 5px; bottom: -10px; height: 2px; border-radius: 2px; background: var(--eg-accent);\n}\n.eg-tab-indicator {\n  position: absolute; left: 0; bottom: -10px; height: 2px; border-radius: 2px;\n  background: var(--eg-accent); pointer-events: none;\n  transition: transform .24s var(--eg-ease), width .24s var(--eg-ease), opacity .16s ease;\n  will-change: transform, width;\n}\n.eg-head-right { margin-left: auto; display: flex; align-items: center; gap: 6px; }\n.eg-close { appearance: none; -webkit-appearance: none;\n  border: none; background: transparent; color: var(--eg-ink-2); cursor: pointer;\n  width: 26px; height: 26px; border-radius: 7px; font-size: 14px; line-height: 1; display: flex; align-items: center; justify-content: center;\n  transition: background var(--eg-dur) ease, color var(--eg-dur) ease, transform .14s ease;\n}\n.eg-close:hover { background: var(--eg-bg-2); color: var(--eg-ink); }\n.eg-close:active { transform: scale(.9); }\n.eg-close:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-body { padding: 20px 22px 0; overflow-y: auto; flex: 1 1 auto; display: flex; flex-direction: column; }\n.eg-body:has(> .eg-view > .eg-word),\n.eg-body:has(.eg-fb.is-phrase) {\n  overflow-y: hidden;\n}\n.eg-body > * { width: 100%; max-width: 640px; margin-left: auto; margin-right: auto; }\n\n/* ===== shared motion primitives ===== */\n.eg-view {\n  width: 100%; max-width: 640px; margin-left: auto; margin-right: auto;\n  display: flex; flex-direction: column; flex: 1 0 auto; padding-bottom: 24px;\n}\n.eg-view > * {\n  animation: eg-view-in .18s var(--eg-ease) both;\n}\n.eg-view:has(> .eg-word),\n.eg-view:has(.eg-fb.is-phrase) {\n  flex: 1 1 0; min-height: 0;\n}\n.eg-stage-in { animation: eg-stage-in .22s var(--eg-ease) both; }\n@keyframes eg-view-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }\n@keyframes eg-stage-in { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: none; } }\n.eg-collapse {\n  display: grid; grid-template-rows: 0fr; opacity: 0;\n  transition: grid-template-rows .24s var(--eg-ease), opacity .2s ease;\n}\n.eg-collapse.open { grid-template-rows: 1fr; opacity: 1; }\n.eg-collapse-inner { overflow: hidden; min-height: 0; }\n\n/* ===== misc ===== */\n.eg-loading { display: flex; align-items: center; gap: 9px; color: var(--eg-ink-2); padding: 10px 0; font-size: var(--eg-fs-sm); }\n.eg-loading.is-stage {\n  flex: 1 1 auto; width: 100%; min-height: 180px;\n  flex-direction: column; justify-content: center; gap: 14px;\n  padding: 0 0 14px; text-align: center;\n  font-size: 14px; font-weight: 500; color: var(--eg-ink-2);\n}\n.eg-spin { display: inline-block; width: 15px; height: 15px; border: 2px solid var(--eg-line-2); border-top-color: var(--eg-accent); border-radius: 50%; animation: eg-spin .7s linear infinite; }\n.eg-loading.is-stage .eg-spin { width: 28px; height: 28px; border-width: 2.5px; }\n@keyframes eg-spin { to { transform: rotate(360deg); } }\n.eg-resize { position: absolute; right: 0; bottom: 0; width: 18px; height: 18px; cursor: nwse-resize; touch-action: none; }\n.eg-resize::after { content: ""; position: absolute; right: 4px; bottom: 4px; width: 9px; height: 9px; border-right: 2px solid var(--eg-line-2); border-bottom: 2px solid var(--eg-line-2); border-bottom-right-radius: 3px; opacity: .7; transition: opacity var(--eg-dur) ease; }\n.eg-resize:hover::after { opacity: 1; }\n\n';
 
 // src/client/styles/phrase.css
-var phrase_default = '/* ===== drill ===== */\n.eg-cap { color: var(--eg-ink-2); font-size: var(--eg-fs-xs); font-weight: 600; letter-spacing: .02em; }\n.eg-zh {\n  margin-top: 14px; font-family: var(--eg-font); font-size: 18px; line-height: 1.6; font-weight: 650;\n  letter-spacing: -.005em; color: var(--eg-ink); overflow-wrap: break-word;\n}\n.eg-hintbtn { appearance: none; -webkit-appearance: none;\n  margin-top: 14px; display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 5px 11px;\n  border: 1px solid var(--eg-line); background: var(--eg-bg); border-radius: 999px;\n  color: var(--eg-ink-2); font: 600 var(--eg-fs-xs)/1 var(--eg-font); cursor: pointer;\n  transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease, background var(--eg-dur) ease;\n}\n.eg-hintbtn:hover { border-color: var(--eg-line-2); background: var(--eg-bg-2); color: var(--eg-ink); }\n.eg-hintbtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-hintbtn .caret { display: inline-block; transition: transform .22s var(--eg-ease); }\n.eg-hintbtn[aria-expanded="true"] .caret { transform: rotate(90deg); }\n.eg-hint-collapse { width: 100%; }\n.eg-hintbox {\n  max-width: 520px; margin: 10px auto 0; padding: 2px 8px;\n  color: var(--eg-ink-2); font-family: var(--eg-en); font-size: var(--eg-fs-sm); line-height: 1.6;\n  text-align: center; overflow-wrap: break-word;\n}\n.eg-inputwrap { position: relative; margin-top: 18px; }\n.eg-input {\n  width: 100%; min-height: 98px; resize: vertical; padding: 12px 14px;\n  border: 1px solid var(--eg-line); border-radius: var(--eg-r-sm);\n  background: var(--eg-bg-2); color: var(--eg-ink);\n  font: var(--eg-fs-md)/1.6 var(--eg-font); outline: none;\n  transition: border-color var(--eg-dur) ease, box-shadow var(--eg-dur) ease, background var(--eg-dur) ease;\n}\n.eg-input::placeholder { color: var(--eg-ink-2); opacity: .82; }\n.eg-input:hover { border-color: var(--eg-line-2); }\n.eg-input:focus { border-color: var(--eg-accent); background: var(--eg-bg); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 16%, transparent); }\n.eg-input.error { border-color: var(--eg-bad); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-bad) 14%, transparent); }\n.eg-foot { display: flex; align-items: center; gap: 10px; margin-top: 16px; }\n.eg-foot .eg-kbd { margin-left: auto; }\n.eg-err { color: var(--eg-bad); font-size: var(--eg-fs-xs); margin-top: 8px; }\n.eg-kbd { color: var(--eg-ink-2); font-size: var(--eg-fs-xs); white-space: nowrap; }\n.eg-kbd kbd {\n  font: 600 11.5px/1 var(--eg-font); padding: 2px 5px; border: 1px solid var(--eg-line); border-bottom-width: 2px;\n  border-radius: 4px; background: var(--eg-bg); color: var(--eg-ink-2);\n}\n.eg-actions { display: flex; gap: 8px; margin-top: 16px; }\n.eg-btn {\n  display: inline-flex; align-items: center; justify-content: center; gap: 6px;\n  min-height: 36px; min-width: 76px; padding: 0 15px; border-radius: var(--eg-r-sm); cursor: pointer;\n  appearance: none; -webkit-appearance: none;\n  font: 600 var(--eg-fs-sm)/1 var(--eg-font);\n  transition: background var(--eg-dur) ease, filter var(--eg-dur) ease, border-color var(--eg-dur) ease, transform .26s var(--eg-spring);\n  border: 1px solid var(--eg-line-2); background: var(--eg-bg); color: var(--eg-ink);\n}\n.eg-btn:hover { background: var(--eg-bg-2); }\n.eg-btn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }\n.eg-btn:active { transform: scale(.94); transition-duration: .06s; }\n.eg-btn.is-bouncing { animation: eg-btn-bounce .34s var(--eg-spring); }\n@keyframes eg-btn-bounce {\n  0% { transform: scale(.93); }\n  55% { transform: scale(1.04); }\n  100% { transform: scale(1); }\n}\n.eg-btn.primary { border-color: transparent; background: var(--eg-accent); color: var(--eg-on-accent); }\n.eg-btn.primary:hover { filter: brightness(1.08); }\n.eg-btn:disabled { opacity: .48; cursor: not-allowed; pointer-events: none; }\n.eg-btn.primary:disabled { background: var(--eg-accent); color: var(--eg-on-accent); border-color: transparent; }\n.eg-btn:not(.primary):disabled { background: var(--eg-bg-2); color: var(--eg-ink-2); border-color: var(--eg-line); }\n.eg-btn.primary.is-loading { color: transparent; position: relative; }\n.eg-btn.primary.is-loading::after {\n  content: ""; position: absolute; width: 15px; height: 15px; border-radius: 50%;\n  border: 2px solid rgba(255, 255, 255, .45); border-top-color: #fff; animation: eg-spin .7s linear infinite;\n}\n.eg-btn.ghost { border-color: transparent; background: transparent; color: var(--eg-ink-2); padding: 0 10px; }\n.eg-btn.ghost:hover { background: var(--eg-bg-2); color: var(--eg-ink); }\n\n/* ===== confetti ===== */\n.eg-confetti { position: absolute; inset: 0; z-index: 6; pointer-events: none; overflow: hidden; border-radius: inherit; }\n.eg-confetti-piece {\n  position: absolute; display: block; border-radius: 1.5px; opacity: 0;\n  transform: translate(-50%, -50%) rotate(var(--r0, 0deg));\n  animation: eg-confetti-fly var(--dur, 900ms) cubic-bezier(.15, .7, .3, 1) var(--delay, 0ms) forwards;\n  will-change: transform, opacity;\n}\n@keyframes eg-confetti-fly {\n  0%   { opacity: 1; transform: translate(-50%, -50%) rotate(var(--r0, 0deg)) scale(.65); }\n  18%  { opacity: 1; }\n  100% { opacity: 0; transform: translate(calc(-50% + var(--dx, 0px)), calc(-50% + var(--dy, 0px))) rotate(calc(var(--r0, 0deg) + var(--rot, 360deg))) scale(1); }\n}\n\n/* ===== feedback ===== */\n.eg-fb {\n  --eg-tone: var(--eg-line-2);\n  margin-top: 8px; padding: 18px 20px; border: 1px solid var(--eg-line);\n  border-top: 3px solid var(--eg-line); border-radius: 12px; background: var(--eg-bg);\n  text-align: left; animation: eg-stage-in .24s var(--eg-ease) both;\n}\n.eg-fb.ok { --eg-tone: var(--eg-ok); border-top-color: var(--eg-ok); }\n.eg-fb.warn { --eg-tone: var(--eg-warn); border-top-color: var(--eg-warn); }\n.eg-fb.bad { --eg-tone: var(--eg-bad); border-top-color: var(--eg-bad); }\n.eg-fb-top { display: flex; align-items: baseline; gap: 10px; }\n.eg-score { font: 700 var(--eg-fs-xl)/1 var(--eg-font); font-variant-numeric: tabular-nums; letter-spacing: -.02em; color: var(--eg-tone); }\n.eg-score small { font-size: var(--eg-fs-xs); font-weight: 700; opacity: .9; color: inherit; margin-left: 2px; }\n.eg-fb-status { font-weight: 700; font-size: 16px; color: var(--eg-tone); line-height: 1.25; }\n.eg-fb-ref {\n  margin-top: 14px; padding: 12px 14px; border-radius: 10px; background: var(--eg-bg-2);\n  font-family: var(--eg-en); font-size: 17px; line-height: 1.65; color: var(--eg-ink); overflow-wrap: break-word;\n  animation: eg-view-in .24s var(--eg-ease) .05s both;\n}\n.eg-fb-ref .lbl { display: block; font: 600 11.5px/1 var(--eg-font); color: var(--eg-ink-2); letter-spacing: .02em; margin-bottom: 6px; }\n.eg-fb-tip {\n  margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--eg-line);\n  color: var(--eg-ink-2); font-size: var(--eg-fs-sm); line-height: 1.65;\n  display: flex; gap: 8px; align-items: flex-start;\n  animation: eg-view-in .24s var(--eg-ease) .1s both;\n}\n.eg-fb-tip .b {\n  padding: 2px 7px; border-radius: 6px; background: var(--eg-bg-2); border: 1px solid var(--eg-line);\n  color: var(--eg-ink); font-size: 11px; font-weight: 650; line-height: 1.3;\n  white-space: nowrap; flex: 0 0 auto; margin-top: 2px;\n}\n.eg-fb-actions { margin-top: 16px; display: flex; gap: 10px; animation: eg-view-in .24s var(--eg-ease) .14s both; }\n\n/* phrase feedback card (editorial study-desk breakdown) */\n.eg-fb.is-phrase {\n  container-type: inline-size;\n  display: flex; flex-direction: column;\n  flex: 0 1 auto; min-height: 0; max-height: 100%;\n  margin-top: 0; padding: 0; border-radius: 14px; overflow: hidden;\n  border: 1px solid color-mix(in srgb, var(--eg-tone) 24%, var(--eg-line));\n  border-top: 1px solid color-mix(in srgb, var(--eg-tone) 24%, var(--eg-line));\n  background: var(--eg-bg);\n  box-shadow: 0 4px 18px color-mix(in srgb, var(--eg-tone) 6%, rgba(17, 22, 31, .05));\n}\n.eg-fb-hero {\n  flex: 0 0 auto;\n  display: flex; align-items: center; gap: 12px; padding: 12px 16px;\n  background: linear-gradient(135deg, color-mix(in srgb, var(--eg-tone) 11%, var(--eg-bg)) 0%, color-mix(in srgb, var(--eg-tone) 2.5%, var(--eg-bg)) 100%);\n  border-bottom: 1px solid color-mix(in srgb, var(--eg-tone) 16%, var(--eg-line));\n}\n.eg-ring {\n  position: relative; width: 50px; height: 50px; flex: 0 0 auto;\n  display: flex; align-items: center; justify-content: center;\n}\n.eg-ring svg { width: 50px; height: 50px; display: block; }\n.eg-ring-track { fill: var(--eg-bg); stroke: color-mix(in srgb, var(--eg-tone) 16%, var(--eg-line)); stroke-width: 3.8; }\n.eg-ring-arc {\n  fill: none; stroke: var(--eg-tone); stroke-width: 3.8; stroke-linecap: round;\n  transform: rotate(-90deg); transform-origin: 50% 50%;\n  transition: stroke-dashoffset .55s var(--eg-ease);\n}\n.eg-ring-val {\n  position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;\n  color: var(--eg-tone); font-variant-numeric: tabular-nums; pointer-events: none;\n}\n.eg-ring-val strong { font: 750 16px/1 var(--eg-font); letter-spacing: -.03em; }\n.eg-ring-val small { font: 650 9px/1 var(--eg-font); opacity: .78; margin-top: 2px; }\n.eg-fb-verdict { min-width: 0; flex: 1 1 auto; }\n.eg-fb-headline { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; }\n.eg-fb-pill {\n  display: inline-flex; align-items: center; gap: 3px;\n  padding: 2px 8px; border-radius: 999px;\n  background: var(--eg-bg); border: 1px solid var(--eg-line);\n  color: var(--eg-ink-2); font: 600 11px/1.35 var(--eg-font); font-variant-numeric: tabular-nums;\n}\n.eg-fb-pill.tone {\n  background: color-mix(in srgb, var(--eg-tone) 12%, var(--eg-bg));\n  border-color: color-mix(in srgb, var(--eg-tone) 28%, transparent);\n  color: var(--eg-tone);\n}\n.eg-fb-pill.up {\n  background: color-mix(in srgb, var(--eg-ok) 12%, var(--eg-bg));\n  border-color: color-mix(in srgb, var(--eg-ok) 28%, transparent);\n  color: var(--eg-ok);\n}\n.eg-fb-sub { margin-top: 3px; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); line-height: 1.45; }\n.eg-fb-body {\n  flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain;\n  padding: 12px 16px 14px; display: flex; flex-direction: column; gap: 9px;\n}\n.eg-fb-prompt {\n  display: flex; align-items: baseline; gap: 9px;\n  padding-bottom: 9px; border-bottom: 1px dashed var(--eg-line);\n}\n.eg-fb-tag {\n  flex: 0 0 auto; padding: 2px 7px; border-radius: 5px;\n  background: var(--eg-bg-2); border: 1px solid var(--eg-line);\n  color: var(--eg-ink-2); font: 650 11px/1.35 var(--eg-font); letter-spacing: .02em;\n}\n.eg-fb-zh { font-size: 14px; font-weight: 600; color: var(--eg-ink); line-height: 1.55; overflow-wrap: break-word; min-width: 0; }\n.eg-fb-boxhead { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 5px; flex-wrap: wrap; }\n.eg-fb-boxhead-left { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; min-width: 0; }\n.eg-fb.is-phrase .lbl {\n  display: inline-flex; align-items: center; gap: 5px; margin-bottom: 0;\n  font: 650 11.5px/1.2 var(--eg-font); color: var(--eg-ink-2); letter-spacing: .02em;\n}\n.eg-fb-mine {\n  padding: 9px 12px; border-radius: 10px;\n  border: 1px solid color-mix(in srgb, var(--eg-tone) 22%, var(--eg-line));\n  border-left: 3px solid var(--eg-tone);\n  background: color-mix(in srgb, var(--eg-tone) 4%, var(--eg-bg));\n  animation: eg-view-in .22s var(--eg-ease) .03s both;\n}\n.eg-fb-mine .lbl { color: var(--eg-tone); }\n.eg-fb-mine-text { font-family: var(--eg-en); font-size: 14.5px; line-height: 1.55; color: var(--eg-ink); overflow-wrap: break-word; }\n.eg-fb-mine-text.empty { font-family: var(--eg-font); font-size: var(--eg-fs-sm); color: var(--eg-ink-2); font-style: italic; }\n.eg-fb.is-phrase .eg-fb-ref {\n  margin-top: 0; padding: 10px 13px; border-radius: 10px;\n  border: 1px solid var(--eg-line); background: var(--eg-bg-2);\n  font-family: var(--eg-font); font-size: var(--eg-fs-sm); line-height: 1.5;\n  animation: eg-view-in .24s var(--eg-ease) .06s both;\n}\n.eg-fb-ref-text { font-family: var(--eg-en); font-size: 16px; line-height: 1.6; color: var(--eg-ink); overflow-wrap: break-word; }\n.eg-fb-banktag {\n  display: inline-flex; align-items: center; padding: 1px 7px; border-radius: 999px;\n  background: color-mix(in srgb, var(--eg-accent) 10%, var(--eg-bg));\n  border: 1px solid color-mix(in srgb, var(--eg-accent) 22%, transparent);\n  color: var(--eg-ink-2); font: 600 10.5px/1.4 var(--eg-font);\n}\n.eg-copybtn {\n  appearance: none; -webkit-appearance: none;\n  display: inline-flex; align-items: center; gap: 4px;\n  height: 24px; padding: 0 8px; border-radius: 6px;\n  border: 1px solid var(--eg-line); background: var(--eg-bg); color: var(--eg-ink-2);\n  font: 600 11px/1 var(--eg-font); cursor: pointer;\n  transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease, background var(--eg-dur) ease;\n}\n.eg-copybtn:hover { border-color: var(--eg-line-2); color: var(--eg-ink); }\n.eg-copybtn.copied { border-color: color-mix(in srgb, var(--eg-ok) 40%, transparent); color: var(--eg-ok); }\n.eg-copybtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-fb-corr {\n  padding: 9px 12px; border-radius: 10px;\n  border: 1px solid color-mix(in srgb, var(--eg-accent) 22%, var(--eg-line));\n  border-left: 3px solid var(--eg-accent);\n  background: color-mix(in srgb, var(--eg-accent) 4%, var(--eg-bg));\n  animation: eg-view-in .24s var(--eg-ease) .08s both;\n}\n.eg-fb-corr-text { font-family: var(--eg-en); font-size: 15px; line-height: 1.55; color: var(--eg-ink); overflow-wrap: break-word; }\n.eg-fb.is-phrase .eg-fb-tip {\n  margin-top: 0; padding: 9px 12px; border-radius: 10px;\n  border: 1px solid var(--eg-line); background: var(--eg-bg);\n  color: var(--eg-ink); font-size: var(--eg-fs-sm); line-height: 1.6;\n  display: flex; gap: 9px; align-items: flex-start;\n  animation: eg-view-in .24s var(--eg-ease) .1s both;\n}\n.eg-fb.is-phrase .eg-fb-tip .b {\n  background: color-mix(in srgb, var(--eg-tone) 11%, var(--eg-bg));\n  border-color: color-mix(in srgb, var(--eg-tone) 26%, transparent);\n  color: var(--eg-tone); margin-top: 2px;\n}\n.eg-fb-hl { display: flex; flex-direction: column; gap: 6px; animation: eg-view-in .24s var(--eg-ease) .12s both; }\n.eg-fb-hl-lbl { font: 650 11.5px/1.2 var(--eg-font); color: var(--eg-ink-2); letter-spacing: .02em; }\n.eg-fb-hl-list { display: flex; flex-wrap: wrap; gap: 6px; }\n.eg-hl-chip {\n  display: inline-flex; align-items: baseline; gap: 6px; padding: 4px 10px; border-radius: 8px;\n  background: var(--eg-bg-2); border: 1px solid var(--eg-line);\n  font-size: var(--eg-fs-xs); line-height: 1.4; max-width: 100%;\n}\n.eg-hl-chip .en { font-family: var(--eg-en); font-weight: 700; font-size: 13px; color: var(--eg-ink); }\n.eg-hl-chip .zh { color: var(--eg-ink-2); }\n.eg-fb.is-phrase .eg-fb-actions {\n  flex: 0 0 auto;\n  margin-top: 0; padding: 10px 16px;\n  border-top: 1px solid var(--eg-line); background: var(--eg-bg-2);\n  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;\n}\n.eg-fb.is-phrase .eg-fb-actions .eg-kbd { margin-left: auto; }\n@container (max-width: 340px) {\n  .eg-fb-hero { padding: 11px 13px; gap: 10px; }\n  .eg-fb-body { padding: 11px 13px 12px; }\n  .eg-fb.is-phrase .eg-fb-actions { padding: 10px 13px; }\n  .eg-fb.is-phrase .eg-fb-actions .eg-kbd { display: none; }\n}\n.eg-cap-row { display: inline-flex; align-items: center; justify-content: center; gap: 7px; flex-wrap: wrap; }\n.eg-attempt-pill, .eg-source-pill {\n  display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 999px;\n  background: color-mix(in srgb, var(--eg-accent) 10%, var(--eg-bg));\n  border: 1px solid color-mix(in srgb, var(--eg-accent) 22%, transparent);\n  color: var(--eg-ink-2); font: 600 11px/1.3 var(--eg-font); font-variant-numeric: tabular-nums;\n}\n.eg-source-pill { color: var(--eg-ink); }\n.eg-source-pill::before {\n  content: ""; width: 6px; height: 6px; border-radius: 50%; flex: 0 0 auto;\n  background: var(--eg-accent);\n}\n\n/* phrase drill: centred prompt, left-aligned reading feedback */\n.eg-drill { flex: 1 0 auto; width: 100%; max-width: 640px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; padding-top: 10px; }\n.eg-view:has(.eg-fb.is-phrase) .eg-drill { flex: 1 1 0; min-height: 0; }\n.eg-drill > div { width: 100%; }\n.eg-drill .eg-cap { justify-content: center; }\n.eg-drill .eg-foot { justify-content: center; width: 100%; }\n.eg-drill .eg-foot .eg-kbd { margin-left: 0; }\n.eg-drill .eg-inputwrap { width: 100%; }\n.eg-drill .eg-input { text-align: left; }\n.eg-drill .eg-err { text-align: center; }\n\n';
+var phrase_default = '/* ===== drill ===== */\n.eg-cap { color: var(--eg-ink-2); font-size: var(--eg-fs-xs); font-weight: 600; letter-spacing: .02em; }\n.eg-zh {\n  margin-top: 14px; font-family: var(--eg-font); font-size: 18px; line-height: 1.6; font-weight: 650;\n  letter-spacing: -.005em; color: var(--eg-ink); overflow-wrap: break-word;\n}\n.eg-hintbtn { appearance: none; -webkit-appearance: none;\n  margin-top: 14px; display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 5px 11px;\n  border: 1px solid var(--eg-line); background: var(--eg-bg); border-radius: 999px;\n  color: var(--eg-ink-2); font: 600 var(--eg-fs-xs)/1 var(--eg-font); cursor: pointer;\n  transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease, background var(--eg-dur) ease;\n}\n.eg-hintbtn:hover { border-color: var(--eg-line-2); background: var(--eg-bg-2); color: var(--eg-ink); }\n.eg-hintbtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-hintbtn .caret { display: inline-block; transition: transform .22s var(--eg-ease); }\n.eg-hintbtn[aria-expanded="true"] .caret { transform: rotate(90deg); }\n.eg-hint-collapse { width: 100%; }\n.eg-hintbox {\n  max-width: 520px; margin: 10px auto 0; padding: 2px 8px;\n  color: var(--eg-ink-2); font-family: var(--eg-en); font-size: var(--eg-fs-sm); line-height: 1.6;\n  text-align: center; overflow-wrap: break-word;\n}\n.eg-inputwrap { position: relative; margin-top: 22px; }\n.eg-input {\n  --eg-line-h: 40px;\n  --eg-rule-color: var(--eg-line-2);\n  display: block;\n  width: 100%;\n  height: var(--eg-line-h);\n  min-height: var(--eg-line-h);\n  resize: none;\n  overflow: hidden;\n  padding: 0 4px;\n  border: none;\n  border-radius: 0;\n  background-color: transparent;\n  background-image: repeating-linear-gradient(\n    to bottom,\n    transparent 0,\n    transparent calc(var(--eg-line-h) - 1.5px),\n    var(--eg-rule-color) calc(var(--eg-line-h) - 1.5px),\n    var(--eg-rule-color) var(--eg-line-h)\n  );\n  background-size: 100% var(--eg-line-h);\n  background-position: 0 0;\n  background-attachment: local;\n  color: var(--eg-ink);\n  font: 400 16px/var(--eg-line-h) var(--eg-font);\n  outline: none;\n  transition: color var(--eg-dur) ease;\n}\n.eg-input::placeholder { color: var(--eg-ink-2); opacity: .68; }\n.eg-input:hover { --eg-rule-color: var(--eg-ink-2); }\n.eg-input:focus { --eg-rule-color: var(--eg-accent); background-color: transparent; box-shadow: none; }\n.eg-input.error { --eg-rule-color: var(--eg-bad); box-shadow: none; }\n.eg-foot { display: flex; align-items: center; gap: 10px; margin-top: 16px; }\n.eg-foot .eg-kbd { margin-left: auto; }\n.eg-err { color: var(--eg-bad); font-size: var(--eg-fs-xs); margin-top: 8px; }\n.eg-kbd { color: var(--eg-ink-2); font-size: var(--eg-fs-xs); white-space: nowrap; }\n.eg-kbd kbd {\n  font: 600 11.5px/1 var(--eg-font); padding: 2px 5px; border: 1px solid var(--eg-line); border-bottom-width: 2px;\n  border-radius: 4px; background: var(--eg-bg); color: var(--eg-ink-2);\n}\n.eg-actions { display: flex; gap: 8px; margin-top: 16px; }\n.eg-btn {\n  display: inline-flex; align-items: center; justify-content: center; gap: 6px;\n  min-height: 36px; min-width: 76px; padding: 0 15px; border-radius: var(--eg-r-sm); cursor: pointer;\n  appearance: none; -webkit-appearance: none;\n  font: 600 var(--eg-fs-sm)/1 var(--eg-font);\n  transition: background var(--eg-dur) ease, filter var(--eg-dur) ease, border-color var(--eg-dur) ease, transform .26s var(--eg-spring);\n  border: 1px solid var(--eg-line-2); background: var(--eg-bg); color: var(--eg-ink);\n}\n.eg-btn:hover { background: var(--eg-bg-2); }\n.eg-btn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }\n.eg-btn:active { transform: scale(.94); transition-duration: .06s; }\n.eg-btn.is-bouncing { animation: eg-btn-bounce .34s var(--eg-spring); }\n@keyframes eg-btn-bounce {\n  0% { transform: scale(.93); }\n  55% { transform: scale(1.04); }\n  100% { transform: scale(1); }\n}\n.eg-btn.primary { border-color: transparent; background: var(--eg-accent); color: var(--eg-on-accent); }\n.eg-btn.primary:hover { filter: brightness(1.08); }\n.eg-btn:disabled { opacity: .48; cursor: not-allowed; pointer-events: none; }\n.eg-btn.primary:disabled { background: var(--eg-accent); color: var(--eg-on-accent); border-color: transparent; }\n.eg-btn:not(.primary):disabled { background: var(--eg-bg-2); color: var(--eg-ink-2); border-color: var(--eg-line); }\n.eg-btn.primary.is-loading { color: transparent; position: relative; }\n.eg-btn.primary.is-loading::after {\n  content: ""; position: absolute; width: 15px; height: 15px; border-radius: 50%;\n  border: 2px solid rgba(255, 255, 255, .45); border-top-color: #fff; animation: eg-spin .7s linear infinite;\n}\n.eg-btn.ghost { border-color: transparent; background: transparent; color: var(--eg-ink-2); padding: 0 10px; }\n.eg-btn.ghost:hover { background: var(--eg-bg-2); color: var(--eg-ink); }\n\n/* ===== confetti ===== */\n.eg-confetti { position: absolute; inset: 0; z-index: 6; pointer-events: none; overflow: hidden; border-radius: inherit; }\n.eg-confetti-piece {\n  position: absolute; display: block; border-radius: 1.5px; opacity: 0;\n  transform: translate(-50%, -50%) rotate(var(--r0, 0deg));\n  animation: eg-confetti-fly var(--dur, 900ms) cubic-bezier(.15, .7, .3, 1) var(--delay, 0ms) forwards;\n  will-change: transform, opacity;\n}\n@keyframes eg-confetti-fly {\n  0%   { opacity: 1; transform: translate(-50%, -50%) rotate(var(--r0, 0deg)) scale(.65); }\n  18%  { opacity: 1; }\n  100% { opacity: 0; transform: translate(calc(-50% + var(--dx, 0px)), calc(-50% + var(--dy, 0px))) rotate(calc(var(--r0, 0deg) + var(--rot, 360deg))) scale(1); }\n}\n\n/* ===== feedback ===== */\n.eg-fb {\n  --eg-tone: var(--eg-line-2);\n  margin-top: 8px; padding: 18px 20px; border: 1px solid var(--eg-line);\n  border-top: 3px solid var(--eg-line); border-radius: 12px; background: var(--eg-bg);\n  text-align: left; animation: eg-stage-in .24s var(--eg-ease) both;\n}\n.eg-fb.ok { --eg-tone: var(--eg-ok); border-top-color: var(--eg-ok); }\n.eg-fb.warn { --eg-tone: var(--eg-warn); border-top-color: var(--eg-warn); }\n.eg-fb.bad { --eg-tone: var(--eg-bad); border-top-color: var(--eg-bad); }\n.eg-fb-top { display: flex; align-items: baseline; gap: 10px; }\n.eg-score { font: 700 var(--eg-fs-xl)/1 var(--eg-font); font-variant-numeric: tabular-nums; letter-spacing: -.02em; color: var(--eg-tone); }\n.eg-score small { font-size: var(--eg-fs-xs); font-weight: 700; opacity: .9; color: inherit; margin-left: 2px; }\n.eg-fb-status { font-weight: 700; font-size: 16px; color: var(--eg-tone); line-height: 1.25; }\n.eg-fb-ref {\n  margin-top: 14px; padding: 12px 14px; border-radius: 10px; background: var(--eg-bg-2);\n  font-family: var(--eg-en); font-size: 17px; line-height: 1.65; color: var(--eg-ink); overflow-wrap: break-word;\n  animation: eg-view-in .24s var(--eg-ease) .05s both;\n}\n.eg-fb-ref .lbl { display: block; font: 600 11.5px/1 var(--eg-font); color: var(--eg-ink-2); letter-spacing: .02em; margin-bottom: 6px; }\n.eg-fb-tip {\n  margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--eg-line);\n  color: var(--eg-ink-2); font-size: var(--eg-fs-sm); line-height: 1.65;\n  display: flex; gap: 8px; align-items: flex-start;\n  animation: eg-view-in .24s var(--eg-ease) .1s both;\n}\n.eg-fb-tip .b {\n  padding: 2px 7px; border-radius: 6px; background: var(--eg-bg-2); border: 1px solid var(--eg-line);\n  color: var(--eg-ink); font-size: 11px; font-weight: 650; line-height: 1.3;\n  white-space: nowrap; flex: 0 0 auto; margin-top: 2px;\n}\n.eg-fb-actions { margin-top: 16px; display: flex; gap: 10px; animation: eg-view-in .24s var(--eg-ease) .14s both; }\n\n/* phrase feedback card (editorial study-desk breakdown) */\n.eg-fb.is-phrase {\n  container-type: inline-size;\n  display: flex; flex-direction: column;\n  flex: 0 1 auto; min-height: 0; max-height: 100%;\n  margin-top: 0; padding: 0; border-radius: 14px; overflow: hidden;\n  border: 1px solid color-mix(in srgb, var(--eg-tone) 24%, var(--eg-line));\n  border-top: 1px solid color-mix(in srgb, var(--eg-tone) 24%, var(--eg-line));\n  background: var(--eg-bg);\n  box-shadow: 0 4px 18px color-mix(in srgb, var(--eg-tone) 6%, rgba(17, 22, 31, .05));\n}\n.eg-fb-hero {\n  flex: 0 0 auto;\n  display: flex; align-items: center; gap: 12px; padding: 12px 16px;\n  background: linear-gradient(135deg, color-mix(in srgb, var(--eg-tone) 11%, var(--eg-bg)) 0%, color-mix(in srgb, var(--eg-tone) 2.5%, var(--eg-bg)) 100%);\n  border-bottom: 1px solid color-mix(in srgb, var(--eg-tone) 16%, var(--eg-line));\n}\n.eg-ring {\n  position: relative; width: 50px; height: 50px; flex: 0 0 auto;\n  display: flex; align-items: center; justify-content: center;\n}\n.eg-ring svg { width: 50px; height: 50px; display: block; }\n.eg-ring-track { fill: var(--eg-bg); stroke: color-mix(in srgb, var(--eg-tone) 16%, var(--eg-line)); stroke-width: 3.8; }\n.eg-ring-arc {\n  fill: none; stroke: var(--eg-tone); stroke-width: 3.8; stroke-linecap: round;\n  transform: rotate(-90deg); transform-origin: 50% 50%;\n  transition: stroke-dashoffset .55s var(--eg-ease);\n}\n.eg-ring-val {\n  position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;\n  color: var(--eg-tone); font-variant-numeric: tabular-nums; pointer-events: none;\n}\n.eg-ring-val strong { font: 750 16px/1 var(--eg-font); letter-spacing: -.03em; }\n.eg-ring-val small { font: 650 9px/1 var(--eg-font); opacity: .78; margin-top: 2px; }\n.eg-fb-verdict { min-width: 0; flex: 1 1 auto; }\n.eg-fb-headline { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; }\n.eg-fb-pill {\n  display: inline-flex; align-items: center; gap: 3px;\n  padding: 2px 8px; border-radius: 999px;\n  background: var(--eg-bg); border: 1px solid var(--eg-line);\n  color: var(--eg-ink-2); font: 600 11px/1.35 var(--eg-font); font-variant-numeric: tabular-nums;\n}\n.eg-fb-pill.tone {\n  background: color-mix(in srgb, var(--eg-tone) 12%, var(--eg-bg));\n  border-color: color-mix(in srgb, var(--eg-tone) 28%, transparent);\n  color: var(--eg-tone);\n}\n.eg-fb-pill.up {\n  background: color-mix(in srgb, var(--eg-ok) 12%, var(--eg-bg));\n  border-color: color-mix(in srgb, var(--eg-ok) 28%, transparent);\n  color: var(--eg-ok);\n}\n.eg-fb-sub { margin-top: 3px; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); line-height: 1.45; }\n.eg-fb-body {\n  flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain;\n  padding: 12px 16px 14px; display: flex; flex-direction: column; gap: 9px;\n}\n.eg-fb-prompt {\n  display: flex; align-items: baseline; gap: 9px;\n  padding-bottom: 9px; border-bottom: 1px dashed var(--eg-line);\n}\n.eg-fb-tag {\n  flex: 0 0 auto; padding: 2px 7px; border-radius: 5px;\n  background: var(--eg-bg-2); border: 1px solid var(--eg-line);\n  color: var(--eg-ink-2); font: 650 11px/1.35 var(--eg-font); letter-spacing: .02em;\n}\n.eg-fb-zh { font-size: 14px; font-weight: 600; color: var(--eg-ink); line-height: 1.55; overflow-wrap: break-word; min-width: 0; }\n.eg-fb-boxhead { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 5px; flex-wrap: wrap; }\n.eg-fb-boxhead-left { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; min-width: 0; }\n.eg-fb.is-phrase .lbl {\n  display: inline-flex; align-items: center; gap: 5px; margin-bottom: 0;\n  font: 650 11.5px/1.2 var(--eg-font); color: var(--eg-ink-2); letter-spacing: .02em;\n}\n.eg-fb-mine {\n  padding: 9px 12px; border-radius: 10px;\n  border: 1px solid color-mix(in srgb, var(--eg-tone) 22%, var(--eg-line));\n  border-left: 3px solid var(--eg-tone);\n  background: color-mix(in srgb, var(--eg-tone) 4%, var(--eg-bg));\n  animation: eg-view-in .22s var(--eg-ease) .03s both;\n}\n.eg-fb-mine .lbl { color: var(--eg-tone); }\n.eg-fb-mine-text { font-family: var(--eg-en); font-size: 14.5px; line-height: 1.55; color: var(--eg-ink); overflow-wrap: break-word; }\n.eg-fb-mine-text.empty { font-family: var(--eg-font); font-size: var(--eg-fs-sm); color: var(--eg-ink-2); font-style: italic; }\n.eg-fb.is-phrase .eg-fb-ref {\n  margin-top: 0; padding: 10px 13px; border-radius: 10px;\n  border: 1px solid var(--eg-line); background: var(--eg-bg-2);\n  font-family: var(--eg-font); font-size: var(--eg-fs-sm); line-height: 1.5;\n  animation: eg-view-in .24s var(--eg-ease) .06s both;\n}\n.eg-fb-ref-text { font-family: var(--eg-en); font-size: 16px; line-height: 1.6; color: var(--eg-ink); overflow-wrap: break-word; }\n.eg-fb-banktag {\n  display: inline-flex; align-items: center; padding: 1px 7px; border-radius: 999px;\n  background: color-mix(in srgb, var(--eg-accent) 10%, var(--eg-bg));\n  border: 1px solid color-mix(in srgb, var(--eg-accent) 22%, transparent);\n  color: var(--eg-ink-2); font: 600 10.5px/1.4 var(--eg-font);\n}\n.eg-copybtn {\n  appearance: none; -webkit-appearance: none;\n  display: inline-flex; align-items: center; gap: 4px;\n  height: 24px; padding: 0 8px; border-radius: 6px;\n  border: 1px solid var(--eg-line); background: var(--eg-bg); color: var(--eg-ink-2);\n  font: 600 11px/1 var(--eg-font); cursor: pointer;\n  transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease, background var(--eg-dur) ease;\n}\n.eg-copybtn:hover { border-color: var(--eg-line-2); color: var(--eg-ink); }\n.eg-copybtn.copied { border-color: color-mix(in srgb, var(--eg-ok) 40%, transparent); color: var(--eg-ok); }\n.eg-copybtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-fb-corr {\n  padding: 9px 12px; border-radius: 10px;\n  border: 1px solid color-mix(in srgb, var(--eg-accent) 22%, var(--eg-line));\n  border-left: 3px solid var(--eg-accent);\n  background: color-mix(in srgb, var(--eg-accent) 4%, var(--eg-bg));\n  animation: eg-view-in .24s var(--eg-ease) .08s both;\n}\n.eg-fb-corr-text { font-family: var(--eg-en); font-size: 15px; line-height: 1.55; color: var(--eg-ink); overflow-wrap: break-word; }\n.eg-fb.is-phrase .eg-fb-tip {\n  margin-top: 0; padding: 9px 12px; border-radius: 10px;\n  border: 1px solid var(--eg-line); background: var(--eg-bg);\n  color: var(--eg-ink); font-size: var(--eg-fs-sm); line-height: 1.6;\n  display: flex; gap: 9px; align-items: flex-start;\n  animation: eg-view-in .24s var(--eg-ease) .1s both;\n}\n.eg-fb.is-phrase .eg-fb-tip .b {\n  background: color-mix(in srgb, var(--eg-tone) 11%, var(--eg-bg));\n  border-color: color-mix(in srgb, var(--eg-tone) 26%, transparent);\n  color: var(--eg-tone); margin-top: 2px;\n}\n.eg-fb-hl { display: flex; flex-direction: column; gap: 6px; animation: eg-view-in .24s var(--eg-ease) .12s both; }\n.eg-fb-hl-lbl { font: 650 11.5px/1.2 var(--eg-font); color: var(--eg-ink-2); letter-spacing: .02em; }\n.eg-fb-hl-list { display: flex; flex-wrap: wrap; gap: 6px; }\n.eg-hl-chip {\n  display: inline-flex; align-items: baseline; gap: 6px; padding: 4px 10px; border-radius: 8px;\n  background: var(--eg-bg-2); border: 1px solid var(--eg-line);\n  font-size: var(--eg-fs-xs); line-height: 1.4; max-width: 100%;\n}\n.eg-hl-chip .en { font-family: var(--eg-en); font-weight: 700; font-size: 13px; color: var(--eg-ink); }\n.eg-hl-chip .zh { color: var(--eg-ink-2); }\n.eg-fb.is-phrase .eg-fb-actions {\n  flex: 0 0 auto;\n  margin-top: 0; padding: 10px 16px;\n  border-top: 1px solid var(--eg-line); background: var(--eg-bg-2);\n  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;\n}\n.eg-fb.is-phrase .eg-fb-actions .eg-kbd { margin-left: auto; }\n@container (max-width: 340px) {\n  .eg-fb-hero { padding: 11px 13px; gap: 10px; }\n  .eg-fb-body { padding: 11px 13px 12px; }\n  .eg-fb.is-phrase .eg-fb-actions { padding: 10px 13px; }\n  .eg-fb.is-phrase .eg-fb-actions .eg-kbd { display: none; }\n}\n.eg-cap-row { display: inline-flex; align-items: center; justify-content: center; gap: 7px; flex-wrap: wrap; }\n.eg-attempt-pill, .eg-source-pill {\n  display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 999px;\n  background: color-mix(in srgb, var(--eg-accent) 10%, var(--eg-bg));\n  border: 1px solid color-mix(in srgb, var(--eg-accent) 22%, transparent);\n  color: var(--eg-ink-2); font: 600 11px/1.3 var(--eg-font); font-variant-numeric: tabular-nums;\n}\n.eg-source-pill { color: var(--eg-ink); }\n.eg-source-pill::before {\n  content: ""; width: 6px; height: 6px; border-radius: 50%; flex: 0 0 auto;\n  background: var(--eg-accent);\n}\n\n/* phrase drill: centred prompt, left-aligned reading feedback */\n.eg-drill { flex: 1 0 auto; width: 100%; max-width: 640px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; padding-top: 0; }\n.eg-view:has(.eg-fb.is-phrase) .eg-drill { flex: 1 1 0; min-height: 0; }\n.eg-drill > div { width: 100%; }\n.eg-drill-stage { width: 100%; margin: auto 0; padding: 12px 0 22px; }\n.eg-drill .eg-zh { max-width: 540px; margin-left: auto; margin-right: auto; text-wrap: balance; }\n.eg-drill .eg-cap { justify-content: center; }\n.eg-drill .eg-foot { justify-content: center; width: 100%; margin-top: 22px; }\n.eg-drill .eg-foot .eg-kbd { margin-left: 0; }\n.eg-drill .eg-inputwrap { width: 100%; max-width: 520px; margin: 22px auto 0; }\n.eg-drill .eg-input { text-align: left; }\n.eg-drill .eg-err { text-align: center; }\n\n';
 
 // src/client/styles/report.css
 var report_default = '/* ===== report ===== */\n.eg-report { position: relative; text-align: left; width: 100%; }\n.eg-report .r-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }\n.eg-rtitle {\n  font-family: var(--eg-en); font-size: 22px; line-height: 1.32; font-weight: 700;\n  letter-spacing: -.01em; margin: 0; overflow-wrap: break-word; min-width: 0; text-align: left; color: var(--eg-ink);\n}\n.eg-rmeta-row {\n  display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;\n  margin-top: 9px;\n}\n.eg-rmeta {\n  display: inline-flex; align-items: center; gap: 6px;\n  padding: 3px 10px; border-radius: 999px; background: var(--eg-bg-2); border: 1px solid var(--eg-line);\n  color: var(--eg-ink-2); font-size: 11.5px; font-weight: 600; font-variant-numeric: tabular-nums;\n}\n.eg-rrefresh {\n  appearance: none; -webkit-appearance: none;\n  display: inline-flex; align-items: center; gap: 5px;\n  height: 26px; padding: 0 10px; border-radius: 999px;\n  border: 1px solid var(--eg-line); background: var(--eg-bg); color: var(--eg-ink-2);\n  font: 600 11.5px/1 var(--eg-font); cursor: pointer;\n  transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease, background var(--eg-dur) ease, transform .14s ease;\n}\n.eg-rrefresh:hover:not(:disabled) { border-color: var(--eg-line-2); background: var(--eg-bg-2); color: var(--eg-ink); }\n.eg-rrefresh:active:not(:disabled) { transform: scale(.96); }\n.eg-rrefresh:disabled { opacity: .48; cursor: not-allowed; }\n.eg-rrefresh:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }\n.eg-rsum {\n  margin: 14px 0 0; padding: 11px 14px;\n  border: 1px solid var(--eg-line); border-left: 3px solid var(--eg-accent); border-radius: 10px;\n  background: var(--eg-bg-2); color: var(--eg-ink-2);\n  font-family: var(--eg-font); font-size: var(--eg-fs-sm); line-height: 1.65; text-align: left;\n}\n.eg-rp {\n  margin: 15px 0 0; width: 100%;\n  font-family: var(--eg-en); font-size: 15.5px; line-height: 1.78; color: var(--eg-ink); text-align: left;\n}\n.eg-rword {\n  display: inline;\n  padding: 0 3px;\n  border-radius: 4px;\n  background: var(--eg-hl-bg);\n  color: inherit;\n  border-bottom: 1.5px dotted var(--eg-hl-line);\n  cursor: pointer;\n  transition: background var(--eg-dur) ease, border-color var(--eg-dur) ease;\n}\n.eg-rword:hover,\n.eg-rword.is-active {\n  background: var(--eg-hl-bg-active);\n  border-bottom-style: solid;\n  border-bottom-color: var(--eg-warn);\n}\n.eg-rword:focus-visible {\n  outline: 2px solid var(--eg-accent);\n  outline-offset: 1px;\n}\n.eg-rpop {\n  position: absolute;\n  z-index: 20;\n  width: max-content;\n  min-width: 152px;\n  max-width: min(244px, 100%);\n  padding: 10px 16px;\n  border-radius: 10px;\n  border: 1px solid var(--eg-line-2);\n  background: var(--eg-bg);\n  box-shadow: 0 10px 28px rgba(17, 22, 31, .16), 0 2px 6px rgba(17, 22, 31, .08);\n  color: var(--eg-ink);\n  text-align: center;\n  visibility: hidden;\n  pointer-events: auto;\n}\n.eg-rpop.is-pinned {\n  padding-left: 24px;\n  padding-right: 24px;\n}\n.eg-rpop.is-ready {\n  visibility: visible;\n  animation: eg-rpop-in .14s var(--eg-ease) both;\n}\n@keyframes eg-rpop-in {\n  from { opacity: 0; transform: translateY(4px) scale(.97); }\n  to { opacity: 1; transform: none; }\n}\n.eg-rpop::after {\n  content: "";\n  position: absolute;\n  left: var(--eg-arrow-x, 20px);\n  bottom: -5px;\n  width: 8px;\n  height: 8px;\n  background: var(--eg-bg);\n  border-right: 1px solid var(--eg-line-2);\n  border-bottom: 1px solid var(--eg-line-2);\n  transform: translateX(-50%) rotate(45deg);\n}\n.eg-rpop.is-below::after {\n  bottom: auto;\n  top: -5px;\n  border-right: none;\n  border-bottom: none;\n  border-left: 1px solid var(--eg-line-2);\n  border-top: 1px solid var(--eg-line-2);\n}\n.eg-rpop-head {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 8px;\n}\n.eg-rpop-title {\n  display: flex;\n  align-items: baseline;\n  justify-content: center;\n  flex-wrap: wrap;\n  gap: 5px;\n  min-width: 0;\n}\n.eg-rpop-word {\n  font-family: var(--eg-en);\n  font-size: 14.5px;\n  font-weight: 700;\n  line-height: 1.3;\n  color: var(--eg-ink);\n  overflow-wrap: anywhere;\n}\n.eg-rpop-lemma {\n  font-family: var(--eg-en);\n  font-size: 11.5px;\n  color: var(--eg-ink-2);\n}\n.eg-rpop-close {\n  appearance: none; -webkit-appearance: none;\n  position: absolute;\n  top: 6px;\n  right: 6px;\n  width: 18px;\n  height: 18px;\n  margin: 0;\n  padding: 0;\n  border: none;\n  border-radius: 5px;\n  background: transparent;\n  color: var(--eg-ink-2);\n  font: 600 13px/1 var(--eg-font);\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  transition: background var(--eg-dur) ease, color var(--eg-dur) ease;\n}\n.eg-rpop-close:hover { background: var(--eg-bg-2); color: var(--eg-ink); }\n.eg-rpop-close:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-rpop-tags {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  flex-wrap: wrap;\n  gap: 5px;\n  margin-top: 4px;\n}\n.eg-rpop-pos,\n.eg-rpop-bank {\n  display: inline-flex;\n  align-items: center;\n  padding: 1px 6px;\n  border-radius: 999px;\n  font: 600 10.5px/1.35 var(--eg-font);\n}\n.eg-rpop-pos {\n  background: var(--eg-bg-2);\n  border: 1px solid var(--eg-line);\n  color: var(--eg-ink-2);\n}\n.eg-rpop-bank {\n  background: color-mix(in srgb, var(--eg-accent) 10%, var(--eg-bg));\n  border: 1px solid color-mix(in srgb, var(--eg-accent) 24%, transparent);\n  color: var(--eg-accent-ink);\n}\n.eg-rpop-zh {\n  margin-top: 5px;\n  font: 500 var(--eg-fs-xs)/1.5 var(--eg-font);\n  color: var(--eg-ink);\n  text-align: center;\n  overflow-wrap: anywhere;\n}\n.eg-practice { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--eg-line); }\n.eg-ptitle {\n  display: flex; align-items: center; justify-content: flex-start; gap: 7px;\n  font-size: var(--eg-fs-xs); font-weight: 650; letter-spacing: .03em; color: var(--eg-ink-2);\n  margin-bottom: 10px;\n}\n.eg-q {\n  margin: 0; padding: 13px 15px; border: 1px solid var(--eg-line); border-radius: 11px;\n  background: var(--eg-bg); transition: border-color var(--eg-dur) ease;\n}\n.eg-q + .eg-q { margin-top: 10px; }\n.eg-q.reveal { border-color: var(--eg-line-2); }\n.eg-q-head { display: flex; gap: 9px; align-items: flex-start; justify-content: flex-start; text-align: left; }\n.eg-q-n {\n  flex: 0 0 auto; width: 20px; height: 20px; margin-top: 1px; border-radius: 6px;\n  background: var(--eg-bg-2); border: 1px solid var(--eg-line); color: var(--eg-ink);\n  display: inline-flex; align-items: center; justify-content: center;\n  font: 700 11px/1 var(--eg-font); font-variant-numeric: tabular-nums;\n}\n.eg-q-zh { font-size: var(--eg-fs-sm); font-weight: 500; line-height: 1.6; color: var(--eg-ink); text-align: left; }\n.eg-q-toggle {\n  appearance: none; -webkit-appearance: none;\n  margin-top: 10px; display: inline-flex; align-items: center; gap: 5px;\n  min-height: 27px; padding: 4px 10px; border-radius: 7px;\n  background: var(--eg-bg); border: 1px solid var(--eg-line); color: var(--eg-ink-2);\n  cursor: pointer; font: 600 var(--eg-fs-xs)/1 var(--eg-font);\n  transition: background var(--eg-dur) ease, color var(--eg-dur) ease, border-color var(--eg-dur) ease;\n}\n.eg-q-toggle:hover { background: var(--eg-bg-2); border-color: var(--eg-line-2); color: var(--eg-ink); }\n.eg-q-toggle:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }\n.eg-q-toggle .caret { display: inline-block; transition: transform .22s var(--eg-ease); }\n.eg-q.reveal .eg-q-toggle .caret { transform: rotate(90deg); }\n.eg-q-en {\n  margin-top: 10px; padding: 10px 13px; border-radius: 8px;\n  border: 1px solid var(--eg-line); border-left: 2.5px solid var(--eg-accent);\n  background: var(--eg-bg-2); font-family: var(--eg-en); font-size: 14.5px; line-height: 1.6;\n  color: var(--eg-ink); text-align: left;\n}\n.eg-report-foot {\n  margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--eg-line);\n  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;\n}\n.eg-report-foot-hint { color: var(--eg-ink-2); font-size: var(--eg-fs-xs); line-height: 1.4; }\n.eg-report .eg-actions { justify-content: flex-start; margin-top: 18px; }\n\n';
 
 // src/client/styles/word.css
-var word_default = "/* ===== word training ===== */\n.eg-letters { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }\n.eg-letters.is-bad { animation: eg-shake .32s cubic-bezier(.36, .07, .19, .97) both; }\n@keyframes eg-shake {\n  0%, 100% { transform: translateX(0); }\n  20% { transform: translateX(-5px); }\n  42% { transform: translateX(5px); }\n  64% { transform: translateX(-3px); }\n  84% { transform: translateX(2px); }\n}\n.eg-letter {\n  flex: 1 1 0; min-width: 8px; max-width: 38px; width: auto; height: 48px; padding: 0; text-align: center;\n  border: none; border-bottom: 2px solid var(--eg-line-2); border-radius: 6px 6px 0 0;\n  background: transparent; color: var(--eg-ink);\n  font: 600 22px/1 var(--eg-font); text-transform: lowercase; outline: none;\n  transition: border-color var(--eg-dur) ease, background var(--eg-dur) ease, color var(--eg-dur) ease, box-shadow var(--eg-dur) ease, transform .14s var(--eg-spring);\n}\n.eg-letter:hover { border-bottom-color: var(--eg-ink-2); background: var(--eg-bg-2); }\n.eg-letter:focus { border-bottom-color: var(--eg-accent); background: var(--eg-bg-2); box-shadow: 0 3px 0 -1px color-mix(in srgb, var(--eg-accent) 26%, transparent); }\n.eg-letter.is-pop { animation: eg-letter-pop .16s var(--eg-spring); }\n@keyframes eg-letter-pop {\n  0% { transform: scale(.9); }\n  55% { transform: scale(1.1); }\n  100% { transform: scale(1); }\n}\n.eg-letter.ok { border-bottom-color: var(--eg-ok); color: var(--eg-ok); }\n.eg-letters.is-ok .eg-letter.ok {\n  animation: eg-letter-ok .34s var(--eg-spring) calc(var(--i, 0) * 34ms) both;\n}\n@keyframes eg-letter-ok {\n  0% { transform: translateY(0) scale(1); }\n  45% { transform: translateY(-5px) scale(1.08); }\n  100% { transform: translateY(0) scale(1); }\n}\n.eg-letter.bad { border-bottom-color: var(--eg-bad); color: var(--eg-bad); }\n.eg-letters.answered .eg-letter { cursor: default; }\n/* word training: centred column */\n.eg-word {\n  container-type: inline-size;\n  width: 100%; max-width: 640px; margin-left: auto; margin-right: auto;\n  height: 100%; min-height: 0; display: flex; flex-direction: column; align-items: stretch; text-align: center;\n}\n.eg-word-main { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; min-height: 0; overflow-y: auto; padding: 10px 0 14px; }\n.eg-word-stage { width: 100%; display: flex; flex-direction: column; align-items: center; }\n.eg-word .eg-pos {\n  display: inline-flex; align-items: center; margin: 0 0 4px; padding: 3px 10px;\n  border-radius: 999px; background: var(--eg-bg-2); border: 1px solid var(--eg-line);\n  color: var(--eg-ink-2); font: 600 11.5px/1.2 var(--eg-font);\n}\n.eg-word .eg-zh { font-family: var(--eg-font); font-size: 26px; font-weight: 700; letter-spacing: -.01em; line-height: 1.4; margin-top: 6px; color: var(--eg-ink); }\n.eg-word .eg-letters { justify-content: center; margin-top: 18px; width: 100%; }\n.eg-word .eg-foot { justify-content: center; width: 100%; margin-top: 24px; }\n.eg-word .eg-foot .eg-kbd { margin-left: 0; }\n.eg-word .eg-fb {\n  width: 100%; text-align: center; margin-top: 14px; padding: 0; border: none; border-radius: 0; background: transparent;\n}\n.eg-word .eg-fb-top { justify-content: center; }\n.eg-word .eg-fb-actions { justify-content: center; }\n.eg-word .eg-fb > .eg-fb-actions:first-child { margin-top: 0; gap: 8px; flex-wrap: wrap; justify-content: center; }\n.eg-word .eg-fb-actions .eg-btn { padding: 0 10px; }\n.eg-word-miss { margin-top: 12px; font-size: var(--eg-fs-xs); font-weight: 550; color: var(--eg-bad); animation: eg-view-in .2s var(--eg-ease) both; }\n.eg-word-reveal { width: 100%; }\n.eg-word-foot { flex: 0 0 auto; display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 6px; padding-top: 10px; border-top: 1px solid var(--eg-line); }\n.eg-word-foot .eg-btn { padding: 0 12px; }\n.eg-word .eg-fb-ref {\n  margin-top: 8px; padding: 0; background: transparent; font-family: var(--eg-en); font-size: 24px; font-weight: 600; text-align: center;\n}\n.eg-word .eg-eg {\n  width: 100%; max-width: 480px; margin: 12px auto 0; padding: 12px 16px;\n  border: 1px solid var(--eg-line); border-radius: 10px; background: var(--eg-bg-2); text-align: center;\n  transition: background var(--eg-dur) ease, border-color var(--eg-dur) ease;\n}\n.eg-word .eg-eg.done { animation: eg-view-in .22s var(--eg-ease) both; }\n.eg-word .eg-eg-en { font: 15px/1.65 var(--eg-en); color: var(--eg-ink); overflow-wrap: anywhere; }\n.eg-word .eg-eg-zh { margin-top: 5px; font: var(--eg-fs-xs)/1.6 var(--eg-font); color: var(--eg-ink-2); }\n.eg-eg-hit {\n  padding: 1px 4px; border-radius: 4px;\n  background: color-mix(in srgb, var(--eg-accent) 13%, transparent);\n  color: var(--eg-ink); font-weight: 700;\n}\n/* ===== word bank bar ===== */\n.eg-bankbar { width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px; padding: 0 0 11px; margin: 0 0 10px; border-bottom: 1px solid var(--eg-line); }\n.eg-banklabel { flex: 0 0 auto; font-size: var(--eg-fs-xs); font-weight: 600; color: var(--eg-ink-2); }\n@container (max-width: 315px) {\n  .eg-banklabel { display: none; }\n}\n.eg-select {\n  flex: 1 1 auto; min-width: 0; max-width: 280px; height: 34px; padding: 0 26px 0 12px; border: 1px solid var(--eg-line);\n  border-radius: 999px; background: var(--eg-bg-2); color: var(--eg-ink); cursor: pointer;\n  font: 600 var(--eg-fs-xs)/1 var(--eg-font); outline: none; appearance: none;\n  background-image: linear-gradient(45deg, transparent 50%, var(--eg-ink-2) 50%), linear-gradient(135deg, var(--eg-ink-2) 50%, transparent 50%);\n  background-position: calc(100% - 13px) 13px, calc(100% - 9px) 13px; background-size: 4px 4px, 4px 4px; background-repeat: no-repeat;\n  transition: border-color var(--eg-dur) ease, background-color var(--eg-dur) ease;\n}\n.eg-select:hover { border-color: var(--eg-line-2); }\n.eg-select:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-bankbtn { appearance: none; -webkit-appearance: none;\n  flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: 4px;\n  min-height: 34px; padding: 0 12px; border: 1px solid var(--eg-line); border-radius: 999px;\n  background: var(--eg-bg); color: var(--eg-ink-2); cursor: pointer;\n  font: 600 var(--eg-fs-xs)/1 var(--eg-font);\n  transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease, background var(--eg-dur) ease, transform .14s ease;\n}\n.eg-bankbtn:hover { border-color: var(--eg-line-2); color: var(--eg-ink); background: var(--eg-bg-2); }\n.eg-bankbtn:active { transform: scale(.95); }\n.eg-bankbtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-notice { margin: 0 0 12px; padding: 8px 11px; border-radius: 9px; background: color-mix(in srgb, var(--eg-ok) 9%, transparent); border: 1px solid color-mix(in srgb, var(--eg-ok) 28%, transparent); color: var(--eg-ink); font-size: var(--eg-fs-xs); line-height: 1.5; animation: eg-view-in .2s var(--eg-ease) both; }\n\n/* ===== word bank import ===== */\n.eg-import { width: 100%; max-width: 520px; margin: 0 auto; text-align: left; animation: eg-view-in .2s var(--eg-ease) both; }\n.eg-import-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }\n.eg-import-title { font-size: var(--eg-fs-md); font-weight: 700; color: var(--eg-ink); line-height: 1.3; }\n.eg-import-actions { flex: 0 0 auto; display: flex; align-items: center; gap: 6px; }\n.eg-import-back, .eg-filebtn { appearance: none; -webkit-appearance: none;\n  flex: 0 0 auto; display: inline-flex; align-items: center; min-height: 30px; padding: 4px 10px;\n  border: 1px solid var(--eg-line); border-radius: 8px; background: var(--eg-bg);\n  color: var(--eg-ink-2); cursor: pointer; font: 600 var(--eg-fs-xs)/1 var(--eg-font); white-space: nowrap;\n  transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease, background var(--eg-dur) ease;\n}\n.eg-import-back:hover, .eg-filebtn:hover { border-color: var(--eg-line-2); background: var(--eg-bg-2); color: var(--eg-ink); }\n.eg-import-back:focus-visible, .eg-filebtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-import-sub { margin-top: 4px; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); line-height: 1.5; }\n.eg-field { margin-top: 10px; }\n.eg-field label { display: block; margin-bottom: 6px; font-size: var(--eg-fs-xs); font-weight: 600; color: var(--eg-ink-2); }\n.eg-text {\n  width: 100%; height: 34px; padding: 0 11px; border: 1px solid var(--eg-line); border-radius: 8px;\n  background: var(--eg-bg-2); color: var(--eg-ink); font: var(--eg-fs-sm)/1 var(--eg-font); outline: none;\n  transition: border-color var(--eg-dur) ease, background var(--eg-dur) ease, box-shadow var(--eg-dur) ease;\n}\n.eg-text:hover { border-color: var(--eg-line-2); }\n.eg-text:focus { border-color: var(--eg-accent); background: var(--eg-bg); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 16%, transparent); }\n.eg-textarea-wrap { position: relative; margin-top: 10px; }\n.eg-textarea {\n  width: 100%; min-height: 86px; resize: vertical; padding: 9px 11px; border: 1px solid var(--eg-line); border-radius: 10px;\n  background: var(--eg-bg-2); color: var(--eg-ink); font: var(--eg-fs-xs)/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; outline: none;\n  transition: border-color var(--eg-dur) ease, background var(--eg-dur) ease, box-shadow var(--eg-dur) ease;\n}\n.eg-textarea-wrap.over .eg-textarea, .eg-textarea-wrap:hover .eg-textarea { border-color: var(--eg-accent); background: color-mix(in srgb, var(--eg-accent) 5%, var(--eg-bg-2)); }\n.eg-textarea:focus { border-color: var(--eg-accent); background: var(--eg-bg); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 16%, transparent); }\n.eg-preview { margin-top: 12px; border: 1px solid var(--eg-line); border-radius: 10px; overflow: hidden; animation: eg-view-in .2s var(--eg-ease) both; }\n.eg-preview-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; background: var(--eg-bg-2); font-size: var(--eg-fs-xs); color: var(--eg-ink-2); }\n.eg-preview-top strong { color: var(--eg-ink); }\n.eg-preview-row { display: flex; flex-wrap: wrap; gap: 10px; padding: 7px 10px; border-top: 1px solid var(--eg-line); font-size: var(--eg-fs-xs); line-height: 1.5; }\n.eg-preview-row .w { flex: 0 0 38%; font-weight: 650; overflow-wrap: anywhere; }\n.eg-preview-row .m { flex: 1 1 auto; color: var(--eg-ink-2); overflow-wrap: anywhere; }\n.eg-preview-row .ex { flex: 1 0 100%; color: var(--eg-ink-2); font-family: var(--eg-en); font-style: italic; overflow-wrap: anywhere; }\n.eg-preview-errors { margin-top: 8px; padding: 8px 10px; border-radius: 8px; background: color-mix(in srgb, var(--eg-bad) 7%, transparent); border: 1px solid color-mix(in srgb, var(--eg-bad) 24%, transparent); }\n.eg-preview-errors .er { font-size: var(--eg-fs-xs); line-height: 1.55; color: var(--eg-bad); }\n.eg-import-foot { display: flex; gap: 8px; margin-top: 10px; }\n\n";
+var word_default = "/* ===== word training ===== */\n.eg-letters { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }\n.eg-letters.is-bad { animation: eg-shake .32s cubic-bezier(.36, .07, .19, .97) both; }\n@keyframes eg-shake {\n  0%, 100% { transform: translateX(0); }\n  20% { transform: translateX(-5px); }\n  42% { transform: translateX(5px); }\n  64% { transform: translateX(-3px); }\n  84% { transform: translateX(2px); }\n}\n.eg-letter {\n  flex: 1 1 0; min-width: 8px; max-width: 38px; width: auto; height: 48px; padding: 0; text-align: center;\n  border: none; border-bottom: 2px solid var(--eg-line-2); border-radius: 6px 6px 0 0;\n  background: transparent; color: var(--eg-ink);\n  font: 600 22px/1 var(--eg-font); text-transform: lowercase; outline: none;\n  transition: border-color var(--eg-dur) ease, background var(--eg-dur) ease, color var(--eg-dur) ease, box-shadow var(--eg-dur) ease, transform .14s var(--eg-spring);\n}\n.eg-letter:hover { border-bottom-color: var(--eg-ink-2); background: var(--eg-bg-2); }\n.eg-letter:focus { border-bottom-color: var(--eg-accent); background: var(--eg-bg-2); box-shadow: 0 3px 0 -1px color-mix(in srgb, var(--eg-accent) 26%, transparent); }\n.eg-letter.is-pop { animation: eg-letter-pop .16s var(--eg-spring); }\n@keyframes eg-letter-pop {\n  0% { transform: scale(.9); }\n  55% { transform: scale(1.1); }\n  100% { transform: scale(1); }\n}\n.eg-letter.ok { border-bottom-color: var(--eg-ok); color: var(--eg-ok); }\n.eg-letters.is-ok .eg-letter.ok {\n  animation: eg-letter-ok .34s var(--eg-spring) calc(var(--i, 0) * 34ms) both;\n}\n@keyframes eg-letter-ok {\n  0% { transform: translateY(0) scale(1); }\n  45% { transform: translateY(-5px) scale(1.08); }\n  100% { transform: translateY(0) scale(1); }\n}\n.eg-letter.bad { border-bottom-color: var(--eg-bad); color: var(--eg-bad); }\n.eg-letters.answered .eg-letter { cursor: default; }\n/* word training: centred column */\n.eg-word {\n  container-type: inline-size;\n  width: 100%; max-width: 640px; margin-left: auto; margin-right: auto;\n  height: 100%; min-height: 0; display: flex; flex-direction: column; align-items: stretch; text-align: center;\n}\n.eg-word-main { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; min-height: 0; overflow-y: auto; padding: 10px 0 14px; }\n.eg-word-stage { width: 100%; margin: auto 0; display: flex; flex-direction: column; align-items: center; }\n.eg-word .eg-pos {\n  display: inline-flex; align-items: center; margin: 0 0 4px; padding: 3px 10px;\n  border-radius: 999px; background: var(--eg-bg-2); border: 1px solid var(--eg-line);\n  color: var(--eg-ink-2); font: 600 11.5px/1.2 var(--eg-font);\n}\n.eg-word .eg-zh {\n  max-width: 500px;\n  font-family: var(--eg-font); font-size: 23px; font-weight: 700; letter-spacing: -.01em; line-height: 1.42;\n  margin-top: 6px; color: var(--eg-ink); text-wrap: balance; overflow-wrap: break-word;\n}\n.eg-word .eg-zh.is-long { font-size: 20px; }\n.eg-word .eg-zh.is-xlong { font-size: 18px; line-height: 1.48; }\n.eg-word .eg-letters { justify-content: center; margin-top: 18px; width: 100%; }\n.eg-word .eg-foot { justify-content: center; width: 100%; margin-top: 24px; }\n.eg-word .eg-foot .eg-kbd { margin-left: 0; }\n.eg-word .eg-fb {\n  width: 100%; text-align: center; margin-top: 14px; padding: 0; border: none; border-radius: 0; background: transparent;\n}\n.eg-word .eg-fb-top { justify-content: center; align-items: center; flex-wrap: wrap; gap: 8px; }\n.eg-word .eg-fb-actions { justify-content: center; }\n.eg-word .eg-fb > .eg-fb-actions:first-child { margin-top: 0; gap: 8px; flex-wrap: wrap; justify-content: center; }\n.eg-word .eg-fb-actions .eg-btn { padding: 0 10px; }\n.eg-word-miss { margin-top: 12px; font-size: var(--eg-fs-xs); font-weight: 550; color: var(--eg-bad); animation: eg-view-in .2s var(--eg-ease) both; }\n.eg-word-reveal { width: 100%; }\n.eg-word-foot { flex: 0 0 auto; display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 6px; padding-top: 10px; border-top: 1px solid var(--eg-line); }\n.eg-word-foot .eg-btn { padding: 0 12px; }\n.eg-word .eg-fb-ref {\n  margin-top: 8px; padding: 0; background: transparent; font-family: var(--eg-en); font-size: 24px; font-weight: 600; text-align: center;\n}\n.eg-word .eg-eg {\n  width: 100%; max-width: 480px; margin: 12px auto 0; padding: 10px 15px;\n  border: none; border-radius: 10px; background: var(--eg-bg-2); text-align: center;\n  transition: background var(--eg-dur) ease;\n}\n.eg-word .eg-eg.done { animation: eg-view-in .22s var(--eg-ease) both; }\n.eg-word .eg-eg-en { font: 15px/1.65 var(--eg-en); color: var(--eg-ink); overflow-wrap: anywhere; }\n.eg-word .eg-eg-zh { margin-top: 5px; font: var(--eg-fs-xs)/1.6 var(--eg-font); color: var(--eg-ink-2); }\n.eg-eg-hit {\n  padding: 1px 4px; border-radius: 4px;\n  background: color-mix(in srgb, var(--eg-accent) 13%, transparent);\n  color: var(--eg-ink); font-weight: 700;\n}\n/* ===== word bank bar ===== */\n.eg-bankbar { width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px; padding: 0 0 10px; margin: 0; border-bottom: 1px solid var(--eg-line); }\n.eg-srs-bar {\n  width: 100%; display: flex; flex-direction: column; align-items: center; gap: 5px;\n  padding: 2px 2px 10px; margin: 0 0 6px; border-bottom: 1px solid var(--eg-line);\n}\n.eg-srs-hint {\n  font: 400 11px/1.4 var(--eg-font); color: var(--eg-ink-2); text-align: center;\n}\n.eg-srs-meta {\n  font: 500 11px/1.3 var(--eg-font); color: var(--eg-ink-2); font-variant-numeric: tabular-nums;\n  opacity: .82; text-align: center;\n}\n.eg-srs-modes {\n  display: inline-flex; align-items: center; gap: 3px; padding: 2px;\n  border-radius: 999px; background: var(--eg-bg-2); border: 1px solid var(--eg-line);\n}\n.eg-srs-mode {\n  appearance: none; -webkit-appearance: none;\n  display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 10px;\n  border: none; border-radius: 999px; background: transparent; color: var(--eg-ink-2);\n  font: 600 11.5px/1 var(--eg-font); cursor: pointer; white-space: nowrap;\n  transition: background var(--eg-dur) ease, color var(--eg-dur) ease;\n}\n.eg-srs-mode:hover:not(.active):not(:disabled) { color: var(--eg-ink); }\n.eg-srs-mode.active { background: var(--eg-bg); color: var(--eg-ink); box-shadow: 0 1px 2px rgba(17, 22, 31, .08); }\n.eg-srs-mode:disabled { opacity: .6; cursor: not-allowed; }\n.eg-srs-mode:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-srs-due {\n  display: inline-flex; align-items: center; justify-content: center;\n  min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px;\n  background: color-mix(in srgb, var(--eg-warn) 18%, transparent);\n  color: var(--eg-warn); font: 700 10.5px/1 var(--eg-font); font-variant-numeric: tabular-nums;\n}\n.eg-word-meta {\n  display: inline-flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px; margin: 0 0 2px;\n  color: var(--eg-ink-2); font: 500 12px/1.3 var(--eg-font);\n}\n.eg-pos-text { color: var(--eg-ink-2); }\n.eg-meta-sep { opacity: .45; }\n.eg-srs-tag {\n  display: inline-flex; align-items: center; gap: 6px;\n  color: var(--eg-ink-2); font: 500 12px/1.3 var(--eg-font);\n}\n.eg-srs-tag.is-review {\n  color: var(--eg-warn); font-weight: 600;\n}\n.eg-srs-dots { display: inline-flex; align-items: center; gap: 2.5px; }\n.eg-srs-dot {\n  width: 4.5px; height: 4.5px; border-radius: 50%; background: var(--eg-line-2); display: inline-block;\n}\n.eg-srs-dot.on { background: currentColor; }\n.eg-srs-next {\n  display: inline-flex; align-items: center; padding: 2px 9px; border-radius: 999px;\n  background: color-mix(in srgb, var(--eg-ok) 12%, var(--eg-bg));\n  border: 1px solid color-mix(in srgb, var(--eg-ok) 26%, transparent);\n  color: var(--eg-ok); font: 600 11.5px/1.3 var(--eg-font);\n}\n.eg-srs-done {\n  margin: 28px auto 0; padding: 22px 20px; max-width: 380px; width: 100%;\n  border: 1px solid var(--eg-line); border-radius: 12px; background: var(--eg-bg-2);\n  display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center;\n}\n.eg-srs-done-title { font: 700 15px/1.35 var(--eg-font); color: var(--eg-ink); }\n.eg-srs-done-sub { font: 500 var(--eg-fs-xs)/1.5 var(--eg-font); color: var(--eg-ink-2); font-variant-numeric: tabular-nums; }\n.eg-banklabel { flex: 0 0 auto; font-size: var(--eg-fs-xs); font-weight: 600; color: var(--eg-ink-2); }\n@container (max-width: 315px) {\n  .eg-banklabel { display: none; }\n}\n.eg-select {\n  flex: 1 1 auto; min-width: 0; max-width: 280px; height: 34px; padding: 0 26px 0 12px; border: 1px solid var(--eg-line);\n  border-radius: 999px; background: var(--eg-bg-2); color: var(--eg-ink); cursor: pointer;\n  font: 600 var(--eg-fs-xs)/1 var(--eg-font); outline: none; appearance: none;\n  background-image: linear-gradient(45deg, transparent 50%, var(--eg-ink-2) 50%), linear-gradient(135deg, var(--eg-ink-2) 50%, transparent 50%);\n  background-position: calc(100% - 13px) 13px, calc(100% - 9px) 13px; background-size: 4px 4px, 4px 4px; background-repeat: no-repeat;\n  transition: border-color var(--eg-dur) ease, background-color var(--eg-dur) ease;\n}\n.eg-select:hover { border-color: var(--eg-line-2); }\n.eg-select:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-bankbtn { appearance: none; -webkit-appearance: none;\n  flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: 4px;\n  min-height: 34px; padding: 0 12px; border: 1px solid var(--eg-line); border-radius: 999px;\n  background: var(--eg-bg); color: var(--eg-ink-2); cursor: pointer;\n  font: 600 var(--eg-fs-xs)/1 var(--eg-font);\n  transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease, background var(--eg-dur) ease, transform .14s ease;\n}\n.eg-bankbtn:hover { border-color: var(--eg-line-2); color: var(--eg-ink); background: var(--eg-bg-2); }\n.eg-bankbtn:active { transform: scale(.95); }\n.eg-bankbtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-notice { margin: 0 0 12px; padding: 8px 11px; border-radius: 9px; background: color-mix(in srgb, var(--eg-ok) 9%, transparent); border: 1px solid color-mix(in srgb, var(--eg-ok) 28%, transparent); color: var(--eg-ink); font-size: var(--eg-fs-xs); line-height: 1.5; animation: eg-view-in .2s var(--eg-ease) both; }\n\n/* ===== word bank import ===== */\n.eg-import { width: 100%; max-width: 520px; margin: 0 auto; text-align: left; animation: eg-view-in .2s var(--eg-ease) both; }\n.eg-import-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }\n.eg-import-title { font-size: var(--eg-fs-md); font-weight: 700; color: var(--eg-ink); line-height: 1.3; }\n.eg-import-actions { flex: 0 0 auto; display: flex; align-items: center; gap: 6px; }\n.eg-import-back, .eg-filebtn { appearance: none; -webkit-appearance: none;\n  flex: 0 0 auto; display: inline-flex; align-items: center; min-height: 30px; padding: 4px 10px;\n  border: 1px solid var(--eg-line); border-radius: 8px; background: var(--eg-bg);\n  color: var(--eg-ink-2); cursor: pointer; font: 600 var(--eg-fs-xs)/1 var(--eg-font); white-space: nowrap;\n  transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease, background var(--eg-dur) ease;\n}\n.eg-import-back:hover, .eg-filebtn:hover { border-color: var(--eg-line-2); background: var(--eg-bg-2); color: var(--eg-ink); }\n.eg-import-back:focus-visible, .eg-filebtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-import-sub { margin-top: 4px; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); line-height: 1.5; }\n.eg-field { margin-top: 10px; }\n.eg-field label { display: block; margin-bottom: 6px; font-size: var(--eg-fs-xs); font-weight: 600; color: var(--eg-ink-2); }\n.eg-text {\n  width: 100%; height: 34px; padding: 0 11px; border: 1px solid var(--eg-line); border-radius: 8px;\n  background: var(--eg-bg-2); color: var(--eg-ink); font: var(--eg-fs-sm)/1 var(--eg-font); outline: none;\n  transition: border-color var(--eg-dur) ease, background var(--eg-dur) ease, box-shadow var(--eg-dur) ease;\n}\n.eg-text:hover { border-color: var(--eg-line-2); }\n.eg-text:focus { border-color: var(--eg-accent); background: var(--eg-bg); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 16%, transparent); }\n.eg-textarea-wrap { position: relative; margin-top: 10px; }\n.eg-textarea {\n  width: 100%; min-height: 86px; resize: vertical; padding: 9px 11px; border: 1px solid var(--eg-line); border-radius: 10px;\n  background: var(--eg-bg-2); color: var(--eg-ink); font: var(--eg-fs-xs)/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; outline: none;\n  transition: border-color var(--eg-dur) ease, background var(--eg-dur) ease, box-shadow var(--eg-dur) ease;\n}\n.eg-textarea-wrap.over .eg-textarea, .eg-textarea-wrap:hover .eg-textarea { border-color: var(--eg-accent); background: color-mix(in srgb, var(--eg-accent) 5%, var(--eg-bg-2)); }\n.eg-textarea:focus { border-color: var(--eg-accent); background: var(--eg-bg); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 16%, transparent); }\n.eg-preview { margin-top: 12px; border: 1px solid var(--eg-line); border-radius: 10px; overflow: hidden; animation: eg-view-in .2s var(--eg-ease) both; }\n.eg-preview-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; background: var(--eg-bg-2); font-size: var(--eg-fs-xs); color: var(--eg-ink-2); }\n.eg-preview-top strong { color: var(--eg-ink); }\n.eg-preview-row { display: flex; flex-wrap: wrap; gap: 10px; padding: 7px 10px; border-top: 1px solid var(--eg-line); font-size: var(--eg-fs-xs); line-height: 1.5; }\n.eg-preview-row .w { flex: 0 0 38%; font-weight: 650; overflow-wrap: anywhere; }\n.eg-preview-row .m { flex: 1 1 auto; color: var(--eg-ink-2); overflow-wrap: anywhere; }\n.eg-preview-row .ex { flex: 1 0 100%; color: var(--eg-ink-2); font-family: var(--eg-en); font-style: italic; overflow-wrap: anywhere; }\n.eg-preview-errors { margin-top: 8px; padding: 8px 10px; border-radius: 8px; background: color-mix(in srgb, var(--eg-bad) 7%, transparent); border: 1px solid color-mix(in srgb, var(--eg-bad) 24%, transparent); }\n.eg-preview-errors .er { font-size: var(--eg-fs-xs); line-height: 1.55; color: var(--eg-bad); }\n.eg-import-foot { display: flex; gap: 8px; margin-top: 10px; }\n\n";
 
 // src/client/styles/settings.css
 var settings_default = `/* ===== settings ===== */
@@ -149,11 +149,79 @@ var settings_default = `/* ===== settings ===== */
 .eg-direction-list {
   display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; margin-top: 12px;
 }
+.eg-bank-list {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; margin-top: 12px;
+}
+.eg-level-list {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; margin-top: 12px;
+}
 @container (min-width: 440px) {
   .eg-direction-list { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .eg-bank-list { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .eg-level-list { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
 }
 @container (max-width: 279px) {
   .eg-direction-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .eg-bank-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .eg-level-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.eg-bank-item {
+  appearance: none; -webkit-appearance: none;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  min-height: 44px; padding: 6px 8px;
+  border: 1px solid var(--eg-line); border-radius: 8px; background: var(--eg-bg);
+  color: var(--eg-ink-2); cursor: pointer;
+  transition: background var(--eg-dur) ease, border-color var(--eg-dur) ease, color var(--eg-dur) ease, transform .14s ease;
+}
+.eg-bank-name { font: 600 12.5px/1.2 var(--eg-font); color: var(--eg-ink); }
+.eg-bank-cnt { font: 500 11px/1.2 var(--eg-font); font-variant-numeric: tabular-nums; color: var(--eg-ink-2); }
+.eg-bank-item:hover:not(.active):not(:disabled) {
+  background: var(--eg-bg-2); border-color: var(--eg-line-2); color: var(--eg-ink);
+}
+.eg-bank-item:active:not(:disabled) { transform: scale(.96); }
+.eg-bank-item.active {
+  border-color: var(--eg-accent); background: var(--eg-accent); color: var(--eg-on-accent);
+}
+.eg-bank-item.active .eg-bank-name,
+.eg-bank-item.active .eg-bank-cnt { color: var(--eg-on-accent); }
+.eg-bank-item:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }
+.eg-bank-notice { margin-top: 10px; margin-bottom: 0; }
+.eg-level {
+  appearance: none; -webkit-appearance: none;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  min-height: 44px; padding: 6px 8px;
+  border: 1px solid var(--eg-line); border-radius: 8px; background: var(--eg-bg);
+  color: var(--eg-ink-2); cursor: pointer;
+  transition: background var(--eg-dur) ease, border-color var(--eg-dur) ease, color var(--eg-dur) ease, transform .14s ease;
+}
+.eg-level-code { font: 700 13px/1.1 var(--eg-en); color: var(--eg-ink); }
+.eg-level-desc { font: 500 11px/1.2 var(--eg-font); color: var(--eg-ink-2); }
+.eg-level:hover:not(.active):not(:disabled) {
+  background: var(--eg-bg-2); border-color: var(--eg-line-2); color: var(--eg-ink);
+}
+.eg-level:active:not(:disabled) { transform: scale(.96); }
+.eg-level.active {
+  border-color: var(--eg-accent); background: var(--eg-accent); color: var(--eg-on-accent);
+}
+.eg-level.active .eg-level-code,
+.eg-level.active .eg-level-desc { color: var(--eg-on-accent); }
+.eg-level:disabled { opacity: .6; cursor: not-allowed; }
+.eg-level:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }
+.eg-level-detail {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--eg-bg-2);
+  border: 1px solid var(--eg-line);
+  color: var(--eg-ink-2);
+  font-size: var(--eg-fs-xs);
+  line-height: 1.55;
+  text-align: center;
+}
+.eg-level-detail strong {
+  color: var(--eg-ink);
+  font-weight: 650;
+  margin-right: 6px;
 }
 .eg-direction {
   appearance: none; -webkit-appearance: none; text-align: center;
@@ -292,7 +360,8 @@ var store = {
   open: false,
   stats: null,
   sessionId: "",
-  settings: { confetti: true, topicId: "ai", customTopics: [], bankLink: true, bankRetries: 1, sessionLink: false },
+  wordModeRequest: null,
+  settings: { confetti: true, topicId: "ai", customTopics: [], bankLink: true, bankRetries: 1, sessionLink: false, reportLevel: "B1" },
   burst: 0,
   listeners: /* @__PURE__ */ new Set(),
   emit() {
@@ -308,6 +377,11 @@ var store = {
   },
   toggle() {
     this.setOpen(!this.open);
+  },
+  openWordReview() {
+    this.open = true;
+    this.wordModeRequest = { mode: "review", tick: Date.now() };
+    this.emit();
   },
   setStats(s) {
     this.stats = s;
@@ -372,7 +446,18 @@ function EnglishGymPill(props) {
       import_react3.default.createElement("span", { className: "eg-mono" }, "EG"),
       import_react3.default.createElement("span", { className: "eg-wordmark" }, "English Gym"),
       stats && stats.streakDays > 0 ? import_react3.default.createElement("span", { className: "eg-streak" }, "连续 " + stats.streakDays + " 天") : null,
-      stats && stats.reviewCount > 0 ? import_react3.default.createElement("span", { className: "eg-chip warn" }, "待复习 " + stats.reviewCount) : null,
+      stats && stats.reviewCount > 0 ? import_react3.default.createElement(
+        "span",
+        {
+          className: "eg-chip warn",
+          title: "有 " + stats.reviewCount + " 个单词到期复习，点击直接开始",
+          onClick: (e) => {
+            e.stopPropagation();
+            store.openWordReview();
+          }
+        },
+        "待复习 " + stats.reviewCount
+      ) : null,
       import_react3.default.createElement("span", { className: "eg-chev", "aria-hidden": "true" }, "▸")
     )
   );
@@ -524,16 +609,16 @@ function fitGeom(g) {
   const vw = window.innerWidth || 1200;
   const vh = window.innerHeight || 800;
   const w = clamp(g.w, 240, Math.max(240, vw - EDGE_PAD * 2));
-  const h4 = clamp(g.h, 170, Math.max(170, vh - MIN_TOP - EDGE_PAD));
+  const h3 = clamp(g.h, 170, Math.max(170, vh - MIN_TOP - EDGE_PAD));
   const x = clamp(g.x, EDGE_PAD, Math.max(EDGE_PAD, vw - w - EDGE_PAD));
   const y = clamp(g.y, MIN_TOP, Math.max(MIN_TOP, vh - 44));
-  return { x, y, w, h: h4 };
+  return { x, y, w, h: h3 };
 }
 function pillAnchorGeom() {
   const vw = window.innerWidth || 1200;
   const vh = window.innerHeight || 800;
   const w = 340;
-  const h4 = 440;
+  const h3 = 440;
   let cx = vw / 2;
   let bottom = vh - 120;
   try {
@@ -547,7 +632,7 @@ function pillAnchorGeom() {
     }
   } catch {
   }
-  return fitGeom({ w, h: h4, x: Math.round(cx - w / 2), y: Math.round(bottom - h4) });
+  return fitGeom({ w, h: h3, x: Math.round(cx - w / 2), y: Math.round(bottom - h3) });
 }
 
 // src/client/shell/useBoardGeom.js
@@ -630,8 +715,8 @@ function useBoardGeom(open) {
     const maxW = window.innerWidth - d.g0.x - EDGE_PAD;
     const maxH = window.innerHeight - d.g0.y - EDGE_PAD;
     const w = clamp(d.g0.w + (e.clientX - d.sx), 240, Math.max(240, maxW));
-    const h4 = clamp(d.g0.h + (e.clientY - d.sy), 170, Math.max(170, maxH));
-    setGeom({ x: d.g0.x, y: d.g0.y, w, h: h4 });
+    const h3 = clamp(d.g0.h + (e.clientY - d.sy), 170, Math.max(170, maxH));
+    setGeom({ x: d.g0.x, y: d.g0.y, w, h: h3 });
   }, []);
   const onResizeUp = (0, import_react6.useCallback)(
     (e) => {
@@ -811,6 +896,41 @@ function formatPos(pos) {
 function escapeRegExp(text) {
   return String(text || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
+function splitOutsideParens(str, seps) {
+  const out = [];
+  let depth = 0;
+  let start = 0;
+  for (let i = 0; i < str.length; i += 1) {
+    const ch = str[i];
+    if (ch === "(" || ch === "（" || ch === "[" || ch === "【") depth += 1;
+    else if ((ch === ")" || ch === "）" || ch === "]" || ch === "】") && depth > 0) depth -= 1;
+    else if (depth === 0 && seps.includes(ch)) {
+      out.push(str.slice(start, i));
+      start = i + 1;
+    }
+  }
+  out.push(str.slice(start));
+  return out;
+}
+function formatMeaning(raw) {
+  const source = String(raw || "").trim();
+  if (!source) return "";
+  const seen = /* @__PURE__ */ new Set();
+  const groups = [];
+  for (const rawGroup of splitOutsideParens(source, ";；")) {
+    const terms = [];
+    for (const rawTerm of splitOutsideParens(rawGroup, ",，、")) {
+      const term = rawTerm.trim().replace(/\s+/g, " ");
+      if (!term) continue;
+      const key = term.toLowerCase().replace(/\s+/g, "");
+      if (seen.has(key)) continue;
+      seen.add(key);
+      terms.push(term);
+    }
+    if (terms.length) groups.push(terms.join("、"));
+  }
+  return groups.length ? groups.join("；") : source;
+}
 function splitByWord(text, word) {
   const source = String(text || "");
   const target = String(word || "");
@@ -927,6 +1047,8 @@ function phraseVerdict(feedback) {
 }
 
 // src/client/features/phrase/Drill.js
+var useIsoLayoutEffect = import_react9.default.useLayoutEffect || import_react9.useEffect;
+var INPUT_LINE_HEIGHT = 40;
 function Drill({
   card,
   answer,
@@ -951,6 +1073,24 @@ function Drill({
     setCopied(false);
     return () => clearTimeout(copyTimerRef.current);
   }, [feedback]);
+  const syncInputHeight = (0, import_react9.useCallback)(() => {
+    const el = inputRef.current;
+    if (!el) return;
+    el.style.height = INPUT_LINE_HEIGHT + "px";
+    const lines = Math.max(1, Math.min(6, Math.ceil((el.scrollHeight - 2) / INPUT_LINE_HEIGHT)));
+    el.style.height = lines * INPUT_LINE_HEIGHT + "px";
+    el.style.overflowY = lines >= 6 ? "auto" : "hidden";
+  }, []);
+  useIsoLayoutEffect(() => {
+    syncInputHeight();
+  }, [answer, card, feedback, syncInputHeight]);
+  (0, import_react9.useEffect)(() => {
+    const el = inputRef.current;
+    if (!el || typeof ResizeObserver !== "function") return void 0;
+    const ro = new ResizeObserver(syncInputHeight);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [card, feedback, syncInputHeight]);
   (0, import_react9.useEffect)(() => {
     if (!retryFocusTick || feedback || !card) return;
     const timer = setTimeout(() => {
@@ -1191,7 +1331,7 @@ function Drill({
   }
   return import_react9.default.createElement(
     "div",
-    null,
+    { className: "eg-drill-stage" },
     import_react9.default.createElement(
       "div",
       { className: "eg-cap eg-cap-row" },
@@ -1232,6 +1372,7 @@ function Drill({
       { className: "eg-inputwrap" },
       import_react9.default.createElement("textarea", {
         ref: inputRef,
+        rows: 1,
         className: "eg-input" + (error ? " error" : ""),
         value: answer,
         placeholder: "在这里写下你的英文…",
@@ -1258,7 +1399,7 @@ function Drill({
         },
         "提交"
       ),
-      import_react9.default.createElement("button", { className: "eg-btn ghost", onClick: onNext, disabled: busy }, "换一题"),
+      import_react9.default.createElement("button", { className: "eg-btn", onClick: onNext, disabled: busy }, "换一题"),
       import_react9.default.createElement(
         "span",
         { className: "eg-kbd", title: "⌘/Ctrl + Enter 提交" },
@@ -1271,7 +1412,7 @@ function Drill({
 }
 
 // src/client/features/word/WordPractice.js
-var import_react12 = __toESM(require("react"), 1);
+var import_react11 = __toESM(require("react"), 1);
 
 // src/client/features/word/ExampleBlock.js
 var import_react10 = __toESM(require("react"), 1);
@@ -1295,19 +1436,1217 @@ function ExampleBlock({ example, exampleZh, word, highlight }) {
   );
 }
 
-// src/client/features/word/WordBankImport.js
-var import_react11 = __toESM(require("react"), 1);
-var h2 = import_react11.default.createElement;
-function WordBankImport({ onClose, onImported }) {
-  const [name, setName] = (0, import_react11.useState)("");
-  const [filename, setFilename] = (0, import_react11.useState)("");
-  const [content, setContent] = (0, import_react11.useState)("");
-  const [preview, setPreview] = (0, import_react11.useState)(null);
+// src/client/features/word/WordPractice.js
+var cachedWord = {
+  item: null,
+  cells: [],
+  res: null,
+  revealed: false,
+  revealedEver: false,
+  mode: "smart",
+  srsStats: null,
+  bankRev: 0
+};
+var lastConsumedWordReqTick = 0;
+var MODES = [
+  { id: "smart", label: "智能", title: "按艾宾浩斯曲线优先复习到期词，每复习 3 个穿插 1 个新词" },
+  { id: "review", label: "待复习", title: "专注清理当前词库已到复习时间的单词" },
+  { id: "new", label: "新词", title: "跳过到期复习，优先抽取尚未背过的新词" }
+];
+function stageLabel(srs) {
+  if (!srs) return "新词";
+  if (srs.kind === "new") return "新词";
+  if (srs.kind === "mastered" || srs.mastered) return "已掌握回顾";
+  if (srs.kind === "upcoming") return "提前巩固 · 第 " + ((srs.stage || 0) + 1) + " 阶";
+  return "复习 · 第 " + ((srs.stage || 0) + 1) + " 阶";
+}
+function shortBankName(name) {
+  return String(name || "").replace(/^内置\s*·\s*/, "");
+}
+function WordPractice({ bankRev = 0 } = {}) {
+  const shared = useShared();
+  const [item, setItem] = (0, import_react11.useState)(() => cachedWord.item);
+  const [cells, setCells] = (0, import_react11.useState)(() => cachedWord.cells);
+  const [res, setRes] = (0, import_react11.useState)(() => cachedWord.res);
+  const [revealed, setRevealed] = (0, import_react11.useState)(() => cachedWord.revealed);
   const [busy, setBusy] = (0, import_react11.useState)(false);
   const [error, setError] = (0, import_react11.useState)("");
-  const [over, setOver] = (0, import_react11.useState)(false);
-  const fileRef = (0, import_react11.useRef)(null);
-  const readFile = (0, import_react11.useCallback)(async (file) => {
+  const [mode, setMode] = (0, import_react11.useState)(() => cachedWord.mode);
+  const [hoverMode, setHoverMode] = (0, import_react11.useState)("");
+  const [srsStats, setSrsStats] = (0, import_react11.useState)(() => cachedWord.srsStats);
+  const refs = (0, import_react11.useRef)([]);
+  const inFlight = (0, import_react11.useRef)(false);
+  const revealedEverRef = (0, import_react11.useRef)(cachedWord.revealedEver);
+  const modeRef = (0, import_react11.useRef)(mode);
+  modeRef.current = mode;
+  (0, import_react11.useEffect)(() => {
+    cachedWord.item = item;
+    cachedWord.cells = cells;
+    cachedWord.res = res;
+    cachedWord.revealed = revealed;
+    cachedWord.revealedEver = revealedEverRef.current;
+    cachedWord.mode = mode;
+    cachedWord.srsStats = srsStats;
+  }, [item, cells, res, revealed, mode, srsStats]);
+  const load = (0, import_react11.useCallback)(async (requestedMode) => {
+    if (inFlight.current) return;
+    const targetMode = requestedMode === "review" || requestedMode === "new" || requestedMode === "smart" ? requestedMode : modeRef.current;
+    inFlight.current = true;
+    setBusy(true);
+    setError("");
+    setRes(null);
+    setRevealed(false);
+    revealedEverRef.current = false;
+    try {
+      const data = await api("/word/next", {
+        method: "POST",
+        body: JSON.stringify({ mode: targetMode })
+      });
+      if (data.srsStats) setSrsStats(data.srsStats);
+      setItem(data);
+      if (data.done) {
+        setCells([]);
+      } else {
+        setCells(new Array(Math.max(0, data.letters || 0)).fill(""));
+        setTimeout(() => {
+          try {
+            if (refs.current[0]) refs.current[0].focus();
+          } catch {
+          }
+        }, 0);
+      }
+    } catch (e) {
+      setError(e.message || "出题失败");
+    } finally {
+      inFlight.current = false;
+      setBusy(false);
+    }
+  }, []);
+  (0, import_react11.useEffect)(() => {
+    const req = shared.wordModeRequest;
+    if (req && req.tick && req.tick !== lastConsumedWordReqTick) {
+      lastConsumedWordReqTick = req.tick;
+      cachedWord.bankRev = bankRev;
+      const nextMode = req.mode || "review";
+      setMode(nextMode);
+      modeRef.current = nextMode;
+      load(nextMode);
+      return;
+    }
+    if (bankRev !== cachedWord.bankRev) {
+      cachedWord.bankRev = bankRev;
+      setItem(null);
+      setRes(null);
+      load(modeRef.current);
+      return;
+    }
+    if (!cachedWord.item) load(modeRef.current);
+  }, [shared.wordModeRequest, bankRev, load]);
+  (0, import_react11.useEffect)(() => {
+    if (!res || !res.correct) return void 0;
+    const onKeyDown = (e) => {
+      if (e.key !== "Enter" || e.isComposing) return;
+      const el = e.target;
+      if (el && el.closest && el.closest("textarea, input:not([disabled]), select, button")) return;
+      e.preventDefault();
+      load();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [res, load]);
+  const switchMode = (0, import_react11.useCallback)(
+    (nextMode) => {
+      if (busy || nextMode === modeRef.current) return;
+      setMode(nextMode);
+      modeRef.current = nextMode;
+      load(nextMode);
+    },
+    [busy, load]
+  );
+  const submit = (0, import_react11.useCallback)(async () => {
+    if (!item || item.done || busy || res) return;
+    if (cells.some((c) => !c)) return;
+    setBusy(true);
+    setError("");
+    setRevealed(false);
+    try {
+      const r = await api("/word/check", {
+        method: "POST",
+        body: JSON.stringify({
+          id: item.id,
+          answer: cells.join(""),
+          revealed: revealedEverRef.current
+        })
+      });
+      setRes(r);
+      if (r.correct) store.celebrate();
+      if (r.srsStats) setSrsStats(r.srsStats);
+      if (r.summary) store.setStats(r.summary);
+    } catch (e) {
+      setError(e.message || "判分失败");
+    } finally {
+      setBusy(false);
+    }
+  }, [item, cells, busy, res]);
+  const markMastered = (0, import_react11.useCallback)(async () => {
+    if (!item || item.done || busy) return;
+    setBusy(true);
+    setError("");
+    try {
+      const r = await api("/word/master", {
+        method: "POST",
+        body: JSON.stringify({ id: item.id, word: res && res.reference || "" })
+      });
+      if (r.srsStats) setSrsStats(r.srsStats);
+      if (r.summary) store.setStats(r.summary);
+      inFlight.current = false;
+      setBusy(false);
+      load(modeRef.current);
+    } catch (e) {
+      setError(e.message || "操作失败");
+      setBusy(false);
+    }
+  }, [item, res, busy, load]);
+  const retry = (0, import_react11.useCallback)(() => {
+    if (!item || busy) return;
+    setRes(null);
+    setError("");
+    setRevealed(false);
+    setCells(new Array(Math.max(0, item.letters || 0)).fill(""));
+    setTimeout(() => {
+      try {
+        if (refs.current[0]) refs.current[0].focus();
+      } catch {
+      }
+    }, 0);
+  }, [item, busy]);
+  const toggleReveal = (0, import_react11.useCallback)(() => {
+    setRevealed((v) => {
+      if (!v) revealedEverRef.current = true;
+      return !v;
+    });
+  }, []);
+  const setCell = (i, v) => {
+    const ch = String(v || "").replace(/[^a-zA-Z]/g, "").slice(-1);
+    setCells((prev) => {
+      const next = prev.slice();
+      next[i] = ch;
+      return next;
+    });
+    if (ch) popElement(refs.current[i], "is-pop", 180);
+    if (ch && i < cells.length - 1) {
+      setTimeout(() => {
+        try {
+          if (refs.current[i + 1]) refs.current[i + 1].focus();
+        } catch {
+        }
+      }, 0);
+    }
+  };
+  const onKey = (i, e) => {
+    if (e.key === "Backspace" && !cells[i] && i > 0) {
+      e.preventDefault();
+      setCells((prev) => {
+        const next = prev.slice();
+        next[i - 1] = "";
+        return next;
+      });
+      try {
+        if (refs.current[i - 1]) refs.current[i - 1].focus();
+      } catch {
+      }
+    } else if (e.key === "ArrowLeft" && i > 0) {
+      try {
+        if (refs.current[i - 1]) refs.current[i - 1].focus();
+      } catch {
+      }
+    } else if (e.key === "ArrowRight" && i < cells.length - 1) {
+      try {
+        if (refs.current[i + 1]) refs.current[i + 1].focus();
+      } catch {
+      }
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      submit();
+    }
+  };
+  const liveStats = srsStats || shared.stats && shared.stats.wordSrs || null;
+  const dueCount = liveStats ? Number(liveStats.due) || 0 : 0;
+  const learningCount = liveStats ? Number(liveStats.learning) || 0 : 0;
+  const masteredCount = liveStats ? Number(liveStats.mastered) || 0 : 0;
+  const bankLabel = shortBankName(item && item.bankName || shared.stats && shared.stats.wordBank && shared.stats.wordBank.name || "");
+  const shownMode = MODES.find((m) => m.id === (hoverMode || mode)) || MODES[0];
+  const topBar = import_react11.default.createElement(
+    "div",
+    { className: "eg-srs-bar", "data-nodrag": "true" },
+    import_react11.default.createElement(
+      "div",
+      {
+        className: "eg-srs-modes",
+        role: "tablist",
+        "aria-label": "出词模式",
+        onMouseLeave: () => setHoverMode("")
+      },
+      MODES.map(
+        (m) => import_react11.default.createElement(
+          "button",
+          {
+            key: m.id,
+            type: "button",
+            role: "tab",
+            "aria-selected": mode === m.id ? "true" : "false",
+            className: "eg-srs-mode" + (mode === m.id ? " active" : ""),
+            title: m.title,
+            disabled: busy,
+            onMouseEnter: () => setHoverMode(m.id),
+            onFocus: () => setHoverMode(m.id),
+            onBlur: () => setHoverMode((prev) => prev === m.id ? "" : prev),
+            onClick: () => switchMode(m.id)
+          },
+          m.label,
+          m.id === "review" && dueCount > 0 ? import_react11.default.createElement("span", { className: "eg-srs-due" }, String(dueCount)) : null
+        )
+      )
+    ),
+    import_react11.default.createElement("div", { className: "eg-srs-hint" }, shownMode.title),
+    liveStats || bankLabel ? import_react11.default.createElement(
+      "div",
+      { className: "eg-srs-meta", title: "词库可在「设置 → 单词词库」切换" },
+      [
+        bankLabel,
+        liveStats ? "学习中 " + learningCount : "",
+        liveStats ? "已掌握 " + masteredCount : ""
+      ].filter(Boolean).join(" · ")
+    ) : null
+  );
+  if (!item) {
+    return import_react11.default.createElement(
+      "div",
+      { className: "eg-word" },
+      topBar,
+      import_react11.default.createElement(
+        "div",
+        { className: "eg-word-main" },
+        error ? import_react11.default.createElement("div", { className: "eg-err" }, error) : import_react11.default.createElement(
+          "div",
+          { className: "eg-loading" },
+          import_react11.default.createElement("span", { className: "eg-spin" }),
+          "正在取词…"
+        ),
+        error ? import_react11.default.createElement(
+          "div",
+          { className: "eg-foot" },
+          import_react11.default.createElement("button", { className: "eg-btn primary", onClick: () => load(), disabled: busy }, "重试")
+        ) : null
+      )
+    );
+  }
+  if (item.done) {
+    return import_react11.default.createElement(
+      "div",
+      { className: "eg-word" },
+      topBar,
+      import_react11.default.createElement(
+        "div",
+        { className: "eg-word-main" },
+        import_react11.default.createElement(
+          "div",
+          { className: "eg-srs-done" },
+          import_react11.default.createElement("div", { className: "eg-srs-done-title" }, "到期单词已全部复习完成"),
+          import_react11.default.createElement(
+            "div",
+            { className: "eg-srs-done-sub" },
+            (bankLabel ? bankLabel + "：" : "当前词库：") + "学习中 " + learningCount + " 词 · 已掌握 " + masteredCount + " 词"
+          ),
+          import_react11.default.createElement(
+            "button",
+            {
+              type: "button",
+              className: "eg-btn primary",
+              disabled: busy,
+              onClick: () => switchMode("smart")
+            },
+            "切回智能模式继续学习"
+          )
+        )
+      )
+    );
+  }
+  const answered = !!res;
+  const ok = answered && !!res.correct;
+  const target = String(res && res.reference || "").toLowerCase();
+  const letterGap = cells.length > 7 ? 8 : 10;
+  const letterFont = cells.length > 12 ? 15 : cells.length > 9 ? 17 : 22;
+  const cellsNodes = cells.map((ch, i) => {
+    let cls = "eg-letter";
+    if (answered) cls += ok ? " ok" : " bad";
+    return import_react11.default.createElement("input", {
+      key: i,
+      ref: (el) => {
+        refs.current[i] = el;
+      },
+      className: cls,
+      value: answered ? ch || target[i] || "" : ch,
+      style: { fontSize: letterFont, "--i": i },
+      maxLength: 1,
+      inputMode: "text",
+      autoCapitalize: "off",
+      autoComplete: "off",
+      autoCorrect: "off",
+      spellCheck: false,
+      disabled: answered || busy,
+      "aria-label": "第 " + (i + 1) + " 个字母",
+      onChange: (e) => setCell(i, e.target.value),
+      onKeyDown: (e) => onKey(i, e)
+    });
+  });
+  const srsInfo = item.srs || null;
+  const srsStage = srsInfo ? Number(srsInfo.stage) || 0 : 0;
+  const srsMax = srsInfo && Number(srsInfo.maxStage) || 9;
+  const showDots = srsInfo && srsInfo.kind !== "new" && srsStage > 0;
+  const cleanMeaning = formatMeaning(item.zh);
+  const meaningClass = "eg-zh" + (cleanMeaning.length > 28 ? " is-xlong" : cleanMeaning.length > 16 ? " is-long" : "");
+  const footerActions = answered ? import_react11.default.createElement(
+    "div",
+    { className: "eg-word-foot" },
+    ok ? [
+      import_react11.default.createElement(
+        "button",
+        { key: "next", className: "eg-btn primary", onClick: () => load(), disabled: busy, title: "回车继续", "aria-keyshortcuts": "Enter" },
+        "下一个"
+      ),
+      !(res.srs && res.srs.mastered) ? import_react11.default.createElement(
+        "button",
+        { key: "master", className: "eg-btn", onClick: markMastered, disabled: busy, title: "太简单，直接标为已掌握" },
+        "已掌握"
+      ) : null
+    ] : [
+      import_react11.default.createElement("button", { key: "retry", className: "eg-btn primary", onClick: retry, disabled: busy }, "再试一次"),
+      import_react11.default.createElement(
+        "button",
+        {
+          key: "reveal",
+          className: "eg-btn",
+          onClick: toggleReveal,
+          disabled: busy,
+          "aria-expanded": revealed ? "true" : "false"
+        },
+        revealed ? "收起答案" : "显示答案"
+      ),
+      import_react11.default.createElement("button", { key: "next", className: "eg-btn", onClick: () => load(), disabled: busy }, "下一个")
+    ]
+  ) : item ? import_react11.default.createElement(
+    "div",
+    { className: "eg-word-foot" },
+    import_react11.default.createElement(
+      "button",
+      {
+        className: "eg-btn primary" + (busy ? " is-loading" : ""),
+        onClick: submit,
+        onPointerDown: bounceButton,
+        disabled: busy || cells.some((c) => !c)
+      },
+      "提交"
+    ),
+    import_react11.default.createElement("button", { className: "eg-btn", onClick: () => load(), disabled: busy }, "换一个"),
+    import_react11.default.createElement(
+      "button",
+      { className: "eg-btn", onClick: markMastered, disabled: busy, title: "太简单，直接标为已掌握" },
+      "已掌握"
+    ),
+    import_react11.default.createElement(
+      "span",
+      { className: "eg-kbd", title: "回车提交" },
+      import_react11.default.createElement("kbd", null, "↵")
+    )
+  ) : null;
+  return import_react11.default.createElement(
+    "div",
+    { className: "eg-word" },
+    topBar,
+    import_react11.default.createElement(
+      "div",
+      { className: "eg-word-main" },
+      import_react11.default.createElement(
+        "div",
+        { className: "eg-word-stage", key: item.id },
+        import_react11.default.createElement(
+          "div",
+          { className: "eg-word-meta" },
+          item.pos ? import_react11.default.createElement("span", { className: "eg-pos-text", title: "词性提示" }, formatPos(item.pos)) : null,
+          item.pos ? import_react11.default.createElement("span", { className: "eg-meta-sep", "aria-hidden": "true" }, "·") : null,
+          import_react11.default.createElement(
+            "span",
+            { className: "eg-srs-tag" + (srsInfo && srsInfo.kind === "review" ? " is-review" : "") },
+            stageLabel(srsInfo),
+            showDots ? import_react11.default.createElement(
+              "span",
+              { className: "eg-srs-dots", "aria-hidden": "true" },
+              Array.from(
+                { length: srsMax },
+                (_, idx) => import_react11.default.createElement("i", { key: idx, className: "eg-srs-dot" + (idx < srsStage ? " on" : "") })
+              )
+            ) : null
+          )
+        ),
+        import_react11.default.createElement("div", { className: meaningClass }, cleanMeaning),
+        !answered ? import_react11.default.createElement(ExampleBlock, { example: item.example }) : null,
+        import_react11.default.createElement(
+          "div",
+          {
+            className: "eg-letters" + (answered ? " answered" + (ok ? " is-ok" : " is-bad") : ""),
+            style: { gap: letterGap }
+          },
+          cellsNodes
+        ),
+        error ? import_react11.default.createElement("div", { className: "eg-err" }, error) : null,
+        answered ? ok ? import_react11.default.createElement(
+          "div",
+          { className: "eg-fb ok" },
+          import_react11.default.createElement(
+            "div",
+            { className: "eg-fb-top" },
+            import_react11.default.createElement("span", { className: "eg-fb-status" }, "拼对了"),
+            res.srs && res.srs.nextReviewText ? import_react11.default.createElement("span", { className: "eg-srs-next" }, res.srs.nextReviewText) : null
+          ),
+          import_react11.default.createElement(
+            "div",
+            { className: "eg-fb-ref" },
+            import_react11.default.createElement("span", { className: "lbl" }, "正确拼写"),
+            res.reference
+          ),
+          import_react11.default.createElement(ExampleBlock, {
+            example: res.example,
+            exampleZh: res.exampleZh,
+            word: res.reference,
+            highlight: true
+          })
+        ) : import_react11.default.createElement(
+          "div",
+          { className: "eg-fb bad" },
+          !revealed ? import_react11.default.createElement("div", { className: "eg-word-miss" }, "拼写有误，可再试一次或查看答案 · 5 分钟后再次巩固") : null,
+          import_react11.default.createElement(
+            "div",
+            {
+              className: "eg-collapse eg-word-reveal" + (revealed ? " open" : ""),
+              "aria-hidden": revealed ? "false" : "true"
+            },
+            import_react11.default.createElement(
+              "div",
+              { className: "eg-collapse-inner" },
+              import_react11.default.createElement(
+                "div",
+                { className: "eg-fb-ref" },
+                import_react11.default.createElement("span", { className: "lbl" }, "正确拼写"),
+                res.reference
+              ),
+              import_react11.default.createElement(ExampleBlock, {
+                example: res.example,
+                exampleZh: res.exampleZh,
+                word: res.reference,
+                highlight: true
+              })
+            )
+          )
+        ) : null
+      )
+    ),
+    footerActions
+  );
+}
+
+// src/client/features/report/useDailyReport.js
+var import_react12 = require("react");
+function useDailyReport({ open, active }) {
+  const [report, setReport] = (0, import_react12.useState)(null);
+  const [loading, setLoading] = (0, import_react12.useState)(false);
+  const [error, setError] = (0, import_react12.useState)("");
+  const staleRef = (0, import_react12.useRef)(false);
+  const refresh = (0, import_react12.useCallback)(async (force) => {
+    setLoading(true);
+    setError("");
+    if (force) setReport(null);
+    try {
+      setReport(force ? await api("/report/refresh", { method: "POST" }) : await api("/report"));
+    } catch (e) {
+      setError(e.message || "文章加载失败");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+  (0, import_react12.useEffect)(() => {
+    if (open && active && !report && !loading) {
+      const force = staleRef.current;
+      staleRef.current = false;
+      refresh(force);
+    }
+  }, [open, active, report, loading, refresh]);
+  const invalidate = (0, import_react12.useCallback)(() => {
+    setReport(null);
+    setError("");
+    staleRef.current = true;
+  }, []);
+  return { report, loading, error, refresh, invalidate };
+}
+
+// src/client/features/report/Report.js
+var import_react13 = __toESM(require("react"), 1);
+
+// src/client/features/report/highlight.js
+function segmentReportParagraphs(paragraphs, highlights, options = {}) {
+  const list = Array.isArray(paragraphs) ? paragraphs : [];
+  const firstOnly = options.firstOnly !== false;
+  const items = [];
+  const byKey = /* @__PURE__ */ new Map();
+  for (const raw of Array.isArray(highlights) ? highlights : []) {
+    if (!raw || typeof raw !== "object") continue;
+    const word = String(raw.word || "").trim().replace(/\s+/g, " ");
+    const zh = String(raw.zh || "").trim();
+    if (!word || !zh) continue;
+    const key = word.toLowerCase();
+    if (byKey.has(key)) continue;
+    const item = { ...raw, word, zh };
+    byKey.set(key, item);
+    items.push(item);
+  }
+  if (!items.length) {
+    return {
+      segmentsByParagraph: list.map((p) => [{ type: "text", text: String(p || "") }]),
+      matchedCount: 0
+    };
+  }
+  items.sort((a, b) => b.word.length - a.word.length);
+  let pattern = "";
+  try {
+    const alts = items.map((i) => escapeRegExp(i.word)).join("|");
+    pattern = new RegExp(`(?<![A-Za-z0-9'’-])(?:${alts})(?![A-Za-z0-9'’-])`, "gi");
+  } catch {
+    return {
+      segmentsByParagraph: list.map((p) => [{ type: "text", text: String(p || "") }]),
+      matchedCount: 0
+    };
+  }
+  const seenKeys = /* @__PURE__ */ new Set();
+  let nextId = 0;
+  const segmentsByParagraph = list.map((rawPara) => {
+    const source = String(rawPara || "");
+    if (!source) return [{ type: "text", text: "" }];
+    pattern.lastIndex = 0;
+    const segs = [];
+    let cursor = 0;
+    let m;
+    while ((m = pattern.exec(source)) !== null) {
+      const matchedText = m[0];
+      if (!matchedText) {
+        pattern.lastIndex += 1;
+        continue;
+      }
+      const key = matchedText.toLowerCase().replace(/\s+/g, " ");
+      const item = byKey.get(key);
+      if (!item || firstOnly && seenKeys.has(key)) continue;
+      if (m.index > cursor) {
+        segs.push({ type: "text", text: source.slice(cursor, m.index) });
+      }
+      seenKeys.add(key);
+      segs.push({ type: "term", id: "hl-" + nextId++, text: matchedText, item });
+      cursor = m.index + matchedText.length;
+    }
+    if (cursor < source.length) {
+      segs.push({ type: "text", text: source.slice(cursor) });
+    }
+    return segs.length ? segs : [{ type: "text", text: source }];
+  });
+  return { segmentsByParagraph, matchedCount: nextId };
+}
+
+// src/client/features/report/Report.js
+var useIsoLayoutEffect2 = import_react13.default.useLayoutEffect || import_react13.useEffect;
+function Report({ report, loading, error, onRefresh }) {
+  const [openMap, setOpenMap] = (0, import_react13.useState)({});
+  const [active, setActive] = (0, import_react13.useState)(null);
+  const [popPos, setPopPos] = (0, import_react13.useState)(null);
+  const reportRef = (0, import_react13.useRef)(null);
+  const popRef = (0, import_react13.useRef)(null);
+  const termRefs = (0, import_react13.useRef)({});
+  const closeTimerRef = (0, import_react13.useRef)(null);
+  const cancelClose = (0, import_react13.useCallback)(() => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+  }, []);
+  const scheduleClose = (0, import_react13.useCallback)(() => {
+    cancelClose();
+    closeTimerRef.current = setTimeout(() => {
+      setActive((prev) => prev && !prev.pinned ? null : prev);
+    }, 140);
+  }, [cancelClose]);
+  (0, import_react13.useEffect)(() => {
+    cancelClose();
+    setOpenMap({});
+    setActive(null);
+    setPopPos(null);
+    termRefs.current = {};
+  }, [report, cancelClose]);
+  (0, import_react13.useEffect)(() => () => cancelClose(), [cancelClose]);
+  (0, import_react13.useEffect)(() => {
+    if (!active) return void 0;
+    const onPointerDown = (e) => {
+      const target = e.target;
+      if (popRef.current && target && popRef.current.contains(target)) return;
+      if (target && target.closest && target.closest(".eg-rword")) return;
+      setActive(null);
+    };
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        e.stopPropagation();
+        setActive(null);
+      }
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    window.addEventListener("keydown", onKeyDown, true);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      window.removeEventListener("keydown", onKeyDown, true);
+    };
+  }, [active]);
+  const updatePopoverPosition = (0, import_react13.useCallback)(() => {
+    if (!active) {
+      setPopPos(null);
+      return;
+    }
+    const reportEl = reportRef.current;
+    const popEl = popRef.current;
+    const anchorEl = termRefs.current[active.id];
+    if (!reportEl || !popEl || !anchorEl) return;
+    const reportRect = reportEl.getBoundingClientRect();
+    const anchorRect = anchorEl.getClientRects && anchorEl.getClientRects()[0] || anchorEl.getBoundingClientRect();
+    const popWidth = popEl.offsetWidth;
+    const popHeight = popEl.offsetHeight;
+    if (!reportRect.width || !popWidth || !popHeight) return;
+    const scrollEl = reportEl.closest ? reportEl.closest(".eg-body") : null;
+    const scrollRect = (scrollEl || document.documentElement).getBoundingClientRect();
+    const anchorTop = anchorRect.top - reportRect.top;
+    const anchorBottom = anchorRect.bottom - reportRect.top;
+    const anchorCenterX = anchorRect.left - reportRect.left + anchorRect.width / 2;
+    const gap = 9;
+    const spaceAbove = anchorRect.top - scrollRect.top;
+    const spaceBelow = scrollRect.bottom - anchorRect.bottom;
+    const placement = spaceAbove < popHeight + gap + 8 && spaceBelow >= spaceAbove ? "below" : "above";
+    const top = placement === "below" ? Math.round(anchorBottom + gap) : Math.round(anchorTop - popHeight - gap);
+    const maxLeft = Math.max(0, reportRect.width - popWidth);
+    const left = Math.round(Math.max(0, Math.min(maxLeft, anchorCenterX - popWidth / 2)));
+    const arrowX = Math.round(Math.max(12, Math.min(Math.max(12, popWidth - 12), anchorCenterX - left)));
+    setPopPos({ left, top, arrowX, placement });
+  }, [active]);
+  useIsoLayoutEffect2(() => {
+    updatePopoverPosition();
+    if (!active) return void 0;
+    window.addEventListener("resize", updatePopoverPosition);
+    let ro = null;
+    if (typeof ResizeObserver === "function" && reportRef.current) {
+      ro = new ResizeObserver(updatePopoverPosition);
+      ro.observe(reportRef.current);
+    }
+    return () => {
+      window.removeEventListener("resize", updatePopoverPosition);
+      if (ro) ro.disconnect();
+    };
+  }, [active, updatePopoverPosition]);
+  const body = report ? String(report.body || "") : "";
+  const highlights = report && Array.isArray(report.highlights) ? report.highlights : [];
+  const paragraphs = (0, import_react13.useMemo)(() => body.split(/\n{2,}/).filter(Boolean), [body]);
+  const { segmentsByParagraph, matchedCount } = (0, import_react13.useMemo)(
+    () => segmentReportParagraphs(paragraphs, highlights),
+    [paragraphs, highlights]
+  );
+  if (loading && !report) {
+    return import_react13.default.createElement(
+      "div",
+      { className: "eg-loading is-stage" },
+      import_react13.default.createElement("span", { className: "eg-spin" }),
+      "正在生成今日文章…"
+    );
+  }
+  if (!report) {
+    return import_react13.default.createElement(
+      "div",
+      null,
+      import_react13.default.createElement(
+        "div",
+        { className: "eg-loading" },
+        error ? import_react13.default.createElement("span", { className: "eg-err" }, error) : "暂无文章。"
+      ),
+      import_react13.default.createElement(
+        "div",
+        { className: "eg-actions" },
+        import_react13.default.createElement("button", { className: "eg-btn primary", onClick: onRefresh }, "生成今日文章")
+      )
+    );
+  }
+  const questions = report.questions || [];
+  const wordCount = (body.match(/[A-Za-z0-9]+(?:['’-][A-Za-z0-9]+)*/g) || []).length;
+  const meta = [
+    report.date,
+    report.level,
+    wordCount ? wordCount + " 词" : "",
+    matchedCount ? matchedCount + " 个重点词" : ""
+  ].filter(Boolean).join(" · ");
+  const handleTermEnter = (seg) => {
+    cancelClose();
+    setActive((prev) => prev && prev.pinned ? prev : { id: seg.id, item: seg.item, text: seg.text, pinned: false });
+  };
+  const handleTermLeave = () => {
+    scheduleClose();
+  };
+  const handleTermClick = (e, seg) => {
+    const sel = typeof window !== "undefined" && window.getSelection ? window.getSelection() : null;
+    if (sel && String(sel).trim()) return;
+    e.stopPropagation();
+    cancelClose();
+    setActive(
+      (prev) => prev && prev.pinned && prev.id === seg.id ? null : { id: seg.id, item: seg.item, text: seg.text, pinned: true }
+    );
+  };
+  const handleTermFocus = (seg) => {
+    cancelClose();
+    setActive((prev) => prev && prev.pinned ? prev : { id: seg.id, item: seg.item, text: seg.text, pinned: false });
+  };
+  const handleTermBlur = (e) => {
+    if (popRef.current && e.relatedTarget && popRef.current.contains(e.relatedTarget)) return;
+    setActive((prev) => prev && !prev.pinned ? null : prev);
+  };
+  const handleTermKeyDown = (e, seg) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      e.stopPropagation();
+      cancelClose();
+      setActive(
+        (prev) => prev && prev.pinned && prev.id === seg.id ? null : { id: seg.id, item: seg.item, text: seg.text, pinned: true }
+      );
+    }
+  };
+  const activePos = active && active.item.pos ? formatPos(active.item.pos) : "";
+  const activeLemma = active && active.item.lemma && active.item.lemma.toLowerCase() !== active.text.toLowerCase() ? active.item.lemma : "";
+  return import_react13.default.createElement(
+    "div",
+    { className: "eg-report", ref: reportRef, "data-nodrag": "true" },
+    import_react13.default.createElement("div", { className: "r-top" }, import_react13.default.createElement("h2", { className: "eg-rtitle" }, report.title || "Daily Report")),
+    import_react13.default.createElement(
+      "div",
+      { className: "eg-rmeta-row" },
+      meta ? import_react13.default.createElement("div", { className: "eg-rmeta" }, meta) : import_react13.default.createElement("span", null),
+      import_react13.default.createElement(
+        "button",
+        {
+          type: "button",
+          className: "eg-rrefresh",
+          onClick: onRefresh,
+          disabled: loading,
+          title: "重新生成一篇今日文章"
+        },
+        loading ? "生成中…" : "↻ 换一篇"
+      )
+    ),
+    report.summary_zh ? import_react13.default.createElement("p", { className: "eg-rsum" }, report.summary_zh) : null,
+    segmentsByParagraph.map(
+      (segs, i) => import_react13.default.createElement(
+        "p",
+        { key: i, className: "eg-rp" },
+        segs.map((seg, j) => {
+          if (seg.type !== "term") return seg.text;
+          const isActive = !!(active && active.id === seg.id);
+          return import_react13.default.createElement(
+            "mark",
+            {
+              key: seg.id + "-" + j,
+              ref: (el) => {
+                if (el) termRefs.current[seg.id] = el;
+                else delete termRefs.current[seg.id];
+              },
+              className: "eg-rword" + (isActive ? " is-active" : ""),
+              role: "button",
+              tabIndex: 0,
+              "aria-expanded": isActive ? "true" : "false",
+              onMouseEnter: () => handleTermEnter(seg),
+              onMouseLeave: handleTermLeave,
+              onClick: (e) => handleTermClick(e, seg),
+              onFocus: () => handleTermFocus(seg),
+              onBlur: handleTermBlur,
+              onKeyDown: (e) => handleTermKeyDown(e, seg)
+            },
+            seg.text
+          );
+        })
+      )
+    ),
+    active ? import_react13.default.createElement(
+      "div",
+      {
+        ref: popRef,
+        className: "eg-rpop" + (popPos ? " is-ready" : "") + (popPos && popPos.placement === "below" ? " is-below" : "") + (active.pinned ? " is-pinned" : ""),
+        role: active.pinned ? "dialog" : "tooltip",
+        "aria-label": active.text + " 释义",
+        style: popPos ? {
+          left: popPos.left + "px",
+          top: popPos.top + "px",
+          "--eg-arrow-x": popPos.arrowX + "px"
+        } : { left: 0, top: 0 },
+        onMouseEnter: cancelClose,
+        onMouseLeave: handleTermLeave
+      },
+      import_react13.default.createElement(
+        "div",
+        { className: "eg-rpop-head" },
+        import_react13.default.createElement(
+          "div",
+          { className: "eg-rpop-title" },
+          import_react13.default.createElement("span", { className: "eg-rpop-word" }, active.text),
+          activeLemma ? import_react13.default.createElement("span", { className: "eg-rpop-lemma" }, "→ " + activeLemma) : null
+        ),
+        active.pinned ? import_react13.default.createElement(
+          "button",
+          {
+            type: "button",
+            className: "eg-rpop-close",
+            "aria-label": "关闭释义",
+            onClick: () => setActive(null)
+          },
+          "×"
+        ) : null
+      ),
+      activePos || active.item.fromBank ? import_react13.default.createElement(
+        "div",
+        { className: "eg-rpop-tags" },
+        activePos ? import_react13.default.createElement("span", { className: "eg-rpop-pos" }, activePos) : null,
+        active.item.fromBank ? import_react13.default.createElement("span", { className: "eg-rpop-bank" }, "词库") : null
+      ) : null,
+      import_react13.default.createElement("div", { className: "eg-rpop-zh" }, active.item.zh)
+    ) : null,
+    questions.length ? import_react13.default.createElement(
+      "div",
+      { className: "eg-practice" },
+      import_react13.default.createElement("div", { className: "eg-ptitle" }, "练一练"),
+      questions.map((q, i) => {
+        const isOpen = !!openMap[i];
+        return import_react13.default.createElement(
+          "div",
+          { key: i, className: "eg-q" + (isOpen ? " reveal" : "") },
+          import_react13.default.createElement(
+            "div",
+            { className: "eg-q-head" },
+            import_react13.default.createElement("span", { className: "eg-q-n" }, String(i + 1)),
+            import_react13.default.createElement("span", { className: "eg-q-zh" }, q.zh)
+          ),
+          import_react13.default.createElement(
+            "button",
+            {
+              className: "eg-q-toggle",
+              type: "button",
+              "aria-expanded": isOpen ? "true" : "false",
+              onClick: () => setOpenMap((prev) => ({ ...prev, [i]: !prev[i] }))
+            },
+            import_react13.default.createElement("span", { className: "caret", "aria-hidden": "true" }, "▸"),
+            isOpen ? "收起参考" : "看参考"
+          ),
+          import_react13.default.createElement(
+            "div",
+            { className: "eg-collapse" + (isOpen ? " open" : ""), "aria-hidden": isOpen ? "false" : "true" },
+            import_react13.default.createElement(
+              "div",
+              { className: "eg-collapse-inner" },
+              import_react13.default.createElement("div", { className: "eg-q-en" }, q.en)
+            )
+          )
+        );
+      })
+    ) : null,
+    import_react13.default.createElement(
+      "div",
+      { className: "eg-report-foot" },
+      import_react13.default.createElement(
+        "span",
+        { className: "eg-report-foot-hint" },
+        matchedCount ? "标黄词可悬停或点击查译，可随时换一篇" : "按当前内容方向生成，可随时换一篇"
+      ),
+      import_react13.default.createElement(
+        "button",
+        {
+          type: "button",
+          className: "eg-btn",
+          onClick: onRefresh,
+          onPointerDown: bounceButton,
+          disabled: loading
+        },
+        loading ? "生成中…" : "↻ 换一篇"
+      )
+    )
+  );
+}
+
+// src/client/features/dashboard/Dashboard.js
+var import_react14 = __toESM(require("react"), 1);
+var WEEKDAYS = ["日", "一", "二", "三", "四", "五", "六"];
+function pad2(n) {
+  return String(n).padStart(2, "0");
+}
+var cachedDashboard = null;
+function Dashboard() {
+  const [data, setData] = (0, import_react14.useState)(() => cachedDashboard);
+  const [loading, setLoading] = (0, import_react14.useState)(() => !cachedDashboard);
+  const [error, setError] = (0, import_react14.useState)("");
+  const [cursor, setCursor] = (0, import_react14.useState)(() => {
+    const d = /* @__PURE__ */ new Date();
+    return { y: d.getFullYear(), m: d.getMonth() };
+  });
+  const [expanded, setExpanded] = (0, import_react14.useState)({});
+  const [flashDay, setFlashDay] = (0, import_react14.useState)("");
+  const flashTimerRef = (0, import_react14.useRef)(null);
+  const toggleGroup = (key) => setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
+  const WORD_LIMIT = 10;
+  const PHRASE_LIMIT = 5;
+  (0, import_react14.useEffect)(() => {
+    return () => clearTimeout(flashTimerRef.current);
+  }, []);
+  const load = (0, import_react14.useCallback)(async () => {
+    if (!cachedDashboard) setLoading(true);
+    setError("");
+    try {
+      const next = await api("/dashboard");
+      cachedDashboard = next;
+      setData(next);
+    } catch (e) {
+      setError(e.message || "看板加载失败");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+  (0, import_react14.useEffect)(() => {
+    load();
+  }, [load]);
+  const activity = {};
+  if (data && Array.isArray(data.activity)) {
+    for (const a of data.activity) activity[a.day] = a;
+  }
+  const records = data && Array.isArray(data.days) ? data.days : [];
+  const today = data ? data.today : null;
+  const streak = data ? data.streak || 0 : 0;
+  const totals = data && data.totals ? data.totals : { days: 0, words: 0, phrases: 0 };
+  const { y, m } = cursor;
+  const startDow = (new Date(y, m, 1).getDay() + 6) % 7;
+  const daysInMonth = new Date(y, m + 1, 0).getDate();
+  const cells = [];
+  for (let i = 0; i < startDow; i += 1) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d += 1) cells.push(d);
+  while (cells.length % 7 !== 0) cells.push(null);
+  const dayStr = (d) => y + "-" + pad2(m + 1) + "-" + pad2(d);
+  const levelOf = (n) => n > 60 ? 4 : n >= 31 ? 3 : n >= 11 ? 2 : n >= 1 ? 1 : 0;
+  const goMonth = (delta) => setCursor((c) => {
+    let mm = c.m + delta;
+    let yy = c.y;
+    if (mm < 0) {
+      mm = 11;
+      yy -= 1;
+    }
+    if (mm > 11) {
+      mm = 0;
+      yy += 1;
+    }
+    return { y: yy, m: mm };
+  });
+  const goToday = () => {
+    const d = /* @__PURE__ */ new Date();
+    setCursor({ y: d.getFullYear(), m: d.getMonth() });
+  };
+  const jumpTo = (day) => {
+    try {
+      const el = document.getElementById("eg-hist-" + day);
+      if (el && el.scrollIntoView) el.scrollIntoView({ block: "start", behavior: "smooth" });
+    } catch {
+    }
+    setFlashDay("");
+    clearTimeout(flashTimerRef.current);
+    setTimeout(() => {
+      setFlashDay(day);
+      flashTimerRef.current = setTimeout(() => setFlashDay(""), 1200);
+    }, 20);
+  };
+  const dowNodes = ["一", "二", "三", "四", "五", "六", "日"].map(
+    (w, i) => import_react14.default.createElement("div", { className: "dow", key: "dow" + i }, w)
+  );
+  const cellNodes = cells.map((d, i) => {
+    if (!d) return import_react14.default.createElement("div", { className: "eg-day blank", key: "b" + i });
+    const key = dayStr(d);
+    const a = activity[key];
+    const lv = a ? levelOf(a.total) : 0;
+    const cls = ["eg-day"];
+    if (lv) cls.push("l" + lv, "has");
+    if (key === today) cls.push("today");
+    return import_react14.default.createElement(
+      "div",
+      {
+        key,
+        className: cls.join(" "),
+        title: a ? key + " · 单词 " + a.words + " · 句子 " + a.phrases : key,
+        onClick: a ? () => jumpTo(key) : void 0,
+        role: a ? "button" : void 0,
+        tabIndex: a ? 0 : void 0,
+        onKeyDown: a ? (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            jumpTo(key);
+          }
+        } : void 0
+      },
+      import_react14.default.createElement("span", { className: "n" }, d),
+      a ? import_react14.default.createElement("span", { className: "cnt" }, a.total) : null
+    );
+  });
+  const recordNodes = records.map((rec) => {
+    const dt = /* @__PURE__ */ new Date(rec.day + "T00:00:00");
+    const wd = WEEKDAYS[dt.getDay()];
+    const t = rec.totals || {};
+    const allWords = rec.words || [];
+    const allPhrases = rec.phrases || [];
+    const wKey = rec.day + ":w";
+    const pKey = rec.day + ":p";
+    const words = expanded[wKey] ? allWords : allWords.slice(0, WORD_LIMIT);
+    const phrases = expanded[pKey] ? allPhrases : allPhrases.slice(0, PHRASE_LIMIT);
+    const moreBtn = (key, total, limit, open) => total > limit ? import_react14.default.createElement(
+      "button",
+      { className: "eg-more", key: "more", onClick: () => toggleGroup(key) },
+      open ? "收起" : "展开全部 · 共 " + total + " 条"
+    ) : null;
+    return import_react14.default.createElement(
+      "div",
+      { className: "eg-hist-day" + (flashDay === rec.day ? " is-flash" : ""), id: "eg-hist-" + rec.day, key: rec.day },
+      import_react14.default.createElement(
+        "div",
+        { className: "eg-hist-head" },
+        import_react14.default.createElement(
+          "div",
+          { className: "eg-hist-date" },
+          dt.getMonth() + 1 + "月" + dt.getDate() + "日",
+          import_react14.default.createElement("span", { className: "wd" }, "周" + wd)
+        ),
+        import_react14.default.createElement("div", { className: "eg-hist-count" }, "单词 " + (t.words || 0) + " · 句子 " + (t.phrases || 0))
+      ),
+      allWords.length ? import_react14.default.createElement(
+        "div",
+        null,
+        import_react14.default.createElement("div", { className: "eg-hist-sub" }, "单词"),
+        import_react14.default.createElement(
+          "div",
+          { className: "eg-wchips" },
+          words.map(
+            (w, i) => import_react14.default.createElement(
+              "span",
+              { className: "eg-wchip " + (w.ok ? "ok" : "bad"), key: "w" + i, title: w.ok ? "拼对了" : "没拼对" },
+              import_react14.default.createElement("span", { className: "w" }, w.en),
+              w.zh ? import_react14.default.createElement("span", { className: "m" }, w.zh) : null
+            )
+          )
+        ),
+        moreBtn(wKey, allWords.length, WORD_LIMIT, !!expanded[wKey])
+      ) : null,
+      allPhrases.length ? import_react14.default.createElement(
+        "div",
+        null,
+        import_react14.default.createElement("div", { className: "eg-hist-sub" }, "句子"),
+        import_react14.default.createElement(
+          "div",
+          { className: "eg-sents" },
+          phrases.map(
+            (p, i) => import_react14.default.createElement(
+              "div",
+              { className: "eg-sent " + (p.ok ? "ok" : "bad"), key: "p" + i },
+              import_react14.default.createElement("span", { className: "mark" }, p.ok ? "✓" : "✗"),
+              import_react14.default.createElement(
+                "div",
+                { className: "body" },
+                import_react14.default.createElement("div", { className: "zh" }, p.zh),
+                p.en ? import_react14.default.createElement("div", { className: "en" }, p.en) : null
+              )
+            )
+          )
+        ),
+        moreBtn(pKey, allPhrases.length, PHRASE_LIMIT, !!expanded[pKey])
+      ) : null
+    );
+  });
+  if (loading && !data) {
+    return import_react14.default.createElement(
+      "div",
+      { className: "eg-dash" },
+      import_react14.default.createElement("div", { className: "eg-loading" }, import_react14.default.createElement("span", { className: "eg-spin" }), "正在加载看板…")
+    );
+  }
+  return import_react14.default.createElement(
+    "div",
+    { className: "eg-dash" },
+    import_react14.default.createElement(
+      "div",
+      { className: "eg-dash-top" },
+      import_react14.default.createElement("div", { className: "eg-dash-title" }, "学习看板"),
+      import_react14.default.createElement(
+        "div",
+        { className: "eg-dash-nav" },
+        import_react14.default.createElement("button", { className: "eg-navbtn", onClick: () => goMonth(-1), "aria-label": "上个月", title: "上个月" }, "‹"),
+        import_react14.default.createElement("span", { className: "eg-month" }, y + " 年 " + (m + 1) + " 月"),
+        import_react14.default.createElement("button", { className: "eg-navbtn", onClick: () => goMonth(1), "aria-label": "下个月", title: "下个月" }, "›"),
+        import_react14.default.createElement("button", { className: "eg-todaybtn", onClick: goToday, title: "回到今天" }, "今天")
+      )
+    ),
+    import_react14.default.createElement(
+      "div",
+      { className: "eg-dash-sum" },
+      import_react14.default.createElement("div", { className: "eg-stat" }, import_react14.default.createElement("b", null, streak), import_react14.default.createElement("span", { title: "连续学习天数" }, "连续")),
+      import_react14.default.createElement("div", { className: "eg-stat" }, import_react14.default.createElement("b", null, totals.words || 0), import_react14.default.createElement("span", { title: "累计单词" }, "单词")),
+      import_react14.default.createElement("div", { className: "eg-stat" }, import_react14.default.createElement("b", null, totals.phrases || 0), import_react14.default.createElement("span", { title: "累计句子" }, "句子")),
+      import_react14.default.createElement("div", { className: "eg-stat" }, import_react14.default.createElement("b", null, totals.days || 0), import_react14.default.createElement("span", { title: "累计学习天数" }, "累计"))
+    ),
+    import_react14.default.createElement(
+      "div",
+      { className: "eg-cal-card" },
+      import_react14.default.createElement("div", { className: "eg-cal" }, dowNodes.concat(cellNodes)),
+      import_react14.default.createElement(
+        "div",
+        { className: "eg-dash-legend" },
+        "少",
+        import_react14.default.createElement("i", { className: "l1" }),
+        import_react14.default.createElement("i", { className: "l2" }),
+        import_react14.default.createElement("i", { className: "l3" }),
+        import_react14.default.createElement("i", { className: "l4" }),
+        "多"
+      )
+    ),
+    error ? import_react14.default.createElement("div", { className: "eg-dash-error" }, error) : null,
+    records.length ? import_react14.default.createElement(
+      "div",
+      null,
+      import_react14.default.createElement("div", { className: "eg-hist-title" }, "每日学习记录"),
+      import_react14.default.createElement("div", { className: "eg-hist" }, recordNodes)
+    ) : import_react14.default.createElement("div", { className: "eg-dash-empty" }, loading ? "正在加载…" : "还没有学习记录，去练几题吧。")
+  );
+}
+
+// src/client/features/settings/SettingsPanel.js
+var import_react16 = __toESM(require("react"), 1);
+
+// src/client/features/word/WordBankImport.js
+var import_react15 = __toESM(require("react"), 1);
+var h2 = import_react15.default.createElement;
+function WordBankImport({ onClose, onImported }) {
+  const [name, setName] = (0, import_react15.useState)("");
+  const [filename, setFilename] = (0, import_react15.useState)("");
+  const [content, setContent] = (0, import_react15.useState)("");
+  const [preview, setPreview] = (0, import_react15.useState)(null);
+  const [busy, setBusy] = (0, import_react15.useState)(false);
+  const [error, setError] = (0, import_react15.useState)("");
+  const [over, setOver] = (0, import_react15.useState)(false);
+  const fileRef = (0, import_react15.useRef)(null);
+  const readFile = (0, import_react15.useCallback)(async (file) => {
     if (!file) return;
     setError("");
     try {
@@ -1326,7 +2665,7 @@ function WordBankImport({ onClose, onImported }) {
       setError("读取文件失败：" + (e.message || e));
     }
   }, []);
-  const doPreview = (0, import_react11.useCallback)(async () => {
+  const doPreview = (0, import_react15.useCallback)(async () => {
     if (!content.trim() || busy) return;
     setBusy(true);
     setError("");
@@ -1338,7 +2677,7 @@ function WordBankImport({ onClose, onImported }) {
       setBusy(false);
     }
   }, [content, filename, busy]);
-  const doImport = (0, import_react11.useCallback)(async () => {
+  const doImport = (0, import_react15.useCallback)(async () => {
     if (!preview || !preview.valid || busy) return;
     setBusy(true);
     setError("");
@@ -1489,1069 +2828,46 @@ function WordBankImport({ onClose, onImported }) {
   );
 }
 
-// src/client/features/word/WordPractice.js
-var h3 = import_react12.default.createElement;
-var cachedWord = { item: null, cells: [], res: null, revealed: false, banks: null, bankId: "" };
-function WordPractice() {
-  const [item, setItem] = (0, import_react12.useState)(() => cachedWord.item);
-  const [cells, setCells] = (0, import_react12.useState)(() => cachedWord.cells);
-  const [res, setRes] = (0, import_react12.useState)(() => cachedWord.res);
-  const [revealed, setRevealed] = (0, import_react12.useState)(() => cachedWord.revealed);
-  const [busy, setBusy] = (0, import_react12.useState)(false);
-  const [error, setError] = (0, import_react12.useState)("");
-  const [banks, setBanks] = (0, import_react12.useState)(() => cachedWord.banks);
-  const [bankId, setBankId] = (0, import_react12.useState)(() => cachedWord.bankId);
-  const [view, setView] = (0, import_react12.useState)("practice");
-  const [notice, setNotice] = (0, import_react12.useState)("");
-  const [switching, setSwitching] = (0, import_react12.useState)(false);
-  const refs = (0, import_react12.useRef)([]);
-  const inFlight = (0, import_react12.useRef)(false);
-  (0, import_react12.useEffect)(() => {
-    cachedWord.item = item;
-    cachedWord.cells = cells;
-    cachedWord.res = res;
-    cachedWord.revealed = revealed;
-    cachedWord.banks = banks;
-    cachedWord.bankId = bankId;
-  }, [item, cells, res, revealed, banks, bankId]);
-  const load = (0, import_react12.useCallback)(async () => {
-    if (inFlight.current) return;
-    inFlight.current = true;
-    setBusy(true);
-    setError("");
-    setRes(null);
-    setRevealed(false);
-    try {
-      const data = await api("/word/next", { method: "POST", body: "{}" });
-      setItem(data);
-      setCells(new Array(Math.max(0, data.letters || 0)).fill(""));
-      setTimeout(() => {
-        try {
-          if (refs.current[0]) refs.current[0].focus();
-        } catch {
-        }
-      }, 0);
-    } catch (e) {
-      setError(e.message || "出题失败");
-    } finally {
-      inFlight.current = false;
-      setBusy(false);
-    }
-  }, []);
-  (0, import_react12.useEffect)(() => {
-    if (!cachedWord.item) load();
-  }, [load]);
-  (0, import_react12.useEffect)(() => {
-    if (!res || !res.correct || view !== "practice") return void 0;
-    const onKeyDown = (e) => {
-      if (e.key !== "Enter" || e.isComposing) return;
-      const el = e.target;
-      if (el && el.closest && el.closest("textarea, input:not([disabled]), select, button")) return;
-      e.preventDefault();
-      load();
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [res, view, load]);
-  const loadBanks = (0, import_react12.useCallback)(async () => {
-    try {
-      const data = await api("/wordbanks");
-      setBanks(Array.isArray(data.banks) ? data.banks : []);
-      setBankId(data.active || "builtin");
-    } catch {
-    }
-  }, []);
-  (0, import_react12.useEffect)(() => {
-    if (!cachedWord.banks) loadBanks();
-  }, [loadBanks]);
-  const switchBank = (0, import_react12.useCallback)(
-    async (e) => {
-      const id = e.target.value;
-      if (!id || id === bankId) return;
-      setSwitching(true);
-      setError("");
-      setNotice("");
-      try {
-        const data = await api("/wordbanks/active", { method: "POST", body: JSON.stringify({ id }) });
-        setBankId(data.active);
-        if (data.summary) store.setStats(data.summary);
-        await load();
-      } catch (err) {
-        setError(err.message || "切换词库失败");
-      } finally {
-        setSwitching(false);
-      }
-    },
-    [bankId, load]
-  );
-  const onImported = (0, import_react12.useCallback)(
-    (result) => {
-      setNotice("已导入「" + result.bank.name + "」" + result.bank.count + " 条");
-      setView("practice");
-      loadBanks();
-      load();
-    },
-    [loadBanks, load]
-  );
-  const submit = (0, import_react12.useCallback)(async () => {
-    if (!item || busy || res) return;
-    if (cells.some((c) => !c)) return;
-    setBusy(true);
-    setError("");
-    setRevealed(false);
-    try {
-      const r = await api("/word/check", {
-        method: "POST",
-        body: JSON.stringify({ id: item.id, answer: cells.join("") })
-      });
-      setRes(r);
-      if (r.correct) store.celebrate();
-      if (r.summary) store.setStats(r.summary);
-    } catch (e) {
-      setError(e.message || "判分失败");
-    } finally {
-      setBusy(false);
-    }
-  }, [item, cells, busy, res]);
-  const retry = (0, import_react12.useCallback)(() => {
-    if (!item || busy) return;
-    setRes(null);
-    setError("");
-    setRevealed(false);
-    setCells(new Array(Math.max(0, item.letters || 0)).fill(""));
-    setTimeout(() => {
-      try {
-        if (refs.current[0]) refs.current[0].focus();
-      } catch {
-      }
-    }, 0);
-  }, [item, busy]);
-  const setCell = (i, v) => {
-    const ch = String(v || "").replace(/[^a-zA-Z]/g, "").slice(-1);
-    setCells((prev) => {
-      const next = prev.slice();
-      next[i] = ch;
-      return next;
-    });
-    if (ch) popElement(refs.current[i], "is-pop", 180);
-    if (ch && i < cells.length - 1) {
-      setTimeout(() => {
-        try {
-          if (refs.current[i + 1]) refs.current[i + 1].focus();
-        } catch {
-        }
-      }, 0);
-    }
-  };
-  const onKey = (i, e) => {
-    if (e.key === "Backspace" && !cells[i] && i > 0) {
-      e.preventDefault();
-      setCells((prev) => {
-        const next = prev.slice();
-        next[i - 1] = "";
-        return next;
-      });
-      try {
-        if (refs.current[i - 1]) refs.current[i - 1].focus();
-      } catch {
-      }
-    } else if (e.key === "ArrowLeft" && i > 0) {
-      try {
-        if (refs.current[i - 1]) refs.current[i - 1].focus();
-      } catch {
-      }
-    } else if (e.key === "ArrowRight" && i < cells.length - 1) {
-      try {
-        if (refs.current[i + 1]) refs.current[i + 1].focus();
-      } catch {
-      }
-    } else if (e.key === "Enter") {
-      e.preventDefault();
-      submit();
-    }
-  };
-  if (view === "import") {
-    return h3(WordBankImport, { onClose: () => setView("practice"), onImported });
-  }
-  if (!item) {
-    return import_react12.default.createElement(
-      "div",
-      null,
-      error ? import_react12.default.createElement("div", { className: "eg-err" }, error) : import_react12.default.createElement(
-        "div",
-        { className: "eg-loading" },
-        import_react12.default.createElement("span", { className: "eg-spin" }),
-        "正在取词…"
-      ),
-      error ? import_react12.default.createElement(
-        "div",
-        { className: "eg-foot" },
-        import_react12.default.createElement("button", { className: "eg-btn primary", onClick: load, disabled: busy }, "重试")
-      ) : null
-    );
-  }
-  const answered = !!res;
-  const ok = answered && !!res.correct;
-  const target = String(res && res.reference || "").toLowerCase();
-  const letterGap = cells.length > 7 ? 8 : 10;
-  const letterFont = cells.length > 12 ? 15 : cells.length > 9 ? 17 : 22;
-  const cellsNodes = cells.map((ch, i) => {
-    let cls = "eg-letter";
-    if (answered) cls += ok ? " ok" : " bad";
-    return import_react12.default.createElement("input", {
-      key: i,
-      ref: (el) => {
-        refs.current[i] = el;
-      },
-      className: cls,
-      value: answered ? ch || target[i] || "" : ch,
-      style: { fontSize: letterFont, "--i": i },
-      maxLength: 1,
-      inputMode: "text",
-      autoCapitalize: "off",
-      autoComplete: "off",
-      autoCorrect: "off",
-      spellCheck: false,
-      disabled: answered || busy,
-      "aria-label": "第 " + (i + 1) + " 个字母",
-      onChange: (e) => setCell(i, e.target.value),
-      onKeyDown: (e) => onKey(i, e)
-    });
-  });
-  const footerActions = answered ? import_react12.default.createElement(
-    "div",
-    { className: "eg-word-foot" },
-    ok ? import_react12.default.createElement("button", { className: "eg-btn primary", onClick: load, disabled: busy, title: "回车继续", "aria-keyshortcuts": "Enter" }, "下一个") : [
-      import_react12.default.createElement("button", { key: "retry", className: "eg-btn primary", onClick: retry, disabled: busy }, "再试一次"),
-      import_react12.default.createElement(
-        "button",
-        {
-          key: "reveal",
-          className: "eg-btn",
-          onClick: () => setRevealed((v) => !v),
-          disabled: busy,
-          "aria-expanded": revealed ? "true" : "false"
-        },
-        revealed ? "收起答案" : "显示答案"
-      ),
-      import_react12.default.createElement("button", { key: "next", className: "eg-btn", onClick: load, disabled: busy }, "下一个")
-    ]
-  ) : item ? import_react12.default.createElement(
-    "div",
-    { className: "eg-word-foot" },
-    import_react12.default.createElement(
-      "button",
-      {
-        className: "eg-btn primary" + (busy ? " is-loading" : ""),
-        onClick: submit,
-        onPointerDown: bounceButton,
-        disabled: busy || cells.some((c) => !c)
-      },
-      "提交"
-    ),
-    import_react12.default.createElement("button", { className: "eg-btn ghost", onClick: load, disabled: busy }, "换一个"),
-    import_react12.default.createElement(
-      "span",
-      { className: "eg-kbd", title: "回车提交" },
-      import_react12.default.createElement("kbd", null, "↵")
-    )
-  ) : null;
-  return import_react12.default.createElement(
-    "div",
-    { className: "eg-word" },
-    import_react12.default.createElement(
-      "div",
-      { className: "eg-bankbar", "data-nodrag": "true" },
-      import_react12.default.createElement("span", { className: "eg-banklabel" }, "词库"),
-      import_react12.default.createElement(
-        "select",
-        {
-          className: "eg-select",
-          value: bankId || "",
-          disabled: switching || !banks,
-          onChange: switchBank,
-          title: "切换单词词库"
-        },
-        (banks || []).map(
-          (b) => import_react12.default.createElement("option", { key: b.id, value: b.id }, b.name + "（" + b.count + "）")
-        )
-      ),
-      import_react12.default.createElement(
-        "button",
-        { className: "eg-bankbtn", onClick: () => {
-          setNotice("");
-          setView("import");
-        } },
-        import_react12.default.createElement("span", { className: "eg-plus", "aria-hidden": "true" }, "+"),
-        "导入"
-      )
-    ),
-    notice ? import_react12.default.createElement("div", { className: "eg-notice" }, notice) : null,
-    import_react12.default.createElement(
-      "div",
-      { className: "eg-word-main" },
-      import_react12.default.createElement(
-        "div",
-        { className: "eg-word-stage", key: item.id },
-        item.pos ? import_react12.default.createElement("div", { className: "eg-pos", title: "词性提示" }, formatPos(item.pos)) : null,
-        import_react12.default.createElement("div", { className: "eg-zh" }, item.zh),
-        !answered ? import_react12.default.createElement(ExampleBlock, { example: item.example }) : null,
-        import_react12.default.createElement(
-          "div",
-          {
-            className: "eg-letters" + (answered ? " answered" + (ok ? " is-ok" : " is-bad") : ""),
-            style: { gap: letterGap }
-          },
-          cellsNodes
-        ),
-        error ? import_react12.default.createElement("div", { className: "eg-err" }, error) : null,
-        answered ? ok ? import_react12.default.createElement(
-          "div",
-          { className: "eg-fb ok" },
-          import_react12.default.createElement(
-            "div",
-            { className: "eg-fb-top" },
-            import_react12.default.createElement("span", { className: "eg-fb-status" }, "拼对了")
-          ),
-          import_react12.default.createElement(
-            "div",
-            { className: "eg-fb-ref" },
-            import_react12.default.createElement("span", { className: "lbl" }, "正确拼写"),
-            res.reference
-          ),
-          import_react12.default.createElement(ExampleBlock, {
-            example: res.example,
-            exampleZh: res.exampleZh,
-            word: res.reference,
-            highlight: true
-          })
-        ) : import_react12.default.createElement(
-          "div",
-          { className: "eg-fb bad" },
-          !revealed ? import_react12.default.createElement("div", { className: "eg-word-miss" }, "拼写有误，可再试一次或查看答案") : null,
-          import_react12.default.createElement(
-            "div",
-            {
-              className: "eg-collapse eg-word-reveal" + (revealed ? " open" : ""),
-              "aria-hidden": revealed ? "false" : "true"
-            },
-            import_react12.default.createElement(
-              "div",
-              { className: "eg-collapse-inner" },
-              import_react12.default.createElement(
-                "div",
-                { className: "eg-fb-ref" },
-                import_react12.default.createElement("span", { className: "lbl" }, "正确拼写"),
-                res.reference
-              ),
-              import_react12.default.createElement(ExampleBlock, {
-                example: res.example,
-                exampleZh: res.exampleZh,
-                word: res.reference,
-                highlight: true
-              })
-            )
-          )
-        ) : null
-      )
-    ),
-    footerActions
-  );
-}
-
-// src/client/features/report/useDailyReport.js
-var import_react13 = require("react");
-function useDailyReport({ open, active }) {
-  const [report, setReport] = (0, import_react13.useState)(null);
-  const [loading, setLoading] = (0, import_react13.useState)(false);
-  const [error, setError] = (0, import_react13.useState)("");
-  const staleRef = (0, import_react13.useRef)(false);
-  const refresh = (0, import_react13.useCallback)(async (force) => {
-    setLoading(true);
-    setError("");
-    if (force) setReport(null);
-    try {
-      setReport(force ? await api("/report/refresh", { method: "POST" }) : await api("/report"));
-    } catch (e) {
-      setError(e.message || "报告加载失败");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-  (0, import_react13.useEffect)(() => {
-    if (open && active && !report && !loading) {
-      const force = staleRef.current;
-      staleRef.current = false;
-      refresh(force);
-    }
-  }, [open, active, report, loading, refresh]);
-  const invalidate = (0, import_react13.useCallback)(() => {
-    setReport(null);
-    setError("");
-    staleRef.current = true;
-  }, []);
-  return { report, loading, error, refresh, invalidate };
-}
-
-// src/client/features/report/Report.js
-var import_react14 = __toESM(require("react"), 1);
-
-// src/client/features/report/highlight.js
-function segmentReportParagraphs(paragraphs, highlights, options = {}) {
-  const list = Array.isArray(paragraphs) ? paragraphs : [];
-  const firstOnly = options.firstOnly !== false;
-  const items = [];
-  const byKey = /* @__PURE__ */ new Map();
-  for (const raw of Array.isArray(highlights) ? highlights : []) {
-    if (!raw || typeof raw !== "object") continue;
-    const word = String(raw.word || "").trim().replace(/\s+/g, " ");
-    const zh = String(raw.zh || "").trim();
-    if (!word || !zh) continue;
-    const key = word.toLowerCase();
-    if (byKey.has(key)) continue;
-    const item = { ...raw, word, zh };
-    byKey.set(key, item);
-    items.push(item);
-  }
-  if (!items.length) {
-    return {
-      segmentsByParagraph: list.map((p) => [{ type: "text", text: String(p || "") }]),
-      matchedCount: 0
-    };
-  }
-  items.sort((a, b) => b.word.length - a.word.length);
-  let pattern = "";
-  try {
-    const alts = items.map((i) => escapeRegExp(i.word)).join("|");
-    pattern = new RegExp(`(?<![A-Za-z0-9'’-])(?:${alts})(?![A-Za-z0-9'’-])`, "gi");
-  } catch {
-    return {
-      segmentsByParagraph: list.map((p) => [{ type: "text", text: String(p || "") }]),
-      matchedCount: 0
-    };
-  }
-  const seenKeys = /* @__PURE__ */ new Set();
-  let nextId = 0;
-  const segmentsByParagraph = list.map((rawPara) => {
-    const source = String(rawPara || "");
-    if (!source) return [{ type: "text", text: "" }];
-    pattern.lastIndex = 0;
-    const segs = [];
-    let cursor = 0;
-    let m;
-    while ((m = pattern.exec(source)) !== null) {
-      const matchedText = m[0];
-      if (!matchedText) {
-        pattern.lastIndex += 1;
-        continue;
-      }
-      const key = matchedText.toLowerCase().replace(/\s+/g, " ");
-      const item = byKey.get(key);
-      if (!item || firstOnly && seenKeys.has(key)) continue;
-      if (m.index > cursor) {
-        segs.push({ type: "text", text: source.slice(cursor, m.index) });
-      }
-      seenKeys.add(key);
-      segs.push({ type: "term", id: "hl-" + nextId++, text: matchedText, item });
-      cursor = m.index + matchedText.length;
-    }
-    if (cursor < source.length) {
-      segs.push({ type: "text", text: source.slice(cursor) });
-    }
-    return segs.length ? segs : [{ type: "text", text: source }];
-  });
-  return { segmentsByParagraph, matchedCount: nextId };
-}
-
-// src/client/features/report/Report.js
-var useIsoLayoutEffect = import_react14.default.useLayoutEffect || import_react14.useEffect;
-function Report({ report, loading, error, onRefresh }) {
-  const [openMap, setOpenMap] = (0, import_react14.useState)({});
-  const [active, setActive] = (0, import_react14.useState)(null);
-  const [popPos, setPopPos] = (0, import_react14.useState)(null);
-  const reportRef = (0, import_react14.useRef)(null);
-  const popRef = (0, import_react14.useRef)(null);
-  const termRefs = (0, import_react14.useRef)({});
-  const closeTimerRef = (0, import_react14.useRef)(null);
-  const cancelClose = (0, import_react14.useCallback)(() => {
-    if (closeTimerRef.current) {
-      clearTimeout(closeTimerRef.current);
-      closeTimerRef.current = null;
-    }
-  }, []);
-  const scheduleClose = (0, import_react14.useCallback)(() => {
-    cancelClose();
-    closeTimerRef.current = setTimeout(() => {
-      setActive((prev) => prev && !prev.pinned ? null : prev);
-    }, 140);
-  }, [cancelClose]);
-  (0, import_react14.useEffect)(() => {
-    cancelClose();
-    setOpenMap({});
-    setActive(null);
-    setPopPos(null);
-    termRefs.current = {};
-  }, [report, cancelClose]);
-  (0, import_react14.useEffect)(() => () => cancelClose(), [cancelClose]);
-  (0, import_react14.useEffect)(() => {
-    if (!active) return void 0;
-    const onPointerDown = (e) => {
-      const target = e.target;
-      if (popRef.current && target && popRef.current.contains(target)) return;
-      if (target && target.closest && target.closest(".eg-rword")) return;
-      setActive(null);
-    };
-    const onKeyDown = (e) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        e.stopPropagation();
-        setActive(null);
-      }
-    };
-    document.addEventListener("pointerdown", onPointerDown);
-    window.addEventListener("keydown", onKeyDown, true);
-    return () => {
-      document.removeEventListener("pointerdown", onPointerDown);
-      window.removeEventListener("keydown", onKeyDown, true);
-    };
-  }, [active]);
-  const updatePopoverPosition = (0, import_react14.useCallback)(() => {
-    if (!active) {
-      setPopPos(null);
-      return;
-    }
-    const reportEl = reportRef.current;
-    const popEl = popRef.current;
-    const anchorEl = termRefs.current[active.id];
-    if (!reportEl || !popEl || !anchorEl) return;
-    const reportRect = reportEl.getBoundingClientRect();
-    const anchorRect = anchorEl.getClientRects && anchorEl.getClientRects()[0] || anchorEl.getBoundingClientRect();
-    const popWidth = popEl.offsetWidth;
-    const popHeight = popEl.offsetHeight;
-    if (!reportRect.width || !popWidth || !popHeight) return;
-    const scrollEl = reportEl.closest ? reportEl.closest(".eg-body") : null;
-    const scrollRect = (scrollEl || document.documentElement).getBoundingClientRect();
-    const anchorTop = anchorRect.top - reportRect.top;
-    const anchorBottom = anchorRect.bottom - reportRect.top;
-    const anchorCenterX = anchorRect.left - reportRect.left + anchorRect.width / 2;
-    const gap = 9;
-    const spaceAbove = anchorRect.top - scrollRect.top;
-    const spaceBelow = scrollRect.bottom - anchorRect.bottom;
-    const placement = spaceAbove < popHeight + gap + 8 && spaceBelow >= spaceAbove ? "below" : "above";
-    const top = placement === "below" ? Math.round(anchorBottom + gap) : Math.round(anchorTop - popHeight - gap);
-    const maxLeft = Math.max(0, reportRect.width - popWidth);
-    const left = Math.round(Math.max(0, Math.min(maxLeft, anchorCenterX - popWidth / 2)));
-    const arrowX = Math.round(Math.max(12, Math.min(Math.max(12, popWidth - 12), anchorCenterX - left)));
-    setPopPos({ left, top, arrowX, placement });
-  }, [active]);
-  useIsoLayoutEffect(() => {
-    updatePopoverPosition();
-    if (!active) return void 0;
-    window.addEventListener("resize", updatePopoverPosition);
-    let ro = null;
-    if (typeof ResizeObserver === "function" && reportRef.current) {
-      ro = new ResizeObserver(updatePopoverPosition);
-      ro.observe(reportRef.current);
-    }
-    return () => {
-      window.removeEventListener("resize", updatePopoverPosition);
-      if (ro) ro.disconnect();
-    };
-  }, [active, updatePopoverPosition]);
-  const body = report ? String(report.body || "") : "";
-  const highlights = report && Array.isArray(report.highlights) ? report.highlights : [];
-  const paragraphs = (0, import_react14.useMemo)(() => body.split(/\n{2,}/).filter(Boolean), [body]);
-  const { segmentsByParagraph, matchedCount } = (0, import_react14.useMemo)(
-    () => segmentReportParagraphs(paragraphs, highlights),
-    [paragraphs, highlights]
-  );
-  if (loading && !report) {
-    return import_react14.default.createElement(
-      "div",
-      { className: "eg-loading is-stage" },
-      import_react14.default.createElement("span", { className: "eg-spin" }),
-      "正在生成今日报告…"
-    );
-  }
-  if (!report) {
-    return import_react14.default.createElement(
-      "div",
-      null,
-      import_react14.default.createElement(
-        "div",
-        { className: "eg-loading" },
-        error ? import_react14.default.createElement("span", { className: "eg-err" }, error) : "暂无报告。"
-      ),
-      import_react14.default.createElement(
-        "div",
-        { className: "eg-actions" },
-        import_react14.default.createElement("button", { className: "eg-btn primary", onClick: onRefresh }, "生成今日报告")
-      )
-    );
-  }
-  const questions = report.questions || [];
-  const wordCount = (body.match(/[A-Za-z0-9]+(?:['’-][A-Za-z0-9]+)*/g) || []).length;
-  const meta = [
-    report.date,
-    report.level,
-    wordCount ? wordCount + " 词" : "",
-    matchedCount ? matchedCount + " 个重点词" : ""
-  ].filter(Boolean).join(" · ");
-  const handleTermEnter = (seg) => {
-    cancelClose();
-    setActive((prev) => prev && prev.pinned ? prev : { id: seg.id, item: seg.item, text: seg.text, pinned: false });
-  };
-  const handleTermLeave = () => {
-    scheduleClose();
-  };
-  const handleTermClick = (e, seg) => {
-    const sel = typeof window !== "undefined" && window.getSelection ? window.getSelection() : null;
-    if (sel && String(sel).trim()) return;
-    e.stopPropagation();
-    cancelClose();
-    setActive(
-      (prev) => prev && prev.pinned && prev.id === seg.id ? null : { id: seg.id, item: seg.item, text: seg.text, pinned: true }
-    );
-  };
-  const handleTermFocus = (seg) => {
-    cancelClose();
-    setActive((prev) => prev && prev.pinned ? prev : { id: seg.id, item: seg.item, text: seg.text, pinned: false });
-  };
-  const handleTermBlur = (e) => {
-    if (popRef.current && e.relatedTarget && popRef.current.contains(e.relatedTarget)) return;
-    setActive((prev) => prev && !prev.pinned ? null : prev);
-  };
-  const handleTermKeyDown = (e, seg) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      e.stopPropagation();
-      cancelClose();
-      setActive(
-        (prev) => prev && prev.pinned && prev.id === seg.id ? null : { id: seg.id, item: seg.item, text: seg.text, pinned: true }
-      );
-    }
-  };
-  const activePos = active && active.item.pos ? formatPos(active.item.pos) : "";
-  const activeLemma = active && active.item.lemma && active.item.lemma.toLowerCase() !== active.text.toLowerCase() ? active.item.lemma : "";
-  return import_react14.default.createElement(
-    "div",
-    { className: "eg-report", ref: reportRef, "data-nodrag": "true" },
-    import_react14.default.createElement("div", { className: "r-top" }, import_react14.default.createElement("h2", { className: "eg-rtitle" }, report.title || "Daily Report")),
-    import_react14.default.createElement(
-      "div",
-      { className: "eg-rmeta-row" },
-      meta ? import_react14.default.createElement("div", { className: "eg-rmeta" }, meta) : import_react14.default.createElement("span", null),
-      import_react14.default.createElement(
-        "button",
-        {
-          type: "button",
-          className: "eg-rrefresh",
-          onClick: onRefresh,
-          disabled: loading,
-          title: "重新生成一篇今日报告"
-        },
-        loading ? "生成中…" : "↻ 换一篇"
-      )
-    ),
-    report.summary_zh ? import_react14.default.createElement("p", { className: "eg-rsum" }, report.summary_zh) : null,
-    segmentsByParagraph.map(
-      (segs, i) => import_react14.default.createElement(
-        "p",
-        { key: i, className: "eg-rp" },
-        segs.map((seg, j) => {
-          if (seg.type !== "term") return seg.text;
-          const isActive = !!(active && active.id === seg.id);
-          return import_react14.default.createElement(
-            "mark",
-            {
-              key: seg.id + "-" + j,
-              ref: (el) => {
-                if (el) termRefs.current[seg.id] = el;
-                else delete termRefs.current[seg.id];
-              },
-              className: "eg-rword" + (isActive ? " is-active" : ""),
-              role: "button",
-              tabIndex: 0,
-              "aria-expanded": isActive ? "true" : "false",
-              onMouseEnter: () => handleTermEnter(seg),
-              onMouseLeave: handleTermLeave,
-              onClick: (e) => handleTermClick(e, seg),
-              onFocus: () => handleTermFocus(seg),
-              onBlur: handleTermBlur,
-              onKeyDown: (e) => handleTermKeyDown(e, seg)
-            },
-            seg.text
-          );
-        })
-      )
-    ),
-    active ? import_react14.default.createElement(
-      "div",
-      {
-        ref: popRef,
-        className: "eg-rpop" + (popPos ? " is-ready" : "") + (popPos && popPos.placement === "below" ? " is-below" : "") + (active.pinned ? " is-pinned" : ""),
-        role: active.pinned ? "dialog" : "tooltip",
-        "aria-label": active.text + " 释义",
-        style: popPos ? {
-          left: popPos.left + "px",
-          top: popPos.top + "px",
-          "--eg-arrow-x": popPos.arrowX + "px"
-        } : { left: 0, top: 0 },
-        onMouseEnter: cancelClose,
-        onMouseLeave: handleTermLeave
-      },
-      import_react14.default.createElement(
-        "div",
-        { className: "eg-rpop-head" },
-        import_react14.default.createElement(
-          "div",
-          { className: "eg-rpop-title" },
-          import_react14.default.createElement("span", { className: "eg-rpop-word" }, active.text),
-          activeLemma ? import_react14.default.createElement("span", { className: "eg-rpop-lemma" }, "→ " + activeLemma) : null
-        ),
-        active.pinned ? import_react14.default.createElement(
-          "button",
-          {
-            type: "button",
-            className: "eg-rpop-close",
-            "aria-label": "关闭释义",
-            onClick: () => setActive(null)
-          },
-          "×"
-        ) : null
-      ),
-      activePos || active.item.fromBank ? import_react14.default.createElement(
-        "div",
-        { className: "eg-rpop-tags" },
-        activePos ? import_react14.default.createElement("span", { className: "eg-rpop-pos" }, activePos) : null,
-        active.item.fromBank ? import_react14.default.createElement("span", { className: "eg-rpop-bank" }, "词库") : null
-      ) : null,
-      import_react14.default.createElement("div", { className: "eg-rpop-zh" }, active.item.zh)
-    ) : null,
-    questions.length ? import_react14.default.createElement(
-      "div",
-      { className: "eg-practice" },
-      import_react14.default.createElement("div", { className: "eg-ptitle" }, "练一练"),
-      questions.map((q, i) => {
-        const isOpen = !!openMap[i];
-        return import_react14.default.createElement(
-          "div",
-          { key: i, className: "eg-q" + (isOpen ? " reveal" : "") },
-          import_react14.default.createElement(
-            "div",
-            { className: "eg-q-head" },
-            import_react14.default.createElement("span", { className: "eg-q-n" }, String(i + 1)),
-            import_react14.default.createElement("span", { className: "eg-q-zh" }, q.zh)
-          ),
-          import_react14.default.createElement(
-            "button",
-            {
-              className: "eg-q-toggle",
-              type: "button",
-              "aria-expanded": isOpen ? "true" : "false",
-              onClick: () => setOpenMap((prev) => ({ ...prev, [i]: !prev[i] }))
-            },
-            import_react14.default.createElement("span", { className: "caret", "aria-hidden": "true" }, "▸"),
-            isOpen ? "收起参考" : "看参考"
-          ),
-          import_react14.default.createElement(
-            "div",
-            { className: "eg-collapse" + (isOpen ? " open" : ""), "aria-hidden": isOpen ? "false" : "true" },
-            import_react14.default.createElement(
-              "div",
-              { className: "eg-collapse-inner" },
-              import_react14.default.createElement("div", { className: "eg-q-en" }, q.en)
-            )
-          )
-        );
-      })
-    ) : null,
-    import_react14.default.createElement(
-      "div",
-      { className: "eg-report-foot" },
-      import_react14.default.createElement(
-        "span",
-        { className: "eg-report-foot-hint" },
-        matchedCount ? "标黄词可悬停或点击查译，可随时换一篇" : "按当前内容方向生成，可随时换一篇"
-      ),
-      import_react14.default.createElement(
-        "button",
-        {
-          type: "button",
-          className: "eg-btn",
-          onClick: onRefresh,
-          onPointerDown: bounceButton,
-          disabled: loading
-        },
-        loading ? "生成中…" : "↻ 换一篇"
-      )
-    )
-  );
-}
-
-// src/client/features/dashboard/Dashboard.js
-var import_react15 = __toESM(require("react"), 1);
-var WEEKDAYS = ["日", "一", "二", "三", "四", "五", "六"];
-function pad2(n) {
-  return String(n).padStart(2, "0");
-}
-var cachedDashboard = null;
-function Dashboard() {
-  const [data, setData] = (0, import_react15.useState)(() => cachedDashboard);
-  const [loading, setLoading] = (0, import_react15.useState)(() => !cachedDashboard);
-  const [error, setError] = (0, import_react15.useState)("");
-  const [cursor, setCursor] = (0, import_react15.useState)(() => {
-    const d = /* @__PURE__ */ new Date();
-    return { y: d.getFullYear(), m: d.getMonth() };
-  });
-  const [expanded, setExpanded] = (0, import_react15.useState)({});
-  const [flashDay, setFlashDay] = (0, import_react15.useState)("");
-  const flashTimerRef = (0, import_react15.useRef)(null);
-  const toggleGroup = (key) => setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
-  const WORD_LIMIT = 10;
-  const PHRASE_LIMIT = 5;
-  (0, import_react15.useEffect)(() => {
-    return () => clearTimeout(flashTimerRef.current);
-  }, []);
-  const load = (0, import_react15.useCallback)(async () => {
-    if (!cachedDashboard) setLoading(true);
-    setError("");
-    try {
-      const next = await api("/dashboard");
-      cachedDashboard = next;
-      setData(next);
-    } catch (e) {
-      setError(e.message || "看板加载失败");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-  (0, import_react15.useEffect)(() => {
-    load();
-  }, [load]);
-  const activity = {};
-  if (data && Array.isArray(data.activity)) {
-    for (const a of data.activity) activity[a.day] = a;
-  }
-  const records = data && Array.isArray(data.days) ? data.days : [];
-  const today = data ? data.today : null;
-  const streak = data ? data.streak || 0 : 0;
-  const totals = data && data.totals ? data.totals : { days: 0, words: 0, phrases: 0 };
-  const { y, m } = cursor;
-  const startDow = (new Date(y, m, 1).getDay() + 6) % 7;
-  const daysInMonth = new Date(y, m + 1, 0).getDate();
-  const cells = [];
-  for (let i = 0; i < startDow; i += 1) cells.push(null);
-  for (let d = 1; d <= daysInMonth; d += 1) cells.push(d);
-  while (cells.length % 7 !== 0) cells.push(null);
-  const dayStr = (d) => y + "-" + pad2(m + 1) + "-" + pad2(d);
-  const levelOf = (n) => n > 60 ? 4 : n >= 31 ? 3 : n >= 11 ? 2 : n >= 1 ? 1 : 0;
-  const goMonth = (delta) => setCursor((c) => {
-    let mm = c.m + delta;
-    let yy = c.y;
-    if (mm < 0) {
-      mm = 11;
-      yy -= 1;
-    }
-    if (mm > 11) {
-      mm = 0;
-      yy += 1;
-    }
-    return { y: yy, m: mm };
-  });
-  const goToday = () => {
-    const d = /* @__PURE__ */ new Date();
-    setCursor({ y: d.getFullYear(), m: d.getMonth() });
-  };
-  const jumpTo = (day) => {
-    try {
-      const el = document.getElementById("eg-hist-" + day);
-      if (el && el.scrollIntoView) el.scrollIntoView({ block: "start", behavior: "smooth" });
-    } catch {
-    }
-    setFlashDay("");
-    clearTimeout(flashTimerRef.current);
-    setTimeout(() => {
-      setFlashDay(day);
-      flashTimerRef.current = setTimeout(() => setFlashDay(""), 1200);
-    }, 20);
-  };
-  const dowNodes = ["一", "二", "三", "四", "五", "六", "日"].map(
-    (w, i) => import_react15.default.createElement("div", { className: "dow", key: "dow" + i }, w)
-  );
-  const cellNodes = cells.map((d, i) => {
-    if (!d) return import_react15.default.createElement("div", { className: "eg-day blank", key: "b" + i });
-    const key = dayStr(d);
-    const a = activity[key];
-    const lv = a ? levelOf(a.total) : 0;
-    const cls = ["eg-day"];
-    if (lv) cls.push("l" + lv, "has");
-    if (key === today) cls.push("today");
-    return import_react15.default.createElement(
-      "div",
-      {
-        key,
-        className: cls.join(" "),
-        title: a ? key + " · 单词 " + a.words + " · 句子 " + a.phrases : key,
-        onClick: a ? () => jumpTo(key) : void 0,
-        role: a ? "button" : void 0,
-        tabIndex: a ? 0 : void 0,
-        onKeyDown: a ? (e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            jumpTo(key);
-          }
-        } : void 0
-      },
-      import_react15.default.createElement("span", { className: "n" }, d),
-      a ? import_react15.default.createElement("span", { className: "cnt" }, a.total) : null
-    );
-  });
-  const recordNodes = records.map((rec) => {
-    const dt = /* @__PURE__ */ new Date(rec.day + "T00:00:00");
-    const wd = WEEKDAYS[dt.getDay()];
-    const t = rec.totals || {};
-    const allWords = rec.words || [];
-    const allPhrases = rec.phrases || [];
-    const wKey = rec.day + ":w";
-    const pKey = rec.day + ":p";
-    const words = expanded[wKey] ? allWords : allWords.slice(0, WORD_LIMIT);
-    const phrases = expanded[pKey] ? allPhrases : allPhrases.slice(0, PHRASE_LIMIT);
-    const moreBtn = (key, total, limit, open) => total > limit ? import_react15.default.createElement(
-      "button",
-      { className: "eg-more", key: "more", onClick: () => toggleGroup(key) },
-      open ? "收起" : "展开全部 · 共 " + total + " 条"
-    ) : null;
-    return import_react15.default.createElement(
-      "div",
-      { className: "eg-hist-day" + (flashDay === rec.day ? " is-flash" : ""), id: "eg-hist-" + rec.day, key: rec.day },
-      import_react15.default.createElement(
-        "div",
-        { className: "eg-hist-head" },
-        import_react15.default.createElement(
-          "div",
-          { className: "eg-hist-date" },
-          dt.getMonth() + 1 + "月" + dt.getDate() + "日",
-          import_react15.default.createElement("span", { className: "wd" }, "周" + wd)
-        ),
-        import_react15.default.createElement("div", { className: "eg-hist-count" }, "单词 " + (t.words || 0) + " · 句子 " + (t.phrases || 0))
-      ),
-      allWords.length ? import_react15.default.createElement(
-        "div",
-        null,
-        import_react15.default.createElement("div", { className: "eg-hist-sub" }, "单词"),
-        import_react15.default.createElement(
-          "div",
-          { className: "eg-wchips" },
-          words.map(
-            (w, i) => import_react15.default.createElement(
-              "span",
-              { className: "eg-wchip " + (w.ok ? "ok" : "bad"), key: "w" + i, title: w.ok ? "拼对了" : "没拼对" },
-              import_react15.default.createElement("span", { className: "w" }, w.en),
-              w.zh ? import_react15.default.createElement("span", { className: "m" }, w.zh) : null
-            )
-          )
-        ),
-        moreBtn(wKey, allWords.length, WORD_LIMIT, !!expanded[wKey])
-      ) : null,
-      allPhrases.length ? import_react15.default.createElement(
-        "div",
-        null,
-        import_react15.default.createElement("div", { className: "eg-hist-sub" }, "句子"),
-        import_react15.default.createElement(
-          "div",
-          { className: "eg-sents" },
-          phrases.map(
-            (p, i) => import_react15.default.createElement(
-              "div",
-              { className: "eg-sent " + (p.ok ? "ok" : "bad"), key: "p" + i },
-              import_react15.default.createElement("span", { className: "mark" }, p.ok ? "✓" : "✗"),
-              import_react15.default.createElement(
-                "div",
-                { className: "body" },
-                import_react15.default.createElement("div", { className: "zh" }, p.zh),
-                p.en ? import_react15.default.createElement("div", { className: "en" }, p.en) : null
-              )
-            )
-          )
-        ),
-        moreBtn(pKey, allPhrases.length, PHRASE_LIMIT, !!expanded[pKey])
-      ) : null
-    );
-  });
-  if (loading && !data) {
-    return import_react15.default.createElement(
-      "div",
-      { className: "eg-dash" },
-      import_react15.default.createElement("div", { className: "eg-loading" }, import_react15.default.createElement("span", { className: "eg-spin" }), "正在加载看板…")
-    );
-  }
-  return import_react15.default.createElement(
-    "div",
-    { className: "eg-dash" },
-    import_react15.default.createElement(
-      "div",
-      { className: "eg-dash-top" },
-      import_react15.default.createElement("div", { className: "eg-dash-title" }, "学习看板"),
-      import_react15.default.createElement(
-        "div",
-        { className: "eg-dash-nav" },
-        import_react15.default.createElement("button", { className: "eg-navbtn", onClick: () => goMonth(-1), "aria-label": "上个月", title: "上个月" }, "‹"),
-        import_react15.default.createElement("span", { className: "eg-month" }, y + " 年 " + (m + 1) + " 月"),
-        import_react15.default.createElement("button", { className: "eg-navbtn", onClick: () => goMonth(1), "aria-label": "下个月", title: "下个月" }, "›"),
-        import_react15.default.createElement("button", { className: "eg-todaybtn", onClick: goToday, title: "回到今天" }, "今天")
-      )
-    ),
-    import_react15.default.createElement(
-      "div",
-      { className: "eg-dash-sum" },
-      import_react15.default.createElement("div", { className: "eg-stat" }, import_react15.default.createElement("b", null, streak), import_react15.default.createElement("span", { title: "连续学习天数" }, "连续")),
-      import_react15.default.createElement("div", { className: "eg-stat" }, import_react15.default.createElement("b", null, totals.words || 0), import_react15.default.createElement("span", { title: "累计单词" }, "单词")),
-      import_react15.default.createElement("div", { className: "eg-stat" }, import_react15.default.createElement("b", null, totals.phrases || 0), import_react15.default.createElement("span", { title: "累计句子" }, "句子")),
-      import_react15.default.createElement("div", { className: "eg-stat" }, import_react15.default.createElement("b", null, totals.days || 0), import_react15.default.createElement("span", { title: "累计学习天数" }, "累计"))
-    ),
-    import_react15.default.createElement(
-      "div",
-      { className: "eg-cal-card" },
-      import_react15.default.createElement("div", { className: "eg-cal" }, dowNodes.concat(cellNodes)),
-      import_react15.default.createElement(
-        "div",
-        { className: "eg-dash-legend" },
-        "少",
-        import_react15.default.createElement("i", { className: "l1" }),
-        import_react15.default.createElement("i", { className: "l2" }),
-        import_react15.default.createElement("i", { className: "l3" }),
-        import_react15.default.createElement("i", { className: "l4" }),
-        "多"
-      )
-    ),
-    error ? import_react15.default.createElement("div", { className: "eg-dash-error" }, error) : null,
-    records.length ? import_react15.default.createElement(
-      "div",
-      null,
-      import_react15.default.createElement("div", { className: "eg-hist-title" }, "每日学习记录"),
-      import_react15.default.createElement("div", { className: "eg-hist" }, recordNodes)
-    ) : import_react15.default.createElement("div", { className: "eg-dash-empty" }, loading ? "正在加载…" : "还没有学习记录，去练几题吧。")
-  );
-}
-
 // src/client/features/settings/SettingsPanel.js
-var import_react16 = __toESM(require("react"), 1);
 var cachedSettings = null;
-function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
+var cachedBanks = null;
+var FALLBACK_LEVELS = [
+  { id: "A1", label: "A1", desc: "入门", detail: "约小学至初中水平 · 简短句式与日常基础词汇，适合零基础起步" },
+  { id: "A2", label: "A2", desc: "基础", detail: "约初中至高中入门 · 常见生活话题与直白表达，轻松建立阅读语感" },
+  { id: "B1", label: "B1", desc: "进阶", detail: "约高考 / 大学四级（CET-4）· 清晰自然的实用表达，日常与职场阅读主力" },
+  { id: "B2", label: "B2", desc: "熟练", detail: "约大学六级（CET-6）/ 雅思 6.0–6.5 · 句式更丰富，流畅阅读技术博客与行业资讯" },
+  { id: "C1", label: "C1", desc: "高级", detail: "约雅思 7.0–7.5 / 托福 95+ · 地道外刊文风，含精准词汇与复杂长难句" },
+  { id: "C2", label: "C2", desc: "精通", detail: "约雅思 8.0+ / 母语外刊水准 · 细腻修辞、高阶词汇与深度评论风格" }
+];
+function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChange, onWordBankChange }) {
   const shared = useShared();
   const [data, setData] = (0, import_react16.useState)(() => cachedSettings);
-  const [busy, setBusy] = (0, import_react16.useState)(false);
+  const [bankData, setBankData] = (0, import_react16.useState)(() => cachedBanks);
+  const [importing, setImporting] = (0, import_react16.useState)(false);
+  const [bankNotice, setBankNotice] = (0, import_react16.useState)("");
+  const [adding, setAdding] = (0, import_react16.useState)(false);
   const [error, setError] = (0, import_react16.useState)("");
   const [draft, setDraft] = (0, import_react16.useState)("");
+  const [hoverLevel, setHoverLevel] = (0, import_react16.useState)("");
   const [loading, setLoading] = (0, import_react16.useState)(() => !cachedSettings);
+  const queueRef = (0, import_react16.useRef)(Promise.resolve());
+  const seqRef = (0, import_react16.useRef)(0);
+  const lastConfirmedRef = (0, import_react16.useRef)(cachedSettings);
   const load = (0, import_react16.useCallback)(async () => {
     if (!cachedSettings) setLoading(true);
     try {
-      const result = await api("/settings");
-      cachedSettings = result;
-      setData(result);
-      store.setSettings(result.settings);
+      const [settingsRes, banksRes] = await Promise.all([
+        api("/settings"),
+        api("/wordbanks").catch(() => null)
+      ]);
+      cachedSettings = settingsRes;
+      lastConfirmedRef.current = settingsRes;
+      setData(settingsRes);
+      store.setSettings(settingsRes.settings);
+      if (banksRes && Array.isArray(banksRes.banks)) {
+        cachedBanks = banksRes;
+        setBankData(banksRes);
+      }
       setError("");
     } catch (e) {
       setError(e.message || "设置加载失败");
@@ -2563,53 +2879,89 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
     load();
   }, [load]);
   const save = (0, import_react16.useCallback)(
-    async (patch, changeScope) => {
-      if (busy) return false;
-      setBusy(true);
+    (patch, changeScope) => {
+      const seq = ++seqRef.current;
       setError("");
-      try {
-        const result = await api("/settings", {
-          method: "POST",
-          body: JSON.stringify(patch)
-        });
-        cachedSettings = result;
-        setData(result);
-        store.setSettings(result.settings);
-        if (changeScope === true || changeScope === "topic") {
-          if (typeof onTopicChange === "function") onTopicChange();
-        } else if (changeScope === "phrase") {
-          if (typeof onPhraseConfigChange === "function") onPhraseConfigChange();
-        }
-        return true;
-      } catch (e) {
-        setError(e.message || "设置保存失败");
-        return false;
-      } finally {
-        setBusy(false);
+      const scalarPatch = {};
+      for (const key of ["confetti", "sessionLink", "bankLink", "bankRetries", "reportLevel", "topicId"]) {
+        if (patch && patch[key] !== void 0) scalarPatch[key] = patch[key];
       }
+      if (Object.keys(scalarPatch).length) {
+        store.setSettings(scalarPatch);
+        setData((prev) => {
+          if (!prev || !prev.settings) return prev;
+          const next = { ...prev, settings: { ...prev.settings, ...scalarPatch } };
+          cachedSettings = next;
+          return next;
+        });
+      }
+      const task = queueRef.current.then(async () => {
+        try {
+          const result = await api("/settings", {
+            method: "POST",
+            body: JSON.stringify(patch)
+          });
+          lastConfirmedRef.current = result;
+          if (seq === seqRef.current) {
+            cachedSettings = result;
+            setData(result);
+            store.setSettings(result.settings);
+          }
+          if (changeScope === true || changeScope === "topic") {
+            if (typeof onTopicChange === "function") onTopicChange();
+          } else if (changeScope === "phrase") {
+            if (typeof onPhraseConfigChange === "function") onPhraseConfigChange();
+          } else if (changeScope === "report") {
+            if (typeof onReportConfigChange === "function") onReportConfigChange();
+          }
+          return true;
+        } catch (e) {
+          if (seq === seqRef.current && lastConfirmedRef.current) {
+            cachedSettings = lastConfirmedRef.current;
+            setData(lastConfirmedRef.current);
+            store.setSettings(lastConfirmedRef.current.settings);
+          }
+          setError(e.message || "设置保存失败");
+          return false;
+        }
+      });
+      queueRef.current = task.catch(() => false);
+      return task;
     },
-    [busy, onTopicChange, onPhraseConfigChange]
+    [onTopicChange, onPhraseConfigChange, onReportConfigChange]
   );
   const settings = data ? data.settings : shared.settings;
   const directions = data ? data.directions : [];
+  const levels = (data && Array.isArray(data.levels) && data.levels.length ? data.levels : FALLBACK_LEVELS).map((item) => {
+    const fb = FALLBACK_LEVELS.find((f) => f.id === item.id);
+    return item.detail || !fb ? item : { ...item, detail: fb.detail };
+  });
   const customTopics = settings.customTopics || [];
   const activeId = settings.topicId;
+  const activeLevel = settings.reportLevel || "B1";
   const chooseDirection = (id) => {
-    if (busy || id === activeId) return;
+    if (id === activeId) return;
     save({ topicId: id }, true);
+  };
+  const chooseReportLevel = (id) => {
+    if (id === activeLevel) return;
+    save({ reportLevel: id }, "report");
   };
   const addCustom = async () => {
     const label = draft.trim();
-    if (!label || busy) return;
-    const ok = await save({ customTopics: customTopics.concat({ label }) }, true);
-    if (ok) setDraft("");
+    if (!label || adding) return;
+    setAdding(true);
+    try {
+      const ok = await save({ customTopics: customTopics.concat({ label }) }, true);
+      if (ok) setDraft("");
+    } finally {
+      setAdding(false);
+    }
   };
   const removeCustom = (id) => {
-    if (busy) return;
     save({ customTopics: customTopics.filter((item) => item.id !== id) }, true);
   };
   const setRetries = (value) => {
-    if (busy) return;
     const next = Math.max(0, Math.min(5, Number(value) || 0));
     if (next === settings.bankRetries) return;
     save({ bankRetries: next }, false);
@@ -2630,6 +2982,68 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
   const builtinDirections = directions.filter((item) => item.builtin !== false);
   const customDirections = directions.filter((item) => item.builtin === false);
   const activeDirection = directions.find((item) => item.id === activeId);
+  const activeLevelObj = levels.find((item) => item.id === activeLevel) || levels[2] || { id: activeLevel, label: activeLevel, desc: "", detail: "" };
+  const shownLevelObj = levels.find((item) => item.id === (hoverLevel || activeLevel)) || activeLevelObj;
+  const banks = bankData && Array.isArray(bankData.banks) ? bankData.banks : [];
+  const activeBankId = bankData && bankData.active || "builtin";
+  const builtinBanks = banks.filter((b) => b.builtin !== false);
+  const customBanks = banks.filter((b) => b.builtin === false);
+  const activeBankObj = banks.find((b) => b.id === activeBankId);
+  const shortBankName2 = (name) => String(name || "").replace(/^内置\s*·\s*/, "");
+  const chooseBank = async (id) => {
+    if (!id || id === activeBankId) return;
+    const prev = bankData;
+    setError("");
+    setBankNotice("");
+    setBankData((cur) => {
+      if (!cur) return cur;
+      const next = { ...cur, active: id };
+      cachedBanks = next;
+      return next;
+    });
+    try {
+      const res = await api("/wordbanks/active", { method: "POST", body: JSON.stringify({ id }) });
+      if (res.summary) store.setStats(res.summary);
+      if (typeof onWordBankChange === "function") onWordBankChange();
+    } catch (e) {
+      cachedBanks = prev;
+      setBankData(prev);
+      setError(e.message || "切换词库失败");
+    }
+  };
+  const removeBank = async (id) => {
+    setError("");
+    setBankNotice("");
+    try {
+      const res = await api("/wordbanks/delete", { method: "POST", body: JSON.stringify({ id }) });
+      const next = { active: res.active, banks: Array.isArray(res.banks) ? res.banks : banks.filter((b) => b.id !== id) };
+      cachedBanks = next;
+      setBankData(next);
+      if (res.summary) store.setStats(res.summary);
+      if (typeof onWordBankChange === "function") onWordBankChange();
+    } catch (e) {
+      setError(e.message || "删除词库失败");
+    }
+  };
+  const handleBankImported = async (res) => {
+    setImporting(false);
+    setBankNotice("已导入「" + res.bank.name + "」" + res.bank.count + " 条");
+    try {
+      const banksRes = await api("/wordbanks");
+      if (banksRes && Array.isArray(banksRes.banks)) {
+        cachedBanks = banksRes;
+        setBankData(banksRes);
+      }
+    } catch {
+    }
+    if (typeof onWordBankChange === "function") onWordBankChange();
+  };
+  if (importing) {
+    return import_react16.default.createElement(WordBankImport, {
+      onClose: () => setImporting(false),
+      onImported: handleBankImported
+    });
+  }
   return import_react16.default.createElement(
     "div",
     { className: "eg-settings" },
@@ -2662,7 +3076,6 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
               role: "switch",
               "aria-checked": settings.confetti ? "true" : "false",
               "aria-label": "彩带庆祝",
-              disabled: busy,
               onClick: () => save({ confetti: !settings.confetti }, false)
             })
           )
@@ -2689,7 +3102,6 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
               role: "switch",
               "aria-checked": settings.sessionLink ? "true" : "false",
               "aria-label": "会话关联",
-              disabled: busy,
               onClick: () => save({ sessionLink: !settings.sessionLink }, "phrase")
             })
           )
@@ -2707,7 +3119,7 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
               import_react16.default.createElement(
                 "div",
                 { className: "eg-setting-desc" },
-                "开启后，短语出题和今日报告会从当前词库挑词，自然融入句子和文章（不硬塞）。"
+                "开启后，短语出题和今日文章会从当前词库挑词，自然融入句子和文章（不硬塞）。"
               )
             ),
             import_react16.default.createElement("button", {
@@ -2716,14 +3128,13 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
               role: "switch",
               "aria-checked": settings.bankLink ? "true" : "false",
               "aria-label": "词库关联",
-              disabled: busy,
               onClick: () => save({ bankLink: !settings.bankLink }, false)
             })
           ),
           settings.sessionLink ? import_react16.default.createElement(
             "div",
             { className: "eg-setting-note" },
-            "已开启会话关联：短语训练优先按当前会话出题，词库关联仅用于今日报告或无可用会话时兜底。"
+            "已开启会话关联：短语训练优先按当前会话出题，词库关联仅用于今日文章或无可用会话时兜底。"
           ) : null,
           import_react16.default.createElement(
             "div",
@@ -2757,7 +3168,7 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
                       className: "eg-stepbtn",
                       "aria-label": "减少重试次数",
                       tabIndex: settings.bankLink ? void 0 : -1,
-                      disabled: busy || !settings.bankLink || settings.bankRetries <= 0,
+                      disabled: !settings.bankLink || settings.bankRetries <= 0,
                       onClick: () => setRetries(settings.bankRetries - 1)
                     },
                     "−"
@@ -2770,7 +3181,7 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
                       className: "eg-stepbtn",
                       "aria-label": "增加重试次数",
                       tabIndex: settings.bankLink ? void 0 : -1,
-                      disabled: busy || !settings.bankLink || settings.bankRetries >= 5,
+                      disabled: !settings.bankLink || settings.bankRetries >= 5,
                       onClick: () => setRetries(settings.bankRetries + 1)
                     },
                     "+"
@@ -2779,6 +3190,176 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
               )
             )
           )
+        )
+      )
+    ),
+    import_react16.default.createElement(
+      "div",
+      { className: "eg-setting-section" },
+      import_react16.default.createElement(
+        "div",
+        { className: "eg-section-head" },
+        import_react16.default.createElement("div", { className: "eg-section-label" }, "单词词库"),
+        activeBankObj ? import_react16.default.createElement(
+          "div",
+          { className: "eg-active-badge", title: "当前词库：" + activeBankObj.name },
+          import_react16.default.createElement("span", null, shortBankName2(activeBankObj.name) + " · " + activeBankObj.count + " 词")
+        ) : null
+      ),
+      import_react16.default.createElement(
+        "div",
+        { className: "eg-setting-card" },
+        import_react16.default.createElement(
+          "div",
+          { className: "eg-setting-row" },
+          import_react16.default.createElement(
+            "div",
+            { className: "eg-setting-desc eg-lead" },
+            "选择单词训练与词库关联使用的词库；记忆进度跨词库通用。"
+          ),
+          builtinBanks.length ? import_react16.default.createElement(
+            "div",
+            { className: "eg-bank-list" },
+            builtinBanks.map(
+              (b) => import_react16.default.createElement(
+                "button",
+                {
+                  type: "button",
+                  key: b.id,
+                  className: "eg-bank-item" + (b.id === activeBankId ? " active" : ""),
+                  "aria-pressed": b.id === activeBankId ? "true" : "false",
+                  title: b.name + "（" + b.count + " 词）",
+                  onClick: () => chooseBank(b.id)
+                },
+                import_react16.default.createElement("span", { className: "eg-bank-name" }, shortBankName2(b.name)),
+                import_react16.default.createElement("span", { className: "eg-bank-cnt" }, b.count + " 词")
+              )
+            )
+          ) : null
+        ),
+        import_react16.default.createElement(
+          "div",
+          { className: "eg-setting-row" },
+          import_react16.default.createElement(
+            "div",
+            { className: "eg-custom-head" },
+            import_react16.default.createElement("div", { className: "eg-sub-title" }, "自定义词库"),
+            import_react16.default.createElement(
+              "button",
+              {
+                type: "button",
+                className: "eg-bankbtn",
+                onClick: () => {
+                  setBankNotice("");
+                  setImporting(true);
+                }
+              },
+              "+ 导入词库"
+            )
+          ),
+          import_react16.default.createElement(
+            "div",
+            { className: "eg-setting-desc" },
+            "支持导入 CSV / TSV / TXT / JSON 词表，导入后自动切换，不影响内置词库。"
+          ),
+          bankNotice ? import_react16.default.createElement("div", { className: "eg-notice eg-bank-notice" }, bankNotice) : null,
+          customBanks.length ? import_react16.default.createElement(
+            "div",
+            { className: "eg-custom-chips" },
+            customBanks.map(
+              (b) => import_react16.default.createElement(
+                "div",
+                {
+                  className: "eg-custom-chip" + (b.id === activeBankId ? " active" : ""),
+                  key: b.id
+                },
+                import_react16.default.createElement(
+                  "button",
+                  {
+                    type: "button",
+                    className: "eg-custom-select",
+                    "aria-pressed": b.id === activeBankId ? "true" : "false",
+                    title: b.name + "（" + b.count + " 词）",
+                    onClick: () => chooseBank(b.id)
+                  },
+                  b.name + "（" + b.count + "）"
+                ),
+                import_react16.default.createElement(
+                  "button",
+                  {
+                    type: "button",
+                    className: "eg-custom-remove",
+                    title: "删除词库",
+                    "aria-label": "删除 " + b.name,
+                    onClick: () => removeBank(b.id)
+                  },
+                  "×"
+                )
+              )
+            )
+          ) : null
+        )
+      )
+    ),
+    import_react16.default.createElement(
+      "div",
+      { className: "eg-setting-section" },
+      import_react16.default.createElement(
+        "div",
+        { className: "eg-section-head" },
+        import_react16.default.createElement("div", { className: "eg-section-label" }, "文章难度"),
+        activeLevelObj ? import_react16.default.createElement(
+          "div",
+          { className: "eg-active-badge", title: "当前难度：" + activeLevelObj.label + (activeLevelObj.desc ? " · " + activeLevelObj.desc : "") },
+          import_react16.default.createElement("span", null, activeLevelObj.label + (activeLevelObj.desc ? " · " + activeLevelObj.desc : ""))
+        ) : null
+      ),
+      import_react16.default.createElement(
+        "div",
+        { className: "eg-setting-card" },
+        import_react16.default.createElement(
+          "div",
+          { className: "eg-setting-row" },
+          import_react16.default.createElement(
+            "div",
+            { className: "eg-setting-desc eg-lead" },
+            "控制今日文章的词汇与句式难度（CEFR）；切换后下次进入或换一篇生效。"
+          ),
+          import_react16.default.createElement(
+            "div",
+            {
+              className: "eg-level-list",
+              onMouseLeave: () => setHoverLevel("")
+            },
+            levels.map(
+              (item) => import_react16.default.createElement(
+                "button",
+                {
+                  type: "button",
+                  key: item.id,
+                  className: "eg-level" + (item.id === activeLevel ? " active" : ""),
+                  "aria-pressed": item.id === activeLevel ? "true" : "false",
+                  title: item.label + (item.desc ? " · " + item.desc : ""),
+                  onMouseEnter: () => setHoverLevel(item.id),
+                  onFocus: () => setHoverLevel(item.id),
+                  onBlur: () => setHoverLevel((prev) => prev === item.id ? "" : prev),
+                  onClick: () => chooseReportLevel(item.id)
+                },
+                import_react16.default.createElement("span", { className: "eg-level-code" }, item.label),
+                item.desc ? import_react16.default.createElement("span", { className: "eg-level-desc" }, item.desc) : null
+              )
+            )
+          ),
+          shownLevelObj && shownLevelObj.detail ? import_react16.default.createElement(
+            "div",
+            { className: "eg-level-detail" },
+            import_react16.default.createElement(
+              "strong",
+              null,
+              shownLevelObj.label + (shownLevelObj.desc ? " " + shownLevelObj.desc : "")
+            ),
+            import_react16.default.createElement("span", null, shownLevelObj.detail)
+          ) : null
         )
       )
     ),
@@ -2804,7 +3385,7 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
           import_react16.default.createElement(
             "div",
             { className: "eg-setting-desc eg-lead" },
-            settings.sessionLink ? "已开启会话关联，短语训练优先按当前会话出题；内容方向用于今日报告及无可用会话时兜底。" : "用于生成短语和今日报告；切换后下一题、下一篇生效。"
+            settings.sessionLink ? "已开启会话关联，短语训练优先按当前会话出题；内容方向用于今日文章及无可用会话时兜底。" : "用于生成短语和今日文章；切换后下一题、下一篇生效。"
           ),
           import_react16.default.createElement(
             "div",
@@ -2817,7 +3398,6 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
                   key: item.id,
                   className: "eg-direction" + (item.id === activeId ? " active" : ""),
                   "aria-pressed": item.id === activeId ? "true" : "false",
-                  disabled: busy,
                   title: item.label,
                   onClick: () => chooseDirection(item.id)
                 },
@@ -2860,7 +3440,6 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
                     type: "button",
                     className: "eg-custom-select",
                     "aria-pressed": item.id === activeId ? "true" : "false",
-                    disabled: busy,
                     title: item.label,
                     onClick: () => chooseDirection(item.id)
                   },
@@ -2873,7 +3452,6 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
                     className: "eg-custom-remove",
                     title: "删除方向",
                     "aria-label": "删除 " + item.label,
-                    disabled: busy,
                     onClick: () => removeCustom(item.id)
                   },
                   "×"
@@ -2900,7 +3478,7 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
               {
                 type: "button",
                 className: "eg-btn primary",
-                disabled: busy || !draft.trim(),
+                disabled: adding || !draft.trim(),
                 onClick: addCustom
               },
               "添加"
@@ -2914,11 +3492,11 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
 }
 
 // src/client/shell/EnglishGymBoard.js
-var useIsoLayoutEffect2 = import_react17.default.useLayoutEffect || import_react17.useEffect;
+var useIsoLayoutEffect3 = import_react17.default.useLayoutEffect || import_react17.useEffect;
 var TABS = [
   { id: "word", label: "单词训练" },
   { id: "drill", label: "短语训练" },
-  { id: "report", label: "今日报告" },
+  { id: "report", label: "今日文章" },
   { id: "dashboard", label: "看板" },
   { id: "settings", label: "设置" }
 ];
@@ -2933,7 +3511,9 @@ function EnglishGymBoard() {
   const bodyRef = (0, import_react17.useRef)(null);
   const [slider, setSlider] = (0, import_react17.useState)({ left: 0, width: 0, ready: false });
   const [confettiKey, setConfettiKey] = (0, import_react17.useState)(0);
+  const [wordBankRev, setWordBankRev] = (0, import_react17.useState)(0);
   const lastBurstRef = (0, import_react17.useRef)(shared.burst || 0);
+  const lastWordReqTickRef = (0, import_react17.useRef)(0);
   const settingsLoadedRef = (0, import_react17.useRef)(false);
   const {
     geom,
@@ -2965,7 +3545,7 @@ function EnglishGymBoard() {
     }, 145);
     return () => clearTimeout(timer);
   }, [open, mounted]);
-  useIsoLayoutEffect2(() => {
+  useIsoLayoutEffect3(() => {
     if (!mounted) return void 0;
     const measure = () => {
       const el = tabRefs.current && tabRefs.current[tab];
@@ -2979,7 +3559,7 @@ function EnglishGymBoard() {
     const raf = requestAnimationFrame(measure);
     return () => cancelAnimationFrame(raf);
   }, [tab, mounted, geom.w]);
-  useIsoLayoutEffect2(() => {
+  useIsoLayoutEffect3(() => {
     if (bodyRef.current) bodyRef.current.scrollTop = 0;
   }, [tab]);
   (0, import_react17.useEffect)(() => {
@@ -2998,8 +3578,14 @@ function EnglishGymBoard() {
     return () => clearTimeout(timer);
   }, [shared.burst]);
   (0, import_react17.useEffect)(() => {
-    if (!store.stats) refreshStats();
-  }, []);
+    const req = shared.wordModeRequest;
+    if (!req || !req.tick || req.tick === lastWordReqTickRef.current) return;
+    lastWordReqTickRef.current = req.tick;
+    setTab("word");
+  }, [shared.wordModeRequest]);
+  (0, import_react17.useEffect)(() => {
+    if (open || !store.stats) refreshStats();
+  }, [open]);
   (0, import_react17.useEffect)(() => {
     if (!open) return;
     const onKey = (e) => {
@@ -3079,13 +3665,19 @@ function EnglishGymBoard() {
             onRetry: drill.retry,
             onNext: drill.next
           })
-        ) : tab === "word" ? import_react17.default.createElement(WordPractice, { key: "word" }) : tab === "report" ? import_react17.default.createElement(Report, {
+        ) : tab === "word" ? import_react17.default.createElement(WordPractice, { key: "word", bankRev: wordBankRev }) : tab === "report" ? import_react17.default.createElement(Report, {
           report: dailyReport.report,
           loading: dailyReport.loading,
           error: dailyReport.error,
           onRefresh: () => dailyReport.refresh(true)
         }) : tab === "dashboard" ? import_react17.default.createElement(Dashboard, { key: "dashboard" }) : import_react17.default.createElement(SettingsPanel, {
           onPhraseConfigChange: drill.reset,
+          onReportConfigChange: dailyReport.invalidate,
+          onWordBankChange: () => {
+            setWordBankRev((n) => n + 1);
+            drill.reset();
+            dailyReport.invalidate();
+          },
           onTopicChange: () => {
             drill.reset();
             dailyReport.invalidate();

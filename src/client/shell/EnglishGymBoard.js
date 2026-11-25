@@ -18,7 +18,7 @@ const useIsoLayoutEffect = React.useLayoutEffect || useEffect
 const TABS = [
   { id: 'word', label: '单词训练' },
   { id: 'drill', label: '短语训练' },
-  { id: 'report', label: '今日报告' },
+  { id: 'report', label: '今日文章' },
   { id: 'dashboard', label: '看板' },
   { id: 'settings', label: '设置' },
 ]
@@ -35,7 +35,9 @@ export function EnglishGymBoard() {
   const bodyRef = useRef(null)
   const [slider, setSlider] = useState({ left: 0, width: 0, ready: false })
   const [confettiKey, setConfettiKey] = useState(0)
+  const [wordBankRev, setWordBankRev] = useState(0)
   const lastBurstRef = useRef(shared.burst || 0)
+  const lastWordReqTickRef = useRef(0)
   const settingsLoadedRef = useRef(false)
 
   const {
@@ -116,8 +118,15 @@ export function EnglishGymBoard() {
   }, [shared.burst])
 
   useEffect(() => {
-    if (!store.stats) refreshStats()
-  }, [])
+    const req = shared.wordModeRequest
+    if (!req || !req.tick || req.tick === lastWordReqTickRef.current) return
+    lastWordReqTickRef.current = req.tick
+    setTab('word')
+  }, [shared.wordModeRequest])
+
+  useEffect(() => {
+    if (open || !store.stats) refreshStats()
+  }, [open])
 
   useEffect(() => {
     if (!open) return
@@ -205,7 +214,7 @@ export function EnglishGymBoard() {
               }),
             )
           : tab === 'word'
-            ? React.createElement(WordPractice, { key: 'word' })
+            ? React.createElement(WordPractice, { key: 'word', bankRev: wordBankRev })
             : tab === 'report'
               ? React.createElement(Report, {
                   report: dailyReport.report,
@@ -217,6 +226,12 @@ export function EnglishGymBoard() {
                 ? React.createElement(Dashboard, { key: 'dashboard' })
                 : React.createElement(SettingsPanel, {
                     onPhraseConfigChange: drill.reset,
+                    onReportConfigChange: dailyReport.invalidate,
+                    onWordBankChange: () => {
+                      setWordBankRev((n) => n + 1)
+                      drill.reset()
+                      dailyReport.invalidate()
+                    },
                     onTopicChange: () => {
                       drill.reset()
                       dailyReport.invalidate()

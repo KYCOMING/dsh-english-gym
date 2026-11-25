@@ -47,25 +47,49 @@ export function pickBankCandidates(dir, state, count = 24) {
   const all = Array.from(byWord.values())
   if (!all.length) return []
 
+  const memMap = state && state.wordMemory && typeof state.wordMemory === 'object' ? state.wordMemory : {}
+  const now = Date.now()
   const recent = new Set((state && Array.isArray(state.wordRecent) ? state.wordRecent : []).map((w) => String(w).toLowerCase()))
-  const recentPool = all.filter((item) => recent.has(item.word.toLowerCase()))
-  const restPool = all.filter((item) => !recent.has(item.word.toLowerCase()))
+
+  const dueOrLapsedPool = []
+  const learningPool = []
+  const recentPool = []
+  const restPool = []
+
+  for (const item of all) {
+    const key = item.word.toLowerCase()
+    const mem = memMap[key]
+    if (mem && typeof mem === 'object') {
+      if (mem.mastered === true) continue
+      const isDue = Number.isFinite(mem.dueAt) && mem.dueAt <= now
+      if (isDue || (Number(mem.lapses) || 0) > 0) dueOrLapsedPool.push(item)
+      else learningPool.push(item)
+    } else if (recent.has(key)) {
+      recentPool.push(item)
+    } else {
+      restPool.push(item)
+    }
+  }
 
   const picked = []
   const seen = new Set()
   const takeFrom = (pool, limit) => {
     for (const item of shuffle(pool)) {
       if (picked.length >= wanted || limit <= 0) return
-      if (seen.has(item.word.toLowerCase())) continue
-      seen.add(item.word.toLowerCase())
+      const key = item.word.toLowerCase()
+      if (seen.has(key)) continue
+      seen.add(key)
       picked.push(item)
       limit -= 1
     }
   }
 
-  takeFrom(recentPool, Math.ceil(wanted / 2))
+  const srsBudget = Math.ceil(wanted / 2)
+  takeFrom(dueOrLapsedPool, srsBudget)
+  takeFrom(learningPool, Math.max(0, srsBudget - picked.length))
+  takeFrom(recentPool, Math.max(0, Math.ceil(wanted / 2) - picked.length))
   takeFrom(restPool, wanted - picked.length)
-  // Small banks may not fill the quota; top up from whatever is left.
+  // Small banks or mostly-mastered banks may not fill the quota; top up from whatever is left.
   if (picked.length < wanted) takeFrom(all, wanted - picked.length)
   return picked
 }

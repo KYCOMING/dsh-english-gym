@@ -4,7 +4,7 @@ import { normalizeSettings } from '../settings/service.js'
 import { pickBankCandidates } from '../word/sample.js'
 
 /** Daily AI/tech report: cache per day, generate on demand, warm in the background. */
-export function createReportService({ ctx, conf, dir, getTopic }) {
+export function createReportService({ ctx, conf, dir, getTopic, getReportLevel }) {
   const reportInflight = new Map()
 
   async function getReport(force) {
@@ -13,11 +13,12 @@ export function createReportService({ ctx, conf, dir, getTopic }) {
     const opts = normalizeSettings(state.settings)
     const bankLink = opts.bankLink !== false
     const bankId = bankLink ? state.wordBankId || 'builtin' : null
+    const level = typeof getReportLevel === 'function' ? getReportLevel() : conf.level
 
     if (!force) {
       const cached = loadReport(dir, day)
-      if (cached && cached.body) {
-        // Reuse today's report only if it was generated for the same word-bank mode.
+      if (cached && cached.body && cached.level === level) {
+        // Reuse today's report only if it was generated for the same difficulty and word-bank mode.
         if (bankLink) {
           if (cached.bankLink === true && cached.bankId === bankId) return cached
         } else if (cached.bankLink !== true) {
@@ -26,7 +27,7 @@ export function createReportService({ ctx, conf, dir, getTopic }) {
       }
     }
 
-    const key = `${day}|${bankLink ? bankId : 'off'}`
+    const key = `${day}|${level}|${bankLink ? bankId : 'off'}`
     if (reportInflight.has(key)) return reportInflight.get(key)
     const job = (async () => {
       const topic = typeof getTopic === 'function' ? getTopic() : conf.topic
@@ -34,7 +35,7 @@ export function createReportService({ ctx, conf, dir, getTopic }) {
       const retries = bankLink ? opts.bankRetries : 0
       let report = null
       for (let attempt = 0; attempt <= retries; attempt += 1) {
-        report = await generateReport(ctx, conf, { level: conf.level, date: day, topic, words })
+        report = await generateReport(ctx, conf, { level, date: day, topic, words })
         if (!report || report.fallback) break
         const used = Array.isArray(report.bankWords) ? report.bankWords : []
         if (!words.length || used.length >= 2) break

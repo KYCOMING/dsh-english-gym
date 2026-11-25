@@ -20,6 +20,23 @@ export const BUILTIN_TOPICS = [
   { id: 'culture', label: '文化与旅行', topic: 'culture and travel' },
 ]
 
+export const REPORT_LEVELS = [
+  { id: 'A1', label: 'A1', desc: '入门', detail: '约小学至初中水平 · 简短句式与日常基础词汇，适合零基础起步' },
+  { id: 'A2', label: 'A2', desc: '基础', detail: '约初中至高中入门 · 常见生活话题与直白表达，轻松建立阅读语感' },
+  { id: 'B1', label: 'B1', desc: '进阶', detail: '约高考 / 大学四级（CET-4）· 清晰自然的实用表达，日常与职场阅读主力' },
+  { id: 'B2', label: 'B2', desc: '熟练', detail: '约大学六级（CET-6）/ 雅思 6.0–6.5 · 句式更丰富，流畅阅读技术博客与行业资讯' },
+  { id: 'C1', label: 'C1', desc: '高级', detail: '约雅思 7.0–7.5 / 托福 95+ · 地道外刊文风，含精准词汇与复杂长难句' },
+  { id: 'C2', label: 'C2', desc: '精通', detail: '约雅思 8.0+ / 母语外刊水准 · 细腻修辞、高阶词汇与深度评论风格' },
+]
+
+export function normalizeReportLevel(value, fallback = 'B1') {
+  const code = String(value || '').trim().toUpperCase()
+  if (REPORT_LEVELS.some((item) => item.id === code)) return code
+  const fb = String(fallback || '').trim().toUpperCase()
+  if (REPORT_LEVELS.some((item) => item.id === fb)) return fb
+  return 'B1'
+}
+
 export const DEFAULT_SETTINGS = {
   confetti: true,
   topicId: 'ai',
@@ -27,6 +44,7 @@ export const DEFAULT_SETTINGS = {
   bankLink: true,
   bankRetries: 1,
   sessionLink: false,
+  reportLevel: 'B1',
 }
 
 export const MAX_BANK_RETRIES = 5
@@ -68,7 +86,7 @@ export function normalizeCustomTopics(list) {
   return result
 }
 
-export function normalizeSettings(raw) {
+export function normalizeSettings(raw, fallbackLevel) {
   const source = raw && typeof raw === 'object' ? raw : {}
   const customTopics = normalizeCustomTopics(source.customTopics)
   let topicId = typeof source.topicId === 'string' && source.topicId ? source.topicId : DEFAULT_SETTINGS.topicId
@@ -82,6 +100,7 @@ export function normalizeSettings(raw) {
     bankLink: source.bankLink !== false,
     bankRetries: normalizeBankRetries(source.bankRetries),
     sessionLink: source.sessionLink === true,
+    reportLevel: normalizeReportLevel(source.reportLevel, fallbackLevel || DEFAULT_SETTINGS.reportLevel),
   }
 }
 
@@ -101,15 +120,17 @@ export function selectedTopic(settings, fallback) {
 }
 
 export function createSettingsService({ dir, conf }) {
+  const defaultLevel = normalizeReportLevel(conf && conf.level, DEFAULT_SETTINGS.reportLevel)
+
   function get() {
     const state = loadState(dir)
-    const settings = normalizeSettings(state.settings)
-    return { settings, directions: listDirections(settings) }
+    const settings = normalizeSettings(state.settings, defaultLevel)
+    return { settings, directions: listDirections(settings), levels: REPORT_LEVELS }
   }
 
   function update(patch) {
     const state = loadState(dir)
-    const current = normalizeSettings(state.settings)
+    const current = normalizeSettings(state.settings, defaultLevel)
     const next = { ...current, customTopics: current.customTopics.map((item) => ({ ...item })) }
     const body = patch && typeof patch === 'object' ? patch : {}
 
@@ -117,6 +138,9 @@ export function createSettingsService({ dir, conf }) {
     if (typeof body.bankLink === 'boolean') next.bankLink = body.bankLink
     if (body.bankRetries !== undefined) next.bankRetries = normalizeBankRetries(body.bankRetries)
     if (typeof body.sessionLink === 'boolean') next.sessionLink = body.sessionLink
+    if (typeof body.reportLevel === 'string' && body.reportLevel.trim()) {
+      next.reportLevel = normalizeReportLevel(body.reportLevel, next.reportLevel)
+    }
     if (Array.isArray(body.customTopics)) next.customTopics = normalizeCustomTopics(body.customTopics)
     if (typeof body.topicId === 'string' && body.topicId) {
       const known = listDirections(next).some((item) => item.id === body.topicId)
@@ -136,5 +160,9 @@ export function createSettingsService({ dir, conf }) {
     return selectedTopic(settings, conf && conf.topic)
   }
 
-  return { get, update, getTopic }
+  function getReportLevel() {
+    return get().settings.reportLevel
+  }
+
+  return { get, update, getTopic, getReportLevel }
 }

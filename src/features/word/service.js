@@ -13,15 +13,16 @@ import {
   saveWordBank,
 } from './banks.js'
 import { parseWordBank, summarizeParse } from './import.js'
+import {
+  applyWordReview,
+  markWordMastered,
+  normalizeWordKey,
+  pickWordSrs,
+  SRS_MAX_STAGE,
+  summarizeBankMemory,
+} from './srs.js'
 
 const letterCount = (en) => String(en).replace(/[^a-zA-Z]/g, '').length
-
-function pickWord(state, entries) {
-  const recent = new Set(state.wordRecent || [])
-  const pool = entries.filter((w) => !recent.has(w.word))
-  const src = pool.length ? pool : entries
-  return src[Math.floor(Math.random() * src.length)]
-}
 
 function pruneWordPending(state) {
   const entries = Object.entries(state.wordPending || {})
@@ -33,7 +34,7 @@ function pruneWordPending(state) {
 
 /** Word spelling drill + word-bank management. */
 export function createWordService({ dir }) {
-  function nextWord() {
+  function nextWord(options = {}) {
     const state = loadState(dir)
     const bank = resolveActiveBank(dir, state)
     if (!bank || !Array.isArray(bank.entries) || !bank.entries.length) {
@@ -41,7 +42,29 @@ export function createWordService({ dir }) {
       error.status = 500
       throw error
     }
-    const picked = pickWord(state, bank.entries)
+    const mode = options && (options.mode === 'review' || options.mode === 'new') ? options.mode : 'smart'
+    const now = Date.now()
+    const srsStats = summarizeBankMemory(bank.entries, state.wordMemory, now)
+    const pick = pickWordSrs(bank.entries, state.wordMemory, {
+      mode,
+      recent: state.wordRecent,
+      reviewStreak: state.wordReviewStreak || 0,
+      now,
+    })
+
+    if (!pick.entry) {
+      return {
+        done: true,
+        reason: pick.reason || 'no_due',
+        mode,
+        bankSize: bank.entries.length,
+        bankId: bank.id,
+        bankName: bank.name,
+        srsStats,
+      }
+    }
+
+    const picked = pick.entry
     const id = randomUUID()
     state.wordPending[id] = {
       en: picked.word,
@@ -51,11 +74,16 @@ export function createWordService({ dir }) {
       exampleZh: picked.exampleZh || '',
       bankId: bank.id,
       createdAt: new Date().toISOString(),
+      hadMiss: false,
+      missRecorded: false,
     }
     pruneWordPending(state)
     state.wordRecent.push(picked.word)
     if (state.wordRecent.length > 200) state.wordRecent = state.wordRecent.slice(-200)
+    state.wordReviewStreak = pick.nextReviewStreak
     saveState(dir, state)
+
+    const mem = state.wordMemory[normalizeWordKey(picked.word)] || null
     return {
       id,
       zh: picked.meaning,
@@ -66,10 +94,20 @@ export function createWordService({ dir }) {
       bankSize: bank.entries.length,
       bankId: bank.id,
       bankName: bank.name,
+      mode,
+      srsStats,
+      srs: {
+        kind: pick.kind,
+        stage: mem ? Number(mem.stage) || 0 : 0,
+        maxStage: SRS_MAX_STAGE,
+        reps: mem ? Number(mem.reps) || 0 : 0,
+        lapses: mem ? Number(mem.lapses) || 0 : 0,
+        mastered: Boolean(mem && mem.mastered),
+      },
     }
   }
 
-  function checkWord({ id, answer }) {
+  function checkWord({ id, answer, revealed } = {}) {
     const state = loadState(dir)
     const pending = id ? state.wordPending[id] : null
     if (!pending) {
@@ -80,12 +118,32 @@ export function createWordService({ dir }) {
     const typed = normalize(answer || '').replace(/\s+/g, '')
     const target = normalize(pending.en).replace(/\s+/g, '')
     const correct = typed === target && typed.length > 0
+    const now = Date.now()
+    const key = normalizeWordKey(pending.en)
+    const clean = correct && !pending.hadMiss && !revealed
+    const outcome = applyWordReview(state.wordMemory[key], {
+      correct,
+      clean,
+      countLapse: !correct && !pending.missRecorded,
+      now,
+    })
+    state.wordMemory[key] = outcome.memory
+
     state.word.answered = (state.word.answered || 0) + 1
     if (correct) state.word.correct = (state.word.correct || 0) + 1
     recordStudy(state, 'word', { en: pending.en, zh: pending.zh, pos: pending.pos || '', ok: correct })
-    // Keep a missed word pending so “再试一次” can re-check the same word.
-    if (correct) delete state.wordPending[id]
+    // Keep a missed word pending so “再试一次” can re-check the same word without double-counting lapses.
+    if (correct) {
+      delete state.wordPending[id]
+    } else {
+      pending.hadMiss = true
+      pending.missRecorded = true
+    }
+
+    const bank = resolveActiveBank(dir, state)
+    const srsStats = summarizeBankMemory(bank ? bank.entries : [], state.wordMemory, now)
     saveState(dir, state)
+
     return {
       correct,
       reference: pending.en,
@@ -94,6 +152,40 @@ export function createWordService({ dir }) {
       letters: letterCount(pending.en),
       example: pending.example || '',
       exampleZh: pending.exampleZh || '',
+      srs: {
+        stage: outcome.stage,
+        maxStage: outcome.maxStage,
+        mastered: outcome.mastered,
+        nextIntervalMs: outcome.nextIntervalMs,
+        nextReviewText: outcome.nextReviewText,
+        clean: outcome.clean,
+      },
+      srsStats,
+    }
+  }
+
+  function markMastered({ id, word } = {}) {
+    const state = loadState(dir)
+    const pending = id ? state.wordPending[id] : null
+    const targetWord = (pending && pending.en) || String(word || '').trim()
+    if (!targetWord) {
+      return { ok: false, status: 400, body: { error: '缺少单词' } }
+    }
+    const now = Date.now()
+    const key = normalizeWordKey(targetWord)
+    state.wordMemory[key] = markWordMastered(state.wordMemory[key], now)
+    if (pending) delete state.wordPending[id]
+    const bank = resolveActiveBank(dir, state)
+    const srsStats = summarizeBankMemory(bank ? bank.entries : [], state.wordMemory, now)
+    saveState(dir, state)
+    return {
+      ok: true,
+      status: 200,
+      body: {
+        ok: true,
+        word: targetWord,
+        srsStats,
+      },
     }
   }
 
@@ -175,5 +267,5 @@ export function createWordService({ dir }) {
     return { ok: true, status: 200, body: { ok: true, active: state.wordBankId, banks: listWordBanks(dir) } }
   }
 
-  return { nextWord, checkWord, listBanks, previewImport, importBank, setActiveBank, deleteBank }
+  return { nextWord, checkWord, markMastered, listBanks, previewImport, importBank, setActiveBank, deleteBank }
 }

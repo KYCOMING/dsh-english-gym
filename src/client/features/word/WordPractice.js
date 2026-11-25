@@ -1,58 +1,100 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { api } from '../../core/api.js'
-import { store } from '../../core/store.js'
-import { formatPos } from '../../core/text.js'
+import { store, useShared } from '../../core/store.js'
+import { formatMeaning, formatPos } from '../../core/text.js'
 import { bounceButton, popElement } from '../../components/motion.js'
 import { ExampleBlock } from './ExampleBlock.js'
-import { WordBankImport } from './WordBankImport.js'
 
-const h = React.createElement
+const cachedWord = {
+  item: null,
+  cells: [],
+  res: null,
+  revealed: false,
+  revealedEver: false,
+  mode: 'smart',
+  srsStats: null,
+  bankRev: 0,
+}
 
-const cachedWord = { item: null, cells: [], res: null, revealed: false, banks: null, bankId: '' }
+let lastConsumedWordReqTick = 0
 
-// Static word bank drill: Chinese gloss + one underline per letter.
-export function WordPractice() {
+const MODES = [
+  { id: 'smart', label: '智能', title: '按艾宾浩斯曲线优先复习到期词，每复习 3 个穿插 1 个新词' },
+  { id: 'review', label: '待复习', title: '专注清理当前词库已到复习时间的单词' },
+  { id: 'new', label: '新词', title: '跳过到期复习，优先抽取尚未背过的新词' },
+]
+
+function stageLabel(srs) {
+  if (!srs) return '新词'
+  if (srs.kind === 'new') return '新词'
+  if (srs.kind === 'mastered' || srs.mastered) return '已掌握回顾'
+  if (srs.kind === 'upcoming') return '提前巩固 · 第 ' + ((srs.stage || 0) + 1) + ' 阶'
+  return '复习 · 第 ' + ((srs.stage || 0) + 1) + ' 阶'
+}
+
+function shortBankName(name) {
+  return String(name || '').replace(/^内置\s*·\s*/, '')
+}
+
+// Static word bank drill: Ebbinghaus SRS + Chinese gloss + one underline per letter.
+export function WordPractice({ bankRev = 0 } = {}) {
+  const shared = useShared()
   const [item, setItem] = useState(() => cachedWord.item)
   const [cells, setCells] = useState(() => cachedWord.cells)
   const [res, setRes] = useState(() => cachedWord.res)
   const [revealed, setRevealed] = useState(() => cachedWord.revealed)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
-  const [banks, setBanks] = useState(() => cachedWord.banks)
-  const [bankId, setBankId] = useState(() => cachedWord.bankId)
-  const [view, setView] = useState('practice')
-  const [notice, setNotice] = useState('')
-  const [switching, setSwitching] = useState(false)
+  const [mode, setMode] = useState(() => cachedWord.mode)
+  const [hoverMode, setHoverMode] = useState('')
+  const [srsStats, setSrsStats] = useState(() => cachedWord.srsStats)
   const refs = useRef([])
   const inFlight = useRef(false)
+  const revealedEverRef = useRef(cachedWord.revealedEver)
+  const modeRef = useRef(mode)
+  modeRef.current = mode
 
   useEffect(() => {
     cachedWord.item = item
     cachedWord.cells = cells
     cachedWord.res = res
     cachedWord.revealed = revealed
-    cachedWord.banks = banks
-    cachedWord.bankId = bankId
-  }, [item, cells, res, revealed, banks, bankId])
+    cachedWord.revealedEver = revealedEverRef.current
+    cachedWord.mode = mode
+    cachedWord.srsStats = srsStats
+  }, [item, cells, res, revealed, mode, srsStats])
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (requestedMode) => {
     if (inFlight.current) return
+    const targetMode =
+      requestedMode === 'review' || requestedMode === 'new' || requestedMode === 'smart'
+        ? requestedMode
+        : modeRef.current
     inFlight.current = true
     setBusy(true)
     setError('')
     setRes(null)
     setRevealed(false)
+    revealedEverRef.current = false
     try {
-      const data = await api('/word/next', { method: 'POST', body: '{}' })
+      const data = await api('/word/next', {
+        method: 'POST',
+        body: JSON.stringify({ mode: targetMode }),
+      })
+      if (data.srsStats) setSrsStats(data.srsStats)
       setItem(data)
-      setCells(new Array(Math.max(0, data.letters || 0)).fill(''))
-      setTimeout(() => {
-        try {
-          if (refs.current[0]) refs.current[0].focus()
-        } catch {
-          /* ignore */
-        }
-      }, 0)
+      if (data.done) {
+        setCells([])
+      } else {
+        setCells(new Array(Math.max(0, data.letters || 0)).fill(''))
+        setTimeout(() => {
+          try {
+            if (refs.current[0]) refs.current[0].focus()
+          } catch {
+            /* ignore */
+          }
+        }, 0)
+      }
     } catch (e) {
       setError(e.message || '出题失败')
     } finally {
@@ -62,13 +104,30 @@ export function WordPractice() {
   }, [])
 
   useEffect(() => {
-    if (!cachedWord.item) load()
-  }, [load])
+    const req = shared.wordModeRequest
+    if (req && req.tick && req.tick !== lastConsumedWordReqTick) {
+      lastConsumedWordReqTick = req.tick
+      cachedWord.bankRev = bankRev
+      const nextMode = req.mode || 'review'
+      setMode(nextMode)
+      modeRef.current = nextMode
+      load(nextMode)
+      return
+    }
+    if (bankRev !== cachedWord.bankRev) {
+      cachedWord.bankRev = bankRev
+      setItem(null)
+      setRes(null)
+      load(modeRef.current)
+      return
+    }
+    if (!cachedWord.item) load(modeRef.current)
+  }, [shared.wordModeRequest, bankRev, load])
 
   // After a correct spelling, Enter acts as “next word” — the primary action is
   // always one keystroke away, even when the letter inputs are disabled.
   useEffect(() => {
-    if (!res || !res.correct || view !== 'practice') return undefined
+    if (!res || !res.correct) return undefined
     const onKeyDown = (e) => {
       if (e.key !== 'Enter' || e.isComposing) return
       const el = e.target
@@ -78,55 +137,20 @@ export function WordPractice() {
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [res, view, load])
+  }, [res, load])
 
-  const loadBanks = useCallback(async () => {
-    try {
-      const data = await api('/wordbanks')
-      setBanks(Array.isArray(data.banks) ? data.banks : [])
-      setBankId(data.active || 'builtin')
-    } catch {
-      /* ignore: practice still works with the built-in bank */
-    }
-  }, [])
-
-  useEffect(() => {
-    if (!cachedWord.banks) loadBanks()
-  }, [loadBanks])
-
-  const switchBank = useCallback(
-    async (e) => {
-      const id = e.target.value
-      if (!id || id === bankId) return
-      setSwitching(true)
-      setError('')
-      setNotice('')
-      try {
-        const data = await api('/wordbanks/active', { method: 'POST', body: JSON.stringify({ id }) })
-        setBankId(data.active)
-        if (data.summary) store.setStats(data.summary)
-        await load()
-      } catch (err) {
-        setError(err.message || '切换词库失败')
-      } finally {
-        setSwitching(false)
-      }
+  const switchMode = useCallback(
+    (nextMode) => {
+      if (busy || nextMode === modeRef.current) return
+      setMode(nextMode)
+      modeRef.current = nextMode
+      load(nextMode)
     },
-    [bankId, load],
-  )
-
-  const onImported = useCallback(
-    (result) => {
-      setNotice('已导入「' + result.bank.name + '」' + result.bank.count + ' 条')
-      setView('practice')
-      loadBanks()
-      load()
-    },
-    [loadBanks, load],
+    [busy, load],
   )
 
   const submit = useCallback(async () => {
-    if (!item || busy || res) return
+    if (!item || item.done || busy || res) return
     if (cells.some((c) => !c)) return
     setBusy(true)
     setError('')
@@ -134,10 +158,15 @@ export function WordPractice() {
     try {
       const r = await api('/word/check', {
         method: 'POST',
-        body: JSON.stringify({ id: item.id, answer: cells.join('') }),
+        body: JSON.stringify({
+          id: item.id,
+          answer: cells.join(''),
+          revealed: revealedEverRef.current,
+        }),
       })
       setRes(r)
       if (r.correct) store.celebrate()
+      if (r.srsStats) setSrsStats(r.srsStats)
       if (r.summary) store.setStats(r.summary)
     } catch (e) {
       setError(e.message || '判分失败')
@@ -145,6 +174,26 @@ export function WordPractice() {
       setBusy(false)
     }
   }, [item, cells, busy, res])
+
+  const markMastered = useCallback(async () => {
+    if (!item || item.done || busy) return
+    setBusy(true)
+    setError('')
+    try {
+      const r = await api('/word/master', {
+        method: 'POST',
+        body: JSON.stringify({ id: item.id, word: (res && res.reference) || '' }),
+      })
+      if (r.srsStats) setSrsStats(r.srsStats)
+      if (r.summary) store.setStats(r.summary)
+      inFlight.current = false
+      setBusy(false)
+      load(modeRef.current)
+    } catch (e) {
+      setError(e.message || '操作失败')
+      setBusy(false)
+    }
+  }, [item, res, busy, load])
 
   const retry = useCallback(() => {
     if (!item || busy) return
@@ -160,6 +209,13 @@ export function WordPractice() {
       }
     }, 0)
   }, [item, busy])
+
+  const toggleReveal = useCallback(() => {
+    setRevealed((v) => {
+      if (!v) revealedEverRef.current = true
+      return !v
+    })
+  }, [])
 
   const setCell = (i, v) => {
     const ch = String(v || '').replace(/[^a-zA-Z]/g, '').slice(-1)
@@ -211,29 +267,119 @@ export function WordPractice() {
     }
   }
 
-  if (view === 'import') {
-    return h(WordBankImport, { onClose: () => setView('practice'), onImported })
-  }
+  const liveStats = srsStats || (shared.stats && shared.stats.wordSrs) || null
+  const dueCount = liveStats ? Number(liveStats.due) || 0 : 0
+  const learningCount = liveStats ? Number(liveStats.learning) || 0 : 0
+  const masteredCount = liveStats ? Number(liveStats.mastered) || 0 : 0
+  const bankLabel = shortBankName((item && item.bankName) || (shared.stats && shared.stats.wordBank && shared.stats.wordBank.name) || '')
+  const shownMode = MODES.find((m) => m.id === (hoverMode || mode)) || MODES[0]
+
+  const topBar = React.createElement(
+    'div',
+    { className: 'eg-srs-bar', 'data-nodrag': 'true' },
+    React.createElement(
+      'div',
+      {
+        className: 'eg-srs-modes',
+        role: 'tablist',
+        'aria-label': '出词模式',
+        onMouseLeave: () => setHoverMode(''),
+      },
+      MODES.map((m) =>
+        React.createElement(
+          'button',
+          {
+            key: m.id,
+            type: 'button',
+            role: 'tab',
+            'aria-selected': mode === m.id ? 'true' : 'false',
+            className: 'eg-srs-mode' + (mode === m.id ? ' active' : ''),
+            title: m.title,
+            disabled: busy,
+            onMouseEnter: () => setHoverMode(m.id),
+            onFocus: () => setHoverMode(m.id),
+            onBlur: () => setHoverMode((prev) => (prev === m.id ? '' : prev)),
+            onClick: () => switchMode(m.id),
+          },
+          m.label,
+          m.id === 'review' && dueCount > 0
+            ? React.createElement('span', { className: 'eg-srs-due' }, String(dueCount))
+            : null,
+        ),
+      ),
+    ),
+    React.createElement('div', { className: 'eg-srs-hint' }, shownMode.title),
+    liveStats || bankLabel
+      ? React.createElement(
+          'div',
+          { className: 'eg-srs-meta', title: '词库可在「设置 → 单词词库」切换' },
+          [
+            bankLabel,
+            liveStats ? '学习中 ' + learningCount : '',
+            liveStats ? '已掌握 ' + masteredCount : '',
+          ]
+            .filter(Boolean)
+            .join(' · '),
+        )
+      : null,
+  )
 
   if (!item) {
     return React.createElement(
       'div',
-      null,
-      error
-        ? React.createElement('div', { className: 'eg-err' }, error)
-        : React.createElement(
+      { className: 'eg-word' },
+      topBar,
+      React.createElement(
+        'div',
+        { className: 'eg-word-main' },
+        error
+          ? React.createElement('div', { className: 'eg-err' }, error)
+          : React.createElement(
+              'div',
+              { className: 'eg-loading' },
+              React.createElement('span', { className: 'eg-spin' }),
+              '正在取词…',
+            ),
+        error
+          ? React.createElement(
+              'div',
+              { className: 'eg-foot' },
+              React.createElement('button', { className: 'eg-btn primary', onClick: () => load(), disabled: busy }, '重试'),
+            )
+          : null,
+      ),
+    )
+  }
+
+  if (item.done) {
+    return React.createElement(
+      'div',
+      { className: 'eg-word' },
+      topBar,
+      React.createElement(
+        'div',
+        { className: 'eg-word-main' },
+        React.createElement(
+          'div',
+          { className: 'eg-srs-done' },
+          React.createElement('div', { className: 'eg-srs-done-title' }, '到期单词已全部复习完成'),
+          React.createElement(
             'div',
-            { className: 'eg-loading' },
-            React.createElement('span', { className: 'eg-spin' }),
-            '正在取词…',
+            { className: 'eg-srs-done-sub' },
+            (bankLabel ? bankLabel + '：' : '当前词库：') + '学习中 ' + learningCount + ' 词 · 已掌握 ' + masteredCount + ' 词',
           ),
-      error
-        ? React.createElement(
-            'div',
-            { className: 'eg-foot' },
-            React.createElement('button', { className: 'eg-btn primary', onClick: load, disabled: busy }, '重试'),
-          )
-        : null,
+          React.createElement(
+            'button',
+            {
+              type: 'button',
+              className: 'eg-btn primary',
+              disabled: busy,
+              onClick: () => switchMode('smart'),
+            },
+            '切回智能模式继续学习',
+          ),
+        ),
+      ),
     )
   }
 
@@ -266,12 +412,32 @@ export function WordPractice() {
     })
   })
 
+  const srsInfo = item.srs || null
+  const srsStage = srsInfo ? Number(srsInfo.stage) || 0 : 0
+  const srsMax = (srsInfo && Number(srsInfo.maxStage)) || 9
+  const showDots = srsInfo && srsInfo.kind !== 'new' && srsStage > 0
+  const cleanMeaning = formatMeaning(item.zh)
+  const meaningClass = 'eg-zh' + (cleanMeaning.length > 28 ? ' is-xlong' : cleanMeaning.length > 16 ? ' is-long' : '')
+
   const footerActions = answered
     ? React.createElement(
         'div',
         { className: 'eg-word-foot' },
         ok
-          ? React.createElement('button', { className: 'eg-btn primary', onClick: load, disabled: busy, title: '回车继续', 'aria-keyshortcuts': 'Enter' }, '下一个')
+          ? [
+              React.createElement(
+                'button',
+                { key: 'next', className: 'eg-btn primary', onClick: () => load(), disabled: busy, title: '回车继续', 'aria-keyshortcuts': 'Enter' },
+                '下一个',
+              ),
+              !(res.srs && res.srs.mastered)
+                ? React.createElement(
+                    'button',
+                    { key: 'master', className: 'eg-btn', onClick: markMastered, disabled: busy, title: '太简单，直接标为已掌握' },
+                    '已掌握',
+                  )
+                : null,
+            ]
           : [
               React.createElement('button', { key: 'retry', className: 'eg-btn primary', onClick: retry, disabled: busy }, '再试一次'),
               React.createElement(
@@ -279,13 +445,13 @@ export function WordPractice() {
                 {
                   key: 'reveal',
                   className: 'eg-btn',
-                  onClick: () => setRevealed((v) => !v),
+                  onClick: toggleReveal,
                   disabled: busy,
                   'aria-expanded': revealed ? 'true' : 'false',
                 },
                 revealed ? '收起答案' : '显示答案',
               ),
-              React.createElement('button', { key: 'next', className: 'eg-btn', onClick: load, disabled: busy }, '下一个'),
+              React.createElement('button', { key: 'next', className: 'eg-btn', onClick: () => load(), disabled: busy }, '下一个'),
             ],
       )
     : item
@@ -302,7 +468,12 @@ export function WordPractice() {
             },
             '提交',
           ),
-          React.createElement('button', { className: 'eg-btn ghost', onClick: load, disabled: busy }, '换一个'),
+          React.createElement('button', { className: 'eg-btn', onClick: () => load(), disabled: busy }, '换一个'),
+          React.createElement(
+            'button',
+            { className: 'eg-btn', onClick: markMastered, disabled: busy, title: '太简单，直接标为已掌握' },
+            '已掌握',
+          ),
           React.createElement(
             'span',
             { className: 'eg-kbd', title: '回车提交' },
@@ -314,39 +485,34 @@ export function WordPractice() {
   return React.createElement(
     'div',
     { className: 'eg-word' },
-    React.createElement(
-      'div',
-      { className: 'eg-bankbar', 'data-nodrag': 'true' },
-      React.createElement('span', { className: 'eg-banklabel' }, '词库'),
-      React.createElement(
-        'select',
-        {
-          className: 'eg-select',
-          value: bankId || '',
-          disabled: switching || !banks,
-          onChange: switchBank,
-          title: '切换单词词库',
-        },
-        (banks || []).map((b) =>
-          React.createElement('option', { key: b.id, value: b.id }, b.name + '（' + b.count + '）'),
-        ),
-      ),
-      React.createElement(
-        'button',
-        { className: 'eg-bankbtn', onClick: () => { setNotice(''); setView('import') } },
-        React.createElement('span', { className: 'eg-plus', 'aria-hidden': 'true' }, '+'),
-        '导入',
-      ),
-    ),
-    notice ? React.createElement('div', { className: 'eg-notice' }, notice) : null,
+    topBar,
     React.createElement(
       'div',
       { className: 'eg-word-main' },
       React.createElement(
         'div',
         { className: 'eg-word-stage', key: item.id },
-        item.pos ? React.createElement('div', { className: 'eg-pos', title: '词性提示' }, formatPos(item.pos)) : null,
-        React.createElement('div', { className: 'eg-zh' }, item.zh),
+        React.createElement(
+          'div',
+          { className: 'eg-word-meta' },
+          item.pos ? React.createElement('span', { className: 'eg-pos-text', title: '词性提示' }, formatPos(item.pos)) : null,
+          item.pos ? React.createElement('span', { className: 'eg-meta-sep', 'aria-hidden': 'true' }, '·') : null,
+          React.createElement(
+            'span',
+            { className: 'eg-srs-tag' + (srsInfo && srsInfo.kind === 'review' ? ' is-review' : '') },
+            stageLabel(srsInfo),
+            showDots
+              ? React.createElement(
+                  'span',
+                  { className: 'eg-srs-dots', 'aria-hidden': 'true' },
+                  Array.from({ length: srsMax }, (_, idx) =>
+                    React.createElement('i', { key: idx, className: 'eg-srs-dot' + (idx < srsStage ? ' on' : '') }),
+                  ),
+                )
+              : null,
+          ),
+        ),
+        React.createElement('div', { className: meaningClass }, cleanMeaning),
         !answered ? React.createElement(ExampleBlock, { example: item.example }) : null,
         React.createElement(
           'div',
@@ -366,6 +532,9 @@ export function WordPractice() {
                   'div',
                   { className: 'eg-fb-top' },
                   React.createElement('span', { className: 'eg-fb-status' }, '拼对了'),
+                  res.srs && res.srs.nextReviewText
+                    ? React.createElement('span', { className: 'eg-srs-next' }, res.srs.nextReviewText)
+                    : null,
                 ),
                 React.createElement(
                   'div',
@@ -384,7 +553,7 @@ export function WordPractice() {
                 'div',
                 { className: 'eg-fb bad' },
                 !revealed
-                  ? React.createElement('div', { className: 'eg-word-miss' }, '拼写有误，可再试一次或查看答案')
+                  ? React.createElement('div', { className: 'eg-word-miss' }, '拼写有误，可再试一次或查看答案 · 5 分钟后再次巩固')
                   : null,
                 React.createElement(
                   'div',

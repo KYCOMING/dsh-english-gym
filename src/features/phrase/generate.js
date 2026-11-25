@@ -29,9 +29,9 @@ export async function generateQuestion(ctx, config, { level, topic, words, sessi
   let prompt = ''
   if (excerpt) {
     prompt =
-      `Create ONE Chinese sentence for a Chinese learner to translate into English, grounded in the learner's current work conversation below.\n` +
+      `Create ONE Chinese sentence for a Chinese learner to translate into English, grounded in the learner's current conversation below.\n` +
       `CEFR level: ${lvl}.\n` +
-      `Goal: write a practical, natural sentence (6-16 English words) that reflects the workflow, task, problem, or discussion in this conversation — something the learner could genuinely say or write in English while doing this work.\n` +
+      `Goal: write a practical, natural sentence (6-16 English words) that reflects the workflow, task, problem, or discussion in this conversation — something the learner could genuinely say or write in English in this context.\n` +
       `Privacy & clarity: NEVER copy private filenames, code identifiers, variable names, URLs, secrets, or niche proper nouns verbatim; generalize them into clean, natural English.\n` +
       `Also give a short ENGLISH hint that genuinely helps a Chinese learner: the 1-3 key English words, ` +
       `phrases or collocations the answer should use (e.g. "reproduce the bug; roll back"), plus optionally ` +
@@ -48,7 +48,7 @@ export async function generateQuestion(ctx, config, { level, topic, words, sessi
     prompt =
       `Create ONE Chinese sentence for a Chinese learner to translate into English.\n` +
       `CEFR level: ${lvl}.\n` +
-      `Theme: ${theme} (the English sentence should be natural, useful workplace / tech English).\n` +
+      `Theme: ${theme} (the English sentence should be natural, idiomatic, and practical).\n` +
       `Length: 6-16 words. Avoid proper nouns and ambiguity.\n` +
       `Also give a short ENGLISH hint that genuinely helps a Chinese learner: the 1-3 key English words, ` +
       `phrases or collocations the answer should use (e.g. "business trip; get to know"), plus optionally ` +

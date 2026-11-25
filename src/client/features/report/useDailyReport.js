@@ -14,7 +14,7 @@ export function useDailyReport({ open, active }) {
     try {
       setReport(force ? await api('/report/refresh', { method: 'POST' }) : await api('/report'))
     } catch (e) {
-      setError(e.message || '报告加载失败')
+      setError(e.message || '文章加载失败')
     } finally {
       setLoading(false)
     }

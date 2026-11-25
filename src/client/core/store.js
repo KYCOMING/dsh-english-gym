@@ -6,7 +6,8 @@ export const store = {
   open: false,
   stats: null,
   sessionId: '',
-  settings: { confetti: true, topicId: 'ai', customTopics: [], bankLink: true, bankRetries: 1, sessionLink: false },
+  wordModeRequest: null,
+  settings: { confetti: true, topicId: 'ai', customTopics: [], bankLink: true, bankRetries: 1, sessionLink: false, reportLevel: 'B1' },
   burst: 0,
   listeners: new Set(),
   emit() {
@@ -22,6 +23,11 @@ export const store = {
   },
   toggle() {
     this.setOpen(!this.open)
+  },
+  openWordReview() {
+    this.open = true
+    this.wordModeRequest = { mode: 'review', tick: Date.now() }
+    this.emit()
   },
   setStats(s) {
     this.stats = s

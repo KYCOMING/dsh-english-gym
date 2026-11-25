@@ -34,7 +34,18 @@ export function EnglishGymPill(props) {
         ? React.createElement('span', { className: 'eg-streak' }, '连续 ' + stats.streakDays + ' 天')
         : null,
       stats && stats.reviewCount > 0
-        ? React.createElement('span', { className: 'eg-chip warn' }, '待复习 ' + stats.reviewCount)
+        ? React.createElement(
+            'span',
+            {
+              className: 'eg-chip warn',
+              title: '有 ' + stats.reviewCount + ' 个单词到期复习，点击直接开始',
+              onClick: (e) => {
+                e.stopPropagation()
+                store.openWordReview()
+              },
+            },
+            '待复习 ' + stats.reviewCount,
+          )
         : null,
       React.createElement('span', { className: 'eg-chev', 'aria-hidden': 'true' }, '▸'),
     ),

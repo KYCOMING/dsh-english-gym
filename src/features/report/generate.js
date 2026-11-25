@@ -7,8 +7,17 @@ function pickLevel(level, fallback) {
   return typeof level === 'string' && level.trim() ? level.trim() : fallback || 'B1'
 }
 
+const LEVEL_STYLE = {
+  A1: 'very simple short sentences and basic everyday vocabulary',
+  A2: 'simple, direct sentences and common practical vocabulary',
+  B1: 'clear, natural prose with useful everyday expressions',
+  B2: 'fluent, nuanced prose with varied sentence structures and mid-advanced vocabulary',
+  C1: 'sophisticated, idiomatic editorial prose with precise vocabulary and complex clauses',
+  C2: 'native-level, publication-grade prose with subtle nuance, rich idioms, and advanced vocabulary',
+}
+
 const REPORT_SYSTEM =
-  'You write short, engaging English reading material for Chinese tech workers who are learning English. Reply with JSON only.'
+  'You write short, engaging English reading material for Chinese learners. Reply with JSON only.'
 
 /**
  * Generate (or reuse) today's AI/tech English mini-report.
@@ -16,14 +25,15 @@ const REPORT_SYSTEM =
  */
 export async function generateReport(ctx, config, { level, date, topic, words } = {}) {
   const lvl = pickLevel(level, config && config.level)
+  const levelGuide = LEVEL_STYLE[lvl.toUpperCase()] || LEVEL_STYLE.B1
   const theme = topic || (config && config.topic) || 'AI and technology'
   const day = date || new Date().toISOString().slice(0, 10)
   const candidates = Array.isArray(words) ? words : []
   let prompt =
-    `Write an English mini-report for ${day} about ${theme}, for a Chinese learner at CEFR ${lvl}.\n` +
+    `Write a short English article for ${day} about ${theme}, for a Chinese learner at CEFR ${lvl}.\n` +
     'Requirements:\n' +
     '- A catchy English title (4-8 words).\n' +
-    '- A 180-240 word English article in 3 short paragraphs. Clear, natural, informative, level-appropriate.\n' +
+    `- A 180-240 word English article in 3 short paragraphs using ${levelGuide}. Informative and strictly level-appropriate.\n` +
     '- 3 Chinese sentences based on the article, each with its natural English reference sentence (for translation practice).\n' +
     '- A one-line summary in Simplified Chinese.\n' +
     '- 6-8 key vocabulary highlights from the article (about 2-3 per paragraph — keep it selective, never over-highlight). ' +

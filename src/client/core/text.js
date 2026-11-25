@@ -25,6 +25,44 @@ export function escapeRegExp(text) {
   return String(text || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
+function splitOutsideParens(str, seps) {
+  const out = []
+  let depth = 0
+  let start = 0
+  for (let i = 0; i < str.length; i += 1) {
+    const ch = str[i]
+    if (ch === '(' || ch === '（' || ch === '[' || ch === '【') depth += 1
+    else if ((ch === ')' || ch === '）' || ch === ']' || ch === '】') && depth > 0) depth -= 1
+    else if (depth === 0 && seps.includes(ch)) {
+      out.push(str.slice(start, i))
+      start = i + 1
+    }
+  }
+  out.push(str.slice(start))
+  return out
+}
+
+/** Normalize mixed ASCII/CJK punctuation and deduplicate repeated glosses for display. */
+export function formatMeaning(raw) {
+  const source = String(raw || '').trim()
+  if (!source) return ''
+  const seen = new Set()
+  const groups = []
+  for (const rawGroup of splitOutsideParens(source, ';；')) {
+    const terms = []
+    for (const rawTerm of splitOutsideParens(rawGroup, ',，、')) {
+      const term = rawTerm.trim().replace(/\s+/g, ' ')
+      if (!term) continue
+      const key = term.toLowerCase().replace(/\s+/g, '')
+      if (seen.has(key)) continue
+      seen.add(key)
+      terms.push(term)
+    }
+    if (terms.length) groups.push(terms.join('、'))
+  }
+  return groups.length ? groups.join('；') : source
+}
+
 /** Split a sentence around the target word for highlighting after grading. */
 export function splitByWord(text, word) {
   const source = String(text || '')

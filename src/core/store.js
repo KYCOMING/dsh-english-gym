@@ -58,6 +58,8 @@ export function defaultState() {
     word: { answered: 0, correct: 0 }, // 单词训练 totals
     wordPending: {}, // id -> { en, zh, createdAt }
     wordRecent: [], // recently served words, to avoid immediate repeats
+    wordMemory: {}, // lowercased word -> { stage, dueAt, lastAt, reps, lapses, mastered }
+    wordReviewStreak: 0,
     wordBankId: 'builtin', // active word bank (builtin or an imported bank id)
     settings: { confetti: true, topicId: 'ai', customTopics: [], bankLink: true, bankRetries: 1, sessionLink: false },
     // Per-day study log used by the dashboard:
@@ -81,6 +83,8 @@ export function loadState(dir) {
     word: { ...base.word, ...(state.word || {}) },
     wordPending: state.wordPending && typeof state.wordPending === 'object' ? state.wordPending : {},
     wordRecent: Array.isArray(state.wordRecent) ? state.wordRecent : [],
+    wordMemory: state.wordMemory && typeof state.wordMemory === 'object' ? state.wordMemory : {},
+    wordReviewStreak: Number.isFinite(Number(state.wordReviewStreak)) ? Number(state.wordReviewStreak) : 0,
     wordBankId: typeof state.wordBankId === 'string' && state.wordBankId ? state.wordBankId : 'builtin',
     settings: { ...base.settings, ...(state.settings && typeof state.settings === 'object' ? state.settings : {}) },
     log: state.log && typeof state.log === 'object' ? state.log : {},

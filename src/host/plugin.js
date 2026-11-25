@@ -8,6 +8,7 @@ import { createReportService } from '../features/report/service.js'
 import { createSettingsService } from '../features/settings/service.js'
 import { buildDashboard } from '../features/activity/service.js'
 import { resolveActiveBank } from '../features/word/banks.js'
+import { summarizeBankMemory } from '../features/word/srs.js'
 import { readBody, sendJson } from './http.js'
 
 const API_PREFIX = '/api/english-gym'
@@ -27,13 +28,16 @@ function summarize(state, conf, dir) {
   const correct = state.totals.correct
   const word = state.word || { answered: 0, correct: 0 }
   const bank = resolveActiveBank(dir, state)
-  const bankCount = bank && Array.isArray(bank.entries) ? bank.entries.length : 0
+  const bankEntries = bank && Array.isArray(bank.entries) ? bank.entries : []
+  const bankCount = bankEntries.length
+  const wordSrs = summarizeBankMemory(bankEntries, state.wordMemory, Date.now())
   return {
     level: conf.level,
     streakDays: state.streak.count || 0,
     totals: { answered, correct },
     accuracy: answered ? Math.round((correct / answered) * 100) : 0,
-    reviewCount: state.review.length,
+    reviewCount: wordSrs.due,
+    wordSrs,
     today: { answered: today.answered || 0, correct: today.correct || 0 },
     word: {
       answered: word.answered || 0,
@@ -54,9 +58,10 @@ export function createEnglishGym(ctx, rawConfig) {
   const dir = resolveDataDir(conf)
   const settings = createSettingsService({ dir, conf })
   const getTopic = () => settings.getTopic()
+  const getReportLevel = () => settings.getReportLevel()
   const phrase = createPhraseService({ ctx, conf, dir, getTopic })
   const word = createWordService({ dir })
-  const report = createReportService({ ctx, conf, dir, getTopic })
+  const report = createReportService({ ctx, conf, dir, getTopic, getReportLevel })
 
   async function handler(req, res, peer) {
     // Defense in depth: with route auth 'required' the webServer only invokes this
@@ -119,15 +124,23 @@ export function createEnglishGym(ctx, rawConfig) {
       if (req.method === 'POST' && sub === '/wordbanks/delete') {
         const body = await readBody(req)
         const result = word.deleteBank(body && body.id)
-        return sendJson(res, result.status, result.body)
+        if (!result.ok) return sendJson(res, result.status, result.body)
+        return sendJson(res, 200, { ...result.body, summary: summarize(loadState(dir), conf, dir) })
       }
       if (req.method === 'POST' && sub === '/word/next') {
-        return sendJson(res, 200, word.nextWord())
+        const body = await readBody(req)
+        return sendJson(res, 200, word.nextWord({ mode: body && body.mode }))
       }
       if (req.method === 'POST' && sub === '/word/check') {
         const body = await readBody(req)
         const result = word.checkWord(body || {})
         return sendJson(res, 200, { ...result, summary: summarize(loadState(dir), conf, dir) })
+      }
+      if (req.method === 'POST' && sub === '/word/master') {
+        const body = await readBody(req)
+        const result = word.markMastered(body || {})
+        if (!result.ok) return sendJson(res, result.status, result.body)
+        return sendJson(res, 200, { ...result.body, summary: summarize(loadState(dir), conf, dir) })
       }
       return sendJson(res, 404, { error: 'not found', sub })
     } catch (error) {

@@ -1,25 +1,51 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { api } from '../../core/api.js'
 import { store, useShared } from '../../core/store.js'
+import { WordBankImport } from '../word/WordBankImport.js'
 
 let cachedSettings = null
+let cachedBanks = null
 
-// Settings tab: celebration toggle + session/bank links + content directions.
-export function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
+const FALLBACK_LEVELS = [
+  { id: 'A1', label: 'A1', desc: '入门', detail: '约小学至初中水平 · 简短句式与日常基础词汇，适合零基础起步' },
+  { id: 'A2', label: 'A2', desc: '基础', detail: '约初中至高中入门 · 常见生活话题与直白表达，轻松建立阅读语感' },
+  { id: 'B1', label: 'B1', desc: '进阶', detail: '约高考 / 大学四级（CET-4）· 清晰自然的实用表达，日常与职场阅读主力' },
+  { id: 'B2', label: 'B2', desc: '熟练', detail: '约大学六级（CET-6）/ 雅思 6.0–6.5 · 句式更丰富，流畅阅读技术博客与行业资讯' },
+  { id: 'C1', label: 'C1', desc: '高级', detail: '约雅思 7.0–7.5 / 托福 95+ · 地道外刊文风，含精准词汇与复杂长难句' },
+  { id: 'C2', label: 'C2', desc: '精通', detail: '约雅思 8.0+ / 母语外刊水准 · 细腻修辞、高阶词汇与深度评论风格' },
+]
+
+// Settings tab: celebration toggle + session/bank links + word bank + report level + content directions.
+export function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChange, onWordBankChange }) {
   const shared = useShared()
   const [data, setData] = useState(() => cachedSettings)
-  const [busy, setBusy] = useState(false)
+  const [bankData, setBankData] = useState(() => cachedBanks)
+  const [importing, setImporting] = useState(false)
+  const [bankNotice, setBankNotice] = useState('')
+  const [adding, setAdding] = useState(false)
   const [error, setError] = useState('')
   const [draft, setDraft] = useState('')
+  const [hoverLevel, setHoverLevel] = useState('')
   const [loading, setLoading] = useState(() => !cachedSettings)
+  const queueRef = useRef(Promise.resolve())
+  const seqRef = useRef(0)
+  const lastConfirmedRef = useRef(cachedSettings)
 
   const load = useCallback(async () => {
     if (!cachedSettings) setLoading(true)
     try {
-      const result = await api('/settings')
-      cachedSettings = result
-      setData(result)
-      store.setSettings(result.settings)
+      const [settingsRes, banksRes] = await Promise.all([
+        api('/settings'),
+        api('/wordbanks').catch(() => null),
+      ])
+      cachedSettings = settingsRes
+      lastConfirmedRef.current = settingsRes
+      setData(settingsRes)
+      store.setSettings(settingsRes.settings)
+      if (banksRes && Array.isArray(banksRes.banks)) {
+        cachedBanks = banksRes
+        setBankData(banksRes)
+      }
       setError('')
     } catch (e) {
       setError(e.message || '设置加载失败')
@@ -33,58 +59,98 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
   }, [load])
 
   const save = useCallback(
-    async (patch, changeScope) => {
-      if (busy) return false
-      setBusy(true)
+    (patch, changeScope) => {
+      const seq = ++seqRef.current
       setError('')
-      try {
-        const result = await api('/settings', {
-          method: 'POST',
-          body: JSON.stringify(patch),
-        })
-        cachedSettings = result
-        setData(result)
-        store.setSettings(result.settings)
-        if (changeScope === true || changeScope === 'topic') {
-          if (typeof onTopicChange === 'function') onTopicChange()
-        } else if (changeScope === 'phrase') {
-          if (typeof onPhraseConfigChange === 'function') onPhraseConfigChange()
-        }
-        return true
-      } catch (e) {
-        setError(e.message || '设置保存失败')
-        return false
-      } finally {
-        setBusy(false)
+
+      // Optimistically apply scalar setting changes immediately so controls never flash disabled.
+      const scalarPatch = {}
+      for (const key of ['confetti', 'sessionLink', 'bankLink', 'bankRetries', 'reportLevel', 'topicId']) {
+        if (patch && patch[key] !== undefined) scalarPatch[key] = patch[key]
       }
+      if (Object.keys(scalarPatch).length) {
+        store.setSettings(scalarPatch)
+        setData((prev) => {
+          if (!prev || !prev.settings) return prev
+          const next = { ...prev, settings: { ...prev.settings, ...scalarPatch } }
+          cachedSettings = next
+          return next
+        })
+      }
+
+      const task = queueRef.current.then(async () => {
+        try {
+          const result = await api('/settings', {
+            method: 'POST',
+            body: JSON.stringify(patch),
+          })
+          lastConfirmedRef.current = result
+          if (seq === seqRef.current) {
+            cachedSettings = result
+            setData(result)
+            store.setSettings(result.settings)
+          }
+          if (changeScope === true || changeScope === 'topic') {
+            if (typeof onTopicChange === 'function') onTopicChange()
+          } else if (changeScope === 'phrase') {
+            if (typeof onPhraseConfigChange === 'function') onPhraseConfigChange()
+          } else if (changeScope === 'report') {
+            if (typeof onReportConfigChange === 'function') onReportConfigChange()
+          }
+          return true
+        } catch (e) {
+          if (seq === seqRef.current && lastConfirmedRef.current) {
+            cachedSettings = lastConfirmedRef.current
+            setData(lastConfirmedRef.current)
+            store.setSettings(lastConfirmedRef.current.settings)
+          }
+          setError(e.message || '设置保存失败')
+          return false
+        }
+      })
+      queueRef.current = task.catch(() => false)
+      return task
     },
-    [busy, onTopicChange, onPhraseConfigChange],
+    [onTopicChange, onPhraseConfigChange, onReportConfigChange],
   )
 
   const settings = data ? data.settings : shared.settings
   const directions = data ? data.directions : []
+  const levels = (data && Array.isArray(data.levels) && data.levels.length ? data.levels : FALLBACK_LEVELS).map((item) => {
+    const fb = FALLBACK_LEVELS.find((f) => f.id === item.id)
+    return item.detail || !fb ? item : { ...item, detail: fb.detail }
+  })
   const customTopics = settings.customTopics || []
   const activeId = settings.topicId
+  const activeLevel = settings.reportLevel || 'B1'
 
   const chooseDirection = (id) => {
-    if (busy || id === activeId) return
+    if (id === activeId) return
     save({ topicId: id }, true)
+  }
+
+  const chooseReportLevel = (id) => {
+    if (id === activeLevel) return
+    save({ reportLevel: id }, 'report')
   }
 
   const addCustom = async () => {
     const label = draft.trim()
-    if (!label || busy) return
-    const ok = await save({ customTopics: customTopics.concat({ label }) }, true)
-    if (ok) setDraft('')
+    if (!label || adding) return
+    setAdding(true)
+    try {
+      const ok = await save({ customTopics: customTopics.concat({ label }) }, true)
+      if (ok) setDraft('')
+    } finally {
+      setAdding(false)
+    }
   }
 
   const removeCustom = (id) => {
-    if (busy) return
     save({ customTopics: customTopics.filter((item) => item.id !== id) }, true)
   }
 
   const setRetries = (value) => {
-    if (busy) return
     const next = Math.max(0, Math.min(5, Number(value) || 0))
     if (next === settings.bankRetries) return
     save({ bankRetries: next }, false)
@@ -107,6 +173,74 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
   const builtinDirections = directions.filter((item) => item.builtin !== false)
   const customDirections = directions.filter((item) => item.builtin === false)
   const activeDirection = directions.find((item) => item.id === activeId)
+  const activeLevelObj = levels.find((item) => item.id === activeLevel) || levels[2] || { id: activeLevel, label: activeLevel, desc: '', detail: '' }
+  const shownLevelObj = levels.find((item) => item.id === (hoverLevel || activeLevel)) || activeLevelObj
+
+  const banks = bankData && Array.isArray(bankData.banks) ? bankData.banks : []
+  const activeBankId = (bankData && bankData.active) || 'builtin'
+  const builtinBanks = banks.filter((b) => b.builtin !== false)
+  const customBanks = banks.filter((b) => b.builtin === false)
+  const activeBankObj = banks.find((b) => b.id === activeBankId)
+  const shortBankName = (name) => String(name || '').replace(/^内置\s*·\s*/, '')
+
+  const chooseBank = async (id) => {
+    if (!id || id === activeBankId) return
+    const prev = bankData
+    setError('')
+    setBankNotice('')
+    setBankData((cur) => {
+      if (!cur) return cur
+      const next = { ...cur, active: id }
+      cachedBanks = next
+      return next
+    })
+    try {
+      const res = await api('/wordbanks/active', { method: 'POST', body: JSON.stringify({ id }) })
+      if (res.summary) store.setStats(res.summary)
+      if (typeof onWordBankChange === 'function') onWordBankChange()
+    } catch (e) {
+      cachedBanks = prev
+      setBankData(prev)
+      setError(e.message || '切换词库失败')
+    }
+  }
+
+  const removeBank = async (id) => {
+    setError('')
+    setBankNotice('')
+    try {
+      const res = await api('/wordbanks/delete', { method: 'POST', body: JSON.stringify({ id }) })
+      const next = { active: res.active, banks: Array.isArray(res.banks) ? res.banks : banks.filter((b) => b.id !== id) }
+      cachedBanks = next
+      setBankData(next)
+      if (res.summary) store.setStats(res.summary)
+      if (typeof onWordBankChange === 'function') onWordBankChange()
+    } catch (e) {
+      setError(e.message || '删除词库失败')
+    }
+  }
+
+  const handleBankImported = async (res) => {
+    setImporting(false)
+    setBankNotice('已导入「' + res.bank.name + '」' + res.bank.count + ' 条')
+    try {
+      const banksRes = await api('/wordbanks')
+      if (banksRes && Array.isArray(banksRes.banks)) {
+        cachedBanks = banksRes
+        setBankData(banksRes)
+      }
+    } catch {
+      /* ignore */
+    }
+    if (typeof onWordBankChange === 'function') onWordBankChange()
+  }
+
+  if (importing) {
+    return React.createElement(WordBankImport, {
+      onClose: () => setImporting(false),
+      onImported: handleBankImported,
+    })
+  }
 
   return React.createElement(
     'div',
@@ -140,7 +274,6 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
               role: 'switch',
               'aria-checked': settings.confetti ? 'true' : 'false',
               'aria-label': '彩带庆祝',
-              disabled: busy,
               onClick: () => save({ confetti: !settings.confetti }, false),
             }),
           ),
@@ -167,7 +300,6 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
               role: 'switch',
               'aria-checked': settings.sessionLink ? 'true' : 'false',
               'aria-label': '会话关联',
-              disabled: busy,
               onClick: () => save({ sessionLink: !settings.sessionLink }, 'phrase'),
             }),
           ),
@@ -185,7 +317,7 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
               React.createElement(
                 'div',
                 { className: 'eg-setting-desc' },
-                '开启后，短语出题和今日报告会从当前词库挑词，自然融入句子和文章（不硬塞）。',
+                '开启后，短语出题和今日文章会从当前词库挑词，自然融入句子和文章（不硬塞）。',
               ),
             ),
             React.createElement('button', {
@@ -194,7 +326,6 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
               role: 'switch',
               'aria-checked': settings.bankLink ? 'true' : 'false',
               'aria-label': '词库关联',
-              disabled: busy,
               onClick: () => save({ bankLink: !settings.bankLink }, false),
             }),
           ),
@@ -202,7 +333,7 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
             ? React.createElement(
                 'div',
                 { className: 'eg-setting-note' },
-                '已开启会话关联：短语训练优先按当前会话出题，词库关联仅用于今日报告或无可用会话时兜底。',
+                '已开启会话关联：短语训练优先按当前会话出题，词库关联仅用于今日文章或无可用会话时兜底。',
               )
             : null,
           React.createElement(
@@ -237,7 +368,7 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
                       className: 'eg-stepbtn',
                       'aria-label': '减少重试次数',
                       tabIndex: settings.bankLink ? undefined : -1,
-                      disabled: busy || !settings.bankLink || settings.bankRetries <= 0,
+                      disabled: !settings.bankLink || settings.bankRetries <= 0,
                       onClick: () => setRetries(settings.bankRetries - 1),
                     },
                     '−',
@@ -250,7 +381,7 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
                       className: 'eg-stepbtn',
                       'aria-label': '增加重试次数',
                       tabIndex: settings.bankLink ? undefined : -1,
-                      disabled: busy || !settings.bankLink || settings.bankRetries >= 5,
+                      disabled: !settings.bankLink || settings.bankRetries >= 5,
                       onClick: () => setRetries(settings.bankRetries + 1),
                     },
                     '+',
@@ -259,6 +390,186 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
               ),
             ),
           ),
+        ),
+      ),
+    ),
+    React.createElement(
+      'div',
+      { className: 'eg-setting-section' },
+      React.createElement(
+        'div',
+        { className: 'eg-section-head' },
+        React.createElement('div', { className: 'eg-section-label' }, '单词词库'),
+        activeBankObj
+          ? React.createElement(
+              'div',
+              { className: 'eg-active-badge', title: '当前词库：' + activeBankObj.name },
+              React.createElement('span', null, shortBankName(activeBankObj.name) + ' · ' + activeBankObj.count + ' 词'),
+            )
+          : null,
+      ),
+      React.createElement(
+        'div',
+        { className: 'eg-setting-card' },
+        React.createElement(
+          'div',
+          { className: 'eg-setting-row' },
+          React.createElement(
+            'div',
+            { className: 'eg-setting-desc eg-lead' },
+            '选择单词训练与词库关联使用的词库；记忆进度跨词库通用。',
+          ),
+          builtinBanks.length
+            ? React.createElement(
+                'div',
+                { className: 'eg-bank-list' },
+                builtinBanks.map((b) =>
+                  React.createElement(
+                    'button',
+                    {
+                      type: 'button',
+                      key: b.id,
+                      className: 'eg-bank-item' + (b.id === activeBankId ? ' active' : ''),
+                      'aria-pressed': b.id === activeBankId ? 'true' : 'false',
+                      title: b.name + '（' + b.count + ' 词）',
+                      onClick: () => chooseBank(b.id),
+                    },
+                    React.createElement('span', { className: 'eg-bank-name' }, shortBankName(b.name)),
+                    React.createElement('span', { className: 'eg-bank-cnt' }, b.count + ' 词'),
+                  ),
+                ),
+              )
+            : null,
+        ),
+        React.createElement(
+          'div',
+          { className: 'eg-setting-row' },
+          React.createElement(
+            'div',
+            { className: 'eg-custom-head' },
+            React.createElement('div', { className: 'eg-sub-title' }, '自定义词库'),
+            React.createElement(
+              'button',
+              {
+                type: 'button',
+                className: 'eg-bankbtn',
+                onClick: () => {
+                  setBankNotice('')
+                  setImporting(true)
+                },
+              },
+              '+ 导入词库',
+            ),
+          ),
+          React.createElement(
+            'div',
+            { className: 'eg-setting-desc' },
+            '支持导入 CSV / TSV / TXT / JSON 词表，导入后自动切换，不影响内置词库。',
+          ),
+          bankNotice ? React.createElement('div', { className: 'eg-notice eg-bank-notice' }, bankNotice) : null,
+          customBanks.length
+            ? React.createElement(
+                'div',
+                { className: 'eg-custom-chips' },
+                customBanks.map((b) =>
+                  React.createElement(
+                    'div',
+                    {
+                      className: 'eg-custom-chip' + (b.id === activeBankId ? ' active' : ''),
+                      key: b.id,
+                    },
+                    React.createElement(
+                      'button',
+                      {
+                        type: 'button',
+                        className: 'eg-custom-select',
+                        'aria-pressed': b.id === activeBankId ? 'true' : 'false',
+                        title: b.name + '（' + b.count + ' 词）',
+                        onClick: () => chooseBank(b.id),
+                      },
+                      b.name + '（' + b.count + '）',
+                    ),
+                    React.createElement(
+                      'button',
+                      {
+                        type: 'button',
+                        className: 'eg-custom-remove',
+                        title: '删除词库',
+                        'aria-label': '删除 ' + b.name,
+                        onClick: () => removeBank(b.id),
+                      },
+                      '×',
+                    ),
+                  ),
+                ),
+              )
+            : null,
+        ),
+      ),
+    ),
+    React.createElement(
+      'div',
+      { className: 'eg-setting-section' },
+      React.createElement(
+        'div',
+        { className: 'eg-section-head' },
+        React.createElement('div', { className: 'eg-section-label' }, '文章难度'),
+        activeLevelObj
+          ? React.createElement(
+              'div',
+              { className: 'eg-active-badge', title: '当前难度：' + activeLevelObj.label + (activeLevelObj.desc ? ' · ' + activeLevelObj.desc : '') },
+              React.createElement('span', null, activeLevelObj.label + (activeLevelObj.desc ? ' · ' + activeLevelObj.desc : '')),
+            )
+          : null,
+      ),
+      React.createElement(
+        'div',
+        { className: 'eg-setting-card' },
+        React.createElement(
+          'div',
+          { className: 'eg-setting-row' },
+          React.createElement(
+            'div',
+            { className: 'eg-setting-desc eg-lead' },
+            '控制今日文章的词汇与句式难度（CEFR）；切换后下次进入或换一篇生效。',
+          ),
+          React.createElement(
+            'div',
+            {
+              className: 'eg-level-list',
+              onMouseLeave: () => setHoverLevel(''),
+            },
+            levels.map((item) =>
+              React.createElement(
+                'button',
+                {
+                  type: 'button',
+                  key: item.id,
+                  className: 'eg-level' + (item.id === activeLevel ? ' active' : ''),
+                  'aria-pressed': item.id === activeLevel ? 'true' : 'false',
+                  title: item.label + (item.desc ? ' · ' + item.desc : ''),
+                  onMouseEnter: () => setHoverLevel(item.id),
+                  onFocus: () => setHoverLevel(item.id),
+                  onBlur: () => setHoverLevel((prev) => (prev === item.id ? '' : prev)),
+                  onClick: () => chooseReportLevel(item.id),
+                },
+                React.createElement('span', { className: 'eg-level-code' }, item.label),
+                item.desc ? React.createElement('span', { className: 'eg-level-desc' }, item.desc) : null,
+              ),
+            ),
+          ),
+          shownLevelObj && shownLevelObj.detail
+            ? React.createElement(
+                'div',
+                { className: 'eg-level-detail' },
+                React.createElement(
+                  'strong',
+                  null,
+                  shownLevelObj.label + (shownLevelObj.desc ? ' ' + shownLevelObj.desc : ''),
+                ),
+                React.createElement('span', null, shownLevelObj.detail),
+              )
+            : null,
         ),
       ),
     ),
@@ -287,8 +598,8 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
             'div',
             { className: 'eg-setting-desc eg-lead' },
             settings.sessionLink
-              ? '已开启会话关联，短语训练优先按当前会话出题；内容方向用于今日报告及无可用会话时兜底。'
-              : '用于生成短语和今日报告；切换后下一题、下一篇生效。',
+              ? '已开启会话关联，短语训练优先按当前会话出题；内容方向用于今日文章及无可用会话时兜底。'
+              : '用于生成短语和今日文章；切换后下一题、下一篇生效。',
           ),
           React.createElement(
             'div',
@@ -301,7 +612,6 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
                   key: item.id,
                   className: 'eg-direction' + (item.id === activeId ? ' active' : ''),
                   'aria-pressed': item.id === activeId ? 'true' : 'false',
-                  disabled: busy,
                   title: item.label,
                   onClick: () => chooseDirection(item.id),
                 },
@@ -345,7 +655,6 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
                         type: 'button',
                         className: 'eg-custom-select',
                         'aria-pressed': item.id === activeId ? 'true' : 'false',
-                        disabled: busy,
                         title: item.label,
                         onClick: () => chooseDirection(item.id),
                       },
@@ -358,7 +667,6 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
                         className: 'eg-custom-remove',
                         title: '删除方向',
                         'aria-label': '删除 ' + item.label,
-                        disabled: busy,
                         onClick: () => removeCustom(item.id),
                       },
                       '×',
@@ -386,7 +694,7 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
               {
                 type: 'button',
                 className: 'eg-btn primary',
-                disabled: busy || !draft.trim(),
+                disabled: adding || !draft.trim(),
                 onClick: addCustom,
               },
               '添加',

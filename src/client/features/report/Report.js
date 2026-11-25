@@ -124,7 +124,7 @@ export function Report({ report, loading, error, onRefresh }) {
       'div',
       { className: 'eg-loading is-stage' },
       React.createElement('span', { className: 'eg-spin' }),
-      '正在生成今日报告…',
+      '正在生成今日文章…',
     )
   }
   if (!report) {
@@ -134,12 +134,12 @@ export function Report({ report, loading, error, onRefresh }) {
       React.createElement(
         'div',
         { className: 'eg-loading' },
-        error ? React.createElement('span', { className: 'eg-err' }, error) : '暂无报告。',
+        error ? React.createElement('span', { className: 'eg-err' }, error) : '暂无文章。',
       ),
       React.createElement(
         'div',
         { className: 'eg-actions' },
-        React.createElement('button', { className: 'eg-btn primary', onClick: onRefresh }, '生成今日报告'),
+        React.createElement('button', { className: 'eg-btn primary', onClick: onRefresh }, '生成今日文章'),
       ),
     )
   }
@@ -216,7 +216,7 @@ export function Report({ report, loading, error, onRefresh }) {
           className: 'eg-rrefresh',
           onClick: onRefresh,
           disabled: loading,
-          title: '重新生成一篇今日报告',
+          title: '重新生成一篇今日文章',
         },
         loading ? '生成中…' : '↻ 换一篇',
       ),
