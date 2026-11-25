@@ -299,7 +299,7 @@ var settings_default = `/* ===== settings ===== */
 `;
 
 // src/client/styles/dashboard.css
-var dashboard_default = "/* ===== dashboard ===== */\n.eg-dash { container-type: inline-size; display: flex; flex-direction: column; }\n.eg-dash-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }\n.eg-dash-title { font: 700 15px/1.2 var(--eg-font); color: var(--eg-ink); white-space: nowrap; }\n.eg-dash-nav { display: flex; align-items: center; justify-content: center; gap: 4px; flex: 1 1 100%; }\n@container (min-width: 340px) {\n  .eg-dash-nav { flex: 0 0 auto; justify-content: flex-end; }\n}\n.eg-navbtn {\n  appearance: none; -webkit-appearance: none; width: 28px; height: 28px; padding: 0;\n  border: 1px solid var(--eg-line); border-radius: 8px; background: var(--eg-bg); color: var(--eg-ink-2);\n  cursor: pointer; font: 600 15px/1 var(--eg-font); display: inline-flex; align-items: center; justify-content: center;\n  transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease, background var(--eg-dur) ease, transform .12s ease;\n}\n.eg-navbtn:hover { border-color: var(--eg-line-2); background: var(--eg-bg-2); color: var(--eg-ink); }\n.eg-navbtn:active { transform: scale(.93); }\n.eg-navbtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-month { min-width: 86px; text-align: center; font: 600 var(--eg-fs-sm)/1 var(--eg-font); font-variant-numeric: tabular-nums; color: var(--eg-ink); }\n.eg-todaybtn {\n  appearance: none; -webkit-appearance: none; height: 28px; padding: 0 9px;\n  border: 1px solid var(--eg-line); border-radius: 8px; background: var(--eg-bg); color: var(--eg-ink-2);\n  cursor: pointer; font: 600 var(--eg-fs-xs)/1 var(--eg-font);\n  transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease, background var(--eg-dur) ease, transform .12s ease;\n}\n.eg-todaybtn:hover { border-color: var(--eg-line-2); background: var(--eg-bg-2); color: var(--eg-ink); }\n.eg-todaybtn:active { transform: scale(.95); }\n.eg-todaybtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-dash-sum { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 14px 0 2px; }\n.eg-stat {\n  min-width: 0; border: 1px solid var(--eg-line); border-radius: 11px; padding: 10px 6px;\n  text-align: center; background: var(--eg-bg);\n  transition: border-color var(--eg-dur) ease, background var(--eg-dur) ease;\n}\n.eg-stat:hover { border-color: var(--eg-line-2); background: var(--eg-bg-2); }\n.eg-stat b { display: block; font: 700 18px/1.15 var(--eg-font); font-variant-numeric: tabular-nums; color: var(--eg-ink); }\n.eg-stat span { display: block; margin-top: 3px; font-size: 11.5px; color: var(--eg-ink-2); }\n.eg-cal-card { margin-top: 12px; padding: 12px; border: 1px solid var(--eg-line); border-radius: 12px; background: var(--eg-bg); }\n.eg-cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; }\n.eg-cal .dow { text-align: center; font: 600 11.5px/1 var(--eg-font); color: var(--eg-ink-2); padding: 0 0 4px; }\n.eg-day {\n  position: relative; aspect-ratio: 1 / 1; border-radius: 8px; border: 1px solid transparent;\n  background: var(--eg-bg-2);\n  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;\n  font: 600 var(--eg-fs-xs)/1 var(--eg-font); color: var(--eg-ink-2); font-variant-numeric: tabular-nums;\n  transition: transform .16s var(--eg-spring), box-shadow .16s ease, border-color .16s ease;\n}\n.eg-day.blank { background: transparent; border-color: transparent; }\n.eg-day .cnt { font-size: 10px; font-weight: 650; opacity: .88; letter-spacing: 0; line-height: 1; }\n.eg-day.l1 { background: color-mix(in srgb, var(--eg-ok) 18%, var(--eg-bg)); color: var(--eg-ink); }\n.eg-day.l2 { background: color-mix(in srgb, var(--eg-ok) 38%, var(--eg-bg)); color: var(--eg-ink); }\n.eg-day.l3 { background: color-mix(in srgb, var(--eg-ok) 68%, var(--eg-bg)); color: #ffffff; }\n.eg-day.l4 { background: var(--eg-ok); color: #ffffff; }\n.eg-day.today { border-color: var(--eg-ok); box-shadow: inset 0 0 0 1px var(--eg-ok); }\n.eg-day.has { cursor: pointer; }\n.eg-day.has:hover { transform: translateY(-1px) scale(1.06); box-shadow: 0 3px 10px rgba(0, 0, 0, .12); z-index: 1; }\n.eg-day.has:active { transform: scale(.96); }\n.eg-day.has:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-dash-legend { display: flex; align-items: center; justify-content: flex-end; gap: 5px; margin-top: 10px; font-size: 11px; color: var(--eg-ink-2); }\n.eg-dash-legend i { width: 11px; height: 11px; border-radius: 3px; background: var(--eg-bg-2); display: inline-block; }\n.eg-dash-legend i.l1 { background: color-mix(in srgb, var(--eg-ok) 18%, var(--eg-bg)); }\n.eg-dash-legend i.l2 { background: color-mix(in srgb, var(--eg-ok) 38%, var(--eg-bg)); }\n.eg-dash-legend i.l3 { background: color-mix(in srgb, var(--eg-ok) 68%, var(--eg-bg)); }\n.eg-dash-legend i.l4 { background: var(--eg-ok); }\n.eg-hist-title { margin: 20px 0 8px; padding: 0 2px; font: 650 var(--eg-fs-xs)/1.3 var(--eg-font); letter-spacing: .03em; color: var(--eg-ink-2); }\n.eg-hist { display: flex; flex-direction: column; gap: 10px; }\n.eg-hist-day {\n  padding: 13px 15px; border: 1px solid var(--eg-line); border-radius: 12px; background: var(--eg-bg);\n  transition: border-color .25s ease, box-shadow .25s ease;\n}\n.eg-hist-day.is-flash { animation: eg-flash-ring 1.15s var(--eg-ease) both; }\n@keyframes eg-flash-ring {\n  0% { border-color: var(--eg-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 22%, transparent); }\n  70% { border-color: var(--eg-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 12%, transparent); }\n  100% { border-color: var(--eg-line); box-shadow: none; }\n}\n.eg-hist-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 4px; }\n.eg-hist-date { font: 650 14px/1.3 var(--eg-font); color: var(--eg-ink); }\n.eg-hist-date .wd { margin-left: 6px; font-weight: 500; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); }\n.eg-hist-count { flex: 0 0 auto; color: var(--eg-ink-2); font-size: 11.5px; font-variant-numeric: tabular-nums; }\n.eg-hist-sub { margin: 11px 0 6px; font: 600 11.5px/1 var(--eg-font); color: var(--eg-ink-2); letter-spacing: .02em; }\n.eg-wchips { display: flex; flex-wrap: wrap; gap: 6px; }\n.eg-wchip { display: inline-flex; align-items: baseline; gap: 5px; padding: 3px 9px; border-radius: 999px; background: var(--eg-bg-2); border: 1px solid var(--eg-line); font-size: var(--eg-fs-xs); max-width: 100%; }\n.eg-wchip .w { font-weight: 650; color: var(--eg-ink); }\n.eg-wchip .m { color: var(--eg-ink-2); overflow-wrap: anywhere; }\n.eg-wchip.ok { border-color: color-mix(in srgb, var(--eg-ok) 42%, var(--eg-line)); }\n.eg-wchip.bad { border-color: color-mix(in srgb, var(--eg-bad) 42%, var(--eg-line)); }\n.eg-sents { display: flex; flex-direction: column; }\n.eg-more {\n  align-self: flex-start; margin: 9px 0 1px; padding: 4px 10px;\n  border: 1px solid var(--eg-line); border-radius: 999px; background: var(--eg-bg);\n  color: var(--eg-ink-2); cursor: pointer; font: 600 var(--eg-fs-xs)/1 var(--eg-font);\n  transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease, background var(--eg-dur) ease;\n}\n.eg-more:hover { border-color: var(--eg-line-2); background: var(--eg-bg-2); color: var(--eg-ink); }\n.eg-more:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-sent { display: flex; gap: 8px; padding: 8px 0; border-top: 1px dashed var(--eg-line); }\n.eg-sent:first-child { border-top: none; padding-top: 4px; }\n.eg-sent:last-child { padding-bottom: 2px; }\n.eg-sent .mark { flex: 0 0 auto; width: 14px; font-weight: 700; font-size: var(--eg-fs-sm); line-height: 1.55; }\n.eg-sent.ok .mark { color: var(--eg-ok); }\n.eg-sent.bad .mark { color: var(--eg-bad); }\n.eg-sent .body { flex: 1 1 auto; min-width: 0; }\n.eg-sent .zh { font-size: var(--eg-fs-sm); line-height: 1.55; color: var(--eg-ink); }\n.eg-sent .en { margin-top: 3px; font-family: var(--eg-en); font-size: 13.5px; line-height: 1.55; color: var(--eg-ink-2); overflow-wrap: break-word; }\n.eg-dash-empty { padding: 30px 0; text-align: center; color: var(--eg-ink-2); font-size: var(--eg-fs-sm); line-height: 1.7; }\n.eg-dash-error { margin-top: 10px; color: var(--eg-bad); font-size: var(--eg-fs-xs); }\n\n";
+var dashboard_default = "/* ===== dashboard ===== */\n.eg-dash { container-type: inline-size; display: flex; flex-direction: column; }\n.eg-dash-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }\n.eg-dash-title { font: 700 15px/1.2 var(--eg-font); color: var(--eg-ink); white-space: nowrap; }\n.eg-dash-ranges {\n  display: inline-flex; align-items: center; gap: 2px; padding: 2px;\n  border-radius: 999px; background: var(--eg-bg-2); border: 1px solid var(--eg-line);\n}\n.eg-rangebtn {\n  appearance: none; -webkit-appearance: none;\n  height: 24px; padding: 0 9px; border: none; border-radius: 999px;\n  background: transparent; color: var(--eg-ink-2); cursor: pointer;\n  font: 600 11.5px/1 var(--eg-font); font-variant-numeric: tabular-nums;\n  transition: background var(--eg-dur) ease, color var(--eg-dur) ease;\n}\n.eg-rangebtn:hover:not(.active) { color: var(--eg-ink); }\n.eg-rangebtn.active { background: var(--eg-bg); color: var(--eg-ink); box-shadow: 0 1px 2px rgba(17, 22, 31, .08); }\n.eg-rangebtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-dash-sum { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 14px 0 2px; }\n.eg-stat {\n  min-width: 0; border: 1px solid var(--eg-line); border-radius: 11px; padding: 10px 6px;\n  text-align: center; background: var(--eg-bg);\n  transition: border-color var(--eg-dur) ease, background var(--eg-dur) ease;\n}\n.eg-stat:hover { border-color: var(--eg-line-2); background: var(--eg-bg-2); }\n.eg-stat b { display: block; font: 700 18px/1.15 var(--eg-font); font-variant-numeric: tabular-nums; color: var(--eg-ink); }\n.eg-stat span { display: block; margin-top: 3px; font-size: 11.5px; color: var(--eg-ink-2); }\n.eg-cal-card { position: relative; margin-top: 12px; padding: 12px 14px; border: 1px solid var(--eg-line); border-radius: 12px; background: var(--eg-bg); }\n.eg-gh-head { font: 600 12.5px/1.3 var(--eg-font); color: var(--eg-ink); margin-bottom: 10px; font-variant-numeric: tabular-nums; }\n.eg-gh-wrap { display: flex; align-items: flex-start; gap: 6px; }\n.eg-gh-dows {\n  display: grid; grid-template-rows: repeat(7, 9px); gap: 2px; padding-top: 16px; flex: 0 0 auto;\n  min-width: 12px; font: 500 9.5px/9px var(--eg-font); color: var(--eg-ink-2); text-align: right; user-select: none;\n}\n.eg-gh-scroll {\n  flex: 1 1 auto; min-width: 0; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin;\n}\n.eg-gh-inner { width: max-content; }\n.eg-gh-months {\n  position: relative; height: 14px; margin-bottom: 2px;\n  font: 500 10px/14px var(--eg-font); color: var(--eg-ink-2); user-select: none;\n}\n.eg-gh-month { position: absolute; top: 0; white-space: nowrap; }\n.eg-gh-grid { display: flex; gap: 2px; }\n.eg-gh-col { display: flex; flex-direction: column; gap: 2px; }\n.eg-gh-cell {\n  appearance: none; -webkit-appearance: none; padding: 0; border: none;\n  width: 9px; height: 9px; border-radius: 2px; display: block;\n  background: var(--eg-bg-2);\n  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--eg-ink) 6%, transparent);\n  transition: transform .12s ease, box-shadow .12s ease;\n}\n.eg-gh-cell.out { visibility: hidden; pointer-events: none; }\n.eg-gh-cell.l1 { background: color-mix(in srgb, var(--eg-ok) 26%, var(--eg-bg)); }\n.eg-gh-cell.l2 { background: color-mix(in srgb, var(--eg-ok) 50%, var(--eg-bg)); }\n.eg-gh-cell.l3 { background: color-mix(in srgb, var(--eg-ok) 74%, var(--eg-bg)); }\n.eg-gh-cell.l4 { background: var(--eg-ok); }\n.eg-gh-cell.today { outline: 1.5px solid var(--eg-ink); outline-offset: -0.5px; }\n.eg-gh-cell.has { cursor: pointer; }\n.eg-gh-cell:hover:not(.out) { transform: scale(1.28); box-shadow: 0 1px 4px rgba(0, 0, 0, .18); position: relative; z-index: 2; }\n.eg-gh-cell:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-gh-foot {\n  display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;\n  margin-top: 10px;\n}\n.eg-gh-hint { font-size: 11px; color: var(--eg-ink-2); }\n.eg-dash-legend { display: flex; align-items: center; justify-content: flex-end; gap: 4px; font-size: 11px; color: var(--eg-ink-2); }\n.eg-dash-legend i {\n  width: 9px; height: 9px; border-radius: 2px; background: var(--eg-bg-2); display: inline-block;\n  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--eg-ink) 6%, transparent);\n}\n.eg-dash-legend i.l1 { background: color-mix(in srgb, var(--eg-ok) 26%, var(--eg-bg)); }\n.eg-dash-legend i.l2 { background: color-mix(in srgb, var(--eg-ok) 50%, var(--eg-bg)); }\n.eg-dash-legend i.l3 { background: color-mix(in srgb, var(--eg-ok) 74%, var(--eg-bg)); }\n.eg-dash-legend i.l4 { background: var(--eg-ok); }\n.eg-gh-tip {\n  position: absolute; z-index: 10; pointer-events: none; white-space: nowrap;\n  padding: 5px 8px; border-radius: 6px; border: 1px solid var(--eg-line-2);\n  background: var(--eg-bg); color: var(--eg-ink);\n  box-shadow: 0 6px 18px rgba(17, 22, 31, .16);\n  font: 500 11px/1.3 var(--eg-font); font-variant-numeric: tabular-nums;\n  transform: translate(-50%, calc(-100% - 8px));\n}\n.eg-hist-bar {\n  display: flex; align-items: baseline; justify-content: space-between; gap: 8px;\n  margin: 20px 0 8px; padding: 0 2px;\n}\n.eg-hist-title { font: 650 var(--eg-fs-xs)/1.3 var(--eg-font); letter-spacing: .03em; color: var(--eg-ink-2); }\n.eg-hist-meta { font-size: 11.5px; color: var(--eg-ink-2); font-variant-numeric: tabular-nums; }\n.eg-pager {\n  display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 5px;\n  margin-top: 14px;\n}\n.eg-pagebtn {\n  appearance: none; -webkit-appearance: none;\n  min-width: 28px; height: 28px; padding: 0 8px;\n  border: 1px solid var(--eg-line); border-radius: 7px;\n  background: var(--eg-bg); color: var(--eg-ink-2); cursor: pointer;\n  font: 600 12px/1 var(--eg-font); font-variant-numeric: tabular-nums;\n  transition: border-color var(--eg-dur) ease, background var(--eg-dur) ease, color var(--eg-dur) ease;\n}\n.eg-pagebtn:hover:not(:disabled):not(.active) { border-color: var(--eg-line-2); background: var(--eg-bg-2); color: var(--eg-ink); }\n.eg-pagebtn.active { border-color: var(--eg-accent); background: var(--eg-accent); color: var(--eg-on-accent); }\n.eg-pagebtn:disabled { opacity: .42; cursor: not-allowed; }\n.eg-pagebtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-page-dots { padding: 0 3px; color: var(--eg-ink-2); font-size: 12px; user-select: none; }\n.eg-hist { display: flex; flex-direction: column; gap: 10px; }\n.eg-hist-day {\n  padding: 13px 15px; border: 1px solid var(--eg-line); border-radius: 12px; background: var(--eg-bg);\n  transition: border-color .25s ease, box-shadow .25s ease;\n}\n.eg-hist-day.is-flash { animation: eg-flash-ring 1.15s var(--eg-ease) both; }\n@keyframes eg-flash-ring {\n  0% { border-color: var(--eg-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 22%, transparent); }\n  70% { border-color: var(--eg-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 12%, transparent); }\n  100% { border-color: var(--eg-line); box-shadow: none; }\n}\n.eg-hist-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 4px; }\n.eg-hist-date { font: 650 14px/1.3 var(--eg-font); color: var(--eg-ink); }\n.eg-hist-date .wd { margin-left: 6px; font-weight: 500; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); }\n.eg-hist-count { flex: 0 0 auto; color: var(--eg-ink-2); font-size: 11.5px; font-variant-numeric: tabular-nums; }\n.eg-hist-sub { margin: 11px 0 6px; font: 600 11.5px/1 var(--eg-font); color: var(--eg-ink-2); letter-spacing: .02em; }\n.eg-wchips { display: flex; flex-wrap: wrap; gap: 6px; }\n.eg-wchip { display: inline-flex; align-items: baseline; gap: 5px; padding: 3px 9px; border-radius: 999px; background: var(--eg-bg-2); border: 1px solid var(--eg-line); font-size: var(--eg-fs-xs); max-width: 100%; }\n.eg-wchip .w { font-weight: 650; color: var(--eg-ink); }\n.eg-wchip .m { color: var(--eg-ink-2); overflow-wrap: anywhere; }\n.eg-wchip.ok { border-color: color-mix(in srgb, var(--eg-ok) 42%, var(--eg-line)); }\n.eg-wchip.bad { border-color: color-mix(in srgb, var(--eg-bad) 42%, var(--eg-line)); }\n.eg-sents { display: flex; flex-direction: column; }\n.eg-more {\n  align-self: flex-start; margin: 9px 0 1px; padding: 4px 10px;\n  border: 1px solid var(--eg-line); border-radius: 999px; background: var(--eg-bg);\n  color: var(--eg-ink-2); cursor: pointer; font: 600 var(--eg-fs-xs)/1 var(--eg-font);\n  transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease, background var(--eg-dur) ease;\n}\n.eg-more:hover { border-color: var(--eg-line-2); background: var(--eg-bg-2); color: var(--eg-ink); }\n.eg-more:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-sent { display: flex; gap: 8px; padding: 8px 0; border-top: 1px dashed var(--eg-line); }\n.eg-sent:first-child { border-top: none; padding-top: 4px; }\n.eg-sent:last-child { padding-bottom: 2px; }\n.eg-sent .mark { flex: 0 0 auto; width: 14px; font-weight: 700; font-size: var(--eg-fs-sm); line-height: 1.55; }\n.eg-sent.ok .mark { color: var(--eg-ok); }\n.eg-sent.bad .mark { color: var(--eg-bad); }\n.eg-sent .body { flex: 1 1 auto; min-width: 0; }\n.eg-sent .zh { font-size: var(--eg-fs-sm); line-height: 1.55; color: var(--eg-ink); }\n.eg-sent .en { margin-top: 3px; font-family: var(--eg-en); font-size: 13.5px; line-height: 1.55; color: var(--eg-ink-2); overflow-wrap: break-word; }\n.eg-dash-empty { padding: 30px 0; text-align: center; color: var(--eg-ink-2); font-size: var(--eg-fs-sm); line-height: 1.7; }\n.eg-dash-error { margin-top: 10px; color: var(--eg-bad); font-size: var(--eg-fs-xs); }\n\n";
 
 // src/client/styles/reduced-motion.css
 var reduced_motion_default = "@media (prefers-reduced-motion: reduce) {\n  .eg-panel, .eg-panel.is-closing, .eg-view, .eg-view > *, .eg-stage-in, .eg-fb, .eg-fb-ref, .eg-fb-tip, .eg-fb-actions,\n  .eg-fb-mine, .eg-fb-corr, .eg-fb-hl,\n  .eg-letters.is-bad, .eg-letter.is-pop, .eg-letters.is-ok .eg-letter.ok, .eg-hist-day.is-flash,\n  .eg-notice, .eg-import, .eg-preview, .eg-word-miss, .eg-word .eg-eg.done, .eg-rpop.is-ready { animation: none !important; }\n  .eg-confetti { display: none; }\n  .eg-root *, .eg-panel * { transition: none !important; }\n}\n";
@@ -2387,25 +2387,146 @@ function Report({ report, loading, error, onRefresh }) {
 
 // src/client/features/dashboard/Dashboard.js
 var import_react14 = __toESM(require("react"), 1);
-var WEEKDAYS = ["日", "一", "二", "三", "四", "五", "六"];
+
+// src/client/features/dashboard/heatmap.js
 function pad2(n) {
   return String(n).padStart(2, "0");
 }
+function dayStr(date) {
+  return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
+}
+function levelOf(n) {
+  const count = Number(n) || 0;
+  if (count > 60) return 4;
+  if (count >= 31) return 3;
+  if (count >= 11) return 2;
+  if (count >= 1) return 1;
+  return 0;
+}
+function parseDay(str) {
+  if (typeof str === "string" && /^\d{4}-\d{2}-\d{2}$/.test(str)) {
+    const d = /* @__PURE__ */ new Date(str + "T00:00:00");
+    if (!Number.isNaN(d.getTime())) return d;
+  }
+  const now = /* @__PURE__ */ new Date();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+}
+function buildContributionGrid({ todayStr, range = "last-year", activityMap = {} } = {}) {
+  const today = parseDay(todayStr);
+  const todayKey = dayStr(today);
+  const map = activityMap && typeof activityMap === "object" ? activityMap : {};
+  const isYear = typeof range === "string" && /^\d{4}$/.test(range);
+  let startDate;
+  let endDate;
+  let gridStart;
+  let gridEnd;
+  if (isYear) {
+    const yr = Number(range);
+    startDate = new Date(yr, 0, 1);
+    endDate = new Date(yr, 11, 31);
+    gridStart = new Date(yr, 0, 1 - startDate.getDay());
+    gridEnd = new Date(yr, 11, 31 + (6 - endDate.getDay()));
+  } else {
+    const endSunday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay());
+    startDate = new Date(endSunday.getFullYear(), endSunday.getMonth(), endSunday.getDate() - 52 * 7);
+    endDate = today;
+    gridStart = startDate;
+    gridEnd = new Date(endSunday.getFullYear(), endSunday.getMonth(), endSunday.getDate() + 6);
+  }
+  const weeks = [];
+  let rangeTotal = 0;
+  let rangeDays = 0;
+  for (let cur = new Date(gridStart.getTime()); cur <= gridEnd; ) {
+    const col = [];
+    for (let row = 0; row < 7; row += 1) {
+      const date = new Date(cur.getTime());
+      const key = dayStr(date);
+      const out = date < startDate || date > endDate;
+      const future = key > todayKey;
+      const act = !out ? map[key] || null : null;
+      const total = act ? Number(act.total) || 0 : 0;
+      const level = !out ? levelOf(total) : 0;
+      if (!out && act && total > 0) {
+        rangeTotal += total;
+        rangeDays += 1;
+      }
+      col.push({
+        key,
+        date,
+        out,
+        future,
+        isToday: !out && key === todayKey,
+        activity: act,
+        level
+      });
+      cur.setDate(cur.getDate() + 1);
+    }
+    weeks.push(col);
+  }
+  const monthLabels = [];
+  let lastCol = -10;
+  for (let colIdx = 0; colIdx < weeks.length; colIdx += 1) {
+    const col = weeks[colIdx];
+    let targetCell = col.find((c) => !c.out && c.date.getDate() === 1);
+    if (!targetCell && colIdx === 0) {
+      targetCell = col.find((c) => !c.out);
+    }
+    if (!targetCell) continue;
+    if (colIdx - lastCol < 3) continue;
+    monthLabels.push({
+      col: colIdx,
+      label: `${targetCell.date.getMonth() + 1}月`
+    });
+    lastCol = colIdx;
+  }
+  return {
+    weeks,
+    monthLabels,
+    rangeTotal,
+    rangeDays
+  };
+}
+function getPageItems(totalPages, currentPage) {
+  const total = Math.max(1, Math.floor(Number(totalPages) || 1));
+  const current = Math.max(1, Math.min(total, Math.floor(Number(currentPage) || 1)));
+  if (total <= 7) {
+    return Array.from({ length: total }, (_, i) => i + 1);
+  }
+  const pages = /* @__PURE__ */ new Set([1, total, current - 1, current, current + 1]);
+  const sorted = Array.from(pages).filter((p) => p >= 1 && p <= total).sort((a, b) => a - b);
+  const items = [];
+  let prev = 0;
+  for (const p of sorted) {
+    if (prev && p - prev > 1) items.push("...");
+    items.push(p);
+    prev = p;
+  }
+  return items;
+}
+
+// src/client/features/dashboard/Dashboard.js
+var WEEKDAYS = ["日", "一", "二", "三", "四", "五", "六"];
+var DOW_LABELS = ["", "一", "", "三", "", "五", ""];
+var PAGE_SIZE = 5;
+var useIsoLayoutEffect3 = import_react14.default.useLayoutEffect || import_react14.useEffect;
 var cachedDashboard = null;
 function Dashboard() {
   const [data, setData] = (0, import_react14.useState)(() => cachedDashboard);
   const [loading, setLoading] = (0, import_react14.useState)(() => !cachedDashboard);
   const [error, setError] = (0, import_react14.useState)("");
-  const [cursor, setCursor] = (0, import_react14.useState)(() => {
-    const d = /* @__PURE__ */ new Date();
-    return { y: d.getFullYear(), m: d.getMonth() };
-  });
+  const [range, setRange] = (0, import_react14.useState)("last-year");
+  const [page, setPage] = (0, import_react14.useState)(1);
   const [expanded, setExpanded] = (0, import_react14.useState)({});
   const [flashDay, setFlashDay] = (0, import_react14.useState)("");
+  const [tip, setTip] = (0, import_react14.useState)(null);
   const flashTimerRef = (0, import_react14.useRef)(null);
+  const pendingJumpRef = (0, import_react14.useRef)("");
+  const cardRef = (0, import_react14.useRef)(null);
+  const scrollRef = (0, import_react14.useRef)(null);
+  const histHeadRef = (0, import_react14.useRef)(null);
   const toggleGroup = (key) => setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
-  const WORD_LIMIT = 10;
-  const PHRASE_LIMIT = 5;
+  const WORD_LIMIT = 5;
+  const PHRASE_LIMIT = 3;
   (0, import_react14.useEffect)(() => {
     return () => clearTimeout(flashTimerRef.current);
   }, []);
@@ -2425,41 +2546,49 @@ function Dashboard() {
   (0, import_react14.useEffect)(() => {
     load();
   }, [load]);
-  const activity = {};
-  if (data && Array.isArray(data.activity)) {
-    for (const a of data.activity) activity[a.day] = a;
-  }
-  const records = data && Array.isArray(data.days) ? data.days : [];
+  const activity = (0, import_react14.useMemo)(() => {
+    const map = {};
+    if (data && Array.isArray(data.activity)) {
+      for (const a of data.activity) map[a.day] = a;
+    }
+    return map;
+  }, [data]);
+  const records = (0, import_react14.useMemo)(() => data && Array.isArray(data.days) ? data.days : [], [data]);
+  const filteredRecords = (0, import_react14.useMemo)(() => {
+    if (/^\d{4}$/.test(range)) return records.filter((r) => String(r.day || "").startsWith(range + "-"));
+    return records;
+  }, [records, range]);
+  const totalPages = Math.max(1, Math.ceil(filteredRecords.length / PAGE_SIZE));
+  const safePage = Math.max(1, Math.min(page, totalPages));
+  const pageRecords = (0, import_react14.useMemo)(
+    () => filteredRecords.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE),
+    [filteredRecords, safePage]
+  );
+  const pageItems = (0, import_react14.useMemo)(() => getPageItems(totalPages, safePage), [totalPages, safePage]);
   const today = data ? data.today : null;
   const streak = data ? data.streak || 0 : 0;
   const totals = data && data.totals ? data.totals : { days: 0, words: 0, phrases: 0 };
-  const { y, m } = cursor;
-  const startDow = (new Date(y, m, 1).getDay() + 6) % 7;
-  const daysInMonth = new Date(y, m + 1, 0).getDate();
-  const cells = [];
-  for (let i = 0; i < startDow; i += 1) cells.push(null);
-  for (let d = 1; d <= daysInMonth; d += 1) cells.push(d);
-  while (cells.length % 7 !== 0) cells.push(null);
-  const dayStr = (d) => y + "-" + pad2(m + 1) + "-" + pad2(d);
-  const levelOf = (n) => n > 60 ? 4 : n >= 31 ? 3 : n >= 11 ? 2 : n >= 1 ? 1 : 0;
-  const goMonth = (delta) => setCursor((c) => {
-    let mm = c.m + delta;
-    let yy = c.y;
-    if (mm < 0) {
-      mm = 11;
-      yy -= 1;
+  const years = (0, import_react14.useMemo)(() => {
+    const set = /* @__PURE__ */ new Set();
+    const currentYear = (today || (/* @__PURE__ */ new Date()).toISOString().slice(0, 10)).slice(0, 4);
+    if (/^\d{4}$/.test(currentYear)) set.add(currentYear);
+    for (const key of Object.keys(activity)) {
+      const y = key.slice(0, 4);
+      if (/^\d{4}$/.test(y)) set.add(y);
     }
-    if (mm > 11) {
-      mm = 0;
-      yy += 1;
-    }
-    return { y: yy, m: mm };
-  });
-  const goToday = () => {
-    const d = /* @__PURE__ */ new Date();
-    setCursor({ y: d.getFullYear(), m: d.getMonth() });
-  };
-  const jumpTo = (day) => {
+    return Array.from(set).sort((a, b) => b.localeCompare(a)).slice(0, 4);
+  }, [activity, today]);
+  const grid = (0, import_react14.useMemo)(
+    () => buildContributionGrid({ todayStr: today, range, activityMap: activity }),
+    [today, range, activity]
+  );
+  useIsoLayoutEffect3(() => {
+    setTip(null);
+    setPage(1);
+    const el = scrollRef.current;
+    if (el) el.scrollLeft = el.scrollWidth;
+  }, [range, data]);
+  const scrollAndFlash = (0, import_react14.useCallback)((day) => {
     try {
       const el = document.getElementById("eg-hist-" + day);
       if (el && el.scrollIntoView) el.scrollIntoView({ block: "start", behavior: "smooth" });
@@ -2471,39 +2600,52 @@ function Dashboard() {
       setFlashDay(day);
       flashTimerRef.current = setTimeout(() => setFlashDay(""), 1200);
     }, 20);
+  }, []);
+  (0, import_react14.useEffect)(() => {
+    const pendingDay = pendingJumpRef.current;
+    if (!pendingDay) return;
+    if (!pageRecords.some((r) => r.day === pendingDay)) return;
+    pendingJumpRef.current = "";
+    scrollAndFlash(pendingDay);
+  }, [safePage, pageRecords, scrollAndFlash]);
+  const showTip = (e, cell) => {
+    const cardEl = cardRef.current;
+    const cellEl = e.currentTarget;
+    if (!cardEl || !cellEl) return;
+    const cardRect = cardEl.getBoundingClientRect();
+    const cellRect = cellEl.getBoundingClientRect();
+    const rawX = cellRect.left - cardRect.left + cellRect.width / 2;
+    const pad = Math.min(82, Math.max(40, cardRect.width * 0.24));
+    const x = Math.round(Math.max(pad, Math.min(Math.max(pad, cardRect.width - pad), rawX)));
+    const y = Math.round(cellRect.top - cardRect.top);
+    setTip({ x, y, cell });
   };
-  const dowNodes = ["一", "二", "三", "四", "五", "六", "日"].map(
-    (w, i) => import_react14.default.createElement("div", { className: "dow", key: "dow" + i }, w)
-  );
-  const cellNodes = cells.map((d, i) => {
-    if (!d) return import_react14.default.createElement("div", { className: "eg-day blank", key: "b" + i });
-    const key = dayStr(d);
-    const a = activity[key];
-    const lv = a ? levelOf(a.total) : 0;
-    const cls = ["eg-day"];
-    if (lv) cls.push("l" + lv, "has");
-    if (key === today) cls.push("today");
-    return import_react14.default.createElement(
-      "div",
-      {
-        key,
-        className: cls.join(" "),
-        title: a ? key + " · 单词 " + a.words + " · 句子 " + a.phrases : key,
-        onClick: a ? () => jumpTo(key) : void 0,
-        role: a ? "button" : void 0,
-        tabIndex: a ? 0 : void 0,
-        onKeyDown: a ? (e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            jumpTo(key);
-          }
-        } : void 0
-      },
-      import_react14.default.createElement("span", { className: "n" }, d),
-      a ? import_react14.default.createElement("span", { className: "cnt" }, a.total) : null
-    );
-  });
-  const recordNodes = records.map((rec) => {
+  const hideTip = () => setTip(null);
+  const jumpTo = (day) => {
+    const idx = filteredRecords.findIndex((r) => r.day === day);
+    if (idx < 0) return;
+    const targetPage = Math.floor(idx / PAGE_SIZE) + 1;
+    if (targetPage !== safePage) {
+      pendingJumpRef.current = day;
+      setPage(targetPage);
+    } else {
+      pendingJumpRef.current = "";
+      scrollAndFlash(day);
+    }
+  };
+  const goPage = (nextPage) => {
+    const target = Math.max(1, Math.min(totalPages, nextPage));
+    if (target === safePage) return;
+    pendingJumpRef.current = "";
+    setPage(target);
+    try {
+      if (histHeadRef.current && histHeadRef.current.scrollIntoView) {
+        histHeadRef.current.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }
+    } catch {
+    }
+  };
+  const recordNodes = pageRecords.map((rec) => {
     const dt = /* @__PURE__ */ new Date(rec.day + "T00:00:00");
     const wd = WEEKDAYS[dt.getDay()];
     const t = rec.totals || {};
@@ -2582,6 +2724,10 @@ function Dashboard() {
       import_react14.default.createElement("div", { className: "eg-loading" }, import_react14.default.createElement("span", { className: "eg-spin" }), "正在加载看板…")
     );
   }
+  const rangeLabel = range === "last-year" ? "近一年" : range + " 年";
+  const tipCell = tip ? tip.cell : null;
+  const tipAct = tipCell && tipCell.activity;
+  const tipText = tipCell ? tipAct ? tipCell.key + " · 单词 " + tipAct.words + " · 句子 " + tipAct.phrases : tipCell.key + " · 无学习记录" : "";
   return import_react14.default.createElement(
     "div",
     { className: "eg-dash" },
@@ -2591,11 +2737,32 @@ function Dashboard() {
       import_react14.default.createElement("div", { className: "eg-dash-title" }, "学习看板"),
       import_react14.default.createElement(
         "div",
-        { className: "eg-dash-nav" },
-        import_react14.default.createElement("button", { className: "eg-navbtn", onClick: () => goMonth(-1), "aria-label": "上个月", title: "上个月" }, "‹"),
-        import_react14.default.createElement("span", { className: "eg-month" }, y + " 年 " + (m + 1) + " 月"),
-        import_react14.default.createElement("button", { className: "eg-navbtn", onClick: () => goMonth(1), "aria-label": "下个月", title: "下个月" }, "›"),
-        import_react14.default.createElement("button", { className: "eg-todaybtn", onClick: goToday, title: "回到今天" }, "今天")
+        { className: "eg-dash-ranges", role: "tablist", "aria-label": "统计范围" },
+        import_react14.default.createElement(
+          "button",
+          {
+            type: "button",
+            role: "tab",
+            "aria-selected": range === "last-year" ? "true" : "false",
+            className: "eg-rangebtn" + (range === "last-year" ? " active" : ""),
+            onClick: () => setRange("last-year")
+          },
+          "近一年"
+        ),
+        years.map(
+          (y) => import_react14.default.createElement(
+            "button",
+            {
+              key: y,
+              type: "button",
+              role: "tab",
+              "aria-selected": range === y ? "true" : "false",
+              className: "eg-rangebtn" + (range === y ? " active" : ""),
+              onClick: () => setRange(y)
+            },
+            y
+          )
+        )
       )
     ),
     import_react14.default.createElement(
@@ -2608,26 +2775,153 @@ function Dashboard() {
     ),
     import_react14.default.createElement(
       "div",
-      { className: "eg-cal-card" },
-      import_react14.default.createElement("div", { className: "eg-cal" }, dowNodes.concat(cellNodes)),
+      { className: "eg-cal-card", ref: cardRef, "data-nodrag": "true" },
       import_react14.default.createElement(
         "div",
-        { className: "eg-dash-legend" },
-        "少",
-        import_react14.default.createElement("i", { className: "l1" }),
-        import_react14.default.createElement("i", { className: "l2" }),
-        import_react14.default.createElement("i", { className: "l3" }),
-        import_react14.default.createElement("i", { className: "l4" }),
-        "多"
-      )
+        { className: "eg-gh-head" },
+        rangeLabel + "共完成 " + grid.rangeTotal + " 项练习 · " + grid.rangeDays + " 天"
+      ),
+      import_react14.default.createElement(
+        "div",
+        { className: "eg-gh-wrap" },
+        import_react14.default.createElement(
+          "div",
+          { className: "eg-gh-dows", "aria-hidden": "true" },
+          DOW_LABELS.map((lbl, i) => import_react14.default.createElement("span", { key: i }, lbl))
+        ),
+        import_react14.default.createElement(
+          "div",
+          { className: "eg-gh-scroll", ref: scrollRef },
+          import_react14.default.createElement(
+            "div",
+            { className: "eg-gh-inner" },
+            import_react14.default.createElement(
+              "div",
+              { className: "eg-gh-months", style: { width: grid.weeks.length * 11 - 2 + "px" } },
+              grid.monthLabels.map(
+                (m) => import_react14.default.createElement(
+                  "span",
+                  { key: m.col, className: "eg-gh-month", style: { left: m.col * 11 + "px" } },
+                  m.label
+                )
+              )
+            ),
+            import_react14.default.createElement(
+              "div",
+              { className: "eg-gh-grid", role: "grid", "aria-label": rangeLabel + "学习热力图" },
+              grid.weeks.map(
+                (week, ci) => import_react14.default.createElement(
+                  "div",
+                  { className: "eg-gh-col", key: ci },
+                  week.map((cell, ri) => {
+                    if (cell.out) {
+                      return import_react14.default.createElement("span", { className: "eg-gh-cell out", key: ri, "aria-hidden": "true" });
+                    }
+                    const has = Boolean(cell.activity && cell.activity.total > 0);
+                    const cls = ["eg-gh-cell", "l" + cell.level];
+                    if (has) cls.push("has");
+                    if (cell.isToday) cls.push("today");
+                    return import_react14.default.createElement("button", {
+                      key: cell.key,
+                      type: "button",
+                      className: cls.join(" "),
+                      "aria-label": cell.activity ? cell.key + " 单词 " + cell.activity.words + " 句子 " + cell.activity.phrases : cell.key + " 无学习记录",
+                      onMouseEnter: (e) => showTip(e, cell),
+                      onMouseLeave: hideTip,
+                      onFocus: (e) => showTip(e, cell),
+                      onBlur: hideTip,
+                      onClick: has ? () => jumpTo(cell.key) : void 0
+                    });
+                  })
+                )
+              )
+            )
+          )
+        )
+      ),
+      import_react14.default.createElement(
+        "div",
+        { className: "eg-gh-foot" },
+        import_react14.default.createElement("span", { className: "eg-gh-hint" }, "点击绿色方块定位当日记录"),
+        import_react14.default.createElement(
+          "div",
+          { className: "eg-dash-legend" },
+          "少",
+          import_react14.default.createElement("i", { className: "l0" }),
+          import_react14.default.createElement("i", { className: "l1" }),
+          import_react14.default.createElement("i", { className: "l2" }),
+          import_react14.default.createElement("i", { className: "l3" }),
+          import_react14.default.createElement("i", { className: "l4" }),
+          "多"
+        )
+      ),
+      tip ? import_react14.default.createElement(
+        "div",
+        {
+          className: "eg-gh-tip",
+          role: "tooltip",
+          style: { left: tip.x + "px", top: tip.y + "px" }
+        },
+        tipText
+      ) : null
     ),
     error ? import_react14.default.createElement("div", { className: "eg-dash-error" }, error) : null,
-    records.length ? import_react14.default.createElement(
+    filteredRecords.length ? import_react14.default.createElement(
       "div",
       null,
-      import_react14.default.createElement("div", { className: "eg-hist-title" }, "每日学习记录"),
-      import_react14.default.createElement("div", { className: "eg-hist" }, recordNodes)
-    ) : import_react14.default.createElement("div", { className: "eg-dash-empty" }, loading ? "正在加载…" : "还没有学习记录，去练几题吧。")
+      import_react14.default.createElement(
+        "div",
+        { className: "eg-hist-bar", ref: histHeadRef },
+        import_react14.default.createElement("div", { className: "eg-hist-title" }, "每日学习记录"),
+        import_react14.default.createElement(
+          "div",
+          { className: "eg-hist-meta" },
+          "共 " + filteredRecords.length + " 天" + (totalPages > 1 ? " · 第 " + safePage + " / " + totalPages + " 页" : "")
+        )
+      ),
+      import_react14.default.createElement("div", { className: "eg-hist" }, recordNodes),
+      totalPages > 1 ? import_react14.default.createElement(
+        "div",
+        { className: "eg-pager", role: "navigation", "aria-label": "学习记录分页" },
+        import_react14.default.createElement(
+          "button",
+          {
+            type: "button",
+            className: "eg-pagebtn",
+            disabled: safePage <= 1,
+            onClick: () => goPage(safePage - 1)
+          },
+          "‹ 上一页"
+        ),
+        pageItems.map(
+          (it, i) => it === "..." ? import_react14.default.createElement("span", { className: "eg-page-dots", key: "dots-" + i }, "…") : import_react14.default.createElement(
+            "button",
+            {
+              type: "button",
+              key: it,
+              className: "eg-pagebtn" + (it === safePage ? " active" : ""),
+              "aria-current": it === safePage ? "page" : void 0,
+              onClick: () => goPage(it)
+            },
+            String(it)
+          )
+        ),
+        import_react14.default.createElement(
+          "button",
+          {
+            type: "button",
+            className: "eg-pagebtn",
+            disabled: safePage >= totalPages,
+            onClick: () => goPage(safePage + 1)
+          },
+          "下一页 ›"
+        )
+      ) : null
+    ) : import_react14.default.createElement(
+      "div",
+      { className: "eg-dash-empty" },
+      loading ? "正在加载…" : records.length ? range + " 年还没有详细学习记录。" : "还没有学习记录，去练几题吧。"
+    )
   );
 }
 
@@ -3492,7 +3786,7 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChan
 }
 
 // src/client/shell/EnglishGymBoard.js
-var useIsoLayoutEffect3 = import_react17.default.useLayoutEffect || import_react17.useEffect;
+var useIsoLayoutEffect4 = import_react17.default.useLayoutEffect || import_react17.useEffect;
 var TABS = [
   { id: "word", label: "单词训练" },
   { id: "drill", label: "短语训练" },
@@ -3545,7 +3839,7 @@ function EnglishGymBoard() {
     }, 145);
     return () => clearTimeout(timer);
   }, [open, mounted]);
-  useIsoLayoutEffect3(() => {
+  useIsoLayoutEffect4(() => {
     if (!mounted) return void 0;
     const measure = () => {
       const el = tabRefs.current && tabRefs.current[tab];
@@ -3559,7 +3853,7 @@ function EnglishGymBoard() {
     const raf = requestAnimationFrame(measure);
     return () => cancelAnimationFrame(raf);
   }, [tab, mounted, geom.w]);
-  useIsoLayoutEffect3(() => {
+  useIsoLayoutEffect4(() => {
     if (bodyRef.current) bodyRef.current.scrollTop = 0;
   }, [tab]);
   (0, import_react17.useEffect)(() => {
