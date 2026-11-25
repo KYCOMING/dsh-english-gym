@@ -10,7 +10,7 @@ import { Drill } from '../features/phrase/Drill.js'
 import { WordPractice } from '../features/word/WordPractice.js'
 import { useDailyReport } from '../features/report/useDailyReport.js'
 import { Report } from '../features/report/Report.js'
-import { Dashboard } from '../features/dashboard/Dashboard.js'
+import { Dashboard, invalidateDashboardCache } from '../features/dashboard/Dashboard.js'
 import { SettingsPanel } from '../features/settings/SettingsPanel.js'
 
 const useIsoLayoutEffect = React.useLayoutEffect || useEffect
@@ -231,6 +231,12 @@ export function EnglishGymBoard() {
                       setWordBankRev((n) => n + 1)
                       drill.reset()
                       dailyReport.invalidate()
+                    },
+                    onDataCleared: ({ range, clearMemory } = {}) => {
+                      invalidateDashboardCache()
+                      if (clearMemory || range === 'all') setWordBankRev((n) => n + 1)
+                      if (range === 'all') dailyReport.invalidate()
+                      refreshStats()
                     },
                     onTopicChange: () => {
                       drill.reset()

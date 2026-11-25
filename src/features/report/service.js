@@ -2,6 +2,7 @@ import { dayKey, loadReport, loadState, saveReport } from '../../core/store.js'
 import { generateReport } from './generate.js'
 import { normalizeSettings } from '../settings/service.js'
 import { pickBankCandidates } from '../word/sample.js'
+import { pruneOldReports } from '../activity/cleanup.js'
 
 /** Daily AI/tech report: cache per day, generate on demand, warm in the background. */
 export function createReportService({ ctx, conf, dir, getTopic, getReportLevel }) {
@@ -44,6 +45,11 @@ export function createReportService({ ctx, conf, dir, getTopic, getReportLevel }
       report.bankId = bankId
       if (!Array.isArray(report.bankWords)) report.bankWords = []
       saveReport(dir, day, report)
+      try {
+        pruneOldReports(dir, 90)
+      } catch {
+        /* ignore */
+      }
       return report
     })()
     reportInflight.set(key, job)

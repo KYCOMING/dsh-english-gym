@@ -15,13 +15,26 @@ const FALLBACK_LEVELS = [
   { id: 'C2', label: 'C2', desc: '精通', detail: '约雅思 8.0+ / 母语外刊水准 · 细腻修辞、高阶词汇与深度评论风格' },
 ]
 
-// Settings tab: celebration toggle + session/bank links + word bank + report level + content directions.
-export function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChange, onWordBankChange }) {
+const CLEANUP_RANGES = [
+  { id: '7d', label: '7 天前' },
+  { id: '30d', label: '30 天前' },
+  { id: '90d', label: '90 天前' },
+  { id: '365d', label: '一年前' },
+  { id: 'all', label: '全部记录' },
+]
+
+// Settings tab: celebration toggle + session/bank links + word bank + report level + content directions + data cleanup.
+export function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChange, onWordBankChange, onDataCleared }) {
   const shared = useShared()
   const [data, setData] = useState(() => cachedSettings)
   const [bankData, setBankData] = useState(() => cachedBanks)
   const [importing, setImporting] = useState(false)
   const [bankNotice, setBankNotice] = useState('')
+  const [cleanRange, setCleanRange] = useState('30d')
+  const [clearMemory, setClearMemory] = useState(false)
+  const [cleanPreview, setCleanPreview] = useState(null)
+  const [cleanBusy, setCleanBusy] = useState(false)
+  const [cleanNotice, setCleanNotice] = useState('')
   const [adding, setAdding] = useState(false)
   const [error, setError] = useState('')
   const [draft, setDraft] = useState('')
@@ -233,6 +246,49 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportCon
       /* ignore */
     }
     if (typeof onWordBankChange === 'function') onWordBankChange()
+  }
+
+  const startCleanupPreview = async () => {
+    if (cleanBusy) return
+    setCleanBusy(true)
+    setError('')
+    setCleanNotice('')
+    try {
+      const preview = await api('/data/preview', {
+        method: 'POST',
+        body: JSON.stringify({ range: cleanRange, clearMemory }),
+      })
+      setCleanPreview(preview)
+    } catch (e) {
+      setError(e.message || '统计可清理数据失败')
+    } finally {
+      setCleanBusy(false)
+    }
+  }
+
+  const confirmCleanup = async () => {
+    if (cleanBusy) return
+    setCleanBusy(true)
+    setError('')
+    try {
+      const res = await api('/data/clear', {
+        method: 'POST',
+        body: JSON.stringify({ range: cleanRange, clearMemory }),
+      })
+      if (res.summary) store.setStats(res.summary)
+      setCleanPreview(null)
+      const rm = (res && res.removed) || {}
+      const parts = []
+      if (rm.recordDays) parts.push(rm.recordDays + ' 天学习记录')
+      if (rm.reports) parts.push(rm.reports + ' 篇缓存文章')
+      if (rm.memoryWords) parts.push(rm.memoryWords + ' 个单词记忆进度')
+      setCleanNotice(parts.length ? '已清理：' + parts.join('、') : '已清理完成')
+      if (typeof onDataCleared === 'function') onDataCleared({ range: cleanRange, clearMemory })
+    } catch (e) {
+      setError(e.message || '清理数据失败')
+    } finally {
+      setCleanBusy(false)
+    }
   }
 
   if (importing) {
@@ -700,6 +756,139 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportCon
               '添加',
             ),
           ),
+        ),
+      ),
+    ),
+    React.createElement(
+      'div',
+      { className: 'eg-setting-section' },
+      React.createElement(
+        'div',
+        { className: 'eg-section-head' },
+        React.createElement('div', { className: 'eg-section-label' }, '数据管理'),
+      ),
+      React.createElement(
+        'div',
+        { className: 'eg-setting-card' },
+        React.createElement(
+          'div',
+          { className: 'eg-setting-row' },
+          React.createElement(
+            'div',
+            { className: 'eg-setting-desc eg-lead' },
+            '按时间清理历史学习记录与文章缓存；不会删除你的偏好设置和自定义词库。',
+          ),
+          React.createElement(
+            'div',
+            { className: 'eg-clean-ranges' },
+            CLEANUP_RANGES.map((item) =>
+              React.createElement(
+                'button',
+                {
+                  type: 'button',
+                  key: item.id,
+                  className:
+                    'eg-clean-range' +
+                    (item.id === cleanRange ? ' active' : '') +
+                    (item.id === 'all' ? ' is-danger' : ''),
+                  'aria-pressed': item.id === cleanRange ? 'true' : 'false',
+                  disabled: cleanBusy,
+                  onClick: () => {
+                    setCleanRange(item.id)
+                    setCleanPreview(null)
+                    setCleanNotice('')
+                  },
+                },
+                item.label,
+              ),
+            ),
+          ),
+          React.createElement(
+            'div',
+            { className: 'eg-clean-foot' },
+            React.createElement(
+              'label',
+              { className: 'eg-clean-check' },
+              React.createElement('input', {
+                type: 'checkbox',
+                checked: clearMemory,
+                disabled: cleanBusy,
+                onChange: (e) => {
+                  setClearMemory(e.target.checked)
+                  setCleanPreview(null)
+                  setCleanNotice('')
+                },
+              }),
+              React.createElement('span', null, '同时清除对应时间段的艾宾浩斯记忆进度（默认保留）'),
+            ),
+            !cleanPreview
+              ? React.createElement(
+                  'button',
+                  {
+                    type: 'button',
+                    className: 'eg-btn danger',
+                    disabled: cleanBusy,
+                    onClick: startCleanupPreview,
+                  },
+                  cleanBusy ? '统计中…' : '清理数据',
+                )
+              : null,
+          ),
+          cleanPreview
+            ? (() => {
+                const totalItems =
+                  (cleanPreview.recordDays || 0) +
+                  (cleanPreview.reports || 0) +
+                  (cleanPreview.memoryWords || 0)
+                const rangeObj = CLEANUP_RANGES.find((r) => r.id === cleanPreview.range)
+                const summaryParts = []
+                if (cleanPreview.recordDays) summaryParts.push(cleanPreview.recordDays + ' 天学习记录')
+                if (cleanPreview.reports) summaryParts.push(cleanPreview.reports + ' 篇缓存文章')
+                if (cleanPreview.memoryWords) summaryParts.push(cleanPreview.memoryWords + ' 个单词记忆进度')
+                return React.createElement(
+                  'div',
+                  { className: 'eg-clean-confirm' },
+                  React.createElement(
+                    'div',
+                    { className: 'eg-clean-confirm-text' },
+                    totalItems > 0
+                      ? '将清除「' +
+                          (rangeObj ? rangeObj.label : cleanPreview.range) +
+                          '」范围内：' +
+                          summaryParts.join('、') +
+                          '，操作不可恢复。'
+                      : '所选范围内暂无可清理的学习记录或缓存文章。',
+                  ),
+                  React.createElement(
+                    'div',
+                    { className: 'eg-clean-confirm-actions' },
+                    React.createElement(
+                      'button',
+                      {
+                        type: 'button',
+                        className: 'eg-btn',
+                        disabled: cleanBusy,
+                        onClick: () => setCleanPreview(null),
+                      },
+                      '取消',
+                    ),
+                    totalItems > 0
+                      ? React.createElement(
+                          'button',
+                          {
+                            type: 'button',
+                            className: 'eg-btn danger',
+                            disabled: cleanBusy,
+                            onClick: confirmCleanup,
+                          },
+                          cleanBusy ? '清理中…' : '确认清理',
+                        )
+                      : null,
+                  ),
+                )
+              })()
+            : null,
+          cleanNotice ? React.createElement('div', { className: 'eg-notice eg-clean-notice' }, cleanNotice) : null,
         ),
       ),
     ),

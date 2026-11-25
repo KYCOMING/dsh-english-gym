@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { api } from '../../core/api.js'
+import { prefersReducedMotion } from '../../components/motion.js'
 import { buildContributionGrid, getPageItems } from './heatmap.js'
 
 // Data dashboard: GitHub-style contribution graph + paginated daily words & sentences.
@@ -9,6 +10,10 @@ const PAGE_SIZE = 5
 const useIsoLayoutEffect = React.useLayoutEffect || useEffect
 
 let cachedDashboard = null
+
+export function invalidateDashboardCache() {
+  cachedDashboard = null
+}
 
 export function Dashboard() {
   const [data, setData] = useState(() => cachedDashboard)
@@ -20,16 +25,51 @@ export function Dashboard() {
   const [flashDay, setFlashDay] = useState('')
   const [tip, setTip] = useState(null)
   const flashTimerRef = useRef(null)
+  const closeTimersRef = useRef({})
   const pendingJumpRef = useRef('')
   const cardRef = useRef(null)
   const scrollRef = useRef(null)
   const histHeadRef = useRef(null)
-  const toggleGroup = (key) => setExpanded((prev) => ({ ...prev, [key]: !prev[key] }))
   const WORD_LIMIT = 5
   const PHRASE_LIMIT = 3
 
+  const toggleGroup = (key, extraCount = 0) => {
+    const timers = closeTimersRef.current
+    if (timers[key]) {
+      clearTimeout(timers[key])
+      delete timers[key]
+    }
+    if (expanded[key] === 'open') {
+      if (prefersReducedMotion()) {
+        setExpanded((prev) => {
+          const next = { ...prev }
+          delete next[key]
+          return next
+        })
+        return
+      }
+      setExpanded((prev) => ({ ...prev, [key]: 'closing' }))
+      const delay = Math.min(260, 150 + Math.min(extraCount, 8) * 14 + 20)
+      timers[key] = setTimeout(() => {
+        delete timers[key]
+        setExpanded((prev) => {
+          if (prev[key] !== 'closing') return prev
+          const next = { ...prev }
+          delete next[key]
+          return next
+        })
+      }, delay)
+    } else {
+      setExpanded((prev) => ({ ...prev, [key]: 'open' }))
+    }
+  }
+
   useEffect(() => {
-    return () => clearTimeout(flashTimerRef.current)
+    return () => {
+      clearTimeout(flashTimerRef.current)
+      const timers = closeTimersRef.current
+      for (const k of Object.keys(timers)) clearTimeout(timers[k])
+    }
   }, [])
 
   const load = useCallback(async () => {
@@ -171,16 +211,53 @@ export function Dashboard() {
     const allPhrases = rec.phrases || []
     const wKey = rec.day + ':w'
     const pKey = rec.day + ':p'
-    const words = expanded[wKey] ? allWords : allWords.slice(0, WORD_LIMIT)
-    const phrases = expanded[pKey] ? allPhrases : allPhrases.slice(0, PHRASE_LIMIT)
-    const moreBtn = (key, total, limit, open) =>
+    const wState = expanded[wKey]
+    const pState = expanded[pKey]
+    const headWords = allWords.slice(0, WORD_LIMIT)
+    const extraWords = allWords.slice(WORD_LIMIT)
+    const headPhrases = allPhrases.slice(0, PHRASE_LIMIT)
+    const extraPhrases = allPhrases.slice(PHRASE_LIMIT)
+    const moreBtn = (key, total, limit, state) =>
       total > limit
         ? React.createElement(
             'button',
-            { className: 'eg-more', key: 'more', onClick: () => toggleGroup(key) },
-            open ? '收起' : '展开全部 · 共 ' + total + ' 条',
+            {
+              className: 'eg-more',
+              key: 'more',
+              'aria-expanded': state === 'open' ? 'true' : 'false',
+              onClick: () => toggleGroup(key, total - limit),
+            },
+            state === 'open' ? '收起' : '展开全部 · 共 ' + total + ' 条',
           )
         : null
+    const renderWordChip = (w, key, animCls, animStyle) =>
+      React.createElement(
+        'span',
+        {
+          className: 'eg-wchip ' + (w.ok ? 'ok' : 'bad') + animCls,
+          style: animStyle,
+          key,
+          title: w.ok ? '拼对了' : '没拼对',
+        },
+        React.createElement('span', { className: 'w' }, w.en),
+        w.zh ? React.createElement('span', { className: 'm' }, w.zh) : null,
+      )
+    const renderPhraseRow = (p, key, animCls, animStyle) =>
+      React.createElement(
+        'div',
+        {
+          className: 'eg-sent ' + (p.ok ? 'ok' : 'bad') + animCls,
+          style: animStyle,
+          key,
+        },
+        React.createElement('span', { className: 'mark' }, p.ok ? '✓' : '✗'),
+        React.createElement(
+          'div',
+          { className: 'body' },
+          React.createElement('div', { className: 'zh' }, p.zh),
+          p.en ? React.createElement('div', { className: 'en' }, p.en) : null,
+        ),
+      )
     return React.createElement(
       'div',
       { className: 'eg-hist-day' + (flashDay === rec.day ? ' is-flash' : ''), id: 'eg-hist-' + rec.day, key: rec.day },
@@ -203,16 +280,34 @@ export function Dashboard() {
             React.createElement(
               'div',
               { className: 'eg-wchips' },
-              words.map((w, i) =>
-                React.createElement(
-                  'span',
-                  { className: 'eg-wchip ' + (w.ok ? 'ok' : 'bad'), key: 'w' + i, title: w.ok ? '拼对了' : '没拼对' },
-                  React.createElement('span', { className: 'w' }, w.en),
-                  w.zh ? React.createElement('span', { className: 'm' }, w.zh) : null,
-                ),
-              ),
+              headWords.map((w, i) => renderWordChip(w, 'w' + i, '', undefined)),
             ),
-            moreBtn(wKey, allWords.length, WORD_LIMIT, !!expanded[wKey]),
+            extraWords.length && (wState === 'open' || wState === 'closing')
+              ? React.createElement(
+                  'div',
+                  {
+                    className: 'eg-extra-collapse' + (wState === 'open' ? ' open' : ''),
+                    'aria-hidden': wState === 'open' ? 'false' : 'true',
+                  },
+                  React.createElement(
+                    'div',
+                    { className: 'eg-extra-inner' },
+                    React.createElement(
+                      'div',
+                      { className: 'eg-wchips eg-extra-wchips' },
+                      extraWords.map((w, idx) => {
+                        const animCls = wState === 'open' ? ' is-enter' : ' is-leave'
+                        const animStyle =
+                          wState === 'open'
+                            ? { '--i': Math.min(idx, 18) }
+                            : { '--ri': Math.min(extraWords.length - 1 - idx, 8) }
+                        return renderWordChip(w, 'we' + idx, animCls, animStyle)
+                      }),
+                    ),
+                  ),
+                )
+              : null,
+            moreBtn(wKey, allWords.length, WORD_LIMIT, wState),
           )
         : null,
       allPhrases.length
@@ -223,21 +318,34 @@ export function Dashboard() {
             React.createElement(
               'div',
               { className: 'eg-sents' },
-              phrases.map((p, i) =>
-                React.createElement(
+              headPhrases.map((p, i) => renderPhraseRow(p, 'p' + i, '', undefined)),
+            ),
+            extraPhrases.length && (pState === 'open' || pState === 'closing')
+              ? React.createElement(
                   'div',
-                  { className: 'eg-sent ' + (p.ok ? 'ok' : 'bad'), key: 'p' + i },
-                  React.createElement('span', { className: 'mark' }, p.ok ? '✓' : '✗'),
+                  {
+                    className: 'eg-extra-collapse' + (pState === 'open' ? ' open' : ''),
+                    'aria-hidden': pState === 'open' ? 'false' : 'true',
+                  },
                   React.createElement(
                     'div',
-                    { className: 'body' },
-                    React.createElement('div', { className: 'zh' }, p.zh),
-                    p.en ? React.createElement('div', { className: 'en' }, p.en) : null,
+                    { className: 'eg-extra-inner' },
+                    React.createElement(
+                      'div',
+                      { className: 'eg-sents eg-extra-sents' },
+                      extraPhrases.map((p, idx) => {
+                        const animCls = pState === 'open' ? ' is-enter' : ' is-leave'
+                        const animStyle =
+                          pState === 'open'
+                            ? { '--i': Math.min(idx, 12) }
+                            : { '--ri': Math.min(extraPhrases.length - 1 - idx, 8) }
+                        return renderPhraseRow(p, 'pe' + idx, animCls, animStyle)
+                      }),
+                    ),
                   ),
-                ),
-              ),
-            ),
-            moreBtn(pKey, allPhrases.length, PHRASE_LIMIT, !!expanded[pKey]),
+                )
+              : null,
+            moreBtn(pKey, allPhrases.length, PHRASE_LIMIT, pState),
           )
         : null,
     )

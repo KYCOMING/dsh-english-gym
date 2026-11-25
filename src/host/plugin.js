@@ -7,6 +7,7 @@ import { createWordService } from '../features/word/service.js'
 import { createReportService } from '../features/report/service.js'
 import { createSettingsService } from '../features/settings/service.js'
 import { buildDashboard } from '../features/activity/service.js'
+import { executeCleanup, previewCleanup } from '../features/activity/cleanup.js'
 import { resolveActiveBank } from '../features/word/banks.js'
 import { summarizeBankMemory } from '../features/word/srs.js'
 import { readBody, sendJson } from './http.js'
@@ -79,6 +80,15 @@ export function createEnglishGym(ctx, rawConfig) {
       }
       if (req.method === 'GET' && sub === '/dashboard') {
         return sendJson(res, 200, buildDashboard(loadState(dir)))
+      }
+      if (req.method === 'POST' && sub === '/data/preview') {
+        const body = await readBody(req)
+        return sendJson(res, 200, previewCleanup(dir, body || {}))
+      }
+      if (req.method === 'POST' && sub === '/data/clear') {
+        const body = await readBody(req)
+        const result = executeCleanup(dir, body || {})
+        return sendJson(res, 200, { ...result, summary: summarize(loadState(dir), conf, dir) })
       }
       if (req.method === 'GET' && sub === '/settings') {
         return sendJson(res, 200, settings.get())

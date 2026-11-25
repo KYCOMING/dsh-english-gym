@@ -295,14 +295,75 @@ var settings_default = `/* ===== settings ===== */
   color: var(--eg-bad); font-size: var(--eg-fs-xs); line-height: 1.55;
 }
 .eg-settings-loading { display: flex; align-items: center; gap: 9px; color: var(--eg-ink-2); font-size: var(--eg-fs-sm); padding: 8px 0; }
+.eg-clean-ranges {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; margin-top: 12px;
+}
+@container (min-width: 440px) {
+  .eg-clean-ranges { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+}
+@container (max-width: 279px) {
+  .eg-clean-ranges { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.eg-clean-range {
+  appearance: none; -webkit-appearance: none; text-align: center;
+  min-height: 34px; padding: 6px 8px;
+  border: 1px solid var(--eg-line); border-radius: 8px; background: var(--eg-bg);
+  color: var(--eg-ink-2); font: 500 12.5px/1.3 var(--eg-font); cursor: pointer;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  transition: background var(--eg-dur) ease, border-color var(--eg-dur) ease, color var(--eg-dur) ease, transform .14s ease;
+}
+.eg-clean-range:hover:not(.active):not(:disabled) {
+  background: var(--eg-bg-2); border-color: var(--eg-line-2); color: var(--eg-ink);
+}
+.eg-clean-range:active:not(:disabled) { transform: scale(.96); }
+.eg-clean-range.active {
+  border-color: var(--eg-accent); background: var(--eg-accent);
+  color: var(--eg-on-accent); font-weight: 600;
+}
+.eg-clean-range.is-danger.active {
+  border-color: var(--eg-bad); background: var(--eg-bad); color: #ffffff;
+}
+.eg-clean-range:disabled { opacity: .6; cursor: not-allowed; }
+.eg-clean-range:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }
+.eg-clean-foot {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--eg-line);
+}
+.eg-clean-check {
+  display: flex; align-items: center; gap: 8px; margin-top: 0; flex: 1 1 200px;
+  font-size: var(--eg-fs-xs); line-height: 1.45; color: var(--eg-ink-2); cursor: pointer; user-select: none;
+}
+.eg-clean-check input { margin: 0; accent-color: var(--eg-accent); cursor: pointer; flex: 0 0 auto; }
+.eg-clean-foot .eg-btn {
+  min-height: 32px; height: 32px; padding: 0 13px; border-radius: 8px; flex: 0 0 auto;
+}
+.eg-btn.danger {
+  border-color: color-mix(in srgb, var(--eg-bad) 36%, transparent);
+  background: color-mix(in srgb, var(--eg-bad) 8%, var(--eg-bg));
+  color: var(--eg-bad);
+}
+.eg-btn.danger:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--eg-bad) 15%, var(--eg-bg));
+  border-color: color-mix(in srgb, var(--eg-bad) 55%, transparent);
+}
+.eg-clean-confirm {
+  margin-top: 12px; padding: 10px 12px; border-radius: 10px;
+  background: color-mix(in srgb, var(--eg-bad) 6%, var(--eg-bg-2));
+  border: 1px solid color-mix(in srgb, var(--eg-bad) 26%, transparent);
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+}
+.eg-clean-confirm-text { font-size: var(--eg-fs-xs); line-height: 1.5; color: var(--eg-ink); flex: 1 1 200px; }
+.eg-clean-confirm-actions { display: flex; align-items: center; gap: 7px; margin-left: auto; }
+.eg-clean-confirm-actions .eg-btn { min-height: 30px; height: 30px; padding: 0 12px; border-radius: 8px; }
+.eg-clean-notice { margin-top: 10px; margin-bottom: 0; }
 
 `;
 
 // src/client/styles/dashboard.css
-var dashboard_default = "/* ===== dashboard ===== */\n.eg-dash { container-type: inline-size; display: flex; flex-direction: column; }\n.eg-dash-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }\n.eg-dash-title { font: 700 15px/1.2 var(--eg-font); color: var(--eg-ink); white-space: nowrap; }\n.eg-dash-ranges {\n  display: inline-flex; align-items: center; gap: 2px; padding: 2px;\n  border-radius: 999px; background: var(--eg-bg-2); border: 1px solid var(--eg-line);\n}\n.eg-rangebtn {\n  appearance: none; -webkit-appearance: none;\n  height: 24px; padding: 0 9px; border: none; border-radius: 999px;\n  background: transparent; color: var(--eg-ink-2); cursor: pointer;\n  font: 600 11.5px/1 var(--eg-font); font-variant-numeric: tabular-nums;\n  transition: background var(--eg-dur) ease, color var(--eg-dur) ease;\n}\n.eg-rangebtn:hover:not(.active) { color: var(--eg-ink); }\n.eg-rangebtn.active { background: var(--eg-bg); color: var(--eg-ink); box-shadow: 0 1px 2px rgba(17, 22, 31, .08); }\n.eg-rangebtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-dash-sum { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 14px 0 2px; }\n.eg-stat {\n  min-width: 0; border: 1px solid var(--eg-line); border-radius: 11px; padding: 10px 6px;\n  text-align: center; background: var(--eg-bg);\n  transition: border-color var(--eg-dur) ease, background var(--eg-dur) ease;\n}\n.eg-stat:hover { border-color: var(--eg-line-2); background: var(--eg-bg-2); }\n.eg-stat b { display: block; font: 700 18px/1.15 var(--eg-font); font-variant-numeric: tabular-nums; color: var(--eg-ink); }\n.eg-stat span { display: block; margin-top: 3px; font-size: 11.5px; color: var(--eg-ink-2); }\n.eg-cal-card { position: relative; margin-top: 12px; padding: 12px 14px; border: 1px solid var(--eg-line); border-radius: 12px; background: var(--eg-bg); }\n.eg-gh-head { font: 600 12.5px/1.3 var(--eg-font); color: var(--eg-ink); margin-bottom: 10px; font-variant-numeric: tabular-nums; }\n.eg-gh-wrap { display: flex; align-items: flex-start; gap: 6px; }\n.eg-gh-dows {\n  display: grid; grid-template-rows: repeat(7, 9px); gap: 2px; padding-top: 16px; flex: 0 0 auto;\n  min-width: 12px; font: 500 9.5px/9px var(--eg-font); color: var(--eg-ink-2); text-align: right; user-select: none;\n}\n.eg-gh-scroll {\n  flex: 1 1 auto; min-width: 0; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin;\n}\n.eg-gh-inner { width: max-content; }\n.eg-gh-months {\n  position: relative; height: 14px; margin-bottom: 2px;\n  font: 500 10px/14px var(--eg-font); color: var(--eg-ink-2); user-select: none;\n}\n.eg-gh-month { position: absolute; top: 0; white-space: nowrap; }\n.eg-gh-grid { display: flex; gap: 2px; }\n.eg-gh-col { display: flex; flex-direction: column; gap: 2px; }\n.eg-gh-cell {\n  appearance: none; -webkit-appearance: none; padding: 0; border: none;\n  width: 9px; height: 9px; border-radius: 2px; display: block;\n  background: var(--eg-bg-2);\n  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--eg-ink) 6%, transparent);\n  transition: transform .12s ease, box-shadow .12s ease;\n}\n.eg-gh-cell.out { visibility: hidden; pointer-events: none; }\n.eg-gh-cell.l1 { background: color-mix(in srgb, var(--eg-ok) 26%, var(--eg-bg)); }\n.eg-gh-cell.l2 { background: color-mix(in srgb, var(--eg-ok) 50%, var(--eg-bg)); }\n.eg-gh-cell.l3 { background: color-mix(in srgb, var(--eg-ok) 74%, var(--eg-bg)); }\n.eg-gh-cell.l4 { background: var(--eg-ok); }\n.eg-gh-cell.today { outline: 1.5px solid var(--eg-ink); outline-offset: -0.5px; }\n.eg-gh-cell.has { cursor: pointer; }\n.eg-gh-cell:hover:not(.out) { transform: scale(1.28); box-shadow: 0 1px 4px rgba(0, 0, 0, .18); position: relative; z-index: 2; }\n.eg-gh-cell:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-gh-foot {\n  display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;\n  margin-top: 10px;\n}\n.eg-gh-hint { font-size: 11px; color: var(--eg-ink-2); }\n.eg-dash-legend { display: flex; align-items: center; justify-content: flex-end; gap: 4px; font-size: 11px; color: var(--eg-ink-2); }\n.eg-dash-legend i {\n  width: 9px; height: 9px; border-radius: 2px; background: var(--eg-bg-2); display: inline-block;\n  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--eg-ink) 6%, transparent);\n}\n.eg-dash-legend i.l1 { background: color-mix(in srgb, var(--eg-ok) 26%, var(--eg-bg)); }\n.eg-dash-legend i.l2 { background: color-mix(in srgb, var(--eg-ok) 50%, var(--eg-bg)); }\n.eg-dash-legend i.l3 { background: color-mix(in srgb, var(--eg-ok) 74%, var(--eg-bg)); }\n.eg-dash-legend i.l4 { background: var(--eg-ok); }\n.eg-gh-tip {\n  position: absolute; z-index: 10; pointer-events: none; white-space: nowrap;\n  padding: 5px 8px; border-radius: 6px; border: 1px solid var(--eg-line-2);\n  background: var(--eg-bg); color: var(--eg-ink);\n  box-shadow: 0 6px 18px rgba(17, 22, 31, .16);\n  font: 500 11px/1.3 var(--eg-font); font-variant-numeric: tabular-nums;\n  transform: translate(-50%, calc(-100% - 8px));\n}\n.eg-hist-bar {\n  display: flex; align-items: baseline; justify-content: space-between; gap: 8px;\n  margin: 20px 0 8px; padding: 0 2px;\n}\n.eg-hist-title { font: 650 var(--eg-fs-xs)/1.3 var(--eg-font); letter-spacing: .03em; color: var(--eg-ink-2); }\n.eg-hist-meta { font-size: 11.5px; color: var(--eg-ink-2); font-variant-numeric: tabular-nums; }\n.eg-pager {\n  display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 5px;\n  margin-top: 14px;\n}\n.eg-pagebtn {\n  appearance: none; -webkit-appearance: none;\n  min-width: 28px; height: 28px; padding: 0 8px;\n  border: 1px solid var(--eg-line); border-radius: 7px;\n  background: var(--eg-bg); color: var(--eg-ink-2); cursor: pointer;\n  font: 600 12px/1 var(--eg-font); font-variant-numeric: tabular-nums;\n  transition: border-color var(--eg-dur) ease, background var(--eg-dur) ease, color var(--eg-dur) ease;\n}\n.eg-pagebtn:hover:not(:disabled):not(.active) { border-color: var(--eg-line-2); background: var(--eg-bg-2); color: var(--eg-ink); }\n.eg-pagebtn.active { border-color: var(--eg-accent); background: var(--eg-accent); color: var(--eg-on-accent); }\n.eg-pagebtn:disabled { opacity: .42; cursor: not-allowed; }\n.eg-pagebtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-page-dots { padding: 0 3px; color: var(--eg-ink-2); font-size: 12px; user-select: none; }\n.eg-hist { display: flex; flex-direction: column; gap: 10px; }\n.eg-hist-day {\n  padding: 13px 15px; border: 1px solid var(--eg-line); border-radius: 12px; background: var(--eg-bg);\n  transition: border-color .25s ease, box-shadow .25s ease;\n}\n.eg-hist-day.is-flash { animation: eg-flash-ring 1.15s var(--eg-ease) both; }\n@keyframes eg-flash-ring {\n  0% { border-color: var(--eg-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 22%, transparent); }\n  70% { border-color: var(--eg-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 12%, transparent); }\n  100% { border-color: var(--eg-line); box-shadow: none; }\n}\n.eg-hist-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 4px; }\n.eg-hist-date { font: 650 14px/1.3 var(--eg-font); color: var(--eg-ink); }\n.eg-hist-date .wd { margin-left: 6px; font-weight: 500; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); }\n.eg-hist-count { flex: 0 0 auto; color: var(--eg-ink-2); font-size: 11.5px; font-variant-numeric: tabular-nums; }\n.eg-hist-sub { margin: 11px 0 6px; font: 600 11.5px/1 var(--eg-font); color: var(--eg-ink-2); letter-spacing: .02em; }\n.eg-wchips { display: flex; flex-wrap: wrap; gap: 6px; }\n.eg-wchip { display: inline-flex; align-items: baseline; gap: 5px; padding: 3px 9px; border-radius: 999px; background: var(--eg-bg-2); border: 1px solid var(--eg-line); font-size: var(--eg-fs-xs); max-width: 100%; }\n.eg-wchip .w { font-weight: 650; color: var(--eg-ink); }\n.eg-wchip .m { color: var(--eg-ink-2); overflow-wrap: anywhere; }\n.eg-wchip.ok { border-color: color-mix(in srgb, var(--eg-ok) 42%, var(--eg-line)); }\n.eg-wchip.bad { border-color: color-mix(in srgb, var(--eg-bad) 42%, var(--eg-line)); }\n.eg-sents { display: flex; flex-direction: column; }\n.eg-more {\n  align-self: flex-start; margin: 9px 0 1px; padding: 4px 10px;\n  border: 1px solid var(--eg-line); border-radius: 999px; background: var(--eg-bg);\n  color: var(--eg-ink-2); cursor: pointer; font: 600 var(--eg-fs-xs)/1 var(--eg-font);\n  transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease, background var(--eg-dur) ease;\n}\n.eg-more:hover { border-color: var(--eg-line-2); background: var(--eg-bg-2); color: var(--eg-ink); }\n.eg-more:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-sent { display: flex; gap: 8px; padding: 8px 0; border-top: 1px dashed var(--eg-line); }\n.eg-sent:first-child { border-top: none; padding-top: 4px; }\n.eg-sent:last-child { padding-bottom: 2px; }\n.eg-sent .mark { flex: 0 0 auto; width: 14px; font-weight: 700; font-size: var(--eg-fs-sm); line-height: 1.55; }\n.eg-sent.ok .mark { color: var(--eg-ok); }\n.eg-sent.bad .mark { color: var(--eg-bad); }\n.eg-sent .body { flex: 1 1 auto; min-width: 0; }\n.eg-sent .zh { font-size: var(--eg-fs-sm); line-height: 1.55; color: var(--eg-ink); }\n.eg-sent .en { margin-top: 3px; font-family: var(--eg-en); font-size: 13.5px; line-height: 1.55; color: var(--eg-ink-2); overflow-wrap: break-word; }\n.eg-dash-empty { padding: 30px 0; text-align: center; color: var(--eg-ink-2); font-size: var(--eg-fs-sm); line-height: 1.7; }\n.eg-dash-error { margin-top: 10px; color: var(--eg-bad); font-size: var(--eg-fs-xs); }\n\n";
+var dashboard_default = "/* ===== dashboard ===== */\n.eg-dash { container-type: inline-size; display: flex; flex-direction: column; }\n.eg-dash-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }\n.eg-dash-title { font: 700 15px/1.2 var(--eg-font); color: var(--eg-ink); white-space: nowrap; }\n.eg-dash-ranges {\n  display: inline-flex; align-items: center; gap: 2px; padding: 2px;\n  border-radius: 999px; background: var(--eg-bg-2); border: 1px solid var(--eg-line);\n}\n.eg-rangebtn {\n  appearance: none; -webkit-appearance: none;\n  height: 24px; padding: 0 9px; border: none; border-radius: 999px;\n  background: transparent; color: var(--eg-ink-2); cursor: pointer;\n  font: 600 11.5px/1 var(--eg-font); font-variant-numeric: tabular-nums;\n  transition: background var(--eg-dur) ease, color var(--eg-dur) ease;\n}\n.eg-rangebtn:hover:not(.active) { color: var(--eg-ink); }\n.eg-rangebtn.active { background: var(--eg-bg); color: var(--eg-ink); box-shadow: 0 1px 2px rgba(17, 22, 31, .08); }\n.eg-rangebtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-dash-sum { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 14px 0 2px; }\n.eg-stat {\n  min-width: 0; border: 1px solid var(--eg-line); border-radius: 11px; padding: 10px 6px;\n  text-align: center; background: var(--eg-bg);\n  transition: border-color var(--eg-dur) ease, background var(--eg-dur) ease;\n}\n.eg-stat:hover { border-color: var(--eg-line-2); background: var(--eg-bg-2); }\n.eg-stat b { display: block; font: 700 18px/1.15 var(--eg-font); font-variant-numeric: tabular-nums; color: var(--eg-ink); }\n.eg-stat span { display: block; margin-top: 3px; font-size: 11.5px; color: var(--eg-ink-2); }\n.eg-cal-card { position: relative; margin-top: 12px; padding: 12px 14px; border: 1px solid var(--eg-line); border-radius: 12px; background: var(--eg-bg); }\n.eg-gh-head { font: 600 12.5px/1.3 var(--eg-font); color: var(--eg-ink); margin-bottom: 10px; font-variant-numeric: tabular-nums; }\n.eg-gh-wrap { display: flex; align-items: flex-start; gap: 6px; }\n.eg-gh-dows {\n  display: grid; grid-template-rows: repeat(7, 9px); gap: 2px; padding-top: 16px; flex: 0 0 auto;\n  min-width: 12px; font: 500 9.5px/9px var(--eg-font); color: var(--eg-ink-2); text-align: right; user-select: none;\n}\n.eg-gh-scroll {\n  flex: 1 1 auto; min-width: 0; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin;\n}\n.eg-gh-inner { width: max-content; }\n.eg-gh-months {\n  position: relative; height: 14px; margin-bottom: 2px;\n  font: 500 10px/14px var(--eg-font); color: var(--eg-ink-2); user-select: none;\n}\n.eg-gh-month { position: absolute; top: 0; white-space: nowrap; }\n.eg-gh-grid { display: flex; gap: 2px; }\n.eg-gh-col { display: flex; flex-direction: column; gap: 2px; }\n.eg-gh-cell {\n  appearance: none; -webkit-appearance: none; padding: 0; border: none;\n  width: 9px; height: 9px; border-radius: 2px; display: block;\n  background: var(--eg-bg-2);\n  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--eg-ink) 6%, transparent);\n  transition: transform .12s ease, box-shadow .12s ease;\n}\n.eg-gh-cell.out { visibility: hidden; pointer-events: none; }\n.eg-gh-cell.l1 { background: color-mix(in srgb, var(--eg-ok) 26%, var(--eg-bg)); }\n.eg-gh-cell.l2 { background: color-mix(in srgb, var(--eg-ok) 50%, var(--eg-bg)); }\n.eg-gh-cell.l3 { background: color-mix(in srgb, var(--eg-ok) 74%, var(--eg-bg)); }\n.eg-gh-cell.l4 { background: var(--eg-ok); }\n.eg-gh-cell.today { outline: 1.5px solid var(--eg-ink); outline-offset: -0.5px; }\n.eg-gh-cell.has { cursor: pointer; }\n.eg-gh-cell:hover:not(.out) { transform: scale(1.28); box-shadow: 0 1px 4px rgba(0, 0, 0, .18); position: relative; z-index: 2; }\n.eg-gh-cell:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-gh-foot {\n  display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;\n  margin-top: 10px;\n}\n.eg-gh-hint { font-size: 11px; color: var(--eg-ink-2); }\n.eg-dash-legend { display: flex; align-items: center; justify-content: flex-end; gap: 4px; font-size: 11px; color: var(--eg-ink-2); }\n.eg-dash-legend i {\n  width: 9px; height: 9px; border-radius: 2px; background: var(--eg-bg-2); display: inline-block;\n  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--eg-ink) 6%, transparent);\n}\n.eg-dash-legend i.l1 { background: color-mix(in srgb, var(--eg-ok) 26%, var(--eg-bg)); }\n.eg-dash-legend i.l2 { background: color-mix(in srgb, var(--eg-ok) 50%, var(--eg-bg)); }\n.eg-dash-legend i.l3 { background: color-mix(in srgb, var(--eg-ok) 74%, var(--eg-bg)); }\n.eg-dash-legend i.l4 { background: var(--eg-ok); }\n.eg-gh-tip {\n  position: absolute; z-index: 10; pointer-events: none; white-space: nowrap;\n  padding: 5px 8px; border-radius: 6px; border: 1px solid var(--eg-line-2);\n  background: var(--eg-bg); color: var(--eg-ink);\n  box-shadow: 0 6px 18px rgba(17, 22, 31, .16);\n  font: 500 11px/1.3 var(--eg-font); font-variant-numeric: tabular-nums;\n  transform: translate(-50%, calc(-100% - 8px));\n}\n.eg-hist-bar {\n  display: flex; align-items: baseline; justify-content: space-between; gap: 8px;\n  margin: 20px 0 8px; padding: 0 2px;\n}\n.eg-hist-title { font: 650 var(--eg-fs-xs)/1.3 var(--eg-font); letter-spacing: .03em; color: var(--eg-ink-2); }\n.eg-hist-meta { font-size: 11.5px; color: var(--eg-ink-2); font-variant-numeric: tabular-nums; }\n.eg-pager {\n  display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 5px;\n  margin-top: 14px;\n}\n.eg-pagebtn {\n  appearance: none; -webkit-appearance: none;\n  min-width: 28px; height: 28px; padding: 0 8px;\n  border: 1px solid var(--eg-line); border-radius: 7px;\n  background: var(--eg-bg); color: var(--eg-ink-2); cursor: pointer;\n  font: 600 12px/1 var(--eg-font); font-variant-numeric: tabular-nums;\n  transition: border-color var(--eg-dur) ease, background var(--eg-dur) ease, color var(--eg-dur) ease;\n}\n.eg-pagebtn:hover:not(:disabled):not(.active) { border-color: var(--eg-line-2); background: var(--eg-bg-2); color: var(--eg-ink); }\n.eg-pagebtn.active { border-color: var(--eg-accent); background: var(--eg-accent); color: var(--eg-on-accent); }\n.eg-pagebtn:disabled { opacity: .42; cursor: not-allowed; }\n.eg-pagebtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-page-dots { padding: 0 3px; color: var(--eg-ink-2); font-size: 12px; user-select: none; }\n.eg-hist { display: flex; flex-direction: column; gap: 10px; }\n.eg-hist-day {\n  padding: 13px 15px; border: 1px solid var(--eg-line); border-radius: 12px; background: var(--eg-bg);\n  transition: border-color .25s ease, box-shadow .25s ease;\n}\n.eg-hist-day.is-flash { animation: eg-flash-ring 1.15s var(--eg-ease) both; }\n@keyframes eg-flash-ring {\n  0% { border-color: var(--eg-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 22%, transparent); }\n  70% { border-color: var(--eg-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 12%, transparent); }\n  100% { border-color: var(--eg-line); box-shadow: none; }\n}\n.eg-hist-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 4px; }\n.eg-hist-date { font: 650 14px/1.3 var(--eg-font); color: var(--eg-ink); }\n.eg-hist-date .wd { margin-left: 6px; font-weight: 500; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); }\n.eg-hist-count { flex: 0 0 auto; color: var(--eg-ink-2); font-size: 11.5px; font-variant-numeric: tabular-nums; }\n.eg-hist-sub { margin: 11px 0 6px; font: 600 11.5px/1 var(--eg-font); color: var(--eg-ink-2); letter-spacing: .02em; }\n.eg-wchips { display: flex; flex-wrap: wrap; gap: 6px; }\n.eg-wchip { display: inline-flex; align-items: baseline; gap: 5px; padding: 3px 9px; border-radius: 999px; background: var(--eg-bg-2); border: 1px solid var(--eg-line); font-size: var(--eg-fs-xs); max-width: 100%; }\n.eg-wchip .w { font-weight: 650; color: var(--eg-ink); }\n.eg-wchip .m { color: var(--eg-ink-2); overflow-wrap: anywhere; }\n.eg-wchip.ok { border-color: color-mix(in srgb, var(--eg-ok) 42%, var(--eg-line)); }\n.eg-wchip.bad { border-color: color-mix(in srgb, var(--eg-bad) 42%, var(--eg-line)); }\n.eg-wchip.is-enter {\n  transform-origin: center bottom;\n  animation: eg-jelly-in .38s cubic-bezier(.22, 1.35, .36, 1) calc(var(--i, 0) * 26ms) both;\n  will-change: transform, opacity;\n}\n@keyframes eg-jelly-in {\n  0%   { opacity: 0; transform: translateY(8px) scale(.76, .72); }\n  52%  { opacity: 1; transform: translateY(-2px) scale(1.06, .95); }\n  76%  { opacity: 1; transform: translateY(.5px) scale(.98, 1.03); }\n  100% { opacity: 1; transform: none; }\n}\n.eg-wchip.is-leave {\n  transform-origin: center top;\n  animation: eg-jelly-out .15s cubic-bezier(.4, 0, 1, 1) calc(var(--ri, 0) * 14ms) both;\n  will-change: transform, opacity;\n}\n@keyframes eg-jelly-out {\n  0%   { opacity: 1; transform: none; }\n  100% { opacity: 0; transform: translateY(-4px) scale(.8, .78); }\n}\n.eg-extra-collapse {\n  display: grid;\n  grid-template-rows: 0fr;\n  transition: grid-template-rows .24s cubic-bezier(.32, 0, .2, 1);\n}\n.eg-extra-collapse.open { grid-template-rows: 1fr; }\n.eg-extra-inner { overflow: hidden; min-height: 0; }\n.eg-extra-wchips { padding: 6px 3px 3px; margin: 0 -3px -3px; }\n.eg-sents { display: flex; flex-direction: column; }\n.eg-extra-sents .eg-sent:first-child { border-top: 1px dashed var(--eg-line); padding-top: 8px; }\n.eg-more {\n  align-self: flex-start; margin: 9px 0 1px; padding: 4px 10px;\n  border: 1px solid var(--eg-line); border-radius: 999px; background: var(--eg-bg);\n  color: var(--eg-ink-2); cursor: pointer; font: 600 var(--eg-fs-xs)/1 var(--eg-font);\n  transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease, background var(--eg-dur) ease, transform .12s ease;\n}\n.eg-more:hover { border-color: var(--eg-line-2); background: var(--eg-bg-2); color: var(--eg-ink); }\n.eg-more:active { transform: scale(.96); }\n.eg-more:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-sent { display: flex; gap: 8px; padding: 8px 0; border-top: 1px dashed var(--eg-line); }\n.eg-sent.is-enter {\n  transform-origin: left center;\n  animation: eg-sent-in .32s var(--eg-spring) calc(var(--i, 0) * 38ms) both;\n  will-change: transform, opacity;\n}\n@keyframes eg-sent-in {\n  0%   { opacity: 0; transform: translateY(8px) scale(.96); }\n  65%  { opacity: 1; transform: translateY(-1px) scale(1.01); }\n  100% { opacity: 1; transform: none; }\n}\n.eg-sent.is-leave {\n  transform-origin: left top;\n  animation: eg-sent-out .15s cubic-bezier(.4, 0, 1, 1) calc(var(--ri, 0) * 18ms) both;\n  will-change: transform, opacity;\n}\n@keyframes eg-sent-out {\n  0%   { opacity: 1; transform: none; }\n  100% { opacity: 0; transform: translateY(-5px) scale(.97); }\n}\n.eg-sent:first-child { border-top: none; padding-top: 4px; }\n.eg-sent:last-child { padding-bottom: 2px; }\n.eg-sent .mark { flex: 0 0 auto; width: 14px; font-weight: 700; font-size: var(--eg-fs-sm); line-height: 1.55; }\n.eg-sent.ok .mark { color: var(--eg-ok); }\n.eg-sent.bad .mark { color: var(--eg-bad); }\n.eg-sent .body { flex: 1 1 auto; min-width: 0; }\n.eg-sent .zh { font-size: var(--eg-fs-sm); line-height: 1.55; color: var(--eg-ink); }\n.eg-sent .en { margin-top: 3px; font-family: var(--eg-en); font-size: 13.5px; line-height: 1.55; color: var(--eg-ink-2); overflow-wrap: break-word; }\n.eg-dash-empty { padding: 30px 0; text-align: center; color: var(--eg-ink-2); font-size: var(--eg-fs-sm); line-height: 1.7; }\n.eg-dash-error { margin-top: 10px; color: var(--eg-bad); font-size: var(--eg-fs-xs); }\n\n";
 
 // src/client/styles/reduced-motion.css
-var reduced_motion_default = "@media (prefers-reduced-motion: reduce) {\n  .eg-panel, .eg-panel.is-closing, .eg-view, .eg-view > *, .eg-stage-in, .eg-fb, .eg-fb-ref, .eg-fb-tip, .eg-fb-actions,\n  .eg-fb-mine, .eg-fb-corr, .eg-fb-hl,\n  .eg-letters.is-bad, .eg-letter.is-pop, .eg-letters.is-ok .eg-letter.ok, .eg-hist-day.is-flash,\n  .eg-notice, .eg-import, .eg-preview, .eg-word-miss, .eg-word .eg-eg.done, .eg-rpop.is-ready { animation: none !important; }\n  .eg-confetti { display: none; }\n  .eg-root *, .eg-panel * { transition: none !important; }\n}\n";
+var reduced_motion_default = "@media (prefers-reduced-motion: reduce) {\n  .eg-panel, .eg-panel.is-closing, .eg-view, .eg-view > *, .eg-stage-in, .eg-fb, .eg-fb-ref, .eg-fb-tip, .eg-fb-actions,\n  .eg-fb-mine, .eg-fb-corr, .eg-fb-hl,\n  .eg-letters.is-bad, .eg-letter.is-pop, .eg-letters.is-ok .eg-letter.ok, .eg-hist-day.is-flash,\n  .eg-notice, .eg-import, .eg-preview, .eg-word-miss, .eg-word .eg-eg.done, .eg-rpop.is-ready, .eg-wchip.is-enter, .eg-wchip.is-leave, .eg-sent.is-enter, .eg-sent.is-leave { animation: none !important; }\n  .eg-confetti { display: none; }\n  .eg-root *, .eg-panel * { transition: none !important; }\n}\n";
 
 // src/client/core/style.js
 var STYLE_ID = "eg-dock-style";
@@ -2510,6 +2571,9 @@ var DOW_LABELS = ["", "一", "", "三", "", "五", ""];
 var PAGE_SIZE = 5;
 var useIsoLayoutEffect3 = import_react14.default.useLayoutEffect || import_react14.useEffect;
 var cachedDashboard = null;
+function invalidateDashboardCache() {
+  cachedDashboard = null;
+}
 function Dashboard() {
   const [data, setData] = (0, import_react14.useState)(() => cachedDashboard);
   const [loading, setLoading] = (0, import_react14.useState)(() => !cachedDashboard);
@@ -2520,15 +2584,49 @@ function Dashboard() {
   const [flashDay, setFlashDay] = (0, import_react14.useState)("");
   const [tip, setTip] = (0, import_react14.useState)(null);
   const flashTimerRef = (0, import_react14.useRef)(null);
+  const closeTimersRef = (0, import_react14.useRef)({});
   const pendingJumpRef = (0, import_react14.useRef)("");
   const cardRef = (0, import_react14.useRef)(null);
   const scrollRef = (0, import_react14.useRef)(null);
   const histHeadRef = (0, import_react14.useRef)(null);
-  const toggleGroup = (key) => setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
   const WORD_LIMIT = 5;
   const PHRASE_LIMIT = 3;
+  const toggleGroup = (key, extraCount = 0) => {
+    const timers = closeTimersRef.current;
+    if (timers[key]) {
+      clearTimeout(timers[key]);
+      delete timers[key];
+    }
+    if (expanded[key] === "open") {
+      if (prefersReducedMotion()) {
+        setExpanded((prev) => {
+          const next = { ...prev };
+          delete next[key];
+          return next;
+        });
+        return;
+      }
+      setExpanded((prev) => ({ ...prev, [key]: "closing" }));
+      const delay = Math.min(260, 150 + Math.min(extraCount, 8) * 14 + 20);
+      timers[key] = setTimeout(() => {
+        delete timers[key];
+        setExpanded((prev) => {
+          if (prev[key] !== "closing") return prev;
+          const next = { ...prev };
+          delete next[key];
+          return next;
+        });
+      }, delay);
+    } else {
+      setExpanded((prev) => ({ ...prev, [key]: "open" }));
+    }
+  };
   (0, import_react14.useEffect)(() => {
-    return () => clearTimeout(flashTimerRef.current);
+    return () => {
+      clearTimeout(flashTimerRef.current);
+      const timers = closeTimersRef.current;
+      for (const k of Object.keys(timers)) clearTimeout(timers[k]);
+    };
   }, []);
   const load = (0, import_react14.useCallback)(async () => {
     if (!cachedDashboard) setLoading(true);
@@ -2653,13 +2751,48 @@ function Dashboard() {
     const allPhrases = rec.phrases || [];
     const wKey = rec.day + ":w";
     const pKey = rec.day + ":p";
-    const words = expanded[wKey] ? allWords : allWords.slice(0, WORD_LIMIT);
-    const phrases = expanded[pKey] ? allPhrases : allPhrases.slice(0, PHRASE_LIMIT);
-    const moreBtn = (key, total, limit, open) => total > limit ? import_react14.default.createElement(
+    const wState = expanded[wKey];
+    const pState = expanded[pKey];
+    const headWords = allWords.slice(0, WORD_LIMIT);
+    const extraWords = allWords.slice(WORD_LIMIT);
+    const headPhrases = allPhrases.slice(0, PHRASE_LIMIT);
+    const extraPhrases = allPhrases.slice(PHRASE_LIMIT);
+    const moreBtn = (key, total, limit, state) => total > limit ? import_react14.default.createElement(
       "button",
-      { className: "eg-more", key: "more", onClick: () => toggleGroup(key) },
-      open ? "收起" : "展开全部 · 共 " + total + " 条"
+      {
+        className: "eg-more",
+        key: "more",
+        "aria-expanded": state === "open" ? "true" : "false",
+        onClick: () => toggleGroup(key, total - limit)
+      },
+      state === "open" ? "收起" : "展开全部 · 共 " + total + " 条"
     ) : null;
+    const renderWordChip = (w, key, animCls, animStyle) => import_react14.default.createElement(
+      "span",
+      {
+        className: "eg-wchip " + (w.ok ? "ok" : "bad") + animCls,
+        style: animStyle,
+        key,
+        title: w.ok ? "拼对了" : "没拼对"
+      },
+      import_react14.default.createElement("span", { className: "w" }, w.en),
+      w.zh ? import_react14.default.createElement("span", { className: "m" }, w.zh) : null
+    );
+    const renderPhraseRow = (p, key, animCls, animStyle) => import_react14.default.createElement(
+      "div",
+      {
+        className: "eg-sent " + (p.ok ? "ok" : "bad") + animCls,
+        style: animStyle,
+        key
+      },
+      import_react14.default.createElement("span", { className: "mark" }, p.ok ? "✓" : "✗"),
+      import_react14.default.createElement(
+        "div",
+        { className: "body" },
+        import_react14.default.createElement("div", { className: "zh" }, p.zh),
+        p.en ? import_react14.default.createElement("div", { className: "en" }, p.en) : null
+      )
+    );
     return import_react14.default.createElement(
       "div",
       { className: "eg-hist-day" + (flashDay === rec.day ? " is-flash" : ""), id: "eg-hist-" + rec.day, key: rec.day },
@@ -2681,16 +2814,29 @@ function Dashboard() {
         import_react14.default.createElement(
           "div",
           { className: "eg-wchips" },
-          words.map(
-            (w, i) => import_react14.default.createElement(
-              "span",
-              { className: "eg-wchip " + (w.ok ? "ok" : "bad"), key: "w" + i, title: w.ok ? "拼对了" : "没拼对" },
-              import_react14.default.createElement("span", { className: "w" }, w.en),
-              w.zh ? import_react14.default.createElement("span", { className: "m" }, w.zh) : null
+          headWords.map((w, i) => renderWordChip(w, "w" + i, "", void 0))
+        ),
+        extraWords.length && (wState === "open" || wState === "closing") ? import_react14.default.createElement(
+          "div",
+          {
+            className: "eg-extra-collapse" + (wState === "open" ? " open" : ""),
+            "aria-hidden": wState === "open" ? "false" : "true"
+          },
+          import_react14.default.createElement(
+            "div",
+            { className: "eg-extra-inner" },
+            import_react14.default.createElement(
+              "div",
+              { className: "eg-wchips eg-extra-wchips" },
+              extraWords.map((w, idx) => {
+                const animCls = wState === "open" ? " is-enter" : " is-leave";
+                const animStyle = wState === "open" ? { "--i": Math.min(idx, 18) } : { "--ri": Math.min(extraWords.length - 1 - idx, 8) };
+                return renderWordChip(w, "we" + idx, animCls, animStyle);
+              })
             )
           )
-        ),
-        moreBtn(wKey, allWords.length, WORD_LIMIT, !!expanded[wKey])
+        ) : null,
+        moreBtn(wKey, allWords.length, WORD_LIMIT, wState)
       ) : null,
       allPhrases.length ? import_react14.default.createElement(
         "div",
@@ -2699,21 +2845,29 @@ function Dashboard() {
         import_react14.default.createElement(
           "div",
           { className: "eg-sents" },
-          phrases.map(
-            (p, i) => import_react14.default.createElement(
+          headPhrases.map((p, i) => renderPhraseRow(p, "p" + i, "", void 0))
+        ),
+        extraPhrases.length && (pState === "open" || pState === "closing") ? import_react14.default.createElement(
+          "div",
+          {
+            className: "eg-extra-collapse" + (pState === "open" ? " open" : ""),
+            "aria-hidden": pState === "open" ? "false" : "true"
+          },
+          import_react14.default.createElement(
+            "div",
+            { className: "eg-extra-inner" },
+            import_react14.default.createElement(
               "div",
-              { className: "eg-sent " + (p.ok ? "ok" : "bad"), key: "p" + i },
-              import_react14.default.createElement("span", { className: "mark" }, p.ok ? "✓" : "✗"),
-              import_react14.default.createElement(
-                "div",
-                { className: "body" },
-                import_react14.default.createElement("div", { className: "zh" }, p.zh),
-                p.en ? import_react14.default.createElement("div", { className: "en" }, p.en) : null
-              )
+              { className: "eg-sents eg-extra-sents" },
+              extraPhrases.map((p, idx) => {
+                const animCls = pState === "open" ? " is-enter" : " is-leave";
+                const animStyle = pState === "open" ? { "--i": Math.min(idx, 12) } : { "--ri": Math.min(extraPhrases.length - 1 - idx, 8) };
+                return renderPhraseRow(p, "pe" + idx, animCls, animStyle);
+              })
             )
           )
-        ),
-        moreBtn(pKey, allPhrases.length, PHRASE_LIMIT, !!expanded[pKey])
+        ) : null,
+        moreBtn(pKey, allPhrases.length, PHRASE_LIMIT, pState)
       ) : null
     );
   });
@@ -3133,12 +3287,24 @@ var FALLBACK_LEVELS = [
   { id: "C1", label: "C1", desc: "高级", detail: "约雅思 7.0–7.5 / 托福 95+ · 地道外刊文风，含精准词汇与复杂长难句" },
   { id: "C2", label: "C2", desc: "精通", detail: "约雅思 8.0+ / 母语外刊水准 · 细腻修辞、高阶词汇与深度评论风格" }
 ];
-function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChange, onWordBankChange }) {
+var CLEANUP_RANGES = [
+  { id: "7d", label: "7 天前" },
+  { id: "30d", label: "30 天前" },
+  { id: "90d", label: "90 天前" },
+  { id: "365d", label: "一年前" },
+  { id: "all", label: "全部记录" }
+];
+function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChange, onWordBankChange, onDataCleared }) {
   const shared = useShared();
   const [data, setData] = (0, import_react16.useState)(() => cachedSettings);
   const [bankData, setBankData] = (0, import_react16.useState)(() => cachedBanks);
   const [importing, setImporting] = (0, import_react16.useState)(false);
   const [bankNotice, setBankNotice] = (0, import_react16.useState)("");
+  const [cleanRange, setCleanRange] = (0, import_react16.useState)("30d");
+  const [clearMemory, setClearMemory] = (0, import_react16.useState)(false);
+  const [cleanPreview, setCleanPreview] = (0, import_react16.useState)(null);
+  const [cleanBusy, setCleanBusy] = (0, import_react16.useState)(false);
+  const [cleanNotice, setCleanNotice] = (0, import_react16.useState)("");
   const [adding, setAdding] = (0, import_react16.useState)(false);
   const [error, setError] = (0, import_react16.useState)("");
   const [draft, setDraft] = (0, import_react16.useState)("");
@@ -3331,6 +3497,47 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChan
     } catch {
     }
     if (typeof onWordBankChange === "function") onWordBankChange();
+  };
+  const startCleanupPreview = async () => {
+    if (cleanBusy) return;
+    setCleanBusy(true);
+    setError("");
+    setCleanNotice("");
+    try {
+      const preview = await api("/data/preview", {
+        method: "POST",
+        body: JSON.stringify({ range: cleanRange, clearMemory })
+      });
+      setCleanPreview(preview);
+    } catch (e) {
+      setError(e.message || "统计可清理数据失败");
+    } finally {
+      setCleanBusy(false);
+    }
+  };
+  const confirmCleanup = async () => {
+    if (cleanBusy) return;
+    setCleanBusy(true);
+    setError("");
+    try {
+      const res = await api("/data/clear", {
+        method: "POST",
+        body: JSON.stringify({ range: cleanRange, clearMemory })
+      });
+      if (res.summary) store.setStats(res.summary);
+      setCleanPreview(null);
+      const rm = res && res.removed || {};
+      const parts = [];
+      if (rm.recordDays) parts.push(rm.recordDays + " 天学习记录");
+      if (rm.reports) parts.push(rm.reports + " 篇缓存文章");
+      if (rm.memoryWords) parts.push(rm.memoryWords + " 个单词记忆进度");
+      setCleanNotice(parts.length ? "已清理：" + parts.join("、") : "已清理完成");
+      if (typeof onDataCleared === "function") onDataCleared({ range: cleanRange, clearMemory });
+    } catch (e) {
+      setError(e.message || "清理数据失败");
+    } finally {
+      setCleanBusy(false);
+    }
   };
   if (importing) {
     return import_react16.default.createElement(WordBankImport, {
@@ -3781,6 +3988,121 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChan
         )
       )
     ),
+    import_react16.default.createElement(
+      "div",
+      { className: "eg-setting-section" },
+      import_react16.default.createElement(
+        "div",
+        { className: "eg-section-head" },
+        import_react16.default.createElement("div", { className: "eg-section-label" }, "数据管理")
+      ),
+      import_react16.default.createElement(
+        "div",
+        { className: "eg-setting-card" },
+        import_react16.default.createElement(
+          "div",
+          { className: "eg-setting-row" },
+          import_react16.default.createElement(
+            "div",
+            { className: "eg-setting-desc eg-lead" },
+            "按时间清理历史学习记录与文章缓存；不会删除你的偏好设置和自定义词库。"
+          ),
+          import_react16.default.createElement(
+            "div",
+            { className: "eg-clean-ranges" },
+            CLEANUP_RANGES.map(
+              (item) => import_react16.default.createElement(
+                "button",
+                {
+                  type: "button",
+                  key: item.id,
+                  className: "eg-clean-range" + (item.id === cleanRange ? " active" : "") + (item.id === "all" ? " is-danger" : ""),
+                  "aria-pressed": item.id === cleanRange ? "true" : "false",
+                  disabled: cleanBusy,
+                  onClick: () => {
+                    setCleanRange(item.id);
+                    setCleanPreview(null);
+                    setCleanNotice("");
+                  }
+                },
+                item.label
+              )
+            )
+          ),
+          import_react16.default.createElement(
+            "div",
+            { className: "eg-clean-foot" },
+            import_react16.default.createElement(
+              "label",
+              { className: "eg-clean-check" },
+              import_react16.default.createElement("input", {
+                type: "checkbox",
+                checked: clearMemory,
+                disabled: cleanBusy,
+                onChange: (e) => {
+                  setClearMemory(e.target.checked);
+                  setCleanPreview(null);
+                  setCleanNotice("");
+                }
+              }),
+              import_react16.default.createElement("span", null, "同时清除对应时间段的艾宾浩斯记忆进度（默认保留）")
+            ),
+            !cleanPreview ? import_react16.default.createElement(
+              "button",
+              {
+                type: "button",
+                className: "eg-btn danger",
+                disabled: cleanBusy,
+                onClick: startCleanupPreview
+              },
+              cleanBusy ? "统计中…" : "清理数据"
+            ) : null
+          ),
+          cleanPreview ? (() => {
+            const totalItems = (cleanPreview.recordDays || 0) + (cleanPreview.reports || 0) + (cleanPreview.memoryWords || 0);
+            const rangeObj = CLEANUP_RANGES.find((r) => r.id === cleanPreview.range);
+            const summaryParts = [];
+            if (cleanPreview.recordDays) summaryParts.push(cleanPreview.recordDays + " 天学习记录");
+            if (cleanPreview.reports) summaryParts.push(cleanPreview.reports + " 篇缓存文章");
+            if (cleanPreview.memoryWords) summaryParts.push(cleanPreview.memoryWords + " 个单词记忆进度");
+            return import_react16.default.createElement(
+              "div",
+              { className: "eg-clean-confirm" },
+              import_react16.default.createElement(
+                "div",
+                { className: "eg-clean-confirm-text" },
+                totalItems > 0 ? "将清除「" + (rangeObj ? rangeObj.label : cleanPreview.range) + "」范围内：" + summaryParts.join("、") + "，操作不可恢复。" : "所选范围内暂无可清理的学习记录或缓存文章。"
+              ),
+              import_react16.default.createElement(
+                "div",
+                { className: "eg-clean-confirm-actions" },
+                import_react16.default.createElement(
+                  "button",
+                  {
+                    type: "button",
+                    className: "eg-btn",
+                    disabled: cleanBusy,
+                    onClick: () => setCleanPreview(null)
+                  },
+                  "取消"
+                ),
+                totalItems > 0 ? import_react16.default.createElement(
+                  "button",
+                  {
+                    type: "button",
+                    className: "eg-btn danger",
+                    disabled: cleanBusy,
+                    onClick: confirmCleanup
+                  },
+                  cleanBusy ? "清理中…" : "确认清理"
+                ) : null
+              )
+            );
+          })() : null,
+          cleanNotice ? import_react16.default.createElement("div", { className: "eg-notice eg-clean-notice" }, cleanNotice) : null
+        )
+      )
+    ),
     error ? import_react16.default.createElement("div", { className: "eg-settings-error" }, error) : null
   );
 }
@@ -3971,6 +4293,12 @@ function EnglishGymBoard() {
             setWordBankRev((n) => n + 1);
             drill.reset();
             dailyReport.invalidate();
+          },
+          onDataCleared: ({ range, clearMemory } = {}) => {
+            invalidateDashboardCache();
+            if (clearMemory || range === "all") setWordBankRev((n) => n + 1);
+            if (range === "all") dailyReport.invalidate();
+            refreshStats();
           },
           onTopicChange: () => {
             drill.reset();
