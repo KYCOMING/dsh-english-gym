@@ -1,0 +1,39 @@
+/* Hallmark · component: english-gym panel · genre: editorial · theme: in-place (dsh tokens) · states: 8 · contrast: pass · v3.0.0
+ * critique: the drill is a study desk — crisp sans for Chinese & UI, Charter/Georgia for English reading, tactile micro-motion throughout.
+ * waive: none
+ */
+.eg-root, .eg-panel {
+  --eg-font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --eg-en: "Charter", "Iowan Old Style", "Georgia", "Times New Roman", "PingFang SC", serif;
+  --eg-serif: var(--eg-en);
+  --eg-ink: var(--dsw-alias-label-primary, #1f2328);
+  --eg-ink-2: var(--dsw-alias-label-secondary, #5a6069);
+  --eg-bg: var(--dsw-alias-bg-layer-1, #ffffff);
+  --eg-bg-2: var(--dsw-alias-bg-layer-2, rgba(23, 26, 31, .045));
+  --eg-bg-3: color-mix(in srgb, var(--eg-ink) 8%, transparent);
+  --eg-line: var(--dsw-alias-border-l1, rgba(23, 26, 31, .12));
+  --eg-line-2: var(--dsw-alias-border-l2, rgba(23, 26, 31, .24));
+  --eg-accent: var(--dsw-alias-brand-primary, #2f6fed);
+  --eg-accent-ink: var(--eg-accent);
+  --eg-on-accent: #ffffff;
+  --eg-ok: var(--dsw-alias-state-success-primary, #1a7f37);
+  --eg-bad: var(--dsw-alias-state-error-primary, #cf222e);
+  --eg-warn: var(--dsw-alias-state-warn-primary, #bf8700);
+  --eg-warn-strong: var(--eg-warn);
+  --eg-r: 16px;
+  --eg-r-sm: 10px;
+  --eg-shadow: 0 20px 56px rgba(17, 22, 31, .22), 0 2px 8px rgba(17, 22, 31, .08);
+  --eg-dur: .16s;
+  --eg-ease: cubic-bezier(.22, 1, .36, 1);
+  --eg-spring: cubic-bezier(.34, 1.45, .64, 1);
+  --eg-fs-xs: 12px; --eg-fs-sm: 13px; --eg-fs-md: 15px; --eg-fs-lg: 19px; --eg-fs-xl: 32px;
+  --eg-confetti-1: var(--eg-accent); --eg-confetti-2: var(--eg-bad); --eg-confetti-3: var(--eg-ok);
+  --eg-confetti-4: var(--eg-warn); --eg-confetti-5: #c9407e; --eg-confetti-6: #1b7c83;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.eg-root { font: var(--eg-fs-sm)/1.5 var(--eg-font); color: var(--eg-ink); }
+/* place the composer-strip pill at the far right of the dock row (after the context meter) */
+.eg-root.eg-entry { order: 999; flex: 0 0 auto; }
+.eg-root *, .eg-panel * { box-sizing: border-box; }
+

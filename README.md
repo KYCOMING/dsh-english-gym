@@ -113,31 +113,41 @@ npm run verify:data -- --min-coverage 95
 
 ## 实现与目录结构
 
-插件由宿主侧与前端两部分组成，无构建步骤，也不依赖外部 npm 包：
+插件由宿主侧与前端两部分组成，运行时零外部依赖（仅前端源码在开发时通过 `esbuild` 打包为单文件 `client.js`）：
 
-- **宿主侧（`index.js` + `src/`）**：通过 `ctx.webServer` 挂载需鉴权的内部 JSON 接口，调用 `ctx.llm` 完成出题、判分与报告生成，使用 `node:fs` 读写本地数据。
-- **前端（`client.js`）**：向 `conversation.composer.dock` 注入输入框下方的触发条，向 `shell.overlay` 挂载浮动面板，两者通过模块内状态同步开关与统计，并复用 DSH 主题变量（`--dsw-alias-*`）自动适配明暗模式。
+- **宿主侧（`index.js` + `src/core|host|features|shared/`）**：通过 `ctx.webServer` 挂载需鉴权的内部 JSON 接口，调用 `ctx.llm` 完成出题、判分与报告生成，使用 `node:fs` 读写本地数据。
+- **前端（`src/client/` → `client.js`）**：向 `conversation.composer.dock` 注入输入框下方的触发条，向 `shell.overlay` 挂载浮动面板，两者通过模块内状态同步开关与统计，并复用 DSH 主题变量（`--dsw-alias-*`）自动适配明暗模式。
 
 ```text
 src/
   core/                 # 本地 JSON 持久化、LLM 调用封装
   shared/               # 通用纯函数（答案归一化等）
   host/                 # 插件装配、内部接口、对话工具与生命周期
-  features/
-    phrase/             # 短语训练：出题、判分、错题复习
-    word/               # 单词训练：词库管理、导入解析、抽词给生成提示
-      data/             # 内置词库 JSON（CET4 / 六级 / 雅思 / 托福，含例句）
-    report/             # 每日英文报告生成与兜底
-    activity/           # 数据看板：按天汇总学习记录、日历热力图数据
-    settings/           # 看板设置与内容方向管理
-scripts/                # 开发者脚本：批量生成例句、词库校验
-client.js               # 前端挂件（dock 入口 + overlay 浮窗）
+  features/             # 宿主侧业务（phrase / word / report / activity / settings）
+    word/data/          # 内置词库 JSON（CET4 / 六级 / 雅思 / 托福，含例句）
+  client/               # 前端源码（按业务与样式拆分）
+    core/               # 请求封装、共享状态、样式注入、文本工具
+    components/         # 通用交互动效与展示组件（Confetti / ScoreRing）
+    shell/              # 触发条、浮窗容器与几何位置管理
+    features/           # 单词、短语、今日报告、看板、设置五大业务模块
+    styles/             # 拆分后的模块化样式表
+scripts/                # 构建前端与数据脚本（build-client / gen-examples / verify-data）
+client.js               # 前端打包产物（DSH ./client 入口，由 npm run build:client 生成）
 index.js                # DSH 插件入口
 ```
 
 ## 开发与发布
 
-改完源码后，对本地目录重新执行 `set_plugin(enabled: true)` 即可热加载，`client.js` 的改动会通过 Client HMR 同步到已打开的页面。发布时可直接以目录形式分享，或使用 `npm publish`（`package.json` 的 `files` 字段已配置运行所需文件）。
+```bash
+# 安装开发依赖（esbuild）
+npm install
+
+# 修改 src/client/ 后重新生成 client.js（或开启 watch 自动触发 Client HMR）
+npm run build:client
+npm run watch:client
+```
+
+改完源码（并构建 `client.js`）后，对本地目录重新执行 `set_plugin(enabled: true)` 即可热加载，`client.js` 的改动会通过 Client HMR 同步到已打开的页面。发布时可直接以目录形式分享，或使用 `npm publish`（`package.json` 的 `files` 字段已配置运行所需文件，且 `prepublishOnly` 会自动构建 `client.js` 并校验数据）。
 
 ## License
 

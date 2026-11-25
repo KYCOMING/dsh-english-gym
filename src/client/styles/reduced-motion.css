@@ -1,0 +1,8 @@
+@media (prefers-reduced-motion: reduce) {
+  .eg-panel, .eg-panel.is-closing, .eg-view, .eg-view > *, .eg-stage-in, .eg-fb, .eg-fb-ref, .eg-fb-tip, .eg-fb-actions,
+  .eg-fb-mine, .eg-fb-corr, .eg-fb-hl,
+  .eg-letters.is-bad, .eg-letter.is-pop, .eg-letters.is-ok .eg-letter.ok, .eg-hist-day.is-flash,
+  .eg-notice, .eg-import, .eg-preview, .eg-word-miss, .eg-word .eg-eg.done { animation: none !important; }
+  .eg-confetti { display: none; }
+  .eg-root *, .eg-panel * { transition: none !important; }
+}
