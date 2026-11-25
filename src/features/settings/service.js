@@ -26,6 +26,7 @@ export const DEFAULT_SETTINGS = {
   customTopics: [],
   bankLink: true,
   bankRetries: 1,
+  sessionLink: false,
 }
 
 export const MAX_BANK_RETRIES = 5
@@ -80,6 +81,7 @@ export function normalizeSettings(raw) {
     customTopics,
     bankLink: source.bankLink !== false,
     bankRetries: normalizeBankRetries(source.bankRetries),
+    sessionLink: source.sessionLink === true,
   }
 }
 
@@ -114,6 +116,7 @@ export function createSettingsService({ dir, conf }) {
     if (typeof body.confetti === 'boolean') next.confetti = body.confetti
     if (typeof body.bankLink === 'boolean') next.bankLink = body.bankLink
     if (body.bankRetries !== undefined) next.bankRetries = normalizeBankRetries(body.bankRetries)
+    if (typeof body.sessionLink === 'boolean') next.sessionLink = body.sessionLink
     if (Array.isArray(body.customTopics)) next.customTopics = normalizeCustomTopics(body.customTopics)
     if (typeof body.topicId === 'string' && body.topicId) {
       const known = listDirections(next).some((item) => item.id === body.topicId)

@@ -59,7 +59,7 @@ export function defaultState() {
     wordPending: {}, // id -> { en, zh, createdAt }
     wordRecent: [], // recently served words, to avoid immediate repeats
     wordBankId: 'builtin', // active word bank (builtin or an imported bank id)
-    settings: { confetti: true, topicId: 'ai', customTopics: [], bankLink: true, bankRetries: 1 },
+    settings: { confetti: true, topicId: 'ai', customTopics: [], bankLink: true, bankRetries: 1, sessionLink: false },
     // Per-day study log used by the dashboard:
     // dayKey -> { words: [{ en, zh, pos, ok, at }], phrases: [{ zh, en, answer, ok, score, at }] }
     log: {},

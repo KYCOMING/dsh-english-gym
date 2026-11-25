@@ -501,11 +501,16 @@ window.__ModuleLoader__.load({
   .eg-fb.is-phrase .eg-fb-actions .eg-kbd { display: none; }
 }
 .eg-cap-row { display: inline-flex; align-items: center; justify-content: center; gap: 7px; flex-wrap: wrap; }
-.eg-attempt-pill {
-  display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px;
+.eg-attempt-pill, .eg-source-pill {
+  display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 999px;
   background: color-mix(in srgb, var(--eg-accent) 10%, var(--eg-bg));
   border: 1px solid color-mix(in srgb, var(--eg-accent) 22%, transparent);
   color: var(--eg-ink-2); font: 600 11px/1.3 var(--eg-font); font-variant-numeric: tabular-nums;
+}
+.eg-source-pill { color: var(--eg-ink); }
+.eg-source-pill::before {
+  content: ""; width: 6px; height: 6px; border-radius: 50%; flex: 0 0 auto;
+  background: var(--eg-accent);
 }
 
 /* ===== report ===== */
@@ -802,6 +807,12 @@ window.__ModuleLoader__.load({
 .eg-setting-title { font-size: 14px; font-weight: 600; color: var(--eg-ink); line-height: 1.35; }
 .eg-setting-desc { margin-top: 3px; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); line-height: 1.55; }
 .eg-setting-desc.eg-lead { margin-top: 0; }
+.eg-setting-note {
+  margin-top: 8px; padding: 7px 10px; border-radius: 8px;
+  background: color-mix(in srgb, var(--eg-accent) 6%, var(--eg-bg-2));
+  border: 1px solid color-mix(in srgb, var(--eg-accent) 18%, var(--eg-line));
+  color: var(--eg-ink-2); font-size: 11.5px; line-height: 1.5;
+}
 .eg-switch {
   appearance: none; -webkit-appearance: none; position: relative; flex: 0 0 auto;
   width: 40px; height: 22px; padding: 2px; border: 1px solid var(--eg-line-2); border-radius: 999px;
@@ -1082,7 +1093,8 @@ window.__ModuleLoader__.load({
     const store = {
       open: false,
       stats: null,
-      settings: { confetti: true, topicId: 'ai', customTopics: [], bankLink: true, bankRetries: 1 },
+      sessionId: '',
+      settings: { confetti: true, topicId: 'ai', customTopics: [], bankLink: true, bankRetries: 1, sessionLink: false },
       burst: 0,
       listeners: new Set(),
       emit() {
@@ -1101,6 +1113,12 @@ window.__ModuleLoader__.load({
       },
       setStats(s) {
         this.stats = s
+        this.emit()
+      },
+      setSessionId(id) {
+        const next = typeof id === 'string' ? id : ''
+        if (this.sessionId === next) return
+        this.sessionId = next
         this.emit()
       },
       setSettings(s) {
@@ -1456,6 +1474,7 @@ window.__ModuleLoader__.load({
         const highlights = Array.isArray(feedback.highlights) ? feedback.highlights : []
         const delta = prevScore !== null && prevScore !== undefined ? score - prevScore : 0
         const canRetry = !!(card && onRetry)
+        const fromSession = (feedback.source || (card && card.source)) === 'session'
 
         return React.createElement(
           'div',
@@ -1472,6 +1491,7 @@ window.__ModuleLoader__.load({
                 { className: 'eg-fb-headline' },
                 React.createElement('span', { className: 'eg-fb-status' }, verdict.title),
                 feedback.exact ? React.createElement('span', { className: 'eg-fb-pill tone' }, '完全匹配') : null,
+                fromSession ? React.createElement('span', { className: 'eg-fb-pill' }, '结合当前会话') : null,
                 attempt > 1 ? React.createElement('span', { className: 'eg-fb-pill' }, '第 ' + attempt + ' 次尝试') : null,
                 delta > 0 ? React.createElement('span', { className: 'eg-fb-pill up' }, '↑ +' + delta + ' 分') : null,
               ),
@@ -1670,6 +1690,9 @@ window.__ModuleLoader__.load({
           'div',
           { className: 'eg-cap eg-cap-row' },
           React.createElement('span', null, '把这句话译成英文'),
+          card.source === 'session'
+            ? React.createElement('span', { className: 'eg-source-pill', title: '根据当前会话内容生成' }, '结合当前会话')
+            : null,
           attempt > 0 ? React.createElement('span', { className: 'eg-attempt-pill' }, '第 ' + (attempt + 1) + ' 次尝试') : null,
         ),
         React.createElement('div', { className: 'eg-zh' }, card.zh),
@@ -2485,8 +2508,8 @@ window.__ModuleLoader__.load({
       )
     }
 
-    // Settings tab: celebration toggle + content directions.
-    function SettingsPanel({ onTopicChange }) {
+    // Settings tab: celebration toggle + session/bank links + content directions.
+    function SettingsPanel({ onTopicChange, onPhraseConfigChange }) {
       const shared = useShared()
       const [data, setData] = useState(null)
       const [busy, setBusy] = useState(false)
@@ -2513,7 +2536,7 @@ window.__ModuleLoader__.load({
       }, [load])
 
       const save = useCallback(
-        async (patch, topicChanged) => {
+        async (patch, changeScope) => {
           if (busy) return false
           setBusy(true)
           setError('')
@@ -2524,7 +2547,11 @@ window.__ModuleLoader__.load({
             })
             setData(result)
             store.setSettings(result.settings)
-            if (topicChanged && typeof onTopicChange === 'function') onTopicChange()
+            if (changeScope === true || changeScope === 'topic') {
+              if (typeof onTopicChange === 'function') onTopicChange()
+            } else if (changeScope === 'phrase') {
+              if (typeof onPhraseConfigChange === 'function') onPhraseConfigChange()
+            }
             return true
           } catch (e) {
             setError(e.message || '设置保存失败')
@@ -2533,7 +2560,7 @@ window.__ModuleLoader__.load({
             setBusy(false)
           }
         },
-        [busy, onTopicChange],
+        [busy, onTopicChange, onPhraseConfigChange],
       )
 
       const settings = data ? data.settings : shared.settings
@@ -2629,6 +2656,33 @@ window.__ModuleLoader__.load({
                 React.createElement(
                   'div',
                   { className: 'eg-setting-info' },
+                  React.createElement('div', { className: 'eg-setting-title' }, '会话关联'),
+                  React.createElement(
+                    'div',
+                    { className: 'eg-setting-desc' },
+                    '开启后，短语训练会读取当前会话并截取部分对话内容作为翻译素材（自动过滤代码与过长文本），不再关注词库关联和内容方向；当前会话暂无可用内容时自动回退。',
+                  ),
+                ),
+                React.createElement('button', {
+                  type: 'button',
+                  className: 'eg-switch',
+                  role: 'switch',
+                  'aria-checked': settings.sessionLink ? 'true' : 'false',
+                  'aria-label': '会话关联',
+                  disabled: busy,
+                  onClick: () => save({ sessionLink: !settings.sessionLink }, 'phrase'),
+                }),
+              ),
+            ),
+            React.createElement(
+              'div',
+              { className: 'eg-setting-row' },
+              React.createElement(
+                'div',
+                { className: 'eg-setting-head' },
+                React.createElement(
+                  'div',
+                  { className: 'eg-setting-info' },
                   React.createElement('div', { className: 'eg-setting-title' }, '词库关联'),
                   React.createElement(
                     'div',
@@ -2646,6 +2700,13 @@ window.__ModuleLoader__.load({
                   onClick: () => save({ bankLink: !settings.bankLink }, false),
                 }),
               ),
+              settings.sessionLink
+                ? React.createElement(
+                    'div',
+                    { className: 'eg-setting-note' },
+                    '已开启会话关联：短语训练优先按当前会话出题，词库关联仅用于今日报告或无可用会话时兜底。',
+                  )
+                : null,
               React.createElement(
                 'div',
                 {
@@ -2727,7 +2788,9 @@ window.__ModuleLoader__.load({
               React.createElement(
                 'div',
                 { className: 'eg-setting-desc eg-lead' },
-                '用于生成短语和今日报告；切换后下一题、下一篇生效。',
+                settings.sessionLink
+                  ? '已开启会话关联，短语训练优先按当前会话出题；内容方向用于今日报告及无可用会话时兜底。'
+                  : '用于生成短语和今日报告；切换后下一题、下一篇生效。',
               ),
               React.createElement(
                 'div',
@@ -3105,9 +3168,16 @@ window.__ModuleLoader__.load({
     }
 
     // Inline trigger under the composer (compact).
-    function EnglishGymPill() {
+    function EnglishGymPill(props) {
       useStyle()
       const shared = useShared()
+      const sessionId = props && typeof props.sessionId === 'string' ? props.sessionId : ''
+      useEffect(() => {
+        store.setSessionId(sessionId)
+        return () => {
+          if (sessionId && store.sessionId === sessionId) store.setSessionId('')
+        }
+      }, [sessionId])
       useEffect(() => {
         if (!store.stats) refreshStats()
       }, [])
@@ -3349,7 +3419,7 @@ window.__ModuleLoader__.load({
         try {
           const data = await api('/next', {
             method: 'POST',
-            body: JSON.stringify({ mode: mode || 'new' }),
+            body: JSON.stringify({ mode: mode || 'new', sessionId: store.sessionId || '' }),
           })
           setCard(data)
           setAnswer('')
@@ -3558,6 +3628,17 @@ window.__ModuleLoader__.load({
                   : tab === 'dashboard'
                     ? React.createElement(Dashboard, { key: 'dashboard' })
                     : React.createElement(SettingsPanel, {
+                        onPhraseConfigChange: () => {
+                          setCard(null)
+                          setFeedback(null)
+                          setAnswer('')
+                          setSubmittedAnswer('')
+                          setAttempt(0)
+                          setPrevScore(null)
+                          setRetryFocusTick(0)
+                          lastScoreRef.current = null
+                          startedRef.current = false
+                        },
                         onTopicChange: () => {
                           setCard(null)
                           setFeedback(null)

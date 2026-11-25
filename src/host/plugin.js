@@ -90,7 +90,7 @@ export function createEnglishGym(ctx, rawConfig) {
       }
       if (req.method === 'POST' && sub === '/next') {
         const body = await readBody(req)
-        return sendJson(res, 200, await phrase.nextQuestion(body && body.mode))
+        return sendJson(res, 200, await phrase.nextQuestion({ mode: body && body.mode, sessionId: body && body.sessionId }))
       }
       if (req.method === 'POST' && sub === '/check') {
         const body = await readBody(req)

@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto'
 import { dayKey, loadState, saveState, yesterdayKey } from '../../core/store.js'
 import { gradeAnswer } from './grade.js'
 import { generateQuestion } from './generate.js'
+import { readSessionExcerpt } from './session.js'
 import { recordStudy } from '../activity/service.js'
 import { normalizeSettings } from '../settings/service.js'
 import { pickBankCandidates } from '../word/sample.js'
@@ -36,27 +37,78 @@ function recordAnswer(state, correct) {
   }
 }
 
+function recentPrompts(state, limit = 6) {
+  const seen = new Set()
+  const out = []
+  const pending = Object.values(state.pending || {}).sort((a, b) =>
+    String(b.createdAt || '').localeCompare(String(a.createdAt || '')),
+  )
+  for (const item of pending) {
+    const zh = String((item && item.zh) || '').trim()
+    if (!zh || seen.has(zh)) continue
+    seen.add(zh)
+    out.push(zh)
+    if (out.length >= limit) return out
+  }
+  const todayBucket = state.log && state.log[dayKey()]
+  const phrases = todayBucket && Array.isArray(todayBucket.phrases) ? todayBucket.phrases : []
+  for (let i = phrases.length - 1; i >= 0 && out.length < limit; i -= 1) {
+    const zh = String((phrases[i] && phrases[i].zh) || '').trim()
+    if (!zh || seen.has(zh)) continue
+    seen.add(zh)
+    out.push(zh)
+  }
+  return out
+}
+
 /** Phrase translation drill: generate one prompt, grade one answer. */
 export function createPhraseService({ ctx, conf, dir, getTopic }) {
-  async function nextQuestion(mode) {
+  async function nextQuestion(input) {
+    const mode = typeof input === 'string' ? input : input && input.mode
+    const sessionId = typeof input === 'object' && input ? input.sessionId : ''
     const state = loadState(dir)
     let picked
     if (mode === 'review' && state.review.length) {
       state.review.sort((a, b) => String(a.missedAt || '').localeCompare(String(b.missedAt || '')))
       const item = state.review[0]
-      picked = { zh: item.zh, en: item.en, hint: item.hint || '', mode: 'review' }
+      picked = { zh: item.zh, en: item.en, hint: item.hint || '', mode: 'review', bankWords: [], source: 'review' }
     } else {
-      const topic = typeof getTopic === 'function' ? getTopic() : conf.topic
       const opts = normalizeSettings(state.settings)
-      const words = opts.bankLink ? pickBankCandidates(dir, state, 24) : []
-      const retries = opts.bankLink ? opts.bankRetries : 0
-      let q = null
-      for (let attempt = 0; attempt <= retries; attempt += 1) {
-        q = await generateQuestion(ctx, conf, { level: conf.level, topic, words })
-        if (!q || q.fallback) break
-        if (!words.length || (Array.isArray(q.used) && q.used.length)) break
+      const sessionExcerpt = opts.sessionLink && sessionId ? await readSessionExcerpt(ctx, sessionId) : ''
+      if (sessionExcerpt) {
+        // Session-linked mode ignores topic and word-bank coupling so the sentence stays focused on the active conversation.
+        const q = await generateQuestion(ctx, conf, {
+          level: conf.level,
+          sessionContext: sessionExcerpt,
+          avoid: recentPrompts(state, 6),
+        })
+        picked = {
+          zh: q.zh,
+          en: q.en,
+          hint: q.hint || '',
+          mode: 'new',
+          bankWords: [],
+          source: q.fallback ? 'fallback' : 'session',
+        }
+      } else {
+        const topic = typeof getTopic === 'function' ? getTopic() : conf.topic
+        const words = opts.bankLink ? pickBankCandidates(dir, state, 24) : []
+        const retries = opts.bankLink ? opts.bankRetries : 0
+        let q = null
+        for (let attempt = 0; attempt <= retries; attempt += 1) {
+          q = await generateQuestion(ctx, conf, { level: conf.level, topic, words })
+          if (!q || q.fallback) break
+          if (!words.length || (Array.isArray(q.used) && q.used.length)) break
+        }
+        picked = {
+          zh: q.zh,
+          en: q.en,
+          hint: q.hint || '',
+          mode: 'new',
+          bankWords: q.used || [],
+          source: q.fallback ? 'fallback' : 'topic',
+        }
       }
-      picked = { zh: q.zh, en: q.en, hint: q.hint || '', mode: 'new', bankWords: q.used || [] }
     }
     const id = randomUUID()
     state.pending[id] = {
@@ -65,11 +117,19 @@ export function createPhraseService({ ctx, conf, dir, getTopic }) {
       hint: picked.hint,
       mode: picked.mode,
       bankWords: picked.bankWords || [],
+      source: picked.source || 'topic',
       createdAt: new Date().toISOString(),
     }
     prunePending(state)
     saveState(dir, state)
-    return { id, zh: picked.zh, hint: picked.hint, mode: picked.mode, bankWords: picked.bankWords || [] }
+    return {
+      id,
+      zh: picked.zh,
+      hint: picked.hint,
+      mode: picked.mode,
+      bankWords: picked.bankWords || [],
+      source: picked.source || 'topic',
+    }
   }
 
   async function checkAnswer({ id, answer }) {
@@ -119,6 +179,7 @@ export function createPhraseService({ ctx, conf, dir, getTopic }) {
       corrected: result.corrected,
       highlights: Array.isArray(result.highlights) ? result.highlights : [],
       bankWords: Array.isArray(pending.bankWords) ? pending.bankWords : [],
+      source: pending.source || 'topic',
     }
   }
 
