@@ -37,35 +37,95 @@ window.__ModuleLoader__.load({
       return source.split(new RegExp('(' + escapeRegExp(target) + ')', 'gi'))
     }
 
+    /** Split a reference sentence around any matched word-bank terms (longest first). */
+    function splitByTerms(text, terms) {
+      const source = String(text || '')
+      const clean = (Array.isArray(terms) ? terms : [])
+        .map((t) => String(t || '').trim())
+        .filter(Boolean)
+        .sort((a, b) => b.length - a.length)
+      if (!source || !clean.length) return [source]
+      const pattern = clean
+        .map((t) => (/\s/.test(t) ? escapeRegExp(t) : '\\b' + escapeRegExp(t) + '\\b'))
+        .join('|')
+      try {
+        return source.split(new RegExp('(' + pattern + ')', 'gi'))
+      } catch {
+        return [source]
+      }
+    }
+
+    function normalizeEnglish(text) {
+      return String(text || '')
+        .toLowerCase()
+        .replace(/[\u2018\u2019]/g, "'")
+        .replace(/[\u201c\u201d]/g, '"')
+        .replace(/[.!?,;:]+$/g, '')
+        .replace(/\s+/g, ' ')
+        .trim()
+    }
+
+    async function copyToClipboard(text) {
+      const value = String(text || '')
+      if (!value) return false
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(value)
+          return true
+        }
+      } catch {
+        /* fall back to execCommand */
+      }
+      try {
+        const ta = document.createElement('textarea')
+        ta.value = value
+        ta.setAttribute('readonly', '')
+        ta.style.position = 'fixed'
+        ta.style.opacity = '0'
+        document.body.appendChild(ta)
+        ta.select()
+        const ok = document.execCommand('copy')
+        document.body.removeChild(ta)
+        return !!ok
+      } catch {
+        return false
+      }
+    }
+
     const CSS = `
-/* Hallmark · component: english-gym panel · genre: editorial · theme: in-place (dsh tokens) · states: 8 · contrast: pass · v2.0.0
- * critique: the drill is a study desk — one sentence set in serif, one writing field, one action; feedback reads like a marked page.
+/* Hallmark · component: english-gym panel · genre: editorial · theme: in-place (dsh tokens) · states: 8 · contrast: pass · v3.0.0
+ * critique: the drill is a study desk — crisp sans for Chinese & UI, Charter/Georgia for English reading, tactile micro-motion throughout.
  * waive: none
  */
 .eg-root, .eg-panel {
-  --eg-font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-  --eg-serif: "Songti SC", "Songti TC", "Georgia", "Times New Roman", serif;
+  --eg-font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --eg-en: "Charter", "Iowan Old Style", "Georgia", "Times New Roman", "PingFang SC", serif;
+  --eg-serif: var(--eg-en);
   --eg-ink: var(--dsw-alias-label-primary, #1f2328);
   --eg-ink-2: var(--dsw-alias-label-secondary, #5a6069);
   --eg-bg: var(--dsw-alias-bg-layer-1, #ffffff);
   --eg-bg-2: var(--dsw-alias-bg-layer-2, rgba(23, 26, 31, .045));
-  --eg-bg-3: rgba(23, 26, 31, .09);
+  --eg-bg-3: color-mix(in srgb, var(--eg-ink) 8%, transparent);
   --eg-line: var(--dsw-alias-border-l1, rgba(23, 26, 31, .12));
   --eg-line-2: var(--dsw-alias-border-l2, rgba(23, 26, 31, .24));
   --eg-accent: var(--dsw-alias-brand-primary, #2f6fed);
-  --eg-accent-ink: #1d54c4;
+  --eg-accent-ink: var(--eg-accent);
   --eg-on-accent: #ffffff;
   --eg-ok: var(--dsw-alias-state-success-primary, #1a7f37);
   --eg-bad: var(--dsw-alias-state-error-primary, #cf222e);
   --eg-warn: var(--dsw-alias-state-warn-primary, #bf8700);
-  --eg-warn-strong: #7a5200;
+  --eg-warn-strong: var(--eg-warn);
   --eg-r: 16px;
   --eg-r-sm: 10px;
   --eg-shadow: 0 20px 56px rgba(17, 22, 31, .22), 0 2px 8px rgba(17, 22, 31, .08);
   --eg-dur: .16s;
+  --eg-ease: cubic-bezier(.22, 1, .36, 1);
+  --eg-spring: cubic-bezier(.34, 1.45, .64, 1);
   --eg-fs-xs: 12px; --eg-fs-sm: 13px; --eg-fs-md: 15px; --eg-fs-lg: 19px; --eg-fs-xl: 32px;
   --eg-confetti-1: var(--eg-accent); --eg-confetti-2: var(--eg-bad); --eg-confetti-3: var(--eg-ok);
   --eg-confetti-4: var(--eg-warn); --eg-confetti-5: #c9407e; --eg-confetti-6: #1b7c83;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 .eg-root { font: var(--eg-fs-sm)/1.5 var(--eg-font); color: var(--eg-ink); }
 /* place the composer-strip pill at the far right of the dock row (after the context meter) */
@@ -77,9 +137,10 @@ window.__ModuleLoader__.load({
   display: flex; align-items: center; gap: 9px; width: 100%;
   padding: 7px 10px; background: transparent; border: none; border-radius: 10px;
   color: var(--eg-ink-2); font-family: var(--eg-font); font-size: var(--eg-fs-sm); text-align: left; cursor: pointer;
-  transition: background var(--eg-dur) ease;
+  transition: background var(--eg-dur) ease, transform .12s ease;
 }
 .eg-pill:hover { background: var(--eg-bg-2); }
+.eg-pill:active { transform: scale(.985); }
 .eg-pill:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }
 .eg-mono {
   width: 22px; height: 22px; border-radius: 7px; flex: 0 0 auto;
@@ -90,11 +151,16 @@ window.__ModuleLoader__.load({
 .eg-wordmark { font-weight: 650; color: var(--eg-ink); letter-spacing: .01em; }
 .eg-streak { color: var(--eg-ink-2); font-variant-numeric: tabular-nums; }
 .eg-chip {
-  display: inline-flex; align-items: center; gap: 4px; padding: 1px 8px; height: 20px; border-radius: 10px;
-  background: var(--eg-bg-3); color: var(--eg-ink-2); font-size: var(--eg-fs-xs); font-variant-numeric: tabular-nums;
+  display: inline-flex; align-items: center; gap: 4px; padding: 1px 8px; height: 20px; border-radius: 999px;
+  background: var(--eg-bg-3); color: var(--eg-ink-2); font-size: 11.5px; font-weight: 600; font-variant-numeric: tabular-nums;
 }
-.eg-chip.warn { background: var(--eg-warn-strong); color: var(--eg-on-accent); }
-.eg-chev { margin-left: auto; opacity: .7; font-size: var(--eg-fs-xs); }
+.eg-chip.warn {
+  background: color-mix(in srgb, var(--eg-warn) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--eg-warn) 32%, transparent);
+  color: var(--eg-warn);
+}
+.eg-chev { margin-left: auto; opacity: .7; font-size: var(--eg-fs-xs); transition: transform .2s var(--eg-ease); }
+.eg-pill[aria-expanded="true"] .eg-chev { transform: rotate(90deg); }
 
 /* ===== panel ===== */
 .eg-panel {
@@ -103,107 +169,136 @@ window.__ModuleLoader__.load({
   background: var(--eg-bg); border: 1px solid var(--eg-line); border-radius: var(--eg-r);
   box-shadow: var(--eg-shadow); overflow: hidden;
   font: var(--eg-fs-sm)/1.5 var(--eg-font); color: var(--eg-ink);
-  transform-origin: bottom center; animation: eg-pop .18s cubic-bezier(.2, .85, .25, 1);
+  transform-origin: bottom center; animation: eg-pop .2s var(--eg-ease) both;
 }
-@keyframes eg-pop { from { opacity: 0; transform: scale(.94) translateY(10px); } to { opacity: 1; transform: none; } }
+.eg-panel.is-closing {
+  animation: eg-pop-out .14s cubic-bezier(.4, 0, 1, 1) forwards;
+  pointer-events: none;
+}
+@keyframes eg-pop { from { opacity: 0; transform: scale(.95) translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes eg-pop-out { from { opacity: 1; transform: none; } to { opacity: 0; transform: scale(.96) translateY(6px); } }
 .eg-head {
-  display: flex; align-items: center; gap: 6px; padding: 10px 10px 10px 12px;
+  display: flex; align-items: center; gap: 5px; padding: 9px 8px 9px 10px;
   border-bottom: 1px solid var(--eg-line); flex: 0 0 auto; cursor: move; user-select: none; touch-action: none;
   background: var(--eg-bg); position: relative;
 }
-.eg-grip { color: var(--eg-ink-2); opacity: .9; font-size: var(--eg-fs-xs); letter-spacing: -2px; cursor: grab; width: 10px; flex: 0 0 auto; }
-.eg-tabs { display: flex; flex-wrap: nowrap; gap: 0; margin-left: 0; min-width: 0; flex: 0 1 auto; }
+.eg-grip { color: var(--eg-ink-2); opacity: .7; font-size: var(--eg-fs-xs); letter-spacing: -2px; cursor: grab; width: 10px; flex: 0 0 auto; transition: opacity var(--eg-dur) ease; }
+.eg-head:hover .eg-grip { opacity: 1; }
+.eg-tabs { position: relative; display: flex; flex-wrap: nowrap; align-items: center; gap: 0; margin-left: 0; min-width: 0; flex: 0 1 auto; }
 .eg-tab {
   position: relative; padding: 5px 5px; border: none; background: transparent; cursor: pointer; white-space: nowrap;
-  color: var(--eg-ink-2); font: 600 var(--eg-fs-xs)/1.2 var(--eg-font); border-radius: 7px; transition: color var(--eg-dur) ease;
+  color: var(--eg-ink-2); font: 600 var(--eg-fs-xs)/1.2 var(--eg-font); border-radius: 7px;
+  transition: color var(--eg-dur) ease, background var(--eg-dur) ease;
 }
-.eg-tab:hover { color: var(--eg-ink); }
+.eg-tab:hover { color: var(--eg-ink); background: var(--eg-bg-2); }
 .eg-tab:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
 .eg-tab.active { color: var(--eg-ink); }
-.eg-tab.active::after {
-  content: ""; position: absolute; left: 12px; right: 12px; bottom: -10px; height: 2px; border-radius: 2px; background: var(--eg-accent);
+.eg-tabs:not(.has-slider) .eg-tab.active::after {
+  content: ""; position: absolute; left: 5px; right: 5px; bottom: -10px; height: 2px; border-radius: 2px; background: var(--eg-accent);
+}
+.eg-tab-indicator {
+  position: absolute; left: 0; bottom: -10px; height: 2px; border-radius: 2px;
+  background: var(--eg-accent); pointer-events: none;
+  transition: transform .24s var(--eg-ease), width .24s var(--eg-ease), opacity .16s ease;
+  will-change: transform, width;
 }
 .eg-head-right { margin-left: auto; display: flex; align-items: center; gap: 6px; }
 .eg-close { appearance: none; -webkit-appearance: none;
   border: none; background: transparent; color: var(--eg-ink-2); cursor: pointer;
   width: 26px; height: 26px; border-radius: 7px; font-size: 14px; line-height: 1; display: flex; align-items: center; justify-content: center;
-  transition: background var(--eg-dur) ease, color var(--eg-dur) ease;
+  transition: background var(--eg-dur) ease, color var(--eg-dur) ease, transform .14s ease;
 }
 .eg-close:hover { background: var(--eg-bg-2); color: var(--eg-ink); }
+.eg-close:active { transform: scale(.9); }
 .eg-close:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
-.eg-body { padding: 22px 24px 24px; overflow-y: auto; flex: 1 1 auto; display: flex; flex-direction: column; }
+.eg-body { padding: 20px 22px 22px; overflow-y: auto; flex: 1 1 auto; display: flex; flex-direction: column; }
 .eg-body > * { width: 100%; max-width: 640px; margin-left: auto; margin-right: auto; }
 
+/* ===== shared motion primitives ===== */
+.eg-view {
+  width: 100%; max-width: 640px; margin-left: auto; margin-right: auto;
+  display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0;
+  animation: eg-view-in .2s var(--eg-ease) both;
+}
+.eg-stage-in { animation: eg-stage-in .22s var(--eg-ease) both; }
+@keyframes eg-view-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes eg-stage-in { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: none; } }
+.eg-collapse {
+  display: grid; grid-template-rows: 0fr; opacity: 0;
+  transition: grid-template-rows .24s var(--eg-ease), opacity .2s ease;
+}
+.eg-collapse.open { grid-template-rows: 1fr; opacity: 1; }
+.eg-collapse-inner { overflow: hidden; min-height: 0; }
+
 /* ===== drill ===== */
-.eg-cap { color: var(--eg-ink-2); font-size: var(--eg-fs-xs); font-weight: 600; letter-spacing: .01em; }
+.eg-cap { color: var(--eg-ink-2); font-size: var(--eg-fs-xs); font-weight: 600; letter-spacing: .02em; }
 .eg-zh {
-  margin-top: 16px; font-family: var(--eg-serif); font-size: var(--eg-fs-lg); line-height: 1.6; font-weight: 600;
-  letter-spacing: .01em; color: var(--eg-ink); overflow-wrap: break-word;
+  margin-top: 14px; font-family: var(--eg-font); font-size: 18px; line-height: 1.6; font-weight: 650;
+  letter-spacing: -.005em; color: var(--eg-ink); overflow-wrap: break-word;
 }
 .eg-hintbtn { appearance: none; -webkit-appearance: none;
-  margin-top: 14px; display: inline-flex; align-items: center; gap: 5px; min-height: 30px; padding: 5px 10px;
-  border: 1px solid var(--eg-line); background: var(--eg-bg); border-radius: var(--eg-r-sm);
-  color: var(--eg-ink-2); font: 600 var(--eg-fs-sm)/1 var(--eg-font); cursor: pointer; transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease;
+  margin-top: 14px; display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 5px 11px;
+  border: 1px solid var(--eg-line); background: var(--eg-bg); border-radius: 999px;
+  color: var(--eg-ink-2); font: 600 var(--eg-fs-xs)/1 var(--eg-font); cursor: pointer;
+  transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease, background var(--eg-dur) ease;
 }
-.eg-hintbtn:hover { border-color: var(--eg-line-2); color: var(--eg-ink); }
+.eg-hintbtn:hover { border-color: var(--eg-line-2); background: var(--eg-bg-2); color: var(--eg-ink); }
 .eg-hintbtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
-.eg-hintbtn .caret { transition: transform var(--eg-dur) ease; }
+.eg-hintbtn .caret { display: inline-block; transition: transform .22s var(--eg-ease); }
+.eg-hintbtn[aria-expanded="true"] .caret { transform: rotate(90deg); }
+.eg-hint-collapse { width: 100%; }
 .eg-hintbox {
-  margin-top: 8px; padding: 2px 6px; border: none; border-radius: 8px;
-  background: transparent; color: var(--eg-ink-2); font-size: var(--eg-fs-sm); line-height: 1.6;
-  text-align: center; opacity: .88;
-  transform-origin: top center; animation: eg-hint-in .22s cubic-bezier(.2,.8,.25,1) both;
+  margin-top: 10px; padding: 10px 13px; border: 1px solid var(--eg-line); border-radius: var(--eg-r-sm);
+  background: var(--eg-bg-2); color: var(--eg-ink-2); font-size: var(--eg-fs-sm); line-height: 1.6;
+  text-align: left;
 }
-@keyframes eg-hint-in {
-  from { opacity: 0; transform: translateY(-5px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.eg-inputwrap { position: relative; margin-top: 20px; }
+.eg-inputwrap { position: relative; margin-top: 18px; }
 .eg-input {
-  width: 100%; min-height: 96px; resize: vertical; padding: 12px 14px;
+  width: 100%; min-height: 98px; resize: vertical; padding: 12px 14px;
   border: 1px solid var(--eg-line); border-radius: var(--eg-r-sm);
   background: var(--eg-bg-2); color: var(--eg-ink);
-  font: var(--eg-fs-md)/1.55 var(--eg-font); outline: none;
+  font: var(--eg-fs-md)/1.6 var(--eg-font); outline: none;
   transition: border-color var(--eg-dur) ease, box-shadow var(--eg-dur) ease, background var(--eg-dur) ease;
 }
-.eg-input::placeholder { color: var(--eg-ink-2); opacity: .85; }
+.eg-input::placeholder { color: var(--eg-ink-2); opacity: .82; }
 .eg-input:hover { border-color: var(--eg-line-2); }
-.eg-input:focus { border-color: var(--eg-accent); background: var(--eg-bg); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 18%, transparent); }
-.eg-input.error { border-color: var(--eg-bad); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-bad) 15%, transparent); }
-.eg-foot { display: flex; align-items: center; gap: 12px; margin-top: 18px; }
+.eg-input:focus { border-color: var(--eg-accent); background: var(--eg-bg); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 16%, transparent); }
+.eg-input.error { border-color: var(--eg-bad); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-bad) 14%, transparent); }
+.eg-foot { display: flex; align-items: center; gap: 10px; margin-top: 16px; }
 .eg-foot .eg-kbd { margin-left: auto; }
 .eg-err { color: var(--eg-bad); font-size: var(--eg-fs-xs); margin-top: 8px; }
 .eg-kbd { color: var(--eg-ink-2); font-size: var(--eg-fs-xs); white-space: nowrap; }
 .eg-kbd kbd {
-  font: 600 12px/1 var(--eg-font); padding: 2px 5px; border: 1px solid var(--eg-line); border-bottom-width: 2px;
+  font: 600 11.5px/1 var(--eg-font); padding: 2px 5px; border: 1px solid var(--eg-line); border-bottom-width: 2px;
   border-radius: 4px; background: var(--eg-bg); color: var(--eg-ink-2);
 }
-.eg-actions { display: flex; gap: 8px; margin-top: 11px; }
+.eg-actions { display: flex; gap: 8px; margin-top: 16px; }
 .eg-btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
   min-height: 36px; min-width: 76px; padding: 0 15px; border-radius: var(--eg-r-sm); cursor: pointer;
   appearance: none; -webkit-appearance: none;
-  font: 600 var(--eg-fs-sm)/1 var(--eg-font); transition: background var(--eg-dur) ease, filter var(--eg-dur) ease, border-color var(--eg-dur) ease, transform .28s cubic-bezier(.34, 1.56, .64, 1);
+  font: 600 var(--eg-fs-sm)/1 var(--eg-font);
+  transition: background var(--eg-dur) ease, filter var(--eg-dur) ease, border-color var(--eg-dur) ease, transform .26s var(--eg-spring);
   border: 1px solid var(--eg-line-2); background: var(--eg-bg); color: var(--eg-ink);
 }
 .eg-btn:hover { background: var(--eg-bg-2); }
 .eg-btn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }
-.eg-btn:active { transform: scale(.92); transition-duration: .06s; }
-.eg-btn.is-bouncing { animation: eg-btn-bounce .34s cubic-bezier(.34, 1.56, .64, 1); }
+.eg-btn:active { transform: scale(.94); transition-duration: .06s; }
+.eg-btn.is-bouncing { animation: eg-btn-bounce .34s var(--eg-spring); }
 @keyframes eg-btn-bounce {
-  0% { transform: scale(.92); }
+  0% { transform: scale(.93); }
   55% { transform: scale(1.04); }
   100% { transform: scale(1); }
 }
 .eg-btn.primary { border-color: transparent; background: var(--eg-accent); color: var(--eg-on-accent); }
-.eg-btn.primary:hover { filter: brightness(1.06); }
-.eg-btn:disabled { opacity: .5; cursor: not-allowed; pointer-events: none; }
+.eg-btn.primary:hover { filter: brightness(1.08); }
+.eg-btn:disabled { opacity: .48; cursor: not-allowed; pointer-events: none; }
 .eg-btn.primary:disabled { background: var(--eg-accent); color: var(--eg-on-accent); border-color: transparent; }
 .eg-btn:not(.primary):disabled { background: var(--eg-bg-2); color: var(--eg-ink-2); border-color: var(--eg-line); }
 .eg-btn.primary.is-loading { color: transparent; position: relative; }
 .eg-btn.primary.is-loading::after {
   content: ""; position: absolute; width: 15px; height: 15px; border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, .5); border-top-color: #fff; animation: eg-spin .7s linear infinite;
+  border: 2px solid rgba(255, 255, 255, .45); border-top-color: #fff; animation: eg-spin .7s linear infinite;
 }
 .eg-btn.ghost { border-color: transparent; background: transparent; color: var(--eg-ink-2); padding: 0 10px; }
 .eg-btn.ghost:hover { background: var(--eg-bg-2); color: var(--eg-ink); }
@@ -221,164 +316,455 @@ window.__ModuleLoader__.load({
   18%  { opacity: 1; }
   100% { opacity: 0; transform: translate(calc(-50% + var(--dx, 0px)), calc(-50% + var(--dy, 0px))) rotate(calc(var(--r0, 0deg) + var(--rot, 360deg))) scale(1); }
 }
-@media (prefers-reduced-motion: reduce) { .eg-confetti { display: none; } }
 
 /* ===== feedback ===== */
-.eg-fb { margin-top: 28px; padding: 18px 0 0; border: none; border-top: 2px solid var(--eg-line); border-radius: 0; background: transparent; }
-.eg-fb.ok { border-top-color: color-mix(in srgb, var(--eg-ok) 55%, var(--eg-line)); }
-.eg-fb.bad { border-top-color: color-mix(in srgb, var(--eg-bad) 55%, var(--eg-line)); }
-.eg-fb-top { display: flex; align-items: baseline; gap: 10px; }
-.eg-score { font: 700 var(--eg-fs-xl)/1 var(--eg-font); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
-.eg-fb.ok .eg-score { color: var(--eg-ok); }
-.eg-fb.bad .eg-score { color: var(--eg-bad); }
-.eg-score small { font-size: var(--eg-fs-xs); font-weight: 700; opacity: 1; color: inherit; margin-left: 1px; }
-.eg-fb-status { font-weight: 650; font-size: var(--eg-fs-lg); }
-.eg-fb.ok .eg-fb-status { color: var(--eg-ok); }
-.eg-fb.bad .eg-fb-status { color: var(--eg-bad); }
-.eg-fb-ref {
-  margin-top: 14px; padding: 0; border: none; border-radius: 0; background: transparent;
-  font-family: var(--eg-serif); font-size: var(--eg-fs-lg); line-height: 1.65; color: var(--eg-ink); overflow-wrap: break-word;
+.eg-fb {
+  --eg-tone: var(--eg-line-2);
+  margin-top: 8px; padding: 18px 20px; border: 1px solid var(--eg-line);
+  border-top: 3px solid var(--eg-line); border-radius: 12px; background: var(--eg-bg);
+  text-align: left; animation: eg-stage-in .24s var(--eg-ease) both;
 }
-.eg-fb-ref .lbl { display: block; font: 600 var(--eg-fs-xs)/1 var(--eg-font); color: var(--eg-ink-2); letter-spacing: .02em; margin-bottom: 6px; }
-.eg-fb-tip { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--eg-line); color: var(--eg-ink-2); font-size: var(--eg-fs-sm); line-height: 1.7; display: flex; gap: 8px; align-items: flex-start; }
-.eg-fb-tip .b { color: var(--eg-accent-ink); font-weight: 700; white-space: nowrap; flex: 0 0 auto; }
-.eg-fb-actions { margin-top: 18px; display: flex; gap: 10px; }
+.eg-fb.ok { --eg-tone: var(--eg-ok); border-top-color: var(--eg-ok); }
+.eg-fb.warn { --eg-tone: var(--eg-warn); border-top-color: var(--eg-warn); }
+.eg-fb.bad { --eg-tone: var(--eg-bad); border-top-color: var(--eg-bad); }
+.eg-fb-top { display: flex; align-items: baseline; gap: 10px; }
+.eg-score { font: 700 var(--eg-fs-xl)/1 var(--eg-font); font-variant-numeric: tabular-nums; letter-spacing: -.02em; color: var(--eg-tone); }
+.eg-score small { font-size: var(--eg-fs-xs); font-weight: 700; opacity: .9; color: inherit; margin-left: 2px; }
+.eg-fb-status { font-weight: 700; font-size: 16px; color: var(--eg-tone); line-height: 1.25; }
+.eg-fb-ref {
+  margin-top: 14px; padding: 12px 14px; border-radius: 10px; background: var(--eg-bg-2);
+  font-family: var(--eg-en); font-size: 17px; line-height: 1.65; color: var(--eg-ink); overflow-wrap: break-word;
+  animation: eg-view-in .24s var(--eg-ease) .05s both;
+}
+.eg-fb-ref .lbl { display: block; font: 600 11.5px/1 var(--eg-font); color: var(--eg-ink-2); letter-spacing: .02em; margin-bottom: 6px; }
+.eg-fb-tip {
+  margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--eg-line);
+  color: var(--eg-ink-2); font-size: var(--eg-fs-sm); line-height: 1.65;
+  display: flex; gap: 8px; align-items: flex-start;
+  animation: eg-view-in .24s var(--eg-ease) .1s both;
+}
+.eg-fb-tip .b {
+  padding: 2px 7px; border-radius: 6px; background: var(--eg-bg-2); border: 1px solid var(--eg-line);
+  color: var(--eg-ink); font-size: 11px; font-weight: 650; line-height: 1.3;
+  white-space: nowrap; flex: 0 0 auto; margin-top: 2px;
+}
+.eg-fb-actions { margin-top: 16px; display: flex; gap: 10px; animation: eg-view-in .24s var(--eg-ease) .14s both; }
+
+/* phrase feedback card (editorial study-desk breakdown) */
+.eg-fb.is-phrase {
+  container-type: inline-size;
+  display: flex; flex-direction: column;
+  flex: 0 1 auto; min-height: 0; max-height: 100%;
+  margin-top: 0; padding: 0; border-radius: 14px; overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--eg-tone) 24%, var(--eg-line));
+  border-top: 1px solid color-mix(in srgb, var(--eg-tone) 24%, var(--eg-line));
+  background: var(--eg-bg);
+  box-shadow: 0 4px 18px color-mix(in srgb, var(--eg-tone) 6%, rgba(17, 22, 31, .05));
+}
+.eg-fb-hero {
+  flex: 0 0 auto;
+  display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--eg-tone) 11%, var(--eg-bg)) 0%, color-mix(in srgb, var(--eg-tone) 2.5%, var(--eg-bg)) 100%);
+  border-bottom: 1px solid color-mix(in srgb, var(--eg-tone) 16%, var(--eg-line));
+}
+.eg-ring {
+  position: relative; width: 50px; height: 50px; flex: 0 0 auto;
+  display: flex; align-items: center; justify-content: center;
+}
+.eg-ring svg { width: 50px; height: 50px; display: block; }
+.eg-ring-track { fill: var(--eg-bg); stroke: color-mix(in srgb, var(--eg-tone) 16%, var(--eg-line)); stroke-width: 3.8; }
+.eg-ring-arc {
+  fill: none; stroke: var(--eg-tone); stroke-width: 3.8; stroke-linecap: round;
+  transform: rotate(-90deg); transform-origin: 50% 50%;
+  transition: stroke-dashoffset .55s var(--eg-ease);
+}
+.eg-ring-val {
+  position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: var(--eg-tone); font-variant-numeric: tabular-nums; pointer-events: none;
+}
+.eg-ring-val strong { font: 750 16px/1 var(--eg-font); letter-spacing: -.03em; }
+.eg-ring-val small { font: 650 9px/1 var(--eg-font); opacity: .78; margin-top: 2px; }
+.eg-fb-verdict { min-width: 0; flex: 1 1 auto; }
+.eg-fb-headline { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; }
+.eg-fb-pill {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 2px 8px; border-radius: 999px;
+  background: var(--eg-bg); border: 1px solid var(--eg-line);
+  color: var(--eg-ink-2); font: 600 11px/1.35 var(--eg-font); font-variant-numeric: tabular-nums;
+}
+.eg-fb-pill.tone {
+  background: color-mix(in srgb, var(--eg-tone) 12%, var(--eg-bg));
+  border-color: color-mix(in srgb, var(--eg-tone) 28%, transparent);
+  color: var(--eg-tone);
+}
+.eg-fb-pill.up {
+  background: color-mix(in srgb, var(--eg-ok) 12%, var(--eg-bg));
+  border-color: color-mix(in srgb, var(--eg-ok) 28%, transparent);
+  color: var(--eg-ok);
+}
+.eg-fb-sub { margin-top: 3px; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); line-height: 1.45; }
+.eg-fb-body {
+  flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+  padding: 12px 16px 14px; display: flex; flex-direction: column; gap: 9px;
+}
+.eg-fb-prompt {
+  display: flex; align-items: baseline; gap: 9px;
+  padding-bottom: 9px; border-bottom: 1px dashed var(--eg-line);
+}
+.eg-fb-tag {
+  flex: 0 0 auto; padding: 2px 7px; border-radius: 5px;
+  background: var(--eg-bg-2); border: 1px solid var(--eg-line);
+  color: var(--eg-ink-2); font: 650 11px/1.35 var(--eg-font); letter-spacing: .02em;
+}
+.eg-fb-zh { font-size: 14px; font-weight: 600; color: var(--eg-ink); line-height: 1.55; overflow-wrap: break-word; min-width: 0; }
+.eg-fb-boxhead { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 5px; flex-wrap: wrap; }
+.eg-fb-boxhead-left { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; min-width: 0; }
+.eg-fb.is-phrase .lbl {
+  display: inline-flex; align-items: center; gap: 5px; margin-bottom: 0;
+  font: 650 11.5px/1.2 var(--eg-font); color: var(--eg-ink-2); letter-spacing: .02em;
+}
+.eg-fb-mine {
+  padding: 9px 12px; border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--eg-tone) 22%, var(--eg-line));
+  border-left: 3px solid var(--eg-tone);
+  background: color-mix(in srgb, var(--eg-tone) 4%, var(--eg-bg));
+  animation: eg-view-in .22s var(--eg-ease) .03s both;
+}
+.eg-fb-mine .lbl { color: var(--eg-tone); }
+.eg-fb-mine-text { font-family: var(--eg-en); font-size: 14.5px; line-height: 1.55; color: var(--eg-ink); overflow-wrap: break-word; }
+.eg-fb-mine-text.empty { font-family: var(--eg-font); font-size: var(--eg-fs-sm); color: var(--eg-ink-2); font-style: italic; }
+.eg-fb.is-phrase .eg-fb-ref {
+  margin-top: 0; padding: 10px 13px; border-radius: 10px;
+  border: 1px solid var(--eg-line); background: var(--eg-bg-2);
+  font-family: var(--eg-font); font-size: var(--eg-fs-sm); line-height: 1.5;
+  animation: eg-view-in .24s var(--eg-ease) .06s both;
+}
+.eg-fb-ref-text { font-family: var(--eg-en); font-size: 16px; line-height: 1.6; color: var(--eg-ink); overflow-wrap: break-word; }
+.eg-fb-banktag {
+  display: inline-flex; align-items: center; padding: 1px 7px; border-radius: 999px;
+  background: color-mix(in srgb, var(--eg-accent) 10%, var(--eg-bg));
+  border: 1px solid color-mix(in srgb, var(--eg-accent) 22%, transparent);
+  color: var(--eg-ink-2); font: 600 10.5px/1.4 var(--eg-font);
+}
+.eg-copybtn {
+  appearance: none; -webkit-appearance: none;
+  display: inline-flex; align-items: center; gap: 4px;
+  height: 24px; padding: 0 8px; border-radius: 6px;
+  border: 1px solid var(--eg-line); background: var(--eg-bg); color: var(--eg-ink-2);
+  font: 600 11px/1 var(--eg-font); cursor: pointer;
+  transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease, background var(--eg-dur) ease;
+}
+.eg-copybtn:hover { border-color: var(--eg-line-2); color: var(--eg-ink); }
+.eg-copybtn.copied { border-color: color-mix(in srgb, var(--eg-ok) 40%, transparent); color: var(--eg-ok); }
+.eg-copybtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
+.eg-fb-corr {
+  padding: 9px 12px; border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--eg-accent) 22%, var(--eg-line));
+  border-left: 3px solid var(--eg-accent);
+  background: color-mix(in srgb, var(--eg-accent) 4%, var(--eg-bg));
+  animation: eg-view-in .24s var(--eg-ease) .08s both;
+}
+.eg-fb-corr-text { font-family: var(--eg-en); font-size: 15px; line-height: 1.55; color: var(--eg-ink); overflow-wrap: break-word; }
+.eg-fb.is-phrase .eg-fb-tip {
+  margin-top: 0; padding: 9px 12px; border-radius: 10px;
+  border: 1px solid var(--eg-line); background: var(--eg-bg);
+  color: var(--eg-ink); font-size: var(--eg-fs-sm); line-height: 1.6;
+  display: flex; gap: 9px; align-items: flex-start;
+  animation: eg-view-in .24s var(--eg-ease) .1s both;
+}
+.eg-fb.is-phrase .eg-fb-tip .b {
+  background: color-mix(in srgb, var(--eg-tone) 11%, var(--eg-bg));
+  border-color: color-mix(in srgb, var(--eg-tone) 26%, transparent);
+  color: var(--eg-tone); margin-top: 2px;
+}
+.eg-fb-hl { display: flex; flex-direction: column; gap: 6px; animation: eg-view-in .24s var(--eg-ease) .12s both; }
+.eg-fb-hl-lbl { font: 650 11.5px/1.2 var(--eg-font); color: var(--eg-ink-2); letter-spacing: .02em; }
+.eg-fb-hl-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.eg-hl-chip {
+  display: inline-flex; align-items: baseline; gap: 6px; padding: 4px 10px; border-radius: 8px;
+  background: var(--eg-bg-2); border: 1px solid var(--eg-line);
+  font-size: var(--eg-fs-xs); line-height: 1.4; max-width: 100%;
+}
+.eg-hl-chip .en { font-family: var(--eg-en); font-weight: 700; font-size: 13px; color: var(--eg-ink); }
+.eg-hl-chip .zh { color: var(--eg-ink-2); }
+.eg-fb.is-phrase .eg-fb-actions {
+  flex: 0 0 auto;
+  margin-top: 0; padding: 10px 16px;
+  border-top: 1px solid var(--eg-line); background: var(--eg-bg-2);
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+.eg-fb.is-phrase .eg-fb-actions .eg-kbd { margin-left: auto; }
+@container (max-width: 340px) {
+  .eg-fb-hero { padding: 11px 13px; gap: 10px; }
+  .eg-fb-body { padding: 11px 13px 12px; }
+  .eg-fb.is-phrase .eg-fb-actions { padding: 10px 13px; }
+  .eg-fb.is-phrase .eg-fb-actions .eg-kbd { display: none; }
+}
+.eg-cap-row { display: inline-flex; align-items: center; justify-content: center; gap: 7px; flex-wrap: wrap; }
+.eg-attempt-pill {
+  display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px;
+  background: color-mix(in srgb, var(--eg-accent) 10%, var(--eg-bg));
+  border: 1px solid color-mix(in srgb, var(--eg-accent) 22%, transparent);
+  color: var(--eg-ink-2); font: 600 11px/1.3 var(--eg-font); font-variant-numeric: tabular-nums;
+}
 
 /* ===== report ===== */
-.eg-report .r-top { display: flex; align-items: center; justify-content: center; gap: 8px; }
-.eg-rtitle { font-family: var(--eg-serif); font-size: var(--eg-fs-lg); line-height: 1.35; font-weight: 700; margin: 0; overflow-wrap: break-word; min-width: 0; text-align: center; }
-.eg-rmeta { color: var(--eg-ink-2); font-size: var(--eg-fs-xs); margin-top: 6px; font-variant-numeric: tabular-nums; text-align: center; }
-.eg-rsum { margin: 16px 0 0; padding: 0; border-top: 1px solid var(--eg-line); border-radius: 0; background: transparent; color: var(--eg-ink-2); font-size: var(--eg-fs-sm); line-height: 1.75; text-align: center; }
-.eg-rp { margin: 16px 0 0; font-size: var(--eg-fs-md); line-height: 1.9; color: var(--eg-ink); }
+.eg-report { text-align: left; width: 100%; padding-bottom: 22px; }
+.eg-report .r-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.eg-rtitle {
+  font-family: var(--eg-en); font-size: 22px; line-height: 1.32; font-weight: 700;
+  letter-spacing: -.01em; margin: 0; overflow-wrap: break-word; min-width: 0; text-align: left; color: var(--eg-ink);
+}
+.eg-rmeta-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+  margin-top: 9px;
+}
+.eg-rmeta {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 10px; border-radius: 999px; background: var(--eg-bg-2); border: 1px solid var(--eg-line);
+  color: var(--eg-ink-2); font-size: 11.5px; font-weight: 600; font-variant-numeric: tabular-nums;
+}
+.eg-rrefresh {
+  appearance: none; -webkit-appearance: none;
+  display: inline-flex; align-items: center; gap: 5px;
+  height: 26px; padding: 0 10px; border-radius: 999px;
+  border: 1px solid var(--eg-line); background: var(--eg-bg); color: var(--eg-ink-2);
+  font: 600 11.5px/1 var(--eg-font); cursor: pointer;
+  transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease, background var(--eg-dur) ease, transform .14s ease;
+}
+.eg-rrefresh:hover:not(:disabled) { border-color: var(--eg-line-2); background: var(--eg-bg-2); color: var(--eg-ink); }
+.eg-rrefresh:active:not(:disabled) { transform: scale(.96); }
+.eg-rrefresh:disabled { opacity: .48; cursor: not-allowed; }
+.eg-rrefresh:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }
+.eg-rsum {
+  margin: 14px 0 0; padding: 11px 14px;
+  border: 1px solid var(--eg-line); border-left: 3px solid var(--eg-accent); border-radius: 10px;
+  background: var(--eg-bg-2); color: var(--eg-ink-2);
+  font-family: var(--eg-font); font-size: var(--eg-fs-sm); line-height: 1.65; text-align: left;
+}
+.eg-rp {
+  margin: 15px 0 0; width: 100%;
+  font-family: var(--eg-en); font-size: 15.5px; line-height: 1.78; color: var(--eg-ink); text-align: left;
+}
 .eg-practice { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--eg-line); }
-.eg-report .eg-ptitle { text-align: center; }
-.eg-report .eg-actions { justify-content: center; }
-.eg-report .eg-q-toggle { appearance: none; -webkit-appearance: none; width: 100%; justify-content: center; }
-.eg-ptitle { display: flex; align-items: center; justify-content: center; gap: 7px; font-size: var(--eg-fs-sm); font-weight: 700; color: var(--eg-ink); }
-.eg-q { margin: 0; padding: 0; border: none; border-radius: 0; background: transparent; }
-.eg-q + .eg-q { margin-top: 20px; }
-.eg-q-head { display: flex; gap: 8px; align-items: baseline; justify-content: center; text-align: center; }
-.eg-q-n { font: 700 var(--eg-fs-sm)/1.4 var(--eg-font); color: var(--eg-accent-ink); font-variant-numeric: tabular-nums; flex: 0 0 auto; }
-.eg-q-zh { font-size: var(--eg-fs-sm); line-height: 1.6; text-align: center; }
-.eg-q-en { display: none; margin-top: 10px; padding: 10px 12px; border-top: none; border-radius: 10px; background: var(--eg-bg-2); font-family: var(--eg-serif); font-size: var(--eg-fs-md); color: var(--eg-ink); text-align: center; }
-.eg-q.reveal .eg-q-en { display: block; }
-.eg-q-toggle { margin-top: 7px; display: inline-flex; align-items: center; min-height: 24px; padding: 4px 0; background: none; border: none; color: var(--eg-accent-ink); cursor: pointer; font: 600 var(--eg-fs-xs)/1 var(--eg-font); }
-.eg-q-toggle:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; border-radius: 4px; }
+.eg-ptitle {
+  display: flex; align-items: center; justify-content: flex-start; gap: 7px;
+  font-size: var(--eg-fs-xs); font-weight: 650; letter-spacing: .03em; color: var(--eg-ink-2);
+  margin-bottom: 10px;
+}
+.eg-q {
+  margin: 0; padding: 13px 15px; border: 1px solid var(--eg-line); border-radius: 11px;
+  background: var(--eg-bg); transition: border-color var(--eg-dur) ease;
+}
+.eg-q + .eg-q { margin-top: 10px; }
+.eg-q.reveal { border-color: var(--eg-line-2); }
+.eg-q-head { display: flex; gap: 9px; align-items: flex-start; justify-content: flex-start; text-align: left; }
+.eg-q-n {
+  flex: 0 0 auto; width: 20px; height: 20px; margin-top: 1px; border-radius: 6px;
+  background: var(--eg-bg-2); border: 1px solid var(--eg-line); color: var(--eg-ink);
+  display: inline-flex; align-items: center; justify-content: center;
+  font: 700 11px/1 var(--eg-font); font-variant-numeric: tabular-nums;
+}
+.eg-q-zh { font-size: var(--eg-fs-sm); font-weight: 500; line-height: 1.6; color: var(--eg-ink); text-align: left; }
+.eg-q-toggle {
+  appearance: none; -webkit-appearance: none;
+  margin-top: 10px; display: inline-flex; align-items: center; gap: 5px;
+  min-height: 27px; padding: 4px 10px; border-radius: 7px;
+  background: var(--eg-bg); border: 1px solid var(--eg-line); color: var(--eg-ink-2);
+  cursor: pointer; font: 600 var(--eg-fs-xs)/1 var(--eg-font);
+  transition: background var(--eg-dur) ease, color var(--eg-dur) ease, border-color var(--eg-dur) ease;
+}
+.eg-q-toggle:hover { background: var(--eg-bg-2); border-color: var(--eg-line-2); color: var(--eg-ink); }
+.eg-q-toggle:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }
+.eg-q-toggle .caret { display: inline-block; transition: transform .22s var(--eg-ease); }
+.eg-q.reveal .eg-q-toggle .caret { transform: rotate(90deg); }
+.eg-q-en {
+  margin-top: 10px; padding: 10px 13px; border-radius: 8px;
+  border: 1px solid var(--eg-line); border-left: 2.5px solid var(--eg-accent);
+  background: var(--eg-bg-2); font-family: var(--eg-en); font-size: 14.5px; line-height: 1.6;
+  color: var(--eg-ink); text-align: left;
+}
+.eg-report-foot {
+  margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--eg-line);
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+}
+.eg-report-foot-hint { color: var(--eg-ink-2); font-size: var(--eg-fs-xs); line-height: 1.4; }
+.eg-report .eg-actions { justify-content: flex-start; margin-top: 18px; }
 
 /* ===== misc ===== */
 .eg-loading { display: flex; align-items: center; gap: 9px; color: var(--eg-ink-2); padding: 10px 0; font-size: var(--eg-fs-sm); }
+.eg-loading.is-stage {
+  flex: 1 1 auto; width: 100%; min-height: 180px;
+  flex-direction: column; justify-content: center; gap: 14px;
+  padding: 0 0 14px; text-align: center;
+  font-size: 14px; font-weight: 500; color: var(--eg-ink-2);
+}
 .eg-spin { display: inline-block; width: 15px; height: 15px; border: 2px solid var(--eg-line-2); border-top-color: var(--eg-accent); border-radius: 50%; animation: eg-spin .7s linear infinite; }
+.eg-loading.is-stage .eg-spin { width: 28px; height: 28px; border-width: 2.5px; }
 @keyframes eg-spin { to { transform: rotate(360deg); } }
 .eg-resize { position: absolute; right: 0; bottom: 0; width: 18px; height: 18px; cursor: nwse-resize; touch-action: none; }
-.eg-resize::after { content: ""; position: absolute; right: 4px; bottom: 4px; width: 9px; height: 9px; border-right: 2px solid var(--eg-line-2); border-bottom: 2px solid var(--eg-line-2); border-bottom-right-radius: 3px; opacity: .7; }
+.eg-resize::after { content: ""; position: absolute; right: 4px; bottom: 4px; width: 9px; height: 9px; border-right: 2px solid var(--eg-line-2); border-bottom: 2px solid var(--eg-line-2); border-bottom-right-radius: 3px; opacity: .7; transition: opacity var(--eg-dur) ease; }
+.eg-resize:hover::after { opacity: 1; }
+
 /* ===== word training ===== */
-.eg-letters { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+.eg-letters { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+.eg-letters.is-bad { animation: eg-shake .32s cubic-bezier(.36, .07, .19, .97) both; }
+@keyframes eg-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-5px); }
+  42% { transform: translateX(5px); }
+  64% { transform: translateX(-3px); }
+  84% { transform: translateX(2px); }
+}
 .eg-letter {
-  flex: 1 1 0; min-width: 8px; max-width: 38px; width: auto; height: 50px; padding: 0; text-align: center;
-  border: none; border-bottom: 2px solid var(--eg-line-2); border-radius: 5px 5px 0 0;
+  flex: 1 1 0; min-width: 8px; max-width: 38px; width: auto; height: 48px; padding: 0; text-align: center;
+  border: none; border-bottom: 2px solid var(--eg-line-2); border-radius: 6px 6px 0 0;
   background: transparent; color: var(--eg-ink);
   font: 600 22px/1 var(--eg-font); text-transform: lowercase; outline: none;
-  transition: border-color var(--eg-dur) ease, background var(--eg-dur) ease, color var(--eg-dur) ease;
+  transition: border-color var(--eg-dur) ease, background var(--eg-dur) ease, color var(--eg-dur) ease, box-shadow var(--eg-dur) ease, transform .14s var(--eg-spring);
 }
-.eg-letter:hover { border-bottom-color: var(--eg-line-2); background: var(--eg-bg-2); }
-.eg-letter:focus { border-bottom-color: var(--eg-accent); background: var(--eg-bg); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 16%, transparent); }
+.eg-letter:hover { border-bottom-color: var(--eg-ink-2); background: var(--eg-bg-2); }
+.eg-letter:focus { border-bottom-color: var(--eg-accent); background: var(--eg-bg-2); box-shadow: 0 3px 0 -1px color-mix(in srgb, var(--eg-accent) 26%, transparent); }
+.eg-letter.is-pop { animation: eg-letter-pop .16s var(--eg-spring); }
+@keyframes eg-letter-pop {
+  0% { transform: scale(.9); }
+  55% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
 .eg-letter.ok { border-bottom-color: var(--eg-ok); color: var(--eg-ok); }
+.eg-letters.is-ok .eg-letter.ok {
+  animation: eg-letter-ok .34s var(--eg-spring) calc(var(--i, 0) * 34ms) both;
+}
+@keyframes eg-letter-ok {
+  0% { transform: translateY(0) scale(1); }
+  45% { transform: translateY(-5px) scale(1.08); }
+  100% { transform: translateY(0) scale(1); }
+}
 .eg-letter.bad { border-bottom-color: var(--eg-bad); color: var(--eg-bad); }
 .eg-letters.answered .eg-letter { cursor: default; }
 /* word training: centred column */
-.eg-word { width: 100%; max-width: 640px; margin-left: auto; margin-right: auto; height: 100%; min-height: 0; display: flex; flex-direction: column; align-items: stretch; text-align: center; }
-.eg-word-main { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; min-height: 0; overflow-y: auto; padding: 8px 0 4px; }
-.eg-word .eg-pos { margin: 0 0 2px; color: var(--eg-ink-2); font: 600 var(--eg-fs-xs)/1.2 var(--eg-font); opacity: .85; }
-.eg-word .eg-zh { font-size: 28px; line-height: 1.4; margin-top: 8px; }
-.eg-word .eg-letters { justify-content: center; margin-top: 16px; }
-.eg-word .eg-foot { justify-content: center; width: 100%; margin-top: 26px; }
+.eg-word {
+  container-type: inline-size;
+  width: 100%; max-width: 640px; margin-left: auto; margin-right: auto;
+  height: 100%; min-height: 0; display: flex; flex-direction: column; align-items: stretch; text-align: center;
+}
+.eg-word-main { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; min-height: 0; overflow-y: auto; padding: 10px 0 6px; }
+.eg-word-stage { width: 100%; display: flex; flex-direction: column; align-items: center; }
+.eg-word .eg-pos {
+  display: inline-flex; align-items: center; margin: 0 0 4px; padding: 3px 10px;
+  border-radius: 999px; background: var(--eg-bg-2); border: 1px solid var(--eg-line);
+  color: var(--eg-ink-2); font: 600 11.5px/1.2 var(--eg-font);
+}
+.eg-word .eg-zh { font-family: var(--eg-font); font-size: 26px; font-weight: 700; letter-spacing: -.01em; line-height: 1.4; margin-top: 6px; color: var(--eg-ink); }
+.eg-word .eg-letters { justify-content: center; margin-top: 18px; width: 100%; }
+.eg-word .eg-foot { justify-content: center; width: 100%; margin-top: 24px; }
 .eg-word .eg-foot .eg-kbd { margin-left: 0; }
-.eg-word .eg-fb { width: 100%; text-align: center; margin-top: 14px; padding-top: 0; border-top: none; }
+.eg-word .eg-fb {
+  width: 100%; text-align: center; margin-top: 14px; padding: 0; border: none; border-radius: 0; background: transparent;
+}
 .eg-word .eg-fb-top { justify-content: center; }
 .eg-word .eg-fb-actions { justify-content: center; }
 .eg-word .eg-fb > .eg-fb-actions:first-child { margin-top: 0; gap: 8px; flex-wrap: wrap; justify-content: center; }
 .eg-word .eg-fb-actions .eg-btn { padding: 0 10px; }
+.eg-word-miss { margin-top: 12px; font-size: var(--eg-fs-xs); font-weight: 550; color: var(--eg-bad); animation: eg-view-in .2s var(--eg-ease) both; }
+.eg-word-reveal { width: 100%; }
 .eg-word-foot { flex: 0 0 auto; display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 6px; padding-top: 10px; border-top: 1px solid var(--eg-line); }
-.eg-word-foot .eg-btn { padding: 0 10px; }
-.eg-word .eg-fb-ref { margin-top: 6px; font-size: 26px; text-align: center; }
-.eg-word .eg-eg { width: 100%; max-width: 520px; margin: 12px auto 0; padding: 10px 14px; border-radius: 10px; background: var(--eg-bg-2); text-align: center; }
-.eg-word .eg-eg-en { font: var(--eg-fs-md)/1.6 var(--eg-serif); color: var(--eg-ink); overflow-wrap: anywhere; }
-.eg-word .eg-eg-zh { margin-top: 4px; font-size: var(--eg-fs-sm); line-height: 1.6; color: var(--eg-ink-2); }
-.eg-eg-hit { background: none; color: var(--eg-accent-ink); font-weight: 700; }
-/* phrase drill: centred column */
-.eg-drill { max-width: 640px; min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; padding-top: 12px; }
+.eg-word-foot .eg-btn { padding: 0 12px; }
+.eg-word .eg-fb-ref {
+  margin-top: 8px; padding: 0; background: transparent; font-family: var(--eg-en); font-size: 24px; font-weight: 600; text-align: center;
+}
+.eg-word .eg-eg {
+  width: 100%; max-width: 480px; margin: 12px auto 0; padding: 12px 16px;
+  border: 1px solid var(--eg-line); border-radius: 10px; background: var(--eg-bg-2); text-align: center;
+  transition: background var(--eg-dur) ease, border-color var(--eg-dur) ease;
+}
+.eg-word .eg-eg.done { animation: eg-view-in .22s var(--eg-ease) both; }
+.eg-word .eg-eg-en { font: 15px/1.65 var(--eg-en); color: var(--eg-ink); overflow-wrap: anywhere; }
+.eg-word .eg-eg-zh { margin-top: 5px; font: var(--eg-fs-xs)/1.6 var(--eg-font); color: var(--eg-ink-2); }
+.eg-eg-hit {
+  padding: 1px 4px; border-radius: 4px;
+  background: color-mix(in srgb, var(--eg-accent) 13%, transparent);
+  color: var(--eg-ink); font-weight: 700;
+}
+/* phrase drill: centred prompt, left-aligned reading feedback */
+.eg-drill { flex: 1 1 auto; width: 100%; max-width: 640px; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; padding-top: 10px; }
+.eg-drill > div { width: 100%; }
 .eg-drill .eg-cap { justify-content: center; }
 .eg-drill .eg-foot { justify-content: center; width: 100%; }
 .eg-drill .eg-foot .eg-kbd { margin-left: 0; }
 .eg-drill .eg-inputwrap { width: 100%; }
 .eg-drill .eg-input { text-align: left; }
-.eg-drill .eg-hintbox { text-align: center; }
-.eg-drill .eg-fb { width: 100%; text-align: center; }
-.eg-drill .eg-fb-top { justify-content: center; }
-.eg-drill .eg-fb-actions { justify-content: center; }
-.eg-drill .eg-fb-tip { justify-content: center; align-items: center; text-align: center; }
 .eg-drill .eg-err { text-align: center; }
 
 /* ===== word bank bar ===== */
-.eg-bankbar { width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; padding: 0 0 10px; margin: 0 0 12px; border-bottom: 1px solid var(--eg-line); }
-.eg-banklabel { flex: 0 0 auto; font-size: var(--eg-fs-sm); font-weight: 500; color: var(--eg-ink-2); }
+.eg-bankbar { width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px; padding: 0 0 11px; margin: 0 0 10px; border-bottom: 1px solid var(--eg-line); }
+.eg-banklabel { flex: 0 0 auto; font-size: var(--eg-fs-xs); font-weight: 600; color: var(--eg-ink-2); }
+@container (max-width: 315px) {
+  .eg-banklabel { display: none; }
+}
 .eg-select {
-  flex: 1 1 auto; min-width: 0; max-width: 260px; height: 34px; padding: 0 25px 0 12px; border: 1px solid var(--eg-line);
+  flex: 1 1 auto; min-width: 0; max-width: 280px; height: 34px; padding: 0 26px 0 12px; border: 1px solid var(--eg-line);
   border-radius: 999px; background: var(--eg-bg-2); color: var(--eg-ink); cursor: pointer;
   font: 600 var(--eg-fs-xs)/1 var(--eg-font); outline: none; appearance: none;
   background-image: linear-gradient(45deg, transparent 50%, var(--eg-ink-2) 50%), linear-gradient(135deg, var(--eg-ink-2) 50%, transparent 50%);
   background-position: calc(100% - 13px) 13px, calc(100% - 9px) 13px; background-size: 4px 4px, 4px 4px; background-repeat: no-repeat;
+  transition: border-color var(--eg-dur) ease, background-color var(--eg-dur) ease;
 }
 .eg-select:hover { border-color: var(--eg-line-2); }
 .eg-select:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
 .eg-bankbtn { appearance: none; -webkit-appearance: none;
-  flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: 3px;
-  min-height: 34px; min-width: 76px; padding: 0 12px; border: 1px solid var(--eg-line-2); border-radius: var(--eg-r-sm);
+  flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+  min-height: 34px; padding: 0 12px; border: 1px solid var(--eg-line); border-radius: 999px;
   background: var(--eg-bg); color: var(--eg-ink-2); cursor: pointer;
-  font: 600 var(--eg-fs-sm)/1 var(--eg-font);
+  font: 600 var(--eg-fs-xs)/1 var(--eg-font);
+  transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease, background var(--eg-dur) ease, transform .14s ease;
 }
-.eg-bankbtn:hover { border-color: var(--eg-accent); color: var(--eg-accent-ink); background: color-mix(in srgb, var(--eg-accent) 5%, var(--eg-bg)); }
+.eg-bankbtn:hover { border-color: var(--eg-line-2); color: var(--eg-ink); background: var(--eg-bg-2); }
+.eg-bankbtn:active { transform: scale(.95); }
 .eg-bankbtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
-.eg-notice { margin: 0 0 12px; padding: 8px 10px; border-radius: 8px; background: color-mix(in srgb, var(--eg-ok) 8%, transparent); border: 1px solid color-mix(in srgb, var(--eg-ok) 28%, transparent); color: var(--eg-ink); font-size: var(--eg-fs-xs); line-height: 1.5; }
+.eg-notice { margin: 0 0 12px; padding: 8px 11px; border-radius: 9px; background: color-mix(in srgb, var(--eg-ok) 9%, transparent); border: 1px solid color-mix(in srgb, var(--eg-ok) 28%, transparent); color: var(--eg-ink); font-size: var(--eg-fs-xs); line-height: 1.5; animation: eg-view-in .2s var(--eg-ease) both; }
 
 /* ===== word bank import ===== */
-.eg-import { width: 100%; max-width: 520px; margin: 0 auto; text-align: left; }
+.eg-import { width: 100%; max-width: 520px; margin: 0 auto; text-align: left; animation: eg-view-in .2s var(--eg-ease) both; }
 .eg-import-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
 .eg-import-title { font-size: var(--eg-fs-md); font-weight: 700; color: var(--eg-ink); line-height: 1.3; }
-.eg-import-actions { flex: 0 0 auto; display: flex; align-items: center; gap: 5px; }
+.eg-import-actions { flex: 0 0 auto; display: flex; align-items: center; gap: 6px; }
 .eg-import-back, .eg-filebtn { appearance: none; -webkit-appearance: none;
   flex: 0 0 auto; display: inline-flex; align-items: center; min-height: 30px; padding: 4px 10px;
-  border: 1px solid var(--eg-line); border-radius: var(--eg-r-sm); background: var(--eg-bg);
-  color: var(--eg-ink-2); cursor: pointer; font: 600 var(--eg-fs-sm)/1 var(--eg-font); white-space: nowrap;
+  border: 1px solid var(--eg-line); border-radius: 8px; background: var(--eg-bg);
+  color: var(--eg-ink-2); cursor: pointer; font: 600 var(--eg-fs-xs)/1 var(--eg-font); white-space: nowrap;
+  transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease, background var(--eg-dur) ease;
 }
-.eg-import-back:hover, .eg-filebtn:hover { border-color: var(--eg-line-2); color: var(--eg-ink); }
+.eg-import-back:hover, .eg-filebtn:hover { border-color: var(--eg-line-2); background: var(--eg-bg-2); color: var(--eg-ink); }
 .eg-import-back:focus-visible, .eg-filebtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
 .eg-import-sub { margin-top: 4px; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); line-height: 1.5; }
-.eg-field { margin-top: 8px; }
+.eg-field { margin-top: 10px; }
 .eg-field label { display: block; margin-bottom: 6px; font-size: var(--eg-fs-xs); font-weight: 600; color: var(--eg-ink-2); }
 .eg-text {
-  width: 100%; height: 32px; padding: 0 10px; border: 1px solid var(--eg-line); border-radius: 8px;
+  width: 100%; height: 34px; padding: 0 11px; border: 1px solid var(--eg-line); border-radius: 8px;
   background: var(--eg-bg-2); color: var(--eg-ink); font: var(--eg-fs-sm)/1 var(--eg-font); outline: none;
+  transition: border-color var(--eg-dur) ease, background var(--eg-dur) ease, box-shadow var(--eg-dur) ease;
 }
+.eg-text:hover { border-color: var(--eg-line-2); }
 .eg-text:focus { border-color: var(--eg-accent); background: var(--eg-bg); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 16%, transparent); }
 .eg-textarea-wrap { position: relative; margin-top: 10px; }
 .eg-textarea {
-  width: 100%; min-height: 82px; resize: vertical; padding: 9px 10px; border: 1px solid var(--eg-line); border-radius: 10px;
+  width: 100%; min-height: 86px; resize: vertical; padding: 9px 11px; border: 1px solid var(--eg-line); border-radius: 10px;
   background: var(--eg-bg-2); color: var(--eg-ink); font: var(--eg-fs-xs)/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; outline: none;
-  transition: border-color var(--eg-dur) ease, background var(--eg-dur) ease;
+  transition: border-color var(--eg-dur) ease, background var(--eg-dur) ease, box-shadow var(--eg-dur) ease;
 }
 .eg-textarea-wrap.over .eg-textarea, .eg-textarea-wrap:hover .eg-textarea { border-color: var(--eg-accent); background: color-mix(in srgb, var(--eg-accent) 5%, var(--eg-bg-2)); }
 .eg-textarea:focus { border-color: var(--eg-accent); background: var(--eg-bg); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 16%, transparent); }
-.eg-preview { margin-top: 12px; border: 1px solid var(--eg-line); border-radius: 10px; overflow: hidden; }
+.eg-preview { margin-top: 12px; border: 1px solid var(--eg-line); border-radius: 10px; overflow: hidden; animation: eg-view-in .2s var(--eg-ease) both; }
 .eg-preview-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; background: var(--eg-bg-2); font-size: var(--eg-fs-xs); color: var(--eg-ink-2); }
 .eg-preview-top strong { color: var(--eg-ink); }
 .eg-preview-row { display: flex; flex-wrap: wrap; gap: 10px; padding: 7px 10px; border-top: 1px solid var(--eg-line); font-size: var(--eg-fs-xs); line-height: 1.5; }
 .eg-preview-row .w { flex: 0 0 38%; font-weight: 650; overflow-wrap: anywhere; }
 .eg-preview-row .m { flex: 1 1 auto; color: var(--eg-ink-2); overflow-wrap: anywhere; }
-.eg-preview-row .ex { flex: 1 0 100%; color: var(--eg-ink-2); font-family: var(--eg-serif); font-style: italic; overflow-wrap: anywhere; }
+.eg-preview-row .ex { flex: 1 0 100%; color: var(--eg-ink-2); font-family: var(--eg-en); font-style: italic; overflow-wrap: anywhere; }
 .eg-preview-errors { margin-top: 8px; padding: 8px 10px; border-radius: 8px; background: color-mix(in srgb, var(--eg-bad) 7%, transparent); border: 1px solid color-mix(in srgb, var(--eg-bad) 24%, transparent); }
 .eg-preview-errors .er { font-size: var(--eg-fs-xs); line-height: 1.55; color: var(--eg-bad); }
-.eg-import-foot { display: flex; gap: 8px; margin-top: 8px; }
+.eg-import-foot { display: flex; gap: 8px; margin-top: 10px; }
 
 /* ===== settings ===== */
 .eg-settings {
@@ -420,15 +806,17 @@ window.__ModuleLoader__.load({
   appearance: none; -webkit-appearance: none; position: relative; flex: 0 0 auto;
   width: 40px; height: 22px; padding: 2px; border: 1px solid var(--eg-line-2); border-radius: 999px;
   background: var(--eg-bg-2); cursor: pointer;
-  transition: background var(--eg-dur) ease, border-color var(--eg-dur) ease;
+  transition: background .2s var(--eg-ease), border-color .2s var(--eg-ease);
 }
 .eg-switch::after {
   content: ''; display: block; width: 16px; height: 16px; border-radius: 50%;
   background: var(--eg-bg); box-shadow: 0 1px 2px rgba(17, 22, 31, .24);
-  transition: transform var(--eg-dur) ease;
+  transition: transform .24s var(--eg-spring), width .16s ease;
 }
+.eg-switch:active::after { width: 19px; }
 .eg-switch[aria-checked="true"] { background: var(--eg-accent); border-color: var(--eg-accent); }
 .eg-switch[aria-checked="true"]::after { transform: translateX(18px); background: var(--eg-on-accent); }
+.eg-switch[aria-checked="true"]:active::after { transform: translateX(15px); }
 .eg-switch:disabled { opacity: .55; cursor: not-allowed; }
 .eg-switch:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }
 .eg-setting-sub {
@@ -471,11 +859,12 @@ window.__ModuleLoader__.load({
   border: 1px solid var(--eg-line); border-radius: 8px; background: var(--eg-bg);
   color: var(--eg-ink-2); font: 500 12.5px/1.3 var(--eg-font); cursor: pointer;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  transition: background var(--eg-dur) ease, border-color var(--eg-dur) ease, color var(--eg-dur) ease;
+  transition: background var(--eg-dur) ease, border-color var(--eg-dur) ease, color var(--eg-dur) ease, transform .14s ease;
 }
 .eg-direction:hover:not(.active):not(:disabled) {
   background: var(--eg-bg-2); border-color: var(--eg-line-2); color: var(--eg-ink);
 }
+.eg-direction:active:not(:disabled) { transform: scale(.96); }
 .eg-direction.active {
   border-color: var(--eg-accent); background: var(--eg-accent);
   color: var(--eg-on-accent); font-weight: 600;
@@ -538,70 +927,120 @@ window.__ModuleLoader__.load({
 .eg-settings-loading { display: flex; align-items: center; gap: 9px; color: var(--eg-ink-2); font-size: var(--eg-fs-sm); padding: 8px 0; }
 
 /* ===== dashboard ===== */
-.eg-dash { display: flex; flex-direction: column; }
-.eg-dash-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
-.eg-dash-title { font: 700 var(--eg-fs-md)/1.2 var(--eg-font); color: var(--eg-ink); white-space: nowrap; }
+.eg-dash { container-type: inline-size; display: flex; flex-direction: column; }
+.eg-dash-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.eg-dash-title { font: 700 15px/1.2 var(--eg-font); color: var(--eg-ink); white-space: nowrap; }
 .eg-dash-nav { display: flex; align-items: center; justify-content: center; gap: 4px; flex: 1 1 100%; }
-.eg-navbtn { appearance: none; -webkit-appearance: none; width: 30px; height: 30px; padding: 0; border: 1px solid var(--eg-line); border-radius: 8px; background: var(--eg-bg); color: var(--eg-ink-2); cursor: pointer; font: 600 15px/1 var(--eg-font); display: inline-flex; align-items: center; justify-content: center; }
-.eg-navbtn:hover { border-color: var(--eg-line-2); color: var(--eg-ink); }
+@container (min-width: 340px) {
+  .eg-dash-nav { flex: 0 0 auto; justify-content: flex-end; }
+}
+.eg-navbtn {
+  appearance: none; -webkit-appearance: none; width: 28px; height: 28px; padding: 0;
+  border: 1px solid var(--eg-line); border-radius: 8px; background: var(--eg-bg); color: var(--eg-ink-2);
+  cursor: pointer; font: 600 15px/1 var(--eg-font); display: inline-flex; align-items: center; justify-content: center;
+  transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease, background var(--eg-dur) ease, transform .12s ease;
+}
+.eg-navbtn:hover { border-color: var(--eg-line-2); background: var(--eg-bg-2); color: var(--eg-ink); }
+.eg-navbtn:active { transform: scale(.93); }
 .eg-navbtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
-.eg-month { min-width: 88px; text-align: center; font: 600 var(--eg-fs-sm)/1 var(--eg-font); font-variant-numeric: tabular-nums; color: var(--eg-ink); }
-.eg-todaybtn { appearance: none; -webkit-appearance: none; height: 30px; padding: 0 9px; border: 1px solid var(--eg-line); border-radius: 8px; background: var(--eg-bg); color: var(--eg-ink-2); cursor: pointer; font: 600 var(--eg-fs-xs)/1 var(--eg-font); }
-.eg-todaybtn:hover { border-color: var(--eg-line-2); color: var(--eg-ink); }
+.eg-month { min-width: 86px; text-align: center; font: 600 var(--eg-fs-sm)/1 var(--eg-font); font-variant-numeric: tabular-nums; color: var(--eg-ink); }
+.eg-todaybtn {
+  appearance: none; -webkit-appearance: none; height: 28px; padding: 0 9px;
+  border: 1px solid var(--eg-line); border-radius: 8px; background: var(--eg-bg); color: var(--eg-ink-2);
+  cursor: pointer; font: 600 var(--eg-fs-xs)/1 var(--eg-font);
+  transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease, background var(--eg-dur) ease, transform .12s ease;
+}
+.eg-todaybtn:hover { border-color: var(--eg-line-2); background: var(--eg-bg-2); color: var(--eg-ink); }
+.eg-todaybtn:active { transform: scale(.95); }
 .eg-todaybtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
-.eg-dash-sum { display: flex; gap: 8px; margin: 14px 0 2px; }
-.eg-stat { flex: 1 1 0; min-width: 0; border: 1px solid var(--eg-line); border-radius: 10px; padding: 8px 6px; text-align: center; background: var(--eg-bg); }
-.eg-stat b { display: block; font: 700 var(--eg-fs-lg)/1.1 var(--eg-font); font-variant-numeric: tabular-nums; color: var(--eg-ink); }
-.eg-stat span { display: block; margin-top: 2px; font-size: var(--eg-fs-xs); color: var(--eg-ink-2); }
-.eg-cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; margin-top: 14px; }
-.eg-cal .dow { text-align: center; font: 600 var(--eg-fs-xs)/1 var(--eg-font); color: var(--eg-ink-2); padding: 0 0 2px; }
-.eg-day { position: relative; aspect-ratio: 1 / 1; border-radius: 8px; border: 1px solid transparent; background: color-mix(in srgb, var(--eg-ink-2) 6%, transparent); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; font: 600 var(--eg-fs-xs)/1 var(--eg-font); color: var(--eg-ink-2); font-variant-numeric: tabular-nums; }
+.eg-dash-sum { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 14px 0 2px; }
+.eg-stat {
+  min-width: 0; border: 1px solid var(--eg-line); border-radius: 11px; padding: 10px 6px;
+  text-align: center; background: var(--eg-bg);
+  transition: border-color var(--eg-dur) ease, background var(--eg-dur) ease;
+}
+.eg-stat:hover { border-color: var(--eg-line-2); background: var(--eg-bg-2); }
+.eg-stat b { display: block; font: 700 18px/1.15 var(--eg-font); font-variant-numeric: tabular-nums; color: var(--eg-ink); }
+.eg-stat span { display: block; margin-top: 3px; font-size: 11.5px; color: var(--eg-ink-2); }
+.eg-cal-card { margin-top: 12px; padding: 12px; border: 1px solid var(--eg-line); border-radius: 12px; background: var(--eg-bg); }
+.eg-cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; }
+.eg-cal .dow { text-align: center; font: 600 11.5px/1 var(--eg-font); color: var(--eg-ink-2); padding: 0 0 4px; }
+.eg-day {
+  position: relative; aspect-ratio: 1 / 1; border-radius: 8px; border: 1px solid transparent;
+  background: var(--eg-bg-2);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  font: 600 var(--eg-fs-xs)/1 var(--eg-font); color: var(--eg-ink-2); font-variant-numeric: tabular-nums;
+  transition: transform .16s var(--eg-spring), box-shadow .16s ease, border-color .16s ease;
+}
 .eg-day.blank { background: transparent; border-color: transparent; }
-.eg-day .cnt { font-size: 9px; font-weight: 600; opacity: .9; letter-spacing: .02em; }
-.eg-day.l1 { background: #9be9a8; color: #14532d; }
-.eg-day.l2 { background: #40c463; color: #0b3d1f; }
-.eg-day.l3 { background: #30a14e; color: #052e16; }
-.eg-day.l4 { background: #216e39; color: #ffffff; }
-.eg-day.today { border-color: #1a7f37; box-shadow: inset 0 0 0 1px #1a7f37; }
+.eg-day .cnt { font-size: 10px; font-weight: 650; opacity: .88; letter-spacing: 0; line-height: 1; }
+.eg-day.l1 { background: color-mix(in srgb, var(--eg-ok) 18%, var(--eg-bg)); color: var(--eg-ink); }
+.eg-day.l2 { background: color-mix(in srgb, var(--eg-ok) 38%, var(--eg-bg)); color: var(--eg-ink); }
+.eg-day.l3 { background: color-mix(in srgb, var(--eg-ok) 68%, var(--eg-bg)); color: #ffffff; }
+.eg-day.l4 { background: var(--eg-ok); color: #ffffff; }
+.eg-day.today { border-color: var(--eg-ok); box-shadow: inset 0 0 0 1px var(--eg-ok); }
 .eg-day.has { cursor: pointer; }
-.eg-day.has:hover { outline: 2px solid #1a7f37; outline-offset: -1px; }
-.eg-dash-legend { display: flex; align-items: center; justify-content: flex-end; gap: 5px; margin-top: 8px; font-size: var(--eg-fs-xs); color: var(--eg-ink-2); }
-.eg-dash-legend i { width: 11px; height: 11px; border-radius: 3px; background: color-mix(in srgb, var(--eg-ink-2) 6%, transparent); display: inline-block; }
-.eg-dash-legend i.l1 { background: #9be9a8; }
-.eg-dash-legend i.l2 { background: #40c463; }
-.eg-dash-legend i.l3 { background: #30a14e; }
-.eg-dash-legend i.l4 { background: #216e39; }
-.eg-hist-title { margin: 22px 0 2px; padding-top: 14px; border-top: 1px solid var(--eg-line); font: 700 var(--eg-fs-sm)/1.3 var(--eg-font); color: var(--eg-ink); }
-.eg-hist { display: flex; flex-direction: column; gap: 14px; margin-top: 6px; }
-.eg-hist-day { padding-top: 12px; border-top: 1px dashed var(--eg-line); }
-.eg-hist-day:first-child { border-top: none; padding-top: 0; }
+.eg-day.has:hover { transform: translateY(-1px) scale(1.06); box-shadow: 0 3px 10px rgba(0, 0, 0, .12); z-index: 1; }
+.eg-day.has:active { transform: scale(.96); }
+.eg-day.has:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
+.eg-dash-legend { display: flex; align-items: center; justify-content: flex-end; gap: 5px; margin-top: 10px; font-size: 11px; color: var(--eg-ink-2); }
+.eg-dash-legend i { width: 11px; height: 11px; border-radius: 3px; background: var(--eg-bg-2); display: inline-block; }
+.eg-dash-legend i.l1 { background: color-mix(in srgb, var(--eg-ok) 18%, var(--eg-bg)); }
+.eg-dash-legend i.l2 { background: color-mix(in srgb, var(--eg-ok) 38%, var(--eg-bg)); }
+.eg-dash-legend i.l3 { background: color-mix(in srgb, var(--eg-ok) 68%, var(--eg-bg)); }
+.eg-dash-legend i.l4 { background: var(--eg-ok); }
+.eg-hist-title { margin: 20px 0 8px; padding: 0 2px; font: 650 var(--eg-fs-xs)/1.3 var(--eg-font); letter-spacing: .03em; color: var(--eg-ink-2); }
+.eg-hist { display: flex; flex-direction: column; gap: 10px; }
+.eg-hist-day {
+  padding: 13px 15px; border: 1px solid var(--eg-line); border-radius: 12px; background: var(--eg-bg);
+  transition: border-color .25s ease, box-shadow .25s ease;
+}
+.eg-hist-day.is-flash { animation: eg-flash-ring 1.15s var(--eg-ease) both; }
+@keyframes eg-flash-ring {
+  0% { border-color: var(--eg-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 22%, transparent); }
+  70% { border-color: var(--eg-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 12%, transparent); }
+  100% { border-color: var(--eg-line); box-shadow: none; }
+}
 .eg-hist-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
-.eg-hist-date { font: 700 var(--eg-fs-sm)/1.3 var(--eg-font); color: var(--eg-ink); }
+.eg-hist-date { font: 650 14px/1.3 var(--eg-font); color: var(--eg-ink); }
 .eg-hist-date .wd { margin-left: 6px; font-weight: 500; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); }
-.eg-hist-count { flex: 0 0 auto; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); font-variant-numeric: tabular-nums; }
-.eg-hist-sub { margin: 12px 0 6px; font: 600 var(--eg-fs-xs)/1 var(--eg-font); color: var(--eg-ink-2); letter-spacing: .02em; }
+.eg-hist-count { flex: 0 0 auto; color: var(--eg-ink-2); font-size: 11.5px; font-variant-numeric: tabular-nums; }
+.eg-hist-sub { margin: 11px 0 6px; font: 600 11.5px/1 var(--eg-font); color: var(--eg-ink-2); letter-spacing: .02em; }
 .eg-wchips { display: flex; flex-wrap: wrap; gap: 6px; }
 .eg-wchip { display: inline-flex; align-items: baseline; gap: 5px; padding: 3px 9px; border-radius: 999px; background: var(--eg-bg-2); border: 1px solid var(--eg-line); font-size: var(--eg-fs-xs); max-width: 100%; }
 .eg-wchip .w { font-weight: 650; color: var(--eg-ink); }
 .eg-wchip .m { color: var(--eg-ink-2); overflow-wrap: anywhere; }
-.eg-wchip.ok { border-color: color-mix(in srgb, var(--eg-ok) 40%, var(--eg-line)); }
-.eg-wchip.bad { border-color: color-mix(in srgb, var(--eg-bad) 40%, var(--eg-line)); }
+.eg-wchip.ok { border-color: color-mix(in srgb, var(--eg-ok) 42%, var(--eg-line)); }
+.eg-wchip.bad { border-color: color-mix(in srgb, var(--eg-bad) 42%, var(--eg-line)); }
 .eg-sents { display: flex; flex-direction: column; }
-.eg-more { align-self: flex-start; margin: 8px 0 2px; padding: 4px 10px; border: 1px solid var(--eg-line); border-radius: 999px; background: var(--eg-bg); color: var(--eg-ink-2); cursor: pointer; font: 600 var(--eg-fs-xs)/1 var(--eg-font); }
-.eg-more:hover { border-color: var(--eg-line-2); color: var(--eg-ink); }
+.eg-more {
+  align-self: flex-start; margin: 9px 0 1px; padding: 4px 10px;
+  border: 1px solid var(--eg-line); border-radius: 999px; background: var(--eg-bg);
+  color: var(--eg-ink-2); cursor: pointer; font: 600 var(--eg-fs-xs)/1 var(--eg-font);
+  transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease, background var(--eg-dur) ease;
+}
+.eg-more:hover { border-color: var(--eg-line-2); background: var(--eg-bg-2); color: var(--eg-ink); }
 .eg-more:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
-.eg-sent { display: flex; gap: 8px; padding: 7px 0; border-top: 1px dashed var(--eg-line); }
-.eg-sent:first-child { border-top: none; }
-.eg-sent .mark { flex: 0 0 auto; width: 14px; font-weight: 700; font-size: var(--eg-fs-sm); line-height: 1.5; }
+.eg-sent { display: flex; gap: 8px; padding: 8px 0; border-top: 1px dashed var(--eg-line); }
+.eg-sent:first-child { border-top: none; padding-top: 4px; }
+.eg-sent:last-child { padding-bottom: 2px; }
+.eg-sent .mark { flex: 0 0 auto; width: 14px; font-weight: 700; font-size: var(--eg-fs-sm); line-height: 1.55; }
 .eg-sent.ok .mark { color: var(--eg-ok); }
 .eg-sent.bad .mark { color: var(--eg-bad); }
 .eg-sent .body { flex: 1 1 auto; min-width: 0; }
-.eg-sent .zh { font-size: var(--eg-fs-sm); line-height: 1.5; color: var(--eg-ink); }
-.eg-sent .en { margin-top: 2px; font-family: var(--eg-serif); font-size: var(--eg-fs-sm); line-height: 1.5; color: var(--eg-ink-2); overflow-wrap: break-word; }
+.eg-sent .zh { font-size: var(--eg-fs-sm); line-height: 1.55; color: var(--eg-ink); }
+.eg-sent .en { margin-top: 3px; font-family: var(--eg-en); font-size: 13.5px; line-height: 1.55; color: var(--eg-ink-2); overflow-wrap: break-word; }
 .eg-dash-empty { padding: 30px 0; text-align: center; color: var(--eg-ink-2); font-size: var(--eg-fs-sm); line-height: 1.7; }
 .eg-dash-error { margin-top: 10px; color: var(--eg-bad); font-size: var(--eg-fs-xs); }
 
-@media (prefers-reduced-motion: reduce) { .eg-panel { animation: none; } .eg-hintbox { animation: none; } .eg-root *, .eg-panel * { transition: none !important; } }
+@media (prefers-reduced-motion: reduce) {
+  .eg-panel, .eg-panel.is-closing, .eg-view, .eg-stage-in, .eg-fb, .eg-fb-ref, .eg-fb-tip, .eg-fb-actions,
+  .eg-fb-mine, .eg-fb-corr, .eg-fb-hl,
+  .eg-letters.is-bad, .eg-letter.is-pop, .eg-letters.is-ok .eg-letter.ok, .eg-hist-day.is-flash,
+  .eg-notice, .eg-import, .eg-preview, .eg-word-miss, .eg-word .eg-eg.done { animation: none !important; }
+  .eg-confetti { display: none; }
+  .eg-root *, .eg-panel * { transition: none !important; }
+}
 `
 
     function useStyle() {
@@ -812,38 +1251,393 @@ window.__ModuleLoader__.load({
       )
     }
 
-    function Drill({ card, answer, setAnswer, feedback, busy, error, onSubmit, onNext }) {
+    function prefersReducedMotion() {
+      try {
+        return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+      } catch {
+        return false
+      }
+    }
+
+    function popElement(el, cls, ms) {
+      if (!el || !el.classList || prefersReducedMotion()) return
+      try {
+        el.classList.remove(cls)
+        void el.offsetWidth
+        el.classList.add(cls)
+        clearTimeout(el.__egPopTimer)
+        el.__egPopTimer = setTimeout(() => el.classList.remove(cls), ms)
+      } catch {
+        /* ignore */
+      }
+    }
+
+    function useCountUp(target, active) {
+      const num = Number(target)
+      const [val, setVal] = useState(() => (Number.isFinite(num) ? num : target))
+      useEffect(() => {
+        if (!active || !Number.isFinite(num) || prefersReducedMotion()) {
+          setVal(target)
+          return undefined
+        }
+        let raf = 0
+        const dur = 260
+        const start = performance.now()
+        const tick = (now) => {
+          const t = Math.min(1, (now - start) / dur)
+          const eased = 1 - Math.pow(1 - t, 3)
+          setVal(Math.round(num * eased))
+          if (t < 1) raf = requestAnimationFrame(tick)
+        }
+        setVal(0)
+        raf = requestAnimationFrame(tick)
+        return () => cancelAnimationFrame(raf)
+      }, [target, num, active])
+      return val
+    }
+
+    function phraseVerdict(feedback) {
+      const score = clamp(Number(feedback && feedback.score) || 0, 0, 100)
+      if (feedback && feedback.correct) {
+        if (feedback.exact || score >= 98) {
+          return { tone: 'ok', title: '完全正确', sub: '表达精准自然，无可挑剔。' }
+        }
+        if (score >= 88) {
+          return { tone: 'ok', title: '表达地道', sub: '语义准确，用词自然流畅。' }
+        }
+        return { tone: 'ok', title: '译得不错', sub: '核心意思到位，可对照参考打磨细节。' }
+      }
+      if (score >= 55) {
+        return { tone: 'warn', title: '还差一点', sub: '方向已接近，修正细节后再试一次。' }
+      }
+      if (score > 0) {
+        return { tone: 'bad', title: '还需调整', sub: '语义或语法有偏差，对照参考重练一遍。' }
+      }
+      return { tone: 'bad', title: '暂未得分', sub: '对照原句和参考译文，重新组织英文再试一次。' }
+    }
+
+    function ScoreRing({ score, displayScore }) {
+      const clamped = clamp(Number(score) || 0, 0, 100)
+      const [drawn, setDrawn] = useState(() => prefersReducedMotion())
+      useEffect(() => {
+        if (prefersReducedMotion()) {
+          setDrawn(true)
+          return undefined
+        }
+        setDrawn(false)
+        let raf2 = 0
+        const raf1 = requestAnimationFrame(() => {
+          raf2 = requestAnimationFrame(() => setDrawn(true))
+        })
+        return () => {
+          cancelAnimationFrame(raf1)
+          cancelAnimationFrame(raf2)
+        }
+      }, [clamped])
+      const r = 20
+      const c = 2 * Math.PI * r
+      const offset = drawn ? c * (1 - clamped / 100) : c
+      return React.createElement(
+        'div',
+        { className: 'eg-ring', 'aria-label': '得分 ' + clamped + ' 分' },
+        React.createElement(
+          'svg',
+          { viewBox: '0 0 50 50', 'aria-hidden': 'true' },
+          React.createElement('circle', { className: 'eg-ring-track', cx: 25, cy: 25, r }),
+          clamped > 0
+            ? React.createElement('circle', {
+                className: 'eg-ring-arc',
+                cx: 25,
+                cy: 25,
+                r,
+                strokeDasharray: c.toFixed(2),
+                strokeDashoffset: offset.toFixed(2),
+              })
+            : null,
+        ),
+        React.createElement(
+          'span',
+          { className: 'eg-ring-val' },
+          React.createElement('strong', null, displayScore),
+          React.createElement('small', null, '分'),
+        ),
+      )
+    }
+
+    function Drill({
+      card,
+      answer,
+      setAnswer,
+      submittedAnswer,
+      feedback,
+      attempt,
+      prevScore,
+      retryFocusTick,
+      busy,
+      error,
+      onSubmit,
+      onRetry,
+      onNext,
+    }) {
       const [hintOpen, setHintOpen] = useState(false)
+      const [copied, setCopied] = useState(false)
+      const inputRef = useRef(null)
+      const copyTimerRef = useRef(null)
+      const displayScore = useCountUp(feedback ? feedback.score : 0, !!feedback)
+
+      useEffect(() => {
+        setCopied(false)
+        return () => clearTimeout(copyTimerRef.current)
+      }, [feedback])
+
+      // Focus and select the previous draft when returning from “再试一次”.
+      useEffect(() => {
+        if (!retryFocusTick || feedback || !card) return
+        const timer = setTimeout(() => {
+          try {
+            const el = inputRef.current
+            if (el) {
+              el.focus()
+              if (el.select) el.select()
+            }
+          } catch {
+            /* ignore */
+          }
+        }, 0)
+        return () => clearTimeout(timer)
+      }, [retryFocusTick, feedback, card])
+
+      // Enter triggers the primary action on the feedback card (retry when missed, next when passed).
+      useEffect(() => {
+        if (!feedback || busy) return undefined
+        const onKeyDown = (e) => {
+          if (e.key !== 'Enter' || e.isComposing || e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return
+          const el = e.target
+          if (el && el.closest && el.closest('textarea, input, select, button, a')) return
+          e.preventDefault()
+          if (feedback.correct) onNext()
+          else if (onRetry) onRetry()
+        }
+        window.addEventListener('keydown', onKeyDown)
+        return () => window.removeEventListener('keydown', onKeyDown)
+      }, [feedback, busy, onNext, onRetry])
+
+      const handleCopy = async () => {
+        if (!feedback || !feedback.reference) return
+        const ok = await copyToClipboard(feedback.reference)
+        if (!ok) return
+        setCopied(true)
+        clearTimeout(copyTimerRef.current)
+        copyTimerRef.current = setTimeout(() => setCopied(false), 1600)
+      }
 
       if (feedback) {
         const ok = !!feedback.correct
+        const verdict = phraseVerdict(feedback)
+        const promptZh = feedback.zh || (card && card.zh) || ''
+        const mine = String(submittedAnswer !== undefined ? submittedAnswer : answer || '').trim()
+        const reference = feedback.reference || ''
+        const corrected = feedback.corrected || ''
+        const score = clamp(Number(feedback.score) || 0, 0, 100)
+        const hasEnglishAttempt = /[a-zA-Z]{2,}/.test(mine)
+        const showCorrected =
+          score >= 40 &&
+          hasEnglishAttempt &&
+          corrected &&
+          normalizeEnglish(corrected) !== normalizeEnglish(reference) &&
+          normalizeEnglish(corrected) !== normalizeEnglish(mine)
+        const bankWords =
+          Array.isArray(feedback.bankWords) && feedback.bankWords.length
+            ? feedback.bankWords
+            : card && Array.isArray(card.bankWords)
+              ? card.bankWords
+              : []
+        const refParts = reference && bankWords.length ? splitByTerms(reference, bankWords) : [reference || '—']
+        const highlights = Array.isArray(feedback.highlights) ? feedback.highlights : []
+        const delta = prevScore !== null && prevScore !== undefined ? score - prevScore : 0
+        const canRetry = !!(card && onRetry)
+
         return React.createElement(
           'div',
-          { className: 'eg-fb ' + (ok ? 'ok' : 'bad') },
+          { className: 'eg-fb is-phrase ' + verdict.tone, 'data-nodrag': 'true' },
           React.createElement(
             'div',
-            { className: 'eg-fb-top' },
-            React.createElement('span', { className: 'eg-score' }, feedback.score, React.createElement('small', null, '分')),
-            React.createElement('span', { className: 'eg-fb-status' }, ok ? '很好' : '再试一次'),
-          ),
-          React.createElement(
-            'div',
-            { className: 'eg-fb-ref' },
-            React.createElement('span', { className: 'lbl' }, '参考'),
-            feedback.reference || '—',
-          ),
-          feedback.tip
-            ? React.createElement(
+            { className: 'eg-fb-hero' },
+            React.createElement(ScoreRing, { score, displayScore }),
+            React.createElement(
+              'div',
+              { className: 'eg-fb-verdict' },
+              React.createElement(
                 'div',
-                { className: 'eg-fb-tip' },
-                React.createElement('span', { className: 'b' }, '提示'),
-                React.createElement('span', null, feedback.tip),
-              )
-            : null,
+                { className: 'eg-fb-headline' },
+                React.createElement('span', { className: 'eg-fb-status' }, verdict.title),
+                feedback.exact ? React.createElement('span', { className: 'eg-fb-pill tone' }, '完全匹配') : null,
+                attempt > 1 ? React.createElement('span', { className: 'eg-fb-pill' }, '第 ' + attempt + ' 次尝试') : null,
+                delta > 0 ? React.createElement('span', { className: 'eg-fb-pill up' }, '↑ +' + delta + ' 分') : null,
+              ),
+              React.createElement('div', { className: 'eg-fb-sub' }, verdict.sub),
+            ),
+          ),
+          React.createElement(
+            'div',
+            { className: 'eg-fb-body' },
+            promptZh
+              ? React.createElement(
+                  'div',
+                  { className: 'eg-fb-prompt' },
+                  React.createElement('span', { className: 'eg-fb-tag' }, '原句'),
+                  React.createElement('span', { className: 'eg-fb-zh' }, promptZh),
+                )
+              : null,
+            React.createElement(
+              'div',
+              { className: 'eg-fb-mine' },
+              React.createElement(
+                'div',
+                { className: 'eg-fb-boxhead' },
+                React.createElement(
+                  'span',
+                  { className: 'lbl' },
+                  React.createElement('span', { 'aria-hidden': 'true' }, ok ? '✓' : '✗'),
+                  '你的作答',
+                ),
+              ),
+              React.createElement(
+                'div',
+                { className: 'eg-fb-mine-text' + (mine ? '' : ' empty') },
+                mine || '（未输入有效内容）',
+              ),
+            ),
+            React.createElement(
+              'div',
+              { className: 'eg-fb-ref' },
+              React.createElement(
+                'div',
+                { className: 'eg-fb-boxhead' },
+                React.createElement(
+                  'div',
+                  { className: 'eg-fb-boxhead-left' },
+                  React.createElement('span', { className: 'lbl' }, '参考译文'),
+                  bankWords.length
+                    ? React.createElement('span', { className: 'eg-fb-banktag', title: '融入的词库词' }, '词库 · ' + bankWords.join(' / '))
+                    : null,
+                ),
+                reference
+                  ? React.createElement(
+                      'button',
+                      {
+                        type: 'button',
+                        className: 'eg-copybtn' + (copied ? ' copied' : ''),
+                        onClick: handleCopy,
+                        title: '复制参考译文',
+                      },
+                      copied ? '已复制 ✓' : '复制',
+                    )
+                  : null,
+              ),
+              React.createElement(
+                'div',
+                { className: 'eg-fb-ref-text' },
+                refParts.map((part, i) =>
+                  i % 2 ? React.createElement('mark', { className: 'eg-eg-hit', key: i }, part) : React.createElement('span', { key: i }, part),
+                ),
+              ),
+            ),
+            showCorrected
+              ? React.createElement(
+                  'div',
+                  { className: 'eg-fb-corr' },
+                  React.createElement(
+                    'div',
+                    { className: 'eg-fb-boxhead' },
+                    React.createElement('span', { className: 'lbl' }, '贴近你思路的改写'),
+                  ),
+                  React.createElement('div', { className: 'eg-fb-corr-text' }, corrected),
+                )
+              : null,
+            feedback.tip
+              ? React.createElement(
+                  'div',
+                  { className: 'eg-fb-tip' },
+                  React.createElement('span', { className: 'b' }, '点评'),
+                  React.createElement('span', null, feedback.tip),
+                )
+              : null,
+            highlights.length
+              ? React.createElement(
+                  'div',
+                  { className: 'eg-fb-hl' },
+                  React.createElement('div', { className: 'eg-fb-hl-lbl' }, '核心表达'),
+                  React.createElement(
+                    'div',
+                    { className: 'eg-fb-hl-list' },
+                    highlights.map((item, i) =>
+                      React.createElement(
+                        'span',
+                        { className: 'eg-hl-chip', key: i },
+                        React.createElement('span', { className: 'en' }, item.en),
+                        React.createElement('span', { className: 'zh' }, item.zh),
+                      ),
+                    ),
+                  ),
+                )
+              : null,
+          ),
           React.createElement(
             'div',
             { className: 'eg-fb-actions' },
-            React.createElement('button', { className: 'eg-btn primary', onClick: onNext, disabled: busy }, '下一题 →'),
+            ok
+              ? [
+                  React.createElement(
+                    'button',
+                    {
+                      key: 'next',
+                      className: 'eg-btn primary',
+                      onClick: onNext,
+                      onPointerDown: bounceButton,
+                      disabled: busy,
+                      title: '回车下一题',
+                      'aria-keyshortcuts': 'Enter',
+                    },
+                    '下一题 →',
+                  ),
+                  canRetry
+                    ? React.createElement(
+                        'button',
+                        { key: 'retry', className: 'eg-btn', onClick: onRetry, disabled: busy },
+                        '↺ 再试一次',
+                      )
+                    : null,
+                ]
+              : [
+                  canRetry
+                    ? React.createElement(
+                        'button',
+                        {
+                          key: 'retry',
+                          className: 'eg-btn primary',
+                          onClick: onRetry,
+                          onPointerDown: bounceButton,
+                          disabled: busy,
+                          title: '回车再试一次',
+                          'aria-keyshortcuts': 'Enter',
+                        },
+                        '↺ 再试一次',
+                      )
+                    : null,
+                  React.createElement(
+                    'button',
+                    { key: 'next', className: canRetry ? 'eg-btn' : 'eg-btn primary', onClick: onNext, disabled: busy },
+                    '下一题 →',
+                  ),
+                ],
+            React.createElement(
+              'span',
+              { className: 'eg-kbd', title: ok ? '按 Enter 进入下一题' : '按 Enter 再试一次' },
+              React.createElement('kbd', null, '↵'),
+              ' ',
+              ok ? '下一题' : '再试',
+            ),
           ),
         )
       }
@@ -863,7 +1657,7 @@ window.__ModuleLoader__.load({
         }
         return React.createElement(
           'div',
-          { className: 'eg-loading' },
+          { className: 'eg-loading is-stage' },
           React.createElement('span', { className: 'eg-spin' }),
           '正在出题…',
         )
@@ -871,27 +1665,48 @@ window.__ModuleLoader__.load({
 
       return React.createElement(
         'div',
-        null,
-        React.createElement('div', { className: 'eg-cap' }, '把这句话译成英文'),
+        { className: 'eg-stage-in' },
+        React.createElement(
+          'div',
+          { className: 'eg-cap eg-cap-row' },
+          React.createElement('span', null, '把这句话译成英文'),
+          attempt > 0 ? React.createElement('span', { className: 'eg-attempt-pill' }, '第 ' + (attempt + 1) + ' 次尝试') : null,
+        ),
         React.createElement('div', { className: 'eg-zh' }, card.zh),
         card.hint
           ? React.createElement(
-              'button',
-              {
-                className: 'eg-hintbtn',
-                'aria-expanded': hintOpen ? 'true' : 'false',
-                onClick: () => setHintOpen((v) => !v),
-                type: 'button',
-              },
-              React.createElement('span', { className: 'caret', 'aria-hidden': 'true' }, hintOpen ? '▾' : '▸'),
-              '提示',
+              React.Fragment,
+              null,
+              React.createElement(
+                'button',
+                {
+                  className: 'eg-hintbtn',
+                  'aria-expanded': hintOpen ? 'true' : 'false',
+                  onClick: () => setHintOpen((v) => !v),
+                  type: 'button',
+                },
+                React.createElement('span', { className: 'caret', 'aria-hidden': 'true' }, '▸'),
+                '提示',
+              ),
+              React.createElement(
+                'div',
+                {
+                  className: 'eg-collapse eg-hint-collapse' + (hintOpen ? ' open' : ''),
+                  'aria-hidden': hintOpen ? 'false' : 'true',
+                },
+                React.createElement(
+                  'div',
+                  { className: 'eg-collapse-inner' },
+                  React.createElement('div', { className: 'eg-hintbox' }, card.hint),
+                ),
+              ),
             )
           : null,
-        card.hint && hintOpen ? React.createElement('div', { className: 'eg-hintbox' }, card.hint) : null,
         React.createElement(
           'div',
           { className: 'eg-inputwrap' },
           React.createElement('textarea', {
+            ref: inputRef,
             className: 'eg-input' + (error ? ' error' : ''),
             value: answer,
             placeholder: '在这里写下你的英文…',
@@ -931,10 +1746,15 @@ window.__ModuleLoader__.load({
     }
 
     function Report({ report, loading, error, onRefresh }) {
+      const [openMap, setOpenMap] = useState({})
+      useEffect(() => {
+        setOpenMap({})
+      }, [report])
+
       if (loading && !report) {
         return React.createElement(
           'div',
-          { className: 'eg-loading' },
+          { className: 'eg-loading is-stage' },
           React.createElement('span', { className: 'eg-spin' }),
           '正在生成今日报告…',
         )
@@ -957,11 +1777,28 @@ window.__ModuleLoader__.load({
       }
       const paragraphs = String(report.body || '').split(/\n{2,}/).filter(Boolean)
       const questions = report.questions || []
+      const wordCount = (String(report.body || '').match(/[A-Za-z0-9]+(?:['’-][A-Za-z0-9]+)*/g) || []).length
+      const meta = [report.date, report.level, wordCount ? wordCount + ' 词' : ''].filter(Boolean).join(' · ')
       return React.createElement(
         'div',
-        { className: 'eg-report' },
+        { className: 'eg-report eg-stage-in', 'data-nodrag': 'true' },
         React.createElement('div', { className: 'r-top' }, React.createElement('h2', { className: 'eg-rtitle' }, report.title || 'Daily Report')),
-        React.createElement('div', { className: 'eg-rmeta' }, [report.date, report.level].filter(Boolean).join(' · ')),
+        React.createElement(
+          'div',
+          { className: 'eg-rmeta-row' },
+          meta ? React.createElement('div', { className: 'eg-rmeta' }, meta) : React.createElement('span', null),
+          React.createElement(
+            'button',
+            {
+              type: 'button',
+              className: 'eg-rrefresh',
+              onClick: onRefresh,
+              disabled: loading,
+              title: '重新生成一篇今日报告',
+            },
+            loading ? '生成中…' : '↻ 换一篇',
+          ),
+        ),
         report.summary_zh ? React.createElement('p', { className: 'eg-rsum' }, report.summary_zh) : null,
         paragraphs.map((p, i) => React.createElement('p', { key: i, className: 'eg-rp' }, p)),
         questions.length
@@ -969,10 +1806,11 @@ window.__ModuleLoader__.load({
               'div',
               { className: 'eg-practice' },
               React.createElement('div', { className: 'eg-ptitle' }, '练一练'),
-              questions.map((q, i) =>
-                React.createElement(
+              questions.map((q, i) => {
+                const isOpen = !!openMap[i]
+                return React.createElement(
                   'div',
-                  { key: i, className: 'eg-q' },
+                  { key: i, className: 'eg-q' + (isOpen ? ' reveal' : '') },
                   React.createElement(
                     'div',
                     { className: 'eg-q-head' },
@@ -984,23 +1822,40 @@ window.__ModuleLoader__.load({
                     {
                       className: 'eg-q-toggle',
                       type: 'button',
-                      onClick: (e) => {
-                        const box = e.currentTarget.parentElement
-                        box.classList.toggle('reveal')
-                        e.currentTarget.textContent = box.classList.contains('reveal') ? '收起参考' : '看参考'
-                      },
+                      'aria-expanded': isOpen ? 'true' : 'false',
+                      onClick: () => setOpenMap((prev) => ({ ...prev, [i]: !prev[i] })),
                     },
-                    '看参考',
+                    React.createElement('span', { className: 'caret', 'aria-hidden': 'true' }, '▸'),
+                    isOpen ? '收起参考' : '看参考',
                   ),
-                  React.createElement('div', { className: 'eg-q-en' }, q.en),
-                ),
-              ),
+                  React.createElement(
+                    'div',
+                    { className: 'eg-collapse' + (isOpen ? ' open' : ''), 'aria-hidden': isOpen ? 'false' : 'true' },
+                    React.createElement(
+                      'div',
+                      { className: 'eg-collapse-inner' },
+                      React.createElement('div', { className: 'eg-q-en' }, q.en),
+                    ),
+                  ),
+                )
+              }),
             )
           : null,
         React.createElement(
           'div',
-          { className: 'eg-actions' },
-          React.createElement('button', { className: 'eg-btn ghost', onClick: onRefresh, disabled: loading }, loading ? '生成中…' : '换一篇'),
+          { className: 'eg-report-foot' },
+          React.createElement('span', { className: 'eg-report-foot-hint' }, '按当前内容方向生成，可随时换一篇'),
+          React.createElement(
+            'button',
+            {
+              type: 'button',
+              className: 'eg-btn',
+              onClick: onRefresh,
+              onPointerDown: bounceButton,
+              disabled: loading,
+            },
+            loading ? '生成中…' : '↻ 换一篇',
+          ),
         ),
       )
     }
@@ -1381,6 +2236,7 @@ window.__ModuleLoader__.load({
           next[i] = ch
           return next
         })
+        if (ch) popElement(refs.current[i], 'is-pop', 180)
         if (ch && i < cells.length - 1) {
           setTimeout(() => {
             try {
@@ -1464,7 +2320,7 @@ window.__ModuleLoader__.load({
           },
           className: cls,
           value: answered ? ch || target[i] || '' : ch,
-          style: { fontSize: letterFont },
+          style: { fontSize: letterFont, '--i': i },
           maxLength: 1,
           inputMode: 'text',
           autoCapitalize: 'off',
@@ -1551,58 +2407,79 @@ window.__ModuleLoader__.load({
           ),
         ),
         notice ? React.createElement('div', { className: 'eg-notice' }, notice) : null,
-        React.createElement('div', { className: 'eg-word-main' },
-        item.pos ? React.createElement('div', { className: 'eg-pos', title: '词性提示' }, formatPos(item.pos)) : null,
-        React.createElement('div', { className: 'eg-zh' }, item.zh),
-        !answered ? React.createElement(ExampleBlock, { example: item.example }) : null,
-        React.createElement('div', { className: 'eg-letters' + (answered ? ' answered' : ''), style: { gap: letterGap } }, cellsNodes),
-        error ? React.createElement('div', { className: 'eg-err' }, error) : null,
-        answered
-          ? ok
-            ? React.createElement(
-                'div',
-                { className: 'eg-fb ok' },
-                React.createElement(
-                  'div',
-                  { className: 'eg-fb-top' },
-                  React.createElement('span', { className: 'eg-fb-status' }, '拼对了'),
-                ),
-                React.createElement(
-                  'div',
-                  { className: 'eg-fb-ref' },
-                  React.createElement('span', { className: 'lbl' }, '正确拼写'),
-                  res.reference,
-                ),
-                React.createElement(ExampleBlock, {
-                  example: res.example,
-                  exampleZh: res.exampleZh,
-                  word: res.reference,
-                  highlight: true,
-                }),
-              )
-            : React.createElement(
-                'div',
-                { className: 'eg-fb bad' },
-                revealed
-                  ? React.createElement(
-                      React.Fragment,
-                      null,
+        React.createElement(
+          'div',
+          { className: 'eg-word-main' },
+          React.createElement(
+            'div',
+            { className: 'eg-word-stage eg-stage-in', key: item.id },
+            item.pos ? React.createElement('div', { className: 'eg-pos', title: '词性提示' }, formatPos(item.pos)) : null,
+            React.createElement('div', { className: 'eg-zh' }, item.zh),
+            !answered ? React.createElement(ExampleBlock, { example: item.example }) : null,
+            React.createElement(
+              'div',
+              {
+                className: 'eg-letters' + (answered ? ' answered' + (ok ? ' is-ok' : ' is-bad') : ''),
+                style: { gap: letterGap },
+              },
+              cellsNodes,
+            ),
+            error ? React.createElement('div', { className: 'eg-err' }, error) : null,
+            answered
+              ? ok
+                ? React.createElement(
+                    'div',
+                    { className: 'eg-fb ok' },
+                    React.createElement(
+                      'div',
+                      { className: 'eg-fb-top' },
+                      React.createElement('span', { className: 'eg-fb-status' }, '拼对了'),
+                    ),
+                    React.createElement(
+                      'div',
+                      { className: 'eg-fb-ref' },
+                      React.createElement('span', { className: 'lbl' }, '正确拼写'),
+                      res.reference,
+                    ),
+                    React.createElement(ExampleBlock, {
+                      example: res.example,
+                      exampleZh: res.exampleZh,
+                      word: res.reference,
+                      highlight: true,
+                    }),
+                  )
+                : React.createElement(
+                    'div',
+                    { className: 'eg-fb bad' },
+                    !revealed
+                      ? React.createElement('div', { className: 'eg-word-miss' }, '拼写有误，可再试一次或查看答案')
+                      : null,
+                    React.createElement(
+                      'div',
+                      {
+                        className: 'eg-collapse eg-word-reveal' + (revealed ? ' open' : ''),
+                        'aria-hidden': revealed ? 'false' : 'true',
+                      },
                       React.createElement(
                         'div',
-                        { className: 'eg-fb-ref' },
-                        React.createElement('span', { className: 'lbl' }, '正确拼写'),
-                        res.reference,
+                        { className: 'eg-collapse-inner' },
+                        React.createElement(
+                          'div',
+                          { className: 'eg-fb-ref' },
+                          React.createElement('span', { className: 'lbl' }, '正确拼写'),
+                          res.reference,
+                        ),
+                        React.createElement(ExampleBlock, {
+                          example: res.example,
+                          exampleZh: res.exampleZh,
+                          word: res.reference,
+                          highlight: true,
+                        }),
                       ),
-                      React.createElement(ExampleBlock, {
-                        example: res.example,
-                        exampleZh: res.exampleZh,
-                        word: res.reference,
-                        highlight: true,
-                      }),
-                    )
-                  : null,
-              )
-          : null,
+                    ),
+                  )
+              : null,
+          ),
         ),
         footerActions,
       )
@@ -1769,8 +2646,16 @@ window.__ModuleLoader__.load({
                   onClick: () => save({ bankLink: !settings.bankLink }, false),
                 }),
               ),
-              settings.bankLink
-                ? React.createElement(
+              React.createElement(
+                'div',
+                {
+                  className: 'eg-collapse' + (settings.bankLink ? ' open' : ''),
+                  'aria-hidden': settings.bankLink ? 'false' : 'true',
+                },
+                React.createElement(
+                  'div',
+                  { className: 'eg-collapse-inner' },
+                  React.createElement(
                     'div',
                     { className: 'eg-setting-sub' },
                     React.createElement(
@@ -1792,7 +2677,8 @@ window.__ModuleLoader__.load({
                           type: 'button',
                           className: 'eg-stepbtn',
                           'aria-label': '减少重试次数',
-                          disabled: busy || settings.bankRetries <= 0,
+                          tabIndex: settings.bankLink ? undefined : -1,
+                          disabled: busy || !settings.bankLink || settings.bankRetries <= 0,
                           onClick: () => setRetries(settings.bankRetries - 1),
                         },
                         '−',
@@ -1804,14 +2690,16 @@ window.__ModuleLoader__.load({
                           type: 'button',
                           className: 'eg-stepbtn',
                           'aria-label': '增加重试次数',
-                          disabled: busy || settings.bankRetries >= 5,
+                          tabIndex: settings.bankLink ? undefined : -1,
+                          disabled: busy || !settings.bankLink || settings.bankRetries >= 5,
                           onClick: () => setRetries(settings.bankRetries + 1),
                         },
                         '+',
                       ),
                     ),
-                  )
-                : null,
+                  ),
+                ),
+              ),
             ),
           ),
         ),
@@ -1965,9 +2853,15 @@ window.__ModuleLoader__.load({
         return { y: d.getFullYear(), m: d.getMonth() }
       })
       const [expanded, setExpanded] = useState({})
+      const [flashDay, setFlashDay] = useState('')
+      const flashTimerRef = useRef(null)
       const toggleGroup = (key) => setExpanded((prev) => ({ ...prev, [key]: !prev[key] }))
       const WORD_LIMIT = 10
       const PHRASE_LIMIT = 5
+
+      useEffect(() => {
+        return () => clearTimeout(flashTimerRef.current)
+      }, [])
 
       const load = useCallback(async () => {
         setLoading(true)
@@ -2029,6 +2923,12 @@ window.__ModuleLoader__.load({
         } catch {
           /* ignore */
         }
+        setFlashDay('')
+        clearTimeout(flashTimerRef.current)
+        setTimeout(() => {
+          setFlashDay(day)
+          flashTimerRef.current = setTimeout(() => setFlashDay(''), 1200)
+        }, 20)
       }
 
       const dowNodes = ['一', '二', '三', '四', '五', '六', '日'].map((w, i) =>
@@ -2085,7 +2985,7 @@ window.__ModuleLoader__.load({
             : null
         return React.createElement(
           'div',
-          { className: 'eg-hist-day', id: 'eg-hist-' + rec.day, key: rec.day },
+          { className: 'eg-hist-day' + (flashDay === rec.day ? ' is-flash' : ''), id: 'eg-hist-' + rec.day, key: rec.day },
           React.createElement(
             'div',
             { className: 'eg-hist-head' },
@@ -2177,16 +3077,20 @@ window.__ModuleLoader__.load({
           React.createElement('div', { className: 'eg-stat' }, React.createElement('b', null, totals.phrases || 0), React.createElement('span', { title: '累计句子' }, '句子')),
           React.createElement('div', { className: 'eg-stat' }, React.createElement('b', null, totals.days || 0), React.createElement('span', { title: '累计学习天数' }, '累计')),
         ),
-        React.createElement('div', { className: 'eg-cal' }, dowNodes.concat(cellNodes)),
         React.createElement(
           'div',
-          { className: 'eg-dash-legend' },
-          '少',
-          React.createElement('i', { className: 'l1' }),
-          React.createElement('i', { className: 'l2' }),
-          React.createElement('i', { className: 'l3' }),
-          React.createElement('i', { className: 'l4' }),
-          '多',
+          { className: 'eg-cal-card' },
+          React.createElement('div', { className: 'eg-cal' }, dowNodes.concat(cellNodes)),
+          React.createElement(
+            'div',
+            { className: 'eg-dash-legend' },
+            '少',
+            React.createElement('i', { className: 'l1' }),
+            React.createElement('i', { className: 'l2' }),
+            React.createElement('i', { className: 'l3' }),
+            React.createElement('i', { className: 'l4' }),
+            '多',
+          ),
         ),
         error ? React.createElement('div', { className: 'eg-dash-error' }, error) : null,
         records.length
@@ -2227,7 +3131,7 @@ window.__ModuleLoader__.load({
           stats && stats.reviewCount > 0
             ? React.createElement('span', { className: 'eg-chip warn' }, '待复习 ' + stats.reviewCount)
             : null,
-          React.createElement('span', { className: 'eg-chev', 'aria-hidden': 'true' }, shared.open ? '▾' : '▸'),
+          React.createElement('span', { className: 'eg-chev', 'aria-hidden': 'true' }, '▸'),
         ),
       )
     }
@@ -2239,7 +3143,12 @@ window.__ModuleLoader__.load({
       const [tab, setTab] = useState('word')
       const [card, setCard] = useState(null)
       const [answer, setAnswer] = useState('')
+      const [submittedAnswer, setSubmittedAnswer] = useState('')
       const [feedback, setFeedback] = useState(null)
+      const [attempt, setAttempt] = useState(0)
+      const [prevScore, setPrevScore] = useState(null)
+      const [retryFocusTick, setRetryFocusTick] = useState(0)
+      const lastScoreRef = useRef(null)
       const [busy, setBusy] = useState(false)
       const [error, setError] = useState('')
       const [report, setReport] = useState(null)
@@ -2258,8 +3167,49 @@ window.__ModuleLoader__.load({
       }, [geom])
 
       const open = shared.open
+      const [mounted, setMounted] = useState(open)
+      const [closing, setClosing] = useState(false)
+      const tabRefs = useRef({})
+      const [slider, setSlider] = useState({ left: 0, width: 0, ready: false })
       const [confettiKey, setConfettiKey] = useState(0)
       const lastBurstRef = useRef(shared.burst || 0)
+
+      useEffect(() => {
+        if (open) {
+          setMounted(true)
+          setClosing(false)
+          return undefined
+        }
+        if (!mounted) return undefined
+        if (prefersReducedMotion()) {
+          setMounted(false)
+          setClosing(false)
+          return undefined
+        }
+        setClosing(true)
+        const timer = setTimeout(() => {
+          setMounted(false)
+          setClosing(false)
+        }, 145)
+        return () => clearTimeout(timer)
+      }, [open, mounted])
+
+      useEffect(() => {
+        if (!mounted) return undefined
+        const measure = () => {
+          const el = tabRefs.current && tabRefs.current[tab]
+          if (!el) return
+          const pad = Math.min(5, Math.floor(el.offsetWidth * 0.16))
+          setSlider({
+            left: el.offsetLeft + pad,
+            width: Math.max(14, el.offsetWidth - pad * 2),
+            ready: true,
+          })
+        }
+        measure()
+        const raf = requestAnimationFrame(measure)
+        return () => cancelAnimationFrame(raf)
+      }, [tab, mounted, geom.w])
 
       // Load persisted settings as soon as the board opens so the celebration
       // switch applies before the user answers anything.
@@ -2403,7 +3353,12 @@ window.__ModuleLoader__.load({
           })
           setCard(data)
           setAnswer('')
+          setSubmittedAnswer('')
           setFeedback(null)
+          setAttempt(0)
+          setPrevScore(null)
+          setRetryFocusTick(0)
+          lastScoreRef.current = null
         } catch (e) {
           setError(e.message || '出题失败')
         } finally {
@@ -2453,13 +3408,18 @@ window.__ModuleLoader__.load({
 
       const submit = useCallback(async () => {
         if (!card || busy) return
+        const currentAnswer = answer
         setBusy(true)
         setError('')
         try {
           const res = await api('/check', {
             method: 'POST',
-            body: JSON.stringify({ id: card.id, answer }),
+            body: JSON.stringify({ id: card.id, answer: currentAnswer }),
           })
+          setSubmittedAnswer(currentAnswer)
+          setPrevScore(lastScoreRef.current)
+          lastScoreRef.current = Number.isFinite(Number(res.score)) ? Number(res.score) : 0
+          setAttempt((n) => n + 1)
           setFeedback(res)
           if (res.correct) store.celebrate()
           if (res.summary) store.setStats(res.summary)
@@ -2468,6 +3428,9 @@ window.__ModuleLoader__.load({
           if (e.status === 409) {
             setCard(null)
             setFeedback(null)
+            setAttempt(0)
+            setPrevScore(null)
+            lastScoreRef.current = null
             startedRef.current = false
           }
         } finally {
@@ -2475,21 +3438,41 @@ window.__ModuleLoader__.load({
         }
       }, [card, answer, busy])
 
+      const retry = useCallback(() => {
+        if (!card || busy) return
+        setFeedback(null)
+        setError('')
+        setRetryFocusTick((n) => n + 1)
+      }, [card, busy])
+
       const next = useCallback(() => {
         setFeedback(null)
         setCard(null)
+        setSubmittedAnswer('')
+        setAttempt(0)
+        setPrevScore(null)
+        setRetryFocusTick(0)
+        lastScoreRef.current = null
         // Keep startedRef true so the auto-load effect does NOT fire a second
         // /next on top of the one we start here (that double-fetch made the
         // previous wording flash in for a moment).
         loadNext('new')
       }, [loadNext])
 
-      if (!open) return null
+      if (!mounted) return null
+
+      const TABS = [
+        { id: 'word', label: '单词训练' },
+        { id: 'drill', label: '短语训练' },
+        { id: 'report', label: '今日报告' },
+        { id: 'dashboard', label: '看板' },
+        { id: 'settings', label: '设置' },
+      ]
 
       return React.createElement(
         'div',
         {
-          className: 'eg-panel',
+          className: 'eg-panel' + (closing ? ' is-closing' : ''),
           role: 'dialog',
           'aria-label': 'English Gym',
           style: { left: geom.x, top: geom.y, width: geom.w, height: geom.h },
@@ -2504,32 +3487,28 @@ window.__ModuleLoader__.load({
           React.createElement('span', { className: 'eg-grip', 'aria-hidden': 'true' }, '⠿'),
           React.createElement(
             'div',
-            { className: 'eg-tabs' },
-            React.createElement(
-              'button',
-              { className: 'eg-tab' + (tab === 'word' ? ' active' : ''), onClick: () => setTab('word') },
-              '单词训练',
+            { className: 'eg-tabs' + (slider.ready ? ' has-slider' : '') },
+            TABS.map((t) =>
+              React.createElement(
+                'button',
+                {
+                  key: t.id,
+                  ref: (el) => {
+                    tabRefs.current[t.id] = el
+                  },
+                  className: 'eg-tab' + (tab === t.id ? ' active' : ''),
+                  onClick: () => setTab(t.id),
+                },
+                t.label,
+              ),
             ),
-            React.createElement(
-              'button',
-              { className: 'eg-tab' + (tab === 'drill' ? ' active' : ''), onClick: () => setTab('drill') },
-              '短语训练',
-            ),
-            React.createElement(
-              'button',
-              { className: 'eg-tab' + (tab === 'report' ? ' active' : ''), onClick: () => setTab('report') },
-              '今日报告',
-            ),
-            React.createElement(
-              'button',
-              { className: 'eg-tab' + (tab === 'dashboard' ? ' active' : ''), onClick: () => setTab('dashboard') },
-              '看板',
-            ),
-            React.createElement(
-              'button',
-              { className: 'eg-tab' + (tab === 'settings' ? ' active' : ''), onClick: () => setTab('settings') },
-              '设置',
-            ),
+            slider.ready
+              ? React.createElement('span', {
+                  className: 'eg-tab-indicator',
+                  'aria-hidden': 'true',
+                  style: { transform: 'translateX(' + slider.left + 'px)', width: slider.width + 'px' },
+                })
+              : null,
           ),
           React.createElement(
             'div',
@@ -2540,46 +3519,60 @@ window.__ModuleLoader__.load({
         React.createElement(
           'div',
           { className: 'eg-body' },
-          tab === 'drill'
-            ? React.createElement(
-                'div',
-                { className: 'eg-drill' },
-                React.createElement(Drill, {
-                  key: card ? card.id : feedback ? 'fb' : 'loading',
-                  card,
-                  answer,
-                  setAnswer,
-                  feedback,
-                  busy,
-                  error,
-                  onSubmit: submit,
-                  onNext: next,
-                }),
-              )
-            : tab === 'word'
-              ? React.createElement(WordPractice, { key: 'word' })
-              : tab === 'report'
-                ? React.createElement(Report, {
-                  report,
-                  loading: reportLoading,
-                  error,
-                  onRefresh: () => {
-                    setReport(null)
-                    refreshReport(true)
-                  },
-                })
-                : tab === 'dashboard'
-                  ? React.createElement(Dashboard, { key: 'dashboard' })
-                  : React.createElement(SettingsPanel, {
-                  onTopicChange: () => {
-                    setCard(null)
-                    setFeedback(null)
-                    setAnswer('')
-                    setReport(null)
-                    reportStaleRef.current = true
-                    startedRef.current = false
-                  },
-                }),
+          React.createElement(
+            'div',
+            { className: 'eg-view', key: tab },
+            tab === 'drill'
+              ? React.createElement(
+                  'div',
+                  { className: 'eg-drill' },
+                  React.createElement(Drill, {
+                    key: card ? card.id : feedback ? 'fb' : 'loading',
+                    card,
+                    answer,
+                    setAnswer,
+                    submittedAnswer,
+                    feedback,
+                    attempt,
+                    prevScore,
+                    retryFocusTick,
+                    busy,
+                    error,
+                    onSubmit: submit,
+                    onRetry: retry,
+                    onNext: next,
+                  }),
+                )
+              : tab === 'word'
+                ? React.createElement(WordPractice, { key: 'word' })
+                : tab === 'report'
+                  ? React.createElement(Report, {
+                      report,
+                      loading: reportLoading,
+                      error,
+                      onRefresh: () => {
+                        setReport(null)
+                        refreshReport(true)
+                      },
+                    })
+                  : tab === 'dashboard'
+                    ? React.createElement(Dashboard, { key: 'dashboard' })
+                    : React.createElement(SettingsPanel, {
+                        onTopicChange: () => {
+                          setCard(null)
+                          setFeedback(null)
+                          setAnswer('')
+                          setSubmittedAnswer('')
+                          setAttempt(0)
+                          setPrevScore(null)
+                          setRetryFocusTick(0)
+                          lastScoreRef.current = null
+                          setReport(null)
+                          reportStaleRef.current = true
+                          startedRef.current = false
+                        },
+                      }),
+          ),
         ),
         confettiKey ? React.createElement(Confetti, { key: confettiKey }) : null,
         React.createElement('div', {

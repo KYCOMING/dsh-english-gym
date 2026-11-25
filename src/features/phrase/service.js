@@ -98,7 +98,7 @@ export function createPhraseService({ ctx, conf, dir, getTopic }) {
       if (idx >= 0) state.review[idx] = entry
       else state.review.push(entry)
     }
-    delete state.pending[id]
+    // Keep the prompt pending (capped by prunePending) so “再试一次” can re-check the same sentence.
     recordStudy(state, 'phrase', {
       zh: pending.zh,
       en: pending.en,
@@ -113,9 +113,12 @@ export function createPhraseService({ ctx, conf, dir, getTopic }) {
       correct: result.correct,
       exact: !!result.exact,
       score: result.score,
+      zh: pending.zh,
       reference: result.reference,
       tip: result.tip,
       corrected: result.corrected,
+      highlights: Array.isArray(result.highlights) ? result.highlights : [],
+      bankWords: Array.isArray(pending.bankWords) ? pending.bankWords : [],
     }
   }
 
