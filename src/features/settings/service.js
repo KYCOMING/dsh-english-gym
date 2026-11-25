@@ -24,6 +24,16 @@ export const DEFAULT_SETTINGS = {
   confetti: true,
   topicId: 'ai',
   customTopics: [],
+  bankLink: true,
+  bankRetries: 1,
+}
+
+export const MAX_BANK_RETRIES = 5
+
+export function normalizeBankRetries(value) {
+  const num = Number(value)
+  if (!Number.isFinite(num)) return DEFAULT_SETTINGS.bankRetries
+  return Math.max(0, Math.min(MAX_BANK_RETRIES, Math.round(num)))
 }
 
 const CUSTOM_ID_RE = /^ct-[a-z0-9-]{4,64}$/
@@ -68,6 +78,8 @@ export function normalizeSettings(raw) {
     confetti: source.confetti !== false,
     topicId,
     customTopics,
+    bankLink: source.bankLink !== false,
+    bankRetries: normalizeBankRetries(source.bankRetries),
   }
 }
 
@@ -100,6 +112,8 @@ export function createSettingsService({ dir, conf }) {
     const body = patch && typeof patch === 'object' ? patch : {}
 
     if (typeof body.confetti === 'boolean') next.confetti = body.confetti
+    if (typeof body.bankLink === 'boolean') next.bankLink = body.bankLink
+    if (body.bankRetries !== undefined) next.bankRetries = normalizeBankRetries(body.bankRetries)
     if (Array.isArray(body.customTopics)) next.customTopics = normalizeCustomTopics(body.customTopics)
     if (typeof body.topicId === 'string' && body.topicId) {
       const known = listDirections(next).some((item) => item.id === body.topicId)

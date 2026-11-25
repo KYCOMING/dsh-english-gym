@@ -1,5 +1,6 @@
 import { completeText, extractJson } from '../../core/llm.js'
 import { SEED_QUESTIONS } from './seed.js'
+import { formatCandidateList, usedBankWords } from '../word/sample.js'
 
 function pickLevel(level, fallback) {
   return typeof level === 'string' && level.trim() ? level.trim() : fallback || 'B1'
@@ -17,18 +18,25 @@ const QUESTION_SYSTEM =
  * Generate one Chinese→English translation prompt.
  * @returns {Promise<{zh:string, en:string, hint:string}>}
  */
-export async function generateQuestion(ctx, config, { level, topic } = {}) {
+export async function generateQuestion(ctx, config, { level, topic, words } = {}) {
   const lvl = pickLevel(level, config && config.level)
   const theme = topic || (config && config.topic) || 'AI and technology'
-  const prompt =
+  const candidates = Array.isArray(words) ? words : []
+  let prompt =
     `Create ONE Chinese sentence for a Chinese learner to translate into English.\n` +
     `CEFR level: ${lvl}.\n` +
     `Theme: ${theme} (the English sentence should be natural, useful workplace / tech English).\n` +
     `Length: 6-16 words. Avoid proper nouns and ambiguity.\n` +
     `Also give a short ENGLISH hint that genuinely helps a Chinese learner: the 1-3 key English words, ` +
     `phrases or collocations the answer should use (e.g. "business trip; get to know"), plus optionally ` +
-    `a brief English sentence frame. English only, never the full translation, max ~15 words.\n` +
-    'Reply with ONLY this JSON: {"zh": "...", "en": "...", "hint": "..."}'
+    `a brief English sentence frame. English only, never the full translation, max ~15 words.\n`
+  if (candidates.length) {
+    prompt +=
+      `Optional vocabulary from the learner's current word bank. Weave 2-4 of these into the English sentence ` +
+      `ONLY where they fit naturally; skip the rest, never force them, and never list or mention them:\n` +
+      `${formatCandidateList(candidates)}\n`
+  }
+  prompt += 'Reply with ONLY this JSON: {"zh": "...", "en": "...", "hint": "..."}'
 
   try {
     const text = await completeText(ctx, config, {
@@ -39,14 +47,16 @@ export async function generateQuestion(ctx, config, { level, topic } = {}) {
     })
     const parsed = extractJson(text)
     if (parsed && parsed.zh && parsed.en) {
+      const en = String(parsed.en).trim()
       return {
         zh: String(parsed.zh).trim(),
-        en: String(parsed.en).trim(),
+        en,
         hint: parsed.hint ? String(parsed.hint).trim() : '',
+        used: usedBankWords(en, candidates),
       }
     }
   } catch {
     /* fall back to seed */
   }
-  return seedQuestion()
+  return { ...seedQuestion(), used: [], fallback: true }
 }

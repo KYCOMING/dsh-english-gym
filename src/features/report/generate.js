@@ -1,5 +1,6 @@
 import { completeText, extractJson } from '../../core/llm.js'
 import { FALLBACK_REPORT } from './fallback.js'
+import { formatCandidateList, usedBankWords } from '../word/sample.js'
 
 function pickLevel(level, fallback) {
   return typeof level === 'string' && level.trim() ? level.trim() : fallback || 'B1'
@@ -12,18 +13,25 @@ const REPORT_SYSTEM =
  * Generate (or reuse) today's AI/tech English mini-report.
  * @returns {Promise<{date:string, level:string, title:string, body:string, summary_zh:string, questions:Array<{zh:string,en:string}>}>}
  */
-export async function generateReport(ctx, config, { level, date, topic } = {}) {
+export async function generateReport(ctx, config, { level, date, topic, words } = {}) {
   const lvl = pickLevel(level, config && config.level)
   const theme = topic || (config && config.topic) || 'AI and technology'
   const day = date || new Date().toISOString().slice(0, 10)
-  const prompt =
+  const candidates = Array.isArray(words) ? words : []
+  let prompt =
     `Write an English mini-report for ${day} about ${theme}, for a Chinese learner at CEFR ${lvl}.\n` +
     'Requirements:\n' +
     '- A catchy English title (4-8 words).\n' +
     '- A 180-240 word English article in 3 short paragraphs. Clear, natural, informative, level-appropriate.\n' +
     '- 3 Chinese sentences based on the article, each with its natural English reference sentence (for translation practice).\n' +
-    '- A one-line summary in Simplified Chinese.\n' +
-    'Reply with ONLY this JSON: {"title":"...","body":"...","summary_zh":"...","questions":[{"zh":"...","en":"..."}]}'
+    '- A one-line summary in Simplified Chinese.\n'
+  if (candidates.length) {
+    prompt +=
+      `Optional vocabulary from the learner's current word bank. Naturally incorporate 4-6 of these where they ` +
+      `fit the topic; skip any that feel forced, never mention or list them, keep the article level-appropriate:\n` +
+      `${formatCandidateList(candidates)}\n`
+  }
+  prompt += 'Reply with ONLY this JSON: {"title":"...","body":"...","summary_zh":"...","questions":[{"zh":"...","en":"..."}]}'
 
   try {
     const text = await completeText(ctx, config, {
@@ -47,6 +55,7 @@ export async function generateReport(ctx, config, { level, date, topic } = {}) {
         body: String(parsed.body).trim(),
         summary_zh: parsed.summary_zh ? String(parsed.summary_zh).trim() : '',
         questions: questions.length ? questions : FALLBACK_REPORT.questions,
+        bankWords: usedBankWords(String(parsed.body), candidates),
       }
     }
   } catch {
@@ -59,5 +68,7 @@ export async function generateReport(ctx, config, { level, date, topic } = {}) {
     body: FALLBACK_REPORT.body,
     summary_zh: FALLBACK_REPORT.summary_zh,
     questions: FALLBACK_REPORT.questions,
+    bankWords: [],
+    fallback: true,
   }
 }

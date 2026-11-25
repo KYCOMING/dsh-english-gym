@@ -3,6 +3,8 @@ import { dayKey, loadState, saveState, yesterdayKey } from '../../core/store.js'
 import { gradeAnswer } from './grade.js'
 import { generateQuestion } from './generate.js'
 import { recordStudy } from '../activity/service.js'
+import { normalizeSettings } from '../settings/service.js'
+import { pickBankCandidates } from '../word/sample.js'
 
 function prunePending(state) {
   const entries = Object.entries(state.pending || {})
@@ -45,8 +47,16 @@ export function createPhraseService({ ctx, conf, dir, getTopic }) {
       picked = { zh: item.zh, en: item.en, hint: item.hint || '', mode: 'review' }
     } else {
       const topic = typeof getTopic === 'function' ? getTopic() : conf.topic
-      const q = await generateQuestion(ctx, conf, { level: conf.level, topic })
-      picked = { zh: q.zh, en: q.en, hint: q.hint || '', mode: 'new' }
+      const opts = normalizeSettings(state.settings)
+      const words = opts.bankLink ? pickBankCandidates(dir, state, 24) : []
+      const retries = opts.bankLink ? opts.bankRetries : 0
+      let q = null
+      for (let attempt = 0; attempt <= retries; attempt += 1) {
+        q = await generateQuestion(ctx, conf, { level: conf.level, topic, words })
+        if (!q || q.fallback) break
+        if (!words.length || (Array.isArray(q.used) && q.used.length)) break
+      }
+      picked = { zh: q.zh, en: q.en, hint: q.hint || '', mode: 'new', bankWords: q.used || [] }
     }
     const id = randomUUID()
     state.pending[id] = {
@@ -54,11 +64,12 @@ export function createPhraseService({ ctx, conf, dir, getTopic }) {
       en: picked.en,
       hint: picked.hint,
       mode: picked.mode,
+      bankWords: picked.bankWords || [],
       createdAt: new Date().toISOString(),
     }
     prunePending(state)
     saveState(dir, state)
-    return { id, zh: picked.zh, hint: picked.hint, mode: picked.mode }
+    return { id, zh: picked.zh, hint: picked.hint, mode: picked.mode, bankWords: picked.bankWords || [] }
   }
 
   async function checkAnswer({ id, answer }) {

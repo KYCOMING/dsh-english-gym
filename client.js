@@ -426,6 +426,18 @@ window.__ModuleLoader__.load({
 .eg-settings-note { margin-top: 10px; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); line-height: 1.55; }
 .eg-settings-error { margin-top: 10px; color: var(--eg-bad); font-size: var(--eg-fs-xs); line-height: 1.55; }
 .eg-settings-loading { color: var(--eg-ink-2); font-size: var(--eg-fs-sm); }
+.eg-retry-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 14px; }
+.eg-retry-name { font-size: var(--eg-fs-md); font-weight: 650; color: var(--eg-ink); line-height: 1.35; }
+.eg-stepper { display: flex; align-items: center; gap: 4px; flex: 0 0 auto; }
+.eg-stepbtn {
+  appearance: none; -webkit-appearance: none; width: 30px; height: 30px; padding: 0;
+  border: 1px solid var(--eg-line); border-radius: 8px; background: var(--eg-bg-2);
+  color: var(--eg-ink); font: 600 16px/1 var(--eg-font); cursor: pointer;
+}
+.eg-stepbtn:hover:not(:disabled) { border-color: var(--eg-accent); color: var(--eg-accent-ink); }
+.eg-stepbtn:disabled { opacity: .4; cursor: default; }
+.eg-stepbtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
+.eg-stepper-value { min-width: 24px; text-align: center; font: 700 var(--eg-fs-sm)/1 var(--eg-font); color: var(--eg-ink); }
 
 /* ===== dashboard ===== */
 .eg-dash { display: flex; flex-direction: column; }
@@ -533,7 +545,7 @@ window.__ModuleLoader__.load({
     const store = {
       open: false,
       stats: null,
-      settings: { confetti: true, topicId: 'ai', customTopics: [] },
+      settings: { confetti: true, topicId: 'ai', customTopics: [], bankLink: true, bankRetries: 1 },
       burst: 0,
       listeners: new Set(),
       emit() {
@@ -1571,6 +1583,13 @@ window.__ModuleLoader__.load({
         save({ customTopics: customTopics.filter((item) => item.id !== id) }, true)
       }
 
+      const setRetries = (value) => {
+        if (busy) return
+        const next = Math.max(0, Math.min(5, Number(value) || 0))
+        if (next === settings.bankRetries) return
+        save({ bankRetries: next }, false)
+      }
+
       if (loading && !data) {
         return React.createElement(
           'div',
@@ -1604,6 +1623,73 @@ window.__ModuleLoader__.load({
               onClick: () => save({ confetti: !settings.confetti }, false),
             }),
           ),
+        ),
+        React.createElement(
+          'div',
+          { className: 'eg-setting-block' },
+          React.createElement(
+            'div',
+            { className: 'eg-setting-head' },
+            React.createElement(
+              'div',
+              null,
+              React.createElement('div', { className: 'eg-setting-title' }, '词库关联'),
+              React.createElement(
+                'div',
+                { className: 'eg-setting-desc' },
+                '开启后，短语出题和今日报告会从当前词库挑词，自然融入句子和文章（不硬塞）。',
+              ),
+            ),
+            React.createElement('button', {
+              className: 'eg-switch',
+              role: 'switch',
+              'aria-checked': settings.bankLink ? 'true' : 'false',
+              'aria-label': '词库关联',
+              disabled: busy,
+              onClick: () => save({ bankLink: !settings.bankLink }, false),
+            }),
+          ),
+          settings.bankLink
+            ? React.createElement(
+                'div',
+                { className: 'eg-retry-row' },
+                React.createElement(
+                  'div',
+                  null,
+                  React.createElement('div', { className: 'eg-retry-name' }, '重试次数'),
+                  React.createElement(
+                    'div',
+                    { className: 'eg-setting-desc' },
+                    '生成的句子或文章没用到词库词时，再试几次（0–5）。',
+                  ),
+                ),
+                React.createElement(
+                  'div',
+                  { className: 'eg-stepper' },
+                  React.createElement(
+                    'button',
+                    {
+                      className: 'eg-stepbtn',
+                      'aria-label': '减少重试次数',
+                      disabled: busy || settings.bankRetries <= 0,
+                      onClick: () => setRetries(settings.bankRetries - 1),
+                    },
+                    '−',
+                  ),
+                  React.createElement('span', { className: 'eg-stepper-value' }, String(settings.bankRetries)),
+                  React.createElement(
+                    'button',
+                    {
+                      className: 'eg-stepbtn',
+                      'aria-label': '增加重试次数',
+                      disabled: busy || settings.bankRetries >= 5,
+                      onClick: () => setRetries(settings.bankRetries + 1),
+                    },
+                    '+',
+                  ),
+                ),
+              )
+            : null,
         ),
         React.createElement(
           'div',
