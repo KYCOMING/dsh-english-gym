@@ -107,6 +107,8 @@ export function buildContributionGrid({ todayStr, range = 'last-year', activityM
     monthLabels,
     rangeTotal,
     rangeDays,
+    startKey: dayStr(startDate),
+    endKey: dayStr(endDate),
   }
 }
 

@@ -159,6 +159,7 @@ export function createWordService({ dir }) {
         nextIntervalMs: outcome.nextIntervalMs,
         nextReviewText: outcome.nextReviewText,
         clean: outcome.clean,
+        early: Boolean(outcome.early),
       },
       srsStats,
     }

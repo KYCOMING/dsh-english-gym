@@ -2544,7 +2544,9 @@ function buildContributionGrid({ todayStr, range = "last-year", activityMap = {}
     weeks,
     monthLabels,
     rangeTotal,
-    rangeDays
+    rangeDays,
+    startKey: dayStr(startDate),
+    endKey: dayStr(endDate)
   };
 }
 function getPageItems(totalPages, currentPage) {
@@ -2651,18 +2653,6 @@ function Dashboard() {
     }
     return map;
   }, [data]);
-  const records = (0, import_react14.useMemo)(() => data && Array.isArray(data.days) ? data.days : [], [data]);
-  const filteredRecords = (0, import_react14.useMemo)(() => {
-    if (/^\d{4}$/.test(range)) return records.filter((r) => String(r.day || "").startsWith(range + "-"));
-    return records;
-  }, [records, range]);
-  const totalPages = Math.max(1, Math.ceil(filteredRecords.length / PAGE_SIZE));
-  const safePage = Math.max(1, Math.min(page, totalPages));
-  const pageRecords = (0, import_react14.useMemo)(
-    () => filteredRecords.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE),
-    [filteredRecords, safePage]
-  );
-  const pageItems = (0, import_react14.useMemo)(() => getPageItems(totalPages, safePage), [totalPages, safePage]);
   const today = data ? data.today : null;
   const streak = data ? data.streak || 0 : 0;
   const totals = data && data.totals ? data.totals : { days: 0, words: 0, phrases: 0 };
@@ -2680,6 +2670,21 @@ function Dashboard() {
     () => buildContributionGrid({ todayStr: today, range, activityMap: activity }),
     [today, range, activity]
   );
+  const records = (0, import_react14.useMemo)(() => data && Array.isArray(data.days) ? data.days : [], [data]);
+  const filteredRecords = (0, import_react14.useMemo)(
+    () => records.filter((r) => {
+      const day = String(r && r.day || "");
+      return day >= grid.startKey && day <= grid.endKey;
+    }),
+    [records, grid.startKey, grid.endKey]
+  );
+  const totalPages = Math.max(1, Math.ceil(filteredRecords.length / PAGE_SIZE));
+  const safePage = Math.max(1, Math.min(page, totalPages));
+  const pageRecords = (0, import_react14.useMemo)(
+    () => filteredRecords.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE),
+    [filteredRecords, safePage]
+  );
+  const pageItems = (0, import_react14.useMemo)(() => getPageItems(totalPages, safePage), [totalPages, safePage]);
   useIsoLayoutEffect3(() => {
     setTip(null);
     setPage(1);
@@ -3074,7 +3079,7 @@ function Dashboard() {
     ) : import_react14.default.createElement(
       "div",
       { className: "eg-dash-empty" },
-      loading ? "正在加载…" : records.length ? range + " 年还没有详细学习记录。" : "还没有学习记录，去练几题吧。"
+      loading ? "正在加载…" : records.length ? rangeLabel + "还没有详细学习记录。" : "还没有学习记录，去练几题吧。"
     )
   );
 }

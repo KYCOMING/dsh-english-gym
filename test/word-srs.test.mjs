@@ -42,15 +42,30 @@ test('applyWordReview handles clean recall, misses, retries, and full progressio
   assert.equal(retryCorrect.mastered, false)
   assert.equal(retryCorrect.nextReviewText, '5 分钟后再次巩固')
 
-  // Clean progression through all remaining stages until mastered
+  // Early clean review before dueAt keeps stage & dueAt unchanged, only incrementing reps
+  const earlyClean = applyWordReview(firstClean.memory, { correct: true, clean: true, now: t0 + 60_000 })
+  assert.equal(earlyClean.stage, INITIAL_CLEAN_STAGE)
+  assert.equal(earlyClean.mastered, false)
+  assert.equal(earlyClean.early, true)
+  assert.equal(earlyClean.memory.dueAt, firstClean.memory.dueAt)
+  assert.equal(earlyClean.memory.reps, firstClean.memory.reps + 1)
+  assert.ok(earlyClean.nextReviewText.startsWith('提前巩固 · 仍于 '))
+
+  // Early miss before dueAt still resets to stage 0 and increments lapses
+  const earlyMiss = applyWordReview(firstClean.memory, { correct: false, clean: false, countLapse: true, now: t0 + 120_000 })
+  assert.equal(earlyMiss.stage, 0)
+  assert.equal(earlyMiss.memory.lapses, 1)
+
+  // Clean progression through all remaining stages once due until mastered
   let mem = firstClean.memory
   for (let s = INITIAL_CLEAN_STAGE + 1; s < SRS_MAX_STAGE; s += 1) {
-    const step = applyWordReview(mem, { correct: true, clean: true, now: t0 + s * 1000 })
+    const step = applyWordReview(mem, { correct: true, clean: true, now: mem.dueAt })
     assert.equal(step.stage, s)
     assert.equal(step.mastered, false)
+    assert.ok(!step.early)
     mem = step.memory
   }
-  const finalStep = applyWordReview(mem, { correct: true, clean: true, now: t0 + 99_000 })
+  const finalStep = applyWordReview(mem, { correct: true, clean: true, now: mem.dueAt })
   assert.equal(finalStep.stage, SRS_MAX_STAGE)
   assert.equal(finalStep.mastered, true)
   assert.equal(finalStep.nextReviewText, '已掌握')

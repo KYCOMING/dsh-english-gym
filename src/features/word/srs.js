@@ -80,6 +80,29 @@ export function applyWordReview(prevMem, { correct, clean = true, countLapse = !
     }
   }
 
+  const isEarly = Boolean(prev && prev.mastered !== true && Number.isFinite(prev.dueAt) && now < prev.dueAt)
+  if (isEarly) {
+    const keepStage = Math.max(0, Math.min(SRS_MAX_STAGE - 1, Number(prev.stage) || 0))
+    const remainingMs = Math.max(1, prev.dueAt - now)
+    return {
+      memory: {
+        stage: keepStage,
+        dueAt: prev.dueAt,
+        lastAt: now,
+        reps: reps + 1,
+        lapses,
+        mastered: false,
+      },
+      stage: keepStage,
+      maxStage: SRS_MAX_STAGE,
+      mastered: false,
+      nextIntervalMs: remainingMs,
+      nextReviewText: `提前巩固 · 仍于 ${formatIntervalZh(remainingMs, false)}`,
+      clean: true,
+      early: true,
+    }
+  }
+
   const nextStage = prev ? Math.min(SRS_MAX_STAGE, (Number(prev.stage) || 0) + 1) : INITIAL_CLEAN_STAGE
   if (nextStage >= SRS_MAX_STAGE) {
     return {
