@@ -56,6 +56,135 @@
   outline: 2px solid var(--eg-accent);
   outline-offset: 1px;
 }
+/* ----- progressive translation: sentence → slot under the paragraph ----- */
+.eg-rsent {
+  border-radius: 4px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition: background var(--eg-dur) ease;
+}
+.eg-rsent.can-reveal { cursor: pointer; }
+.eg-rsent.can-reveal:hover:not(:has(.eg-rword:hover)) { background: var(--eg-bg-2); }
+.eg-rsent.is-open { background: color-mix(in srgb, var(--eg-accent) 7%, transparent); }
+.eg-rsent.is-open:hover:not(:has(.eg-rword:hover)) { background: color-mix(in srgb, var(--eg-accent) 12%, transparent); }
+.eg-rsent:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }
+.eg-rslash {
+  margin: 0 1px 0 4px;
+  color: var(--eg-accent-ink);
+  font-family: var(--eg-font);
+  font-weight: 600;
+  font-size: .86em;
+  opacity: .62;
+  user-select: none;
+  pointer-events: none;
+}
+.eg-rcore {
+  font-weight: 650;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--eg-accent) 44%, transparent);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+.eg-rword.is-core { font-weight: 650; }
+.eg-rsent-n {
+  margin-left: 2px;
+  font: 700 9.5px/1 var(--eg-font);
+  color: var(--eg-accent-ink);
+  font-variant-numeric: tabular-nums;
+}
+.eg-rgist-btn {
+  appearance: none; -webkit-appearance: none;
+  display: inline-flex; align-items: center;
+  height: 19px; margin-left: 7px; padding: 0 7px; vertical-align: 2px;
+  border-radius: 999px; border: 1px solid var(--eg-line); background: transparent;
+  color: var(--eg-ink-2); font: 600 10.5px/1 var(--eg-font); cursor: pointer;
+  transition: background var(--eg-dur) ease, border-color var(--eg-dur) ease, color var(--eg-dur) ease;
+}
+.eg-rgist-btn:hover { background: var(--eg-bg-2); border-color: var(--eg-line-2); color: var(--eg-ink); }
+.eg-rgist-btn[aria-expanded="true"] {
+  background: color-mix(in srgb, var(--eg-accent) 9%, var(--eg-bg));
+  border-color: color-mix(in srgb, var(--eg-accent) 32%, transparent);
+  color: var(--eg-accent-ink);
+}
+.eg-rgist-btn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }
+.eg-rslot {
+  margin: 8px 0 0; padding: 8px 8px 8px 10px;
+  display: flex; flex-direction: column; gap: 6px;
+  border: 1px solid var(--eg-line); border-radius: 10px; background: var(--eg-bg-2);
+  animation: eg-rslot-in .18s var(--eg-ease) both;
+}
+.eg-rslot-row {
+  display: flex; align-items: flex-start; gap: 8px;
+  font: 500 var(--eg-fs-sm)/1.6 var(--eg-font); color: var(--eg-ink); text-align: left;
+  animation: eg-rslot-in .18s var(--eg-ease) both;
+}
+@keyframes eg-rslot-in {
+  from { opacity: 0; transform: translateY(-3px); }
+  to { opacity: 1; transform: none; }
+}
+.eg-rslot-tag {
+  flex: 0 0 auto; min-width: 20px; height: 18px; margin-top: 2px; padding: 0 5px; box-sizing: border-box;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 5px; font: 700 10.5px/1 var(--eg-font); font-variant-numeric: tabular-nums;
+  background: color-mix(in srgb, var(--eg-accent) 12%, var(--eg-bg)); color: var(--eg-accent-ink);
+}
+.eg-rslot-row.is-gist .eg-rslot-tag { background: var(--eg-bg); border: 1px solid var(--eg-line); color: var(--eg-ink-2); }
+.eg-rslot-row.is-gist .eg-rslot-zh { color: var(--eg-ink-2); }
+.eg-rslot-body { flex: 1 1 auto; min-width: 0; }
+.eg-rslot-zh { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
+.eg-rslot-tools { margin-top: 5px; display: flex; align-items: center; gap: 6px; }
+.eg-rslot-btn {
+  appearance: none; -webkit-appearance: none;
+  flex: 0 0 auto;
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 21px; padding: 0 8px; border-radius: 999px;
+  border: 1px solid var(--eg-line); background: var(--eg-bg); color: var(--eg-ink-2);
+  font: 600 11px/1 var(--eg-font); cursor: pointer;
+  transition: background var(--eg-dur) ease, border-color var(--eg-dur) ease, color var(--eg-dur) ease;
+}
+.eg-rslot-btn:hover:not(:disabled) { border-color: var(--eg-line-2); color: var(--eg-ink); }
+.eg-rslot-btn.is-active {
+  background: color-mix(in srgb, var(--eg-accent) 9%, var(--eg-bg));
+  border-color: color-mix(in srgb, var(--eg-accent) 32%, transparent);
+  color: var(--eg-accent-ink);
+}
+.eg-rslot-btn:disabled { opacity: .55; cursor: wait; }
+.eg-rslot-btn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }
+.eg-rexplain {
+  margin-top: 7px; padding: 8px 10px; border-radius: 8px;
+  border: 1px solid var(--eg-line); background: var(--eg-bg);
+  display: flex; flex-direction: column; gap: 6px;
+  font-size: var(--eg-fs-xs); line-height: 1.6;
+  animation: eg-rslot-in .18s var(--eg-ease) both;
+}
+.eg-rexplain-sec { display: flex; align-items: flex-start; gap: 7px; }
+.eg-rexplain-label {
+  flex: 0 0 auto; margin-top: 2px; padding: 1px 6px; border-radius: 4px;
+  background: var(--eg-bg-2); border: 1px solid var(--eg-line);
+  color: var(--eg-ink-2); font: 600 10.5px/1.3 var(--eg-font);
+}
+.eg-rexplain-text { flex: 1 1 auto; min-width: 0; color: var(--eg-ink); overflow-wrap: anywhere; }
+.eg-rexplain-pts { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 4px; }
+.eg-rexplain-pt { overflow-wrap: anywhere; }
+.eg-rexplain-phrase {
+  font-family: var(--eg-en); font-weight: 700; color: var(--eg-ink); margin-right: 6px;
+}
+.eg-rexplain-note { color: var(--eg-ink-2); }
+.eg-rexplain-loading { display: flex; align-items: center; gap: 7px; color: var(--eg-ink-2); }
+.eg-rexplain-loading .eg-spin { width: 12px; height: 12px; border-width: 1.5px; }
+.eg-rexplain-err { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--eg-bad); }
+.eg-rslot-x {
+  appearance: none; -webkit-appearance: none;
+  flex: 0 0 auto; width: 20px; height: 20px; margin-top: 1px; padding: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: none; border-radius: 5px; background: transparent; color: var(--eg-ink-2);
+  font: 600 13px/1 var(--eg-font); cursor: pointer; opacity: 0;
+  transition: opacity var(--eg-dur) ease, background var(--eg-dur) ease, color var(--eg-dur) ease;
+}
+.eg-rslot-row:hover .eg-rslot-x, .eg-rslot-x:focus-visible { opacity: 1; }
+.eg-rslot-x:hover { background: var(--eg-bg-3); color: var(--eg-ink); }
+.eg-rslot-x:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
+@media (hover: none) { .eg-rslot-x { opacity: 1; } }
 .eg-rpop {
   position: absolute;
   z-index: 20;

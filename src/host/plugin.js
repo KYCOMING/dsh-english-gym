@@ -103,6 +103,10 @@ export function createEnglishGym(ctx, rawConfig) {
       if (req.method === 'POST' && sub === '/report/refresh') {
         return sendJson(res, 200, await report.getReport(true))
       }
+      if (req.method === 'POST' && sub === '/report/explain') {
+        const body = await readBody(req)
+        return sendJson(res, 200, await report.explainSentence(body || {}))
+      }
       if (req.method === 'POST' && sub === '/next') {
         const body = await readBody(req)
         return sendJson(res, 200, await phrase.nextQuestion({ sessionId: body && body.sessionId }))
