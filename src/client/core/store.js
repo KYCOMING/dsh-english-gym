@@ -33,6 +33,12 @@ export const store = {
     this.stats = s
     this.emit()
   },
+  setWordSrs(wordSrs) {
+    if (wordSrs && typeof wordSrs === 'object') {
+      this.stats = { ...(this.stats || {}), wordSrs, reviewCount: Number(wordSrs.due) || 0 }
+      this.emit()
+    }
+  },
   setSessionId(id) {
     const next = typeof id === 'string' ? id : ''
     if (this.sessionId === next) return

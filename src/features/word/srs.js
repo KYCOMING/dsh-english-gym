@@ -205,7 +205,9 @@ export function pickWordSrs(
 
   const normMode = mode === 'review' || mode === 'new' ? mode : 'smart'
   const memMap = wordMemory && typeof wordMemory === 'object' ? wordMemory : {}
-  const avoid = new Set((Array.isArray(recent) ? recent : []).slice(-3).map(normalizeWordKey).filter(Boolean))
+  const recentKeys = (Array.isArray(recent) ? recent : []).map(normalizeWordKey).filter(Boolean)
+  const avoid = new Set(recentKeys.slice(-3))
+  const lastKey = recentKeys.length ? recentKeys[recentKeys.length - 1] : ''
 
   const dueList = []
   const unseenList = []
@@ -242,10 +244,24 @@ export function pickWordSrs(
 
   const choose = (pool, randomPick) => {
     if (!pool.length) return null
+    if (pool.length === 1) return pool[0]
     const filtered = pool.filter((e) => !avoid.has(normalizeWordKey(e.word)))
-    const src = filtered.length ? filtered : pool
-    if (!randomPick) return src[0]
-    return src[Math.floor(rng() * src.length)]
+    if (filtered.length) {
+      return randomPick ? filtered[Math.floor(rng() * filtered.length)] : filtered[0]
+    }
+    const notLast = lastKey ? pool.filter((e) => normalizeWordKey(e.word) !== lastKey) : pool
+    const candidates = notLast.length ? notLast : pool
+    if (randomPick) return candidates[Math.floor(rng() * candidates.length)]
+    let bestEntry = candidates[0]
+    let bestRecency = Infinity
+    for (const entry of candidates) {
+      const recency = recentKeys.lastIndexOf(normalizeWordKey(entry.word))
+      if (recency < bestRecency) {
+        bestRecency = recency
+        bestEntry = entry
+      }
+    }
+    return bestEntry
   }
 
   if (normMode === 'review') {

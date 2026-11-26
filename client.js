@@ -448,6 +448,12 @@ var store = {
     this.stats = s;
     this.emit();
   },
+  setWordSrs(wordSrs) {
+    if (wordSrs && typeof wordSrs === "object") {
+      this.stats = { ...this.stats || {}, wordSrs, reviewCount: Number(wordSrs.due) || 0 };
+      this.emit();
+    }
+  },
   setSessionId(id) {
     const next = typeof id === "string" ? id : "";
     if (this.sessionId === next) return;
@@ -491,6 +497,23 @@ function EnglishGymPill(props) {
   }, [sessionId]);
   (0, import_react3.useEffect)(() => {
     if (!store.stats) refreshStats();
+    const refreshIfVisible = () => {
+      if (typeof document === "undefined" || document.visibilityState === "visible") {
+        refreshStats();
+      }
+    };
+    const interval = setInterval(refreshIfVisible, 60 * 1e3);
+    const onFocus = () => refreshStats();
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") refreshStats();
+    };
+    if (typeof window !== "undefined") window.addEventListener("focus", onFocus);
+    if (typeof document !== "undefined") document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      clearInterval(interval);
+      if (typeof window !== "undefined") window.removeEventListener("focus", onFocus);
+      if (typeof document !== "undefined") document.removeEventListener("visibilitychange", onVisibility);
+    };
   }, []);
   const stats = shared.stats;
   return import_react3.default.createElement(
@@ -817,17 +840,27 @@ function usePhraseDrill({ open, active }) {
   const [error, setError] = (0, import_react7.useState)("");
   const lastScoreRef = (0, import_react7.useRef)(null);
   const startedRef = (0, import_react7.useRef)(false);
-  const inFlightRef = (0, import_react7.useRef)(false);
+  const genRef = (0, import_react7.useRef)(0);
+  const abortRef = (0, import_react7.useRef)(null);
+  (0, import_react7.useEffect)(() => {
+    return () => {
+      if (abortRef.current) abortRef.current.abort();
+    };
+  }, []);
   const loadNext = (0, import_react7.useCallback)(async () => {
-    if (inFlightRef.current) return;
-    inFlightRef.current = true;
+    const gen = ++genRef.current;
+    if (abortRef.current) abortRef.current.abort();
+    const ac = new AbortController();
+    abortRef.current = ac;
     setBusy(true);
     setError("");
     try {
       const data = await api("/next", {
         method: "POST",
-        body: JSON.stringify({ sessionId: store.sessionId || "" })
+        body: JSON.stringify({ sessionId: store.sessionId || "" }),
+        signal: ac.signal
       });
+      if (gen !== genRef.current || ac.signal.aborted) return;
       setCard(data);
       setAnswer("");
       setSubmittedAnswer("");
@@ -837,10 +870,13 @@ function usePhraseDrill({ open, active }) {
       setRetryFocusTick(0);
       lastScoreRef.current = null;
     } catch (e) {
+      if (gen !== genRef.current || ac.signal.aborted || e && e.name === "AbortError") return;
       setError(e.message || "出题失败");
     } finally {
-      inFlightRef.current = false;
-      setBusy(false);
+      if (gen === genRef.current) {
+        abortRef.current = null;
+        setBusy(false);
+      }
     }
   }, []);
   (0, import_react7.useEffect)(() => {
@@ -852,13 +888,19 @@ function usePhraseDrill({ open, active }) {
   const submit = (0, import_react7.useCallback)(async () => {
     if (!card || busy || !String(answer || "").trim()) return;
     const currentAnswer = answer;
+    const gen = ++genRef.current;
+    if (abortRef.current) abortRef.current.abort();
+    const ac = new AbortController();
+    abortRef.current = ac;
     setBusy(true);
     setError("");
     try {
       const res = await api("/check", {
         method: "POST",
-        body: JSON.stringify({ id: card.id, answer: currentAnswer })
+        body: JSON.stringify({ id: card.id, answer: currentAnswer }),
+        signal: ac.signal
       });
+      if (gen !== genRef.current || ac.signal.aborted) return;
       setSubmittedAnswer(currentAnswer);
       setPrevScore(lastScoreRef.current);
       lastScoreRef.current = Number.isFinite(Number(res.score)) ? Number(res.score) : 0;
@@ -867,6 +909,7 @@ function usePhraseDrill({ open, active }) {
       if (res.correct) store.celebrate();
       if (res.summary) store.setStats(res.summary);
     } catch (e) {
+      if (gen !== genRef.current || ac.signal.aborted || e && e.name === "AbortError") return;
       setError(e.message || "判分失败");
       if (e.status === 409) {
         setCard(null);
@@ -877,7 +920,10 @@ function usePhraseDrill({ open, active }) {
         startedRef.current = false;
       }
     } finally {
-      setBusy(false);
+      if (gen === genRef.current) {
+        abortRef.current = null;
+        setBusy(false);
+      }
     }
   }, [card, answer, busy]);
   const retry = (0, import_react7.useCallback)(() => {
@@ -897,6 +943,11 @@ function usePhraseDrill({ open, active }) {
     loadNext();
   }, [loadNext]);
   const reset = (0, import_react7.useCallback)(() => {
+    genRef.current += 1;
+    if (abortRef.current) {
+      abortRef.current.abort();
+      abortRef.current = null;
+    }
     setCard(null);
     setFeedback(null);
     setAnswer("");
@@ -905,6 +956,7 @@ function usePhraseDrill({ open, active }) {
     setPrevScore(null);
     setRetryFocusTick(0);
     setError("");
+    setBusy(false);
     lastScoreRef.current = null;
     startedRef.current = false;
   }, []);
@@ -1536,10 +1588,16 @@ function WordPractice({ bankRev = 0 } = {}) {
   const [hoverMode, setHoverMode] = (0, import_react11.useState)("");
   const [srsStats, setSrsStats] = (0, import_react11.useState)(() => cachedWord.srsStats);
   const refs = (0, import_react11.useRef)([]);
-  const inFlight = (0, import_react11.useRef)(false);
+  const reqGenRef = (0, import_react11.useRef)(0);
+  const abortRef = (0, import_react11.useRef)(null);
   const revealedEverRef = (0, import_react11.useRef)(cachedWord.revealedEver);
   const modeRef = (0, import_react11.useRef)(mode);
   modeRef.current = mode;
+  (0, import_react11.useEffect)(() => {
+    return () => {
+      if (abortRef.current) abortRef.current.abort();
+    };
+  }, []);
   (0, import_react11.useEffect)(() => {
     cachedWord.item = item;
     cachedWord.cells = cells;
@@ -1550,9 +1608,11 @@ function WordPractice({ bankRev = 0 } = {}) {
     cachedWord.srsStats = srsStats;
   }, [item, cells, res, revealed, mode, srsStats]);
   const load = (0, import_react11.useCallback)(async (requestedMode) => {
-    if (inFlight.current) return;
+    const gen = ++reqGenRef.current;
+    if (abortRef.current) abortRef.current.abort();
+    const ac = new AbortController();
+    abortRef.current = ac;
     const targetMode = requestedMode === "review" || requestedMode === "new" || requestedMode === "smart" ? requestedMode : modeRef.current;
-    inFlight.current = true;
     setBusy(true);
     setError("");
     setRes(null);
@@ -1561,9 +1621,14 @@ function WordPractice({ bankRev = 0 } = {}) {
     try {
       const data = await api("/word/next", {
         method: "POST",
-        body: JSON.stringify({ mode: targetMode })
+        body: JSON.stringify({ mode: targetMode }),
+        signal: ac.signal
       });
-      if (data.srsStats) setSrsStats(data.srsStats);
+      if (gen !== reqGenRef.current || ac.signal.aborted) return;
+      if (data.srsStats) {
+        setSrsStats(data.srsStats);
+        store.setWordSrs(data.srsStats);
+      }
       setItem(data);
       if (data.done) {
         setCells([]);
@@ -1577,10 +1642,13 @@ function WordPractice({ bankRev = 0 } = {}) {
         }, 0);
       }
     } catch (e) {
+      if (gen !== reqGenRef.current || ac.signal.aborted || e && e.name === "AbortError") return;
       setError(e.message || "出题失败");
     } finally {
-      inFlight.current = false;
-      setBusy(false);
+      if (gen === reqGenRef.current) {
+        abortRef.current = null;
+        setBusy(false);
+      }
     }
   }, []);
   (0, import_react11.useEffect)(() => {
@@ -1643,6 +1711,7 @@ function WordPractice({ bankRev = 0 } = {}) {
       if (r.correct) store.celebrate();
       if (r.srsStats) setSrsStats(r.srsStats);
       if (r.summary) store.setStats(r.summary);
+      else if (r.srsStats) store.setWordSrs(r.srsStats);
     } catch (e) {
       setError(e.message || "判分失败");
     } finally {
@@ -1660,7 +1729,7 @@ function WordPractice({ bankRev = 0 } = {}) {
       });
       if (r.srsStats) setSrsStats(r.srsStats);
       if (r.summary) store.setStats(r.summary);
-      inFlight.current = false;
+      else if (r.srsStats) store.setWordSrs(r.srsStats);
       setBusy(false);
       load(modeRef.current);
     } catch (e) {
@@ -1731,7 +1800,7 @@ function WordPractice({ bankRev = 0 } = {}) {
       submit();
     }
   };
-  const liveStats = srsStats || shared.stats && shared.stats.wordSrs || null;
+  const liveStats = shared.stats && shared.stats.wordSrs || srsStats || null;
   const dueCount = liveStats ? Number(liveStats.due) || 0 : 0;
   const learningCount = liveStats ? Number(liveStats.learning) || 0 : 0;
   const masteredCount = liveStats ? Number(liveStats.mastered) || 0 : 0;
@@ -2022,26 +2091,58 @@ function useDailyReport({ open, active }) {
   const [report, setReport] = (0, import_react12.useState)(null);
   const [loading, setLoading] = (0, import_react12.useState)(false);
   const [error, setError] = (0, import_react12.useState)("");
+  const genRef = (0, import_react12.useRef)(0);
+  const abortRef = (0, import_react12.useRef)(null);
+  const startedRef = (0, import_react12.useRef)(false);
+  (0, import_react12.useEffect)(() => {
+    return () => {
+      if (abortRef.current) abortRef.current.abort();
+    };
+  }, []);
   const refresh = (0, import_react12.useCallback)(async (force) => {
+    const gen = ++genRef.current;
+    if (abortRef.current) abortRef.current.abort();
+    const ac = new AbortController();
+    abortRef.current = ac;
+    startedRef.current = true;
     setLoading(true);
     setError("");
     if (force) setReport(null);
     try {
-      setReport(force ? await api("/report/refresh", { method: "POST" }) : await api("/report"));
+      const next = force ? await api("/report/refresh", { method: "POST", signal: ac.signal }) : await api("/report", { signal: ac.signal });
+      if (gen !== genRef.current || ac.signal.aborted) return;
+      setReport(next);
     } catch (e) {
+      if (gen !== genRef.current || ac.signal.aborted || e && e.name === "AbortError") return;
       setError(e.message || "文章加载失败");
     } finally {
-      setLoading(false);
+      if (gen === genRef.current) {
+        abortRef.current = null;
+        setLoading(false);
+      }
     }
   }, []);
   (0, import_react12.useEffect)(() => {
-    if (open && active && !report && !loading) {
+    if (open && active && !report && !loading && !error && !startedRef.current) {
       refresh(false);
     }
-  }, [open, active, report, loading, refresh]);
+  }, [open, active, report, loading, error, refresh]);
+  (0, import_react12.useEffect)(() => {
+    if (!open && error) {
+      startedRef.current = false;
+      setError("");
+    }
+  }, [open, error]);
   const invalidate = (0, import_react12.useCallback)(() => {
+    genRef.current += 1;
+    if (abortRef.current) {
+      abortRef.current.abort();
+      abortRef.current = null;
+    }
+    startedRef.current = false;
     setReport(null);
     setError("");
+    setLoading(false);
   }, []);
   return { report, loading, error, refresh, invalidate };
 }
@@ -3724,6 +3825,12 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChan
   const queueRef = (0, import_react16.useRef)(Promise.resolve());
   const seqRef = (0, import_react16.useRef)(0);
   const lastConfirmedRef = (0, import_react16.useRef)(cachedSettings);
+  const customTopicsRef = (0, import_react16.useRef)(
+    cachedSettings && cachedSettings.settings && cachedSettings.settings.customTopics || []
+  );
+  const bankQueueRef = (0, import_react16.useRef)(Promise.resolve());
+  const bankSeqRef = (0, import_react16.useRef)(0);
+  const lastConfirmedBanksRef = (0, import_react16.useRef)(cachedBanks);
   const load = (0, import_react16.useCallback)(async () => {
     if (!cachedSettings) setLoading(true);
     try {
@@ -3733,10 +3840,12 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChan
       ]);
       cachedSettings = settingsRes;
       lastConfirmedRef.current = settingsRes;
+      customTopicsRef.current = settingsRes && settingsRes.settings && settingsRes.settings.customTopics || [];
       setData(settingsRes);
       store.setSettings(settingsRes.settings);
       if (banksRes && Array.isArray(banksRes.banks)) {
         cachedBanks = banksRes;
+        lastConfirmedBanksRef.current = banksRes;
         setBankData(banksRes);
       }
       setError("");
@@ -3750,29 +3859,47 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChan
     load();
   }, [load]);
   const save = (0, import_react16.useCallback)(
-    (patch, changeScope) => {
+    (patchOrBuilder, changeScope, optimisticOverride) => {
       const seq = ++seqRef.current;
       setError("");
+      const optimisticPatch = optimisticOverride !== void 0 ? optimisticOverride : typeof patchOrBuilder === "function" ? null : patchOrBuilder;
       const scalarPatch = {};
       for (const key of ["confetti", "sessionLink", "bankLink", "bankRetries", "reportLevel", "topicId"]) {
-        if (patch && patch[key] !== void 0) scalarPatch[key] = patch[key];
+        if (optimisticPatch && optimisticPatch[key] !== void 0) scalarPatch[key] = optimisticPatch[key];
       }
-      if (Object.keys(scalarPatch).length) {
-        store.setSettings(scalarPatch);
+      const hasOptimisticTopics = Boolean(optimisticPatch && Array.isArray(optimisticPatch.customTopics));
+      if (Object.keys(scalarPatch).length || hasOptimisticTopics) {
+        if (Object.keys(scalarPatch).length) store.setSettings(scalarPatch);
         setData((prev) => {
           if (!prev || !prev.settings) return prev;
-          const next = { ...prev, settings: { ...prev.settings, ...scalarPatch } };
+          const nextSettings = { ...prev.settings, ...scalarPatch };
+          let nextDirections = prev.directions;
+          if (hasOptimisticTopics) {
+            nextSettings.customTopics = optimisticPatch.customTopics;
+            const keepIds = new Set(optimisticPatch.customTopics.map((item) => item.id).filter(Boolean));
+            if (Array.isArray(prev.directions)) {
+              nextDirections = prev.directions.filter((item) => item.builtin !== false || keepIds.has(item.id));
+            }
+            if (nextDirections && !nextDirections.some((item) => item.id === nextSettings.topicId)) {
+              nextSettings.topicId = "ai";
+            }
+            store.setSettings({ customTopics: nextSettings.customTopics, topicId: nextSettings.topicId });
+          }
+          const next = { ...prev, settings: nextSettings, directions: nextDirections };
           cachedSettings = next;
           return next;
         });
       }
       const task = queueRef.current.then(async () => {
         try {
+          const baseSettings = lastConfirmedRef.current && lastConfirmedRef.current.settings || null;
+          const patch = typeof patchOrBuilder === "function" ? patchOrBuilder(baseSettings) : patchOrBuilder;
           const result = await api("/settings", {
             method: "POST",
             body: JSON.stringify(patch)
           });
           lastConfirmedRef.current = result;
+          customTopicsRef.current = result && result.settings && result.settings.customTopics || [];
           if (seq === seqRef.current) {
             cachedSettings = result;
             setData(result);
@@ -3787,6 +3914,9 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChan
           }
           return true;
         } catch (e) {
+          if (lastConfirmedRef.current && lastConfirmedRef.current.settings) {
+            customTopicsRef.current = lastConfirmedRef.current.settings.customTopics || [];
+          }
           if (seq === seqRef.current && lastConfirmedRef.current) {
             cachedSettings = lastConfirmedRef.current;
             setData(lastConfirmedRef.current);
@@ -3823,14 +3953,30 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChan
     if (!label || adding) return;
     setAdding(true);
     try {
-      const ok = await save({ customTopics: customTopics.concat({ label }) }, false);
+      const ok = await save(
+        (latest) => {
+          const base = latest && Array.isArray(latest.customTopics) ? latest.customTopics : customTopicsRef.current;
+          return { customTopics: base.concat({ label }) };
+        },
+        false,
+        null
+      );
       if (ok) setDraft("");
     } finally {
       setAdding(false);
     }
   };
   const removeCustom = (id) => {
-    save({ customTopics: customTopics.filter((item) => item.id !== id) }, id === activeId);
+    const nextTopics = customTopicsRef.current.filter((item) => item.id !== id);
+    customTopicsRef.current = nextTopics;
+    save(
+      (latest) => {
+        const base = latest && Array.isArray(latest.customTopics) ? latest.customTopics : customTopicsRef.current;
+        return { customTopics: base.filter((item) => item.id !== id) };
+      },
+      id === activeId,
+      { customTopics: nextTopics }
+    );
   };
   const setRetries = (value) => {
     const next = Math.max(0, Math.min(5, Number(value) || 0));
@@ -3861,9 +4007,9 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChan
   const customBanks = banks.filter((b) => b.builtin === false);
   const activeBankObj = banks.find((b) => b.id === activeBankId);
   const shortBankName2 = (name) => String(name || "").replace(/^内置\s*·\s*/, "");
-  const chooseBank = async (id) => {
+  const chooseBank = (id) => {
     if (!id || id === activeBankId) return;
-    const prev = bankData;
+    const seq = ++bankSeqRef.current;
     setError("");
     setBankNotice("");
     setBankData((cur) => {
@@ -3872,15 +4018,35 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChan
       cachedBanks = next;
       return next;
     });
-    try {
-      const res = await api("/wordbanks/active", { method: "POST", body: JSON.stringify({ id }) });
-      if (res.summary) store.setStats(res.summary);
-      if (typeof onWordBankChange === "function") onWordBankChange();
-    } catch (e) {
-      cachedBanks = prev;
-      setBankData(prev);
-      setError(e.message || "切换词库失败");
-    }
+    const task = bankQueueRef.current.then(async () => {
+      try {
+        const res = await api("/wordbanks/active", { method: "POST", body: JSON.stringify({ id }) });
+        const base = lastConfirmedBanksRef.current || cachedBanks;
+        if (base) {
+          lastConfirmedBanksRef.current = { ...base, active: res && res.active || id };
+        }
+        if (seq === bankSeqRef.current) {
+          if (lastConfirmedBanksRef.current) {
+            cachedBanks = lastConfirmedBanksRef.current;
+            setBankData(lastConfirmedBanksRef.current);
+          }
+          if (res.summary) store.setStats(res.summary);
+          if (typeof onWordBankChange === "function") onWordBankChange();
+        }
+      } catch (e) {
+        if (seq === bankSeqRef.current) {
+          const rollback = lastConfirmedBanksRef.current;
+          if (rollback) {
+            cachedBanks = rollback;
+            setBankData(rollback);
+          }
+          setError(e.message || "切换词库失败");
+        }
+      }
+    });
+    bankQueueRef.current = task.catch(() => {
+    });
+    return task;
   };
   const removeBank = async (id) => {
     const wasActive = id === activeBankId;
@@ -3890,6 +4056,7 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChan
       const res = await api("/wordbanks/delete", { method: "POST", body: JSON.stringify({ id }) });
       const next = { active: res.active, banks: Array.isArray(res.banks) ? res.banks : banks.filter((b) => b.id !== id) };
       cachedBanks = next;
+      lastConfirmedBanksRef.current = next;
       setBankData(next);
       if (res.summary) store.setStats(res.summary);
       if (wasActive && typeof onWordBankChange === "function") onWordBankChange();
@@ -3904,6 +4071,7 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChan
       const banksRes = await api("/wordbanks");
       if (banksRes && Array.isArray(banksRes.banks)) {
         cachedBanks = banksRes;
+        lastConfirmedBanksRef.current = banksRes;
         setBankData(banksRes);
       }
     } catch {
@@ -4457,7 +4625,7 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChan
                   setCleanNotice("");
                 }
               }),
-              import_react16.default.createElement("span", null, "同时清除对应时间段的艾宾浩斯记忆进度（默认保留）")
+              import_react16.default.createElement("span", null, "同时清除对应时间段内学习中的记忆进度（已掌握单词仅在「全部记录」时清除）")
             ),
             !cleanPreview ? import_react16.default.createElement(
               "button",

@@ -15,6 +15,23 @@ export function EnglishGymPill(props) {
   }, [sessionId])
   useEffect(() => {
     if (!store.stats) refreshStats()
+    const refreshIfVisible = () => {
+      if (typeof document === 'undefined' || document.visibilityState === 'visible') {
+        refreshStats()
+      }
+    }
+    const interval = setInterval(refreshIfVisible, 60 * 1000)
+    const onFocus = () => refreshStats()
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') refreshStats()
+    }
+    if (typeof window !== 'undefined') window.addEventListener('focus', onFocus)
+    if (typeof document !== 'undefined') document.addEventListener('visibilitychange', onVisibility)
+    return () => {
+      clearInterval(interval)
+      if (typeof window !== 'undefined') window.removeEventListener('focus', onFocus)
+      if (typeof document !== 'undefined') document.removeEventListener('visibilitychange', onVisibility)
+    }
   }, [])
   const stats = shared.stats
   return React.createElement(

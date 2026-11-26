@@ -10,13 +10,18 @@ export const CLEANUP_RANGES = [
   { id: 'all', label: '全部记录', days: null },
 ]
 
-function normalizeRange(range) {
-  const id = String(range || '').trim()
-  return CLEANUP_RANGES.some((r) => r.id === id) ? id : '30d'
+function assertValidRange(range) {
+  const id = String(range == null ? '' : range).trim()
+  if (!CLEANUP_RANGES.some((r) => r.id === id)) {
+    const err = new Error('无效的清理时间范围')
+    err.status = 400
+    throw err
+  }
+  return id
 }
 
 export function cutoffDayKey(range, now = new Date()) {
-  const norm = normalizeRange(range)
+  const norm = assertValidRange(range)
   const meta = CLEANUP_RANGES.find((r) => r.id === norm)
   if (!meta || meta.days === null) return null
   const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - meta.days)
@@ -40,8 +45,8 @@ function listReportFiles(dir) {
   return out
 }
 
-function computeMatches(dir, state, { range = '30d', clearMemory = false, now = new Date() } = {}) {
-  const normRange = normalizeRange(range)
+function computeMatches(dir, state, { range, clearMemory = false, now = new Date() } = {}) {
+  const normRange = assertValidRange(range)
   const cutoff = cutoffDayKey(normRange, now)
   const isOld = (day) => cutoff === null || String(day) < cutoff
 
@@ -55,8 +60,9 @@ function computeMatches(dir, state, { range = '30d', clearMemory = false, now = 
     const memMap = state.wordMemory || {}
     const cutoffMs = cutoff ? new Date(cutoff + 'T00:00:00').getTime() : null
     memoryKeys = Object.keys(memMap).filter((k) => {
-      if (cutoffMs === null) return true
       const mem = memMap[k]
+      if (cutoffMs === null) return true
+      if (mem && mem.mastered === true) return false
       const lastAt = mem && Number(mem.lastAt)
       return !Number.isFinite(lastAt) || lastAt < cutoffMs
     })
@@ -74,7 +80,8 @@ function computeMatches(dir, state, { range = '30d', clearMemory = false, now = 
 }
 
 /** Read-only preview of how many items match a time-based cleanup request. */
-export function previewCleanup(dir, { range = '30d', clearMemory = false, now = new Date() } = {}) {
+export function previewCleanup(dir, { range, clearMemory = false, now = new Date() } = {}) {
+  assertValidRange(range)
   const state = loadState(dir)
   const m = computeMatches(dir, state, { range, clearMemory, now })
   return {
@@ -118,12 +125,31 @@ function recomputeStreak(state) {
  * Settings and custom word banks are never touched; `wordMemory` is preserved
  * unless `clearMemory` is explicitly true.
  */
-export function executeCleanup(dir, { range = '30d', clearMemory = false, now = new Date() } = {}) {
+export function executeCleanup(dir, { range, clearMemory = false, now = new Date() } = {}) {
+  assertValidRange(range)
   const state = loadState(dir)
   const m = computeMatches(dir, state, { range, clearMemory, now })
 
-  for (const k of m.logKeys) delete state.log[k]
-  for (const k of m.dailyKeys) delete state.daily[k]
+  let removedPhraseAnswered = 0
+  let removedPhraseCorrect = 0
+  for (const k of m.dailyKeys) {
+    const rec = state.daily && state.daily[k]
+    if (rec && typeof rec === 'object') {
+      removedPhraseAnswered += Math.max(0, Number(rec.answered) || 0)
+      removedPhraseCorrect += Math.max(0, Number(rec.correct) || 0)
+    }
+    delete state.daily[k]
+  }
+
+  let removedWordAnswered = 0
+  let removedWordCorrect = 0
+  for (const k of m.logKeys) {
+    const bucket = state.log && state.log[k]
+    const words = bucket && Array.isArray(bucket.words) ? bucket.words : []
+    removedWordAnswered += words.length
+    removedWordCorrect += words.filter((w) => w && w.ok).length
+    delete state.log[k]
+  }
 
   if (m.range === 'all') {
     state.pending = {}
@@ -132,6 +158,29 @@ export function executeCleanup(dir, { range = '30d', clearMemory = false, now = 
     state.wordReviewStreak = 0
     state.totals = { answered: 0, correct: 0 }
     state.word = { answered: 0, correct: 0 }
+  } else {
+    const hasRemainingPhrases = Object.values(state.log || {}).some(
+      (b) => b && Array.isArray(b.phrases) && b.phrases.length > 0,
+    )
+    if (Object.keys(state.daily || {}).length === 0 && !hasRemainingPhrases) {
+      state.totals = { answered: 0, correct: 0 }
+    } else {
+      const prevAnswered = Math.max(0, Number(state.totals && state.totals.answered) || 0)
+      const prevCorrect = Math.max(0, Number(state.totals && state.totals.correct) || 0)
+      const nextAnswered = Math.max(0, prevAnswered - removedPhraseAnswered)
+      const nextCorrect = Math.max(0, Math.min(nextAnswered, prevCorrect - removedPhraseCorrect))
+      state.totals = { answered: nextAnswered, correct: nextCorrect }
+    }
+
+    if (Object.keys(state.log || {}).length === 0) {
+      state.word = { answered: 0, correct: 0 }
+    } else {
+      const prevWordAnswered = Math.max(0, Number(state.word && state.word.answered) || 0)
+      const prevWordCorrect = Math.max(0, Number(state.word && state.word.correct) || 0)
+      const nextWordAnswered = Math.max(0, prevWordAnswered - removedWordAnswered)
+      const nextWordCorrect = Math.max(0, Math.min(nextWordAnswered, prevWordCorrect - removedWordCorrect))
+      state.word = { answered: nextWordAnswered, correct: nextWordCorrect }
+    }
   }
   recomputeStreak(state)
 

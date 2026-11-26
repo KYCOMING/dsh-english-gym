@@ -44,13 +44,18 @@ export function createReportService({ ctx, conf, dir, getTopic, getReportLevel }
     const job = (async () => {
       const words = bankLink ? pickBankCandidates(dir, state, 30) : []
       const retries = bankLink ? opts.bankRetries : 0
-      let report = null
+      let best = null
+      let last = null
       for (let attempt = 0; attempt <= retries; attempt += 1) {
-        report = await generateReport(ctx, conf, { level, date: day, topic, words })
-        if (!report || report.fallback) break
-        const used = Array.isArray(report.bankWords) ? report.bankWords : []
-        if (!words.length || used.length >= 2) break
+        const r = await generateReport(ctx, conf, { level, date: day, topic, words })
+        last = r
+        if (!r || r.fallback) break
+        const usedCount = Array.isArray(r.bankWords) ? r.bankWords.length : 0
+        const bestCount = best && Array.isArray(best.bankWords) ? best.bankWords.length : -1
+        if (!best || usedCount > bestCount) best = r
+        if (!words.length || usedCount >= 2) break
       }
+      const report = best || last
       report.topic = topic
       report.bankLink = bankLink
       report.bankId = bankId

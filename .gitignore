@@ -10,3 +10,4 @@ scripts/.gen-*.lock
 .env
 
 .openidea/
+promo-assets/

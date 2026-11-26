@@ -64,6 +64,7 @@ export async function generateReport(ctx, config, { level, date, topic, words } 
       prompt,
       temperature: 0.6,
       maxTokens: 6000,
+      timeoutMs: 90_000,
     })
     const parsed = extractJson(text)
     // Prefer structured paragraphs (enables progressive translation); accept a plain "body" as a fallback.
@@ -85,7 +86,7 @@ export async function generateReport(ctx, config, { level, date, topic, words } 
         schema: REPORT_SCHEMA,
         summary_zh: parsed.summary_zh ? String(parsed.summary_zh).trim() : '',
         highlights: normalizeReportHighlights(parsed.highlights, body, candidates),
-        questions: questions.length ? questions : FALLBACK_REPORT.questions,
+        questions,
         bankWords: usedBankWords(body, candidates),
       }
     }

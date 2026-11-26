@@ -82,18 +82,24 @@ export function createPhraseService({ ctx, conf, dir, getTopic }) {
       const topic = typeof getTopic === 'function' ? getTopic() : conf.topic
       const words = opts.bankLink ? pickBankCandidates(dir, snapshot, 24) : []
       const retries = opts.bankLink ? opts.bankRetries : 0
-      let q = null
+      let best = null
+      let last = null
       for (let attempt = 0; attempt <= retries; attempt += 1) {
-        q = await generateQuestion(ctx, conf, { level: conf.level, topic, words })
+        const q = await generateQuestion(ctx, conf, { level: conf.level, topic, words })
+        last = q
         if (!q || q.fallback) break
-        if (!words.length || (Array.isArray(q.used) && q.used.length)) break
+        const usedCount = Array.isArray(q.used) ? q.used.length : 0
+        const bestCount = best && Array.isArray(best.used) ? best.used.length : -1
+        if (!best || usedCount > bestCount) best = q
+        if (!words.length || usedCount > 0) break
       }
+      const chosen = best || last
       picked = {
-        zh: q.zh,
-        en: q.en,
-        hint: q.hint || '',
-        bankWords: q.used || [],
-        source: q.fallback ? 'fallback' : 'topic',
+        zh: chosen.zh,
+        en: chosen.en,
+        hint: chosen.hint || '',
+        bankWords: chosen.used || [],
+        source: chosen.fallback ? 'fallback' : 'topic',
       }
     }
     const id = randomUUID()

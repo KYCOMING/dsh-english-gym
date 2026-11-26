@@ -23,9 +23,11 @@ export function hasLlm(ctx) {
   return !!(svc && typeof svc.stream === 'function')
 }
 
+export const DEFAULT_LLM_TIMEOUT_MS = 45_000
+
 /**
  * Run one non-streaming completion and return the concatenated text.
- * @param {{system?:string, prompt:string, temperature?:number, maxTokens?:number, purpose?:string}} req
+ * @param {{system?:string, prompt:string, temperature?:number, maxTokens?:number, purpose?:string, signal?:AbortSignal, timeoutMs?:number}} req
  */
 export async function completeText(ctx, config, req) {
   const llm = ctx.get('llm')
@@ -33,8 +35,45 @@ export async function completeText(ctx, config, req) {
   const { provider, model } = getRoute(ctx, config)
   if (!provider || !model) throw new Error('no model route (set provider/model in config)')
 
+  if (req.signal && req.signal.aborted) {
+    throw new Error('model call aborted')
+  }
+
+  const timeoutDisabled = req.timeoutMs === 0 || req.timeoutMs === Infinity
+  const timeoutMs = timeoutDisabled
+    ? 0
+    : Number.isFinite(req.timeoutMs) && req.timeoutMs > 0
+      ? req.timeoutMs
+      : DEFAULT_LLM_TIMEOUT_MS
+
   const temperature = typeof req.temperature === 'number' ? req.temperature : 0.4
   const maxTokens = typeof req.maxTokens === 'number' ? req.maxTokens : 900
+
+  const ac = new AbortController()
+  let timer = null
+  let rejectAbort = null
+  const abortPromise = new Promise((_, reject) => {
+    rejectAbort = reject
+  })
+  abortPromise.catch(() => {})
+
+  const triggerAbort = (err) => {
+    if (!ac.signal.aborted) ac.abort(err)
+    if (rejectAbort) {
+      rejectAbort(err)
+      rejectAbort = null
+    }
+  }
+
+  let onExternalAbort = null
+  if (req.signal) {
+    onExternalAbort = () => triggerAbort(new Error('model call aborted'))
+    req.signal.addEventListener('abort', onExternalAbort, { once: true })
+  }
+
+  if (timeoutMs > 0) {
+    timer = setTimeout(() => triggerAbort(new Error('model call timed out')), timeoutMs)
+  }
 
   const options = {
     provider,
@@ -43,30 +82,49 @@ export async function completeText(ctx, config, req) {
     temperature,
     maxTokens,
     purpose: req.purpose || 'english-gym',
+    signal: ac.signal,
   }
   if (req.system) options.system = req.system
-  if (req.signal) options.signal = req.signal
 
-  const iterable = llm.stream(options)
   let text = ''
   const seen = new Set()
   let finishKind = ''
-  for await (const chunk of iterable) {
-    if (!chunk || typeof chunk !== 'object') continue
-    if (chunk.type) seen.add(chunk.type)
-    if (chunk.type === 'text-delta') {
-      text += chunk.text || ''
-    } else if (chunk.type === 'finish') {
-      const reason = chunk.reason || {}
-      finishKind = reason.kind || ''
-      if (reason.kind === 'error') {
-        throw new Error((reason.failure && reason.failure.message) || 'model call failed')
-      }
-      if (reason.kind === 'aborted') {
-        throw new Error('model call aborted')
+  let iter = null
+  try {
+    const iterable = llm.stream(options)
+    iter = iterable[Symbol.asyncIterator]()
+    while (true) {
+      const step = await Promise.race([iter.next(), abortPromise])
+      if (!step || step.done) break
+      const chunk = step.value
+      if (!chunk || typeof chunk !== 'object') continue
+      if (chunk.type) seen.add(chunk.type)
+      if (chunk.type === 'text-delta') {
+        text += chunk.text || ''
+      } else if (chunk.type === 'finish') {
+        const reason = chunk.reason || {}
+        finishKind = reason.kind || ''
+        if (reason.kind === 'error') {
+          throw new Error((reason.failure && reason.failure.message) || 'model call failed')
+        }
+        if (reason.kind === 'aborted') {
+          throw new Error('model call aborted')
+        }
       }
     }
+  } catch (err) {
+    if (ac.signal.aborted && iter && typeof iter.return === 'function') {
+      Promise.resolve()
+        .then(() => iter.return())
+        .catch(() => {})
+    }
+    throw err
+  } finally {
+    rejectAbort = null
+    if (timer) clearTimeout(timer)
+    if (req.signal && onExternalAbort) req.signal.removeEventListener('abort', onExternalAbort)
   }
+
   if (!text) {
     throw new Error('empty model output types=[' + [...seen].join(',') + '] finish=' + finishKind)
   }

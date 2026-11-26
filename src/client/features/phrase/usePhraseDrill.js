@@ -14,21 +14,29 @@ export function usePhraseDrill({ open, active }) {
   const [error, setError] = useState('')
   const lastScoreRef = useRef(null)
   const startedRef = useRef(false)
-  const inFlightRef = useRef(false)
+  const genRef = useRef(0)
+  const abortRef = useRef(null)
+
+  useEffect(() => {
+    return () => {
+      if (abortRef.current) abortRef.current.abort()
+    }
+  }, [])
 
   const loadNext = useCallback(async () => {
-    // Guard against a duplicate request: the "reset then reload" flow can
-    // re-enter through the auto-load effect and, before this guard, fired a
-    // second /next whose late response briefly replaced the just-shown card.
-    if (inFlightRef.current) return
-    inFlightRef.current = true
+    const gen = ++genRef.current
+    if (abortRef.current) abortRef.current.abort()
+    const ac = new AbortController()
+    abortRef.current = ac
     setBusy(true)
     setError('')
     try {
       const data = await api('/next', {
         method: 'POST',
         body: JSON.stringify({ sessionId: store.sessionId || '' }),
+        signal: ac.signal,
       })
+      if (gen !== genRef.current || ac.signal.aborted) return
       setCard(data)
       setAnswer('')
       setSubmittedAnswer('')
@@ -38,10 +46,13 @@ export function usePhraseDrill({ open, active }) {
       setRetryFocusTick(0)
       lastScoreRef.current = null
     } catch (e) {
+      if (gen !== genRef.current || ac.signal.aborted || (e && e.name === 'AbortError')) return
       setError(e.message || '出题失败')
     } finally {
-      inFlightRef.current = false
-      setBusy(false)
+      if (gen === genRef.current) {
+        abortRef.current = null
+        setBusy(false)
+      }
     }
   }, [])
 
@@ -55,13 +66,19 @@ export function usePhraseDrill({ open, active }) {
   const submit = useCallback(async () => {
     if (!card || busy || !String(answer || '').trim()) return
     const currentAnswer = answer
+    const gen = ++genRef.current
+    if (abortRef.current) abortRef.current.abort()
+    const ac = new AbortController()
+    abortRef.current = ac
     setBusy(true)
     setError('')
     try {
       const res = await api('/check', {
         method: 'POST',
         body: JSON.stringify({ id: card.id, answer: currentAnswer }),
+        signal: ac.signal,
       })
+      if (gen !== genRef.current || ac.signal.aborted) return
       setSubmittedAnswer(currentAnswer)
       setPrevScore(lastScoreRef.current)
       lastScoreRef.current = Number.isFinite(Number(res.score)) ? Number(res.score) : 0
@@ -70,6 +87,7 @@ export function usePhraseDrill({ open, active }) {
       if (res.correct) store.celebrate()
       if (res.summary) store.setStats(res.summary)
     } catch (e) {
+      if (gen !== genRef.current || ac.signal.aborted || (e && e.name === 'AbortError')) return
       setError(e.message || '判分失败')
       if (e.status === 409) {
         setCard(null)
@@ -80,7 +98,10 @@ export function usePhraseDrill({ open, active }) {
         startedRef.current = false
       }
     } finally {
-      setBusy(false)
+      if (gen === genRef.current) {
+        abortRef.current = null
+        setBusy(false)
+      }
     }
   }, [card, answer, busy])
 
@@ -106,6 +127,11 @@ export function usePhraseDrill({ open, active }) {
   }, [loadNext])
 
   const reset = useCallback(() => {
+    genRef.current += 1
+    if (abortRef.current) {
+      abortRef.current.abort()
+      abortRef.current = null
+    }
     setCard(null)
     setFeedback(null)
     setAnswer('')
@@ -114,6 +140,7 @@ export function usePhraseDrill({ open, active }) {
     setPrevScore(null)
     setRetryFocusTick(0)
     setError('')
+    setBusy(false)
     lastScoreRef.current = null
     startedRef.current = false
   }, [])

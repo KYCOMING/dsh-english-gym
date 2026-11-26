@@ -43,6 +43,12 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportCon
   const queueRef = useRef(Promise.resolve())
   const seqRef = useRef(0)
   const lastConfirmedRef = useRef(cachedSettings)
+  const customTopicsRef = useRef(
+    (cachedSettings && cachedSettings.settings && cachedSettings.settings.customTopics) || [],
+  )
+  const bankQueueRef = useRef(Promise.resolve())
+  const bankSeqRef = useRef(0)
+  const lastConfirmedBanksRef = useRef(cachedBanks)
 
   const load = useCallback(async () => {
     if (!cachedSettings) setLoading(true)
@@ -53,10 +59,12 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportCon
       ])
       cachedSettings = settingsRes
       lastConfirmedRef.current = settingsRes
+      customTopicsRef.current = (settingsRes && settingsRes.settings && settingsRes.settings.customTopics) || []
       setData(settingsRes)
       store.setSettings(settingsRes.settings)
       if (banksRes && Array.isArray(banksRes.banks)) {
         cachedBanks = banksRes
+        lastConfirmedBanksRef.current = banksRes
         setBankData(banksRes)
       }
       setError('')
@@ -72,20 +80,41 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportCon
   }, [load])
 
   const save = useCallback(
-    (patch, changeScope) => {
+    (patchOrBuilder, changeScope, optimisticOverride) => {
       const seq = ++seqRef.current
       setError('')
 
-      // Optimistically apply scalar setting changes immediately so controls never flash disabled.
+      const optimisticPatch =
+        optimisticOverride !== undefined
+          ? optimisticOverride
+          : typeof patchOrBuilder === 'function'
+            ? null
+            : patchOrBuilder
+
+      // Optimistically apply scalar and customTopics removals immediately so controls never flash disabled.
       const scalarPatch = {}
       for (const key of ['confetti', 'sessionLink', 'bankLink', 'bankRetries', 'reportLevel', 'topicId']) {
-        if (patch && patch[key] !== undefined) scalarPatch[key] = patch[key]
+        if (optimisticPatch && optimisticPatch[key] !== undefined) scalarPatch[key] = optimisticPatch[key]
       }
-      if (Object.keys(scalarPatch).length) {
-        store.setSettings(scalarPatch)
+      const hasOptimisticTopics = Boolean(optimisticPatch && Array.isArray(optimisticPatch.customTopics))
+      if (Object.keys(scalarPatch).length || hasOptimisticTopics) {
+        if (Object.keys(scalarPatch).length) store.setSettings(scalarPatch)
         setData((prev) => {
           if (!prev || !prev.settings) return prev
-          const next = { ...prev, settings: { ...prev.settings, ...scalarPatch } }
+          const nextSettings = { ...prev.settings, ...scalarPatch }
+          let nextDirections = prev.directions
+          if (hasOptimisticTopics) {
+            nextSettings.customTopics = optimisticPatch.customTopics
+            const keepIds = new Set(optimisticPatch.customTopics.map((item) => item.id).filter(Boolean))
+            if (Array.isArray(prev.directions)) {
+              nextDirections = prev.directions.filter((item) => item.builtin !== false || keepIds.has(item.id))
+            }
+            if (nextDirections && !nextDirections.some((item) => item.id === nextSettings.topicId)) {
+              nextSettings.topicId = 'ai'
+            }
+            store.setSettings({ customTopics: nextSettings.customTopics, topicId: nextSettings.topicId })
+          }
+          const next = { ...prev, settings: nextSettings, directions: nextDirections }
           cachedSettings = next
           return next
         })
@@ -93,11 +122,14 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportCon
 
       const task = queueRef.current.then(async () => {
         try {
+          const baseSettings = (lastConfirmedRef.current && lastConfirmedRef.current.settings) || null
+          const patch = typeof patchOrBuilder === 'function' ? patchOrBuilder(baseSettings) : patchOrBuilder
           const result = await api('/settings', {
             method: 'POST',
             body: JSON.stringify(patch),
           })
           lastConfirmedRef.current = result
+          customTopicsRef.current = (result && result.settings && result.settings.customTopics) || []
           if (seq === seqRef.current) {
             cachedSettings = result
             setData(result)
@@ -112,6 +144,9 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportCon
           }
           return true
         } catch (e) {
+          if (lastConfirmedRef.current && lastConfirmedRef.current.settings) {
+            customTopicsRef.current = lastConfirmedRef.current.settings.customTopics || []
+          }
           if (seq === seqRef.current && lastConfirmedRef.current) {
             cachedSettings = lastConfirmedRef.current
             setData(lastConfirmedRef.current)
@@ -152,7 +187,14 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportCon
     if (!label || adding) return
     setAdding(true)
     try {
-      const ok = await save({ customTopics: customTopics.concat({ label }) }, false)
+      const ok = await save(
+        (latest) => {
+          const base = latest && Array.isArray(latest.customTopics) ? latest.customTopics : customTopicsRef.current
+          return { customTopics: base.concat({ label }) }
+        },
+        false,
+        null,
+      )
       if (ok) setDraft('')
     } finally {
       setAdding(false)
@@ -160,7 +202,16 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportCon
   }
 
   const removeCustom = (id) => {
-    save({ customTopics: customTopics.filter((item) => item.id !== id) }, id === activeId)
+    const nextTopics = customTopicsRef.current.filter((item) => item.id !== id)
+    customTopicsRef.current = nextTopics
+    save(
+      (latest) => {
+        const base = latest && Array.isArray(latest.customTopics) ? latest.customTopics : customTopicsRef.current
+        return { customTopics: base.filter((item) => item.id !== id) }
+      },
+      id === activeId,
+      { customTopics: nextTopics },
+    )
   }
 
   const setRetries = (value) => {
@@ -196,9 +247,9 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportCon
   const activeBankObj = banks.find((b) => b.id === activeBankId)
   const shortBankName = (name) => String(name || '').replace(/^内置\s*·\s*/, '')
 
-  const chooseBank = async (id) => {
+  const chooseBank = (id) => {
     if (!id || id === activeBankId) return
-    const prev = bankData
+    const seq = ++bankSeqRef.current
     setError('')
     setBankNotice('')
     setBankData((cur) => {
@@ -207,15 +258,34 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportCon
       cachedBanks = next
       return next
     })
-    try {
-      const res = await api('/wordbanks/active', { method: 'POST', body: JSON.stringify({ id }) })
-      if (res.summary) store.setStats(res.summary)
-      if (typeof onWordBankChange === 'function') onWordBankChange()
-    } catch (e) {
-      cachedBanks = prev
-      setBankData(prev)
-      setError(e.message || '切换词库失败')
-    }
+    const task = bankQueueRef.current.then(async () => {
+      try {
+        const res = await api('/wordbanks/active', { method: 'POST', body: JSON.stringify({ id }) })
+        const base = lastConfirmedBanksRef.current || cachedBanks
+        if (base) {
+          lastConfirmedBanksRef.current = { ...base, active: (res && res.active) || id }
+        }
+        if (seq === bankSeqRef.current) {
+          if (lastConfirmedBanksRef.current) {
+            cachedBanks = lastConfirmedBanksRef.current
+            setBankData(lastConfirmedBanksRef.current)
+          }
+          if (res.summary) store.setStats(res.summary)
+          if (typeof onWordBankChange === 'function') onWordBankChange()
+        }
+      } catch (e) {
+        if (seq === bankSeqRef.current) {
+          const rollback = lastConfirmedBanksRef.current
+          if (rollback) {
+            cachedBanks = rollback
+            setBankData(rollback)
+          }
+          setError(e.message || '切换词库失败')
+        }
+      }
+    })
+    bankQueueRef.current = task.catch(() => {})
+    return task
   }
 
   const removeBank = async (id) => {
@@ -226,6 +296,7 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportCon
       const res = await api('/wordbanks/delete', { method: 'POST', body: JSON.stringify({ id }) })
       const next = { active: res.active, banks: Array.isArray(res.banks) ? res.banks : banks.filter((b) => b.id !== id) }
       cachedBanks = next
+      lastConfirmedBanksRef.current = next
       setBankData(next)
       if (res.summary) store.setStats(res.summary)
       if (wasActive && typeof onWordBankChange === 'function') onWordBankChange()
@@ -241,6 +312,7 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportCon
       const banksRes = await api('/wordbanks')
       if (banksRes && Array.isArray(banksRes.banks)) {
         cachedBanks = banksRes
+        lastConfirmedBanksRef.current = banksRes
         setBankData(banksRes)
       }
     } catch {
@@ -820,7 +892,7 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportCon
                   setCleanNotice('')
                 },
               }),
-              React.createElement('span', null, '同时清除对应时间段的艾宾浩斯记忆进度（默认保留）'),
+              React.createElement('span', null, '同时清除对应时间段内学习中的记忆进度（已掌握单词仅在「全部记录」时清除）'),
             ),
             !cleanPreview
               ? React.createElement(

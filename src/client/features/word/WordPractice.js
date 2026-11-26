@@ -49,10 +49,17 @@ export function WordPractice({ bankRev = 0 } = {}) {
   const [hoverMode, setHoverMode] = useState('')
   const [srsStats, setSrsStats] = useState(() => cachedWord.srsStats)
   const refs = useRef([])
-  const inFlight = useRef(false)
+  const reqGenRef = useRef(0)
+  const abortRef = useRef(null)
   const revealedEverRef = useRef(cachedWord.revealedEver)
   const modeRef = useRef(mode)
   modeRef.current = mode
+
+  useEffect(() => {
+    return () => {
+      if (abortRef.current) abortRef.current.abort()
+    }
+  }, [])
 
   useEffect(() => {
     cachedWord.item = item
@@ -65,12 +72,14 @@ export function WordPractice({ bankRev = 0 } = {}) {
   }, [item, cells, res, revealed, mode, srsStats])
 
   const load = useCallback(async (requestedMode) => {
-    if (inFlight.current) return
+    const gen = ++reqGenRef.current
+    if (abortRef.current) abortRef.current.abort()
+    const ac = new AbortController()
+    abortRef.current = ac
     const targetMode =
       requestedMode === 'review' || requestedMode === 'new' || requestedMode === 'smart'
         ? requestedMode
         : modeRef.current
-    inFlight.current = true
     setBusy(true)
     setError('')
     setRes(null)
@@ -80,8 +89,13 @@ export function WordPractice({ bankRev = 0 } = {}) {
       const data = await api('/word/next', {
         method: 'POST',
         body: JSON.stringify({ mode: targetMode }),
+        signal: ac.signal,
       })
-      if (data.srsStats) setSrsStats(data.srsStats)
+      if (gen !== reqGenRef.current || ac.signal.aborted) return
+      if (data.srsStats) {
+        setSrsStats(data.srsStats)
+        store.setWordSrs(data.srsStats)
+      }
       setItem(data)
       if (data.done) {
         setCells([])
@@ -96,10 +110,13 @@ export function WordPractice({ bankRev = 0 } = {}) {
         }, 0)
       }
     } catch (e) {
+      if (gen !== reqGenRef.current || ac.signal.aborted || (e && e.name === 'AbortError')) return
       setError(e.message || '出题失败')
     } finally {
-      inFlight.current = false
-      setBusy(false)
+      if (gen === reqGenRef.current) {
+        abortRef.current = null
+        setBusy(false)
+      }
     }
   }, [])
 
@@ -168,6 +185,7 @@ export function WordPractice({ bankRev = 0 } = {}) {
       if (r.correct) store.celebrate()
       if (r.srsStats) setSrsStats(r.srsStats)
       if (r.summary) store.setStats(r.summary)
+      else if (r.srsStats) store.setWordSrs(r.srsStats)
     } catch (e) {
       setError(e.message || '判分失败')
     } finally {
@@ -186,7 +204,7 @@ export function WordPractice({ bankRev = 0 } = {}) {
       })
       if (r.srsStats) setSrsStats(r.srsStats)
       if (r.summary) store.setStats(r.summary)
-      inFlight.current = false
+      else if (r.srsStats) store.setWordSrs(r.srsStats)
       setBusy(false)
       load(modeRef.current)
     } catch (e) {
@@ -267,7 +285,7 @@ export function WordPractice({ bankRev = 0 } = {}) {
     }
   }
 
-  const liveStats = srsStats || (shared.stats && shared.stats.wordSrs) || null
+  const liveStats = (shared.stats && shared.stats.wordSrs) || srsStats || null
   const dueCount = liveStats ? Number(liveStats.due) || 0 : 0
   const learningCount = liveStats ? Number(liveStats.learning) || 0 : 0
   const masteredCount = liveStats ? Number(liveStats.mastered) || 0 : 0
