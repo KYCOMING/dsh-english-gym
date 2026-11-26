@@ -1,8 +1,8 @@
-# English Gym（英语健身房）
+# DSH-English-Gym（英语健身房）
 
 [![npm](https://img.shields.io/npm/v/dsh-english-gym?logo=npm&logoColor=white&color=cb3837)](https://www.npmjs.com/package/dsh-english-gym) [![GitHub](https://img.shields.io/github/stars/KYCOMING/dsh-english-gym?logo=github&logoColor=white&color=181717)](https://github.com/KYCOMING/dsh-english-gym)
 
-English Gym（英语健身房）是常驻在 DSH（DeepSeek Harness）对话输入框下方的英语练习挂件：单词拼写、短句拼写、AI 根据会话内容生成对应训练短句；每天生成一篇英文短文，并用学习看板记录连续天数与进度。
+dsh-english-gym（英语健身房）是常驻在 DSH对话输入框下方的英语练习挂件,让你能够在VibeCoding||VibeWorking时也能练习英语，同时这个插件**可以直接读取当前会话内容来对工作流进行针对性的出题**;也可以自由选择文章难度;同时内置CET4、CET6、雅思、托福4 种常见英语词库。
 
 ## 功能
 
@@ -16,23 +16,27 @@ English Gym（英语健身房）是常驻在 DSH（DeepSeek Harness）对话输�
 - ⚙️**设置与统计**：面板内可切换内容方向（12 个内置方向，也支持自定义，最多 40 个）、开关答对彩带、开关词库关联并设置重试次数、开关会话关联，并展示连续天数、今日答题、正确率和待复习数。
 - 🛠️**对话工具**：除浮窗面板外，主对话里也可直接调用 `english_drill` 和 `english_grade` 工具练习。
 
-## 截图
+## 界面截图
 
 ### 单词训练
 
-![单词训练](docs/screenshots/word-training.webp)
+![图5](https://public-osss.oss-cn-beijing.aliyuncs.com/english-gym/PixPin_2026-11-26_09-49-38.png)
 
 ### 短语训练
 
-![短语训练](docs/screenshots/phrase-training.webp)
+![图1](https://public-osss.oss-cn-beijing.aliyuncs.com/english-gym/PixPin_2026-11-26_09-46-21.png)
 
 ### 今日文章
 
-![今日文章](docs/screenshots/report.webp)
+![图2](https://public-osss.oss-cn-beijing.aliyuncs.com/english-gym/PixPin_2026-11-26_09-46-35.png)
 
 ### 设置
 
-![设置](docs/screenshots/settings.webp)
+![图4](https://public-osss.oss-cn-beijing.aliyuncs.com/english-gym/PixPin_2026-11-26_09-47-18.png)
+
+### 数据看板
+
+![图3](https://public-osss.oss-cn-beijing.aliyuncs.com/english-gym/PixPin_2026-11-26_09-46-48.png)
 
 ## 安装
 
