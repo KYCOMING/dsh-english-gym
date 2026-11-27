@@ -60,9 +60,10 @@ export function createEnglishGym(ctx, rawConfig) {
   const settings = createSettingsService({ dir, conf })
   const getTopic = () => settings.getTopic()
   const getReportLevel = () => settings.getReportLevel()
-  const phrase = createPhraseService({ ctx, conf, dir, getTopic })
+  const getReasoningEffort = () => settings.getReasoningEffort()
+  const phrase = createPhraseService({ ctx, conf, dir, getTopic, getReasoningEffort })
   const word = createWordService({ dir })
-  const report = createReportService({ ctx, conf, dir, getTopic, getReportLevel })
+  const report = createReportService({ ctx, conf, dir, getTopic, getReportLevel, getReasoningEffort })
 
   async function handler(req, res, peer) {
     // Defense in depth: with route auth 'required' the webServer only invokes this
@@ -102,6 +103,10 @@ export function createEnglishGym(ctx, rawConfig) {
       }
       if (req.method === 'POST' && sub === '/report/refresh') {
         return sendJson(res, 200, await report.getReport(true))
+      }
+      if (req.method === 'POST' && sub === '/report/enrich') {
+        const body = await readBody(req)
+        return sendJson(res, 200, await report.enrichReport(body || {}))
       }
       if (req.method === 'POST' && sub === '/report/explain') {
         const body = await readBody(req)
@@ -211,7 +216,11 @@ export function createEnglishGym(ctx, rawConfig) {
             },
           },
           async execute(args) {
-            const q = await generateQuestion(ctx, conf, { level: (args && args.level) || conf.level, topic: settings.getTopic() })
+            const q = await generateQuestion(ctx, conf, {
+              level: (args && args.level) || conf.level,
+              topic: settings.getTopic(),
+              reasoningEffort: getReasoningEffort(),
+            })
             return { zh: q.zh, hint: q.hint }
           },
         },
@@ -260,6 +269,7 @@ export function createEnglishGym(ctx, rawConfig) {
               zh: args.zh,
               reference: args.reference || '',
               answer: args.answer,
+              reasoningEffort: getReasoningEffort(),
             })
             return { correct: r.correct, score: r.score, reference: r.reference || r.corrected || '', tip: r.tip }
           },
@@ -279,5 +289,12 @@ export function createEnglishGym(ctx, rawConfig) {
     }
   }
 
-  return { route, registerTools, startDailyReporter: report.startDailyReporter, getReport: report.getReport, summarize }
+  return {
+    route,
+    registerTools,
+    startDailyReporter: report.startDailyReporter,
+    getReport: report.getReport,
+    enrichReport: report.enrichReport,
+    summarize,
+  }
 }

@@ -21,6 +21,14 @@ export const FALLBACK_RETENTIONS = [
   { id: 0.95, label: '95%', desc: '极致', detail: '高频巩固以维持极高记住率，适合考前冲刺（每日复习量明显增加）' },
 ]
 
+export const FALLBACK_REASONING_EFFORTS = [
+  { id: 'off', label: '关闭', desc: '极速', detail: '关闭思考过程，生成文章、出题与讲解响应最快（推荐）' },
+  { id: 'low', label: '低', desc: '轻量', detail: '少量思考，在保持较快响应的同时略微提升表达准确度' },
+  { id: 'medium', label: '中', desc: '均衡', detail: '适度思考，兼顾响应速度与句式、译文及讲解质量' },
+  { id: 'high', label: '高', desc: '深度', detail: '深度思考，表达更细腻严谨，但等待时间会明显变长' },
+  { id: 'auto', label: '跟随', desc: '默认', detail: '不覆盖思考强度，跟随 DSH 当前默认模型的思考设置' },
+]
+
 export function shortBankName(name) {
   return String(name || '').replace(/^内置\s*·\s*/, '')
 }
@@ -85,7 +93,7 @@ export function useSettings({ onTopicChange, onPhraseConfigChange, onReportConfi
 
       // Optimistically apply scalar and customTopics removals immediately so controls never flash disabled.
       const scalarPatch = {}
-      for (const key of ['confetti', 'sessionLink', 'bankLink', 'bankRetries', 'reportLevel', 'topicId', 'fsrsRetention']) {
+      for (const key of ['confetti', 'sessionLink', 'bankLink', 'bankRetries', 'reportLevel', 'topicId', 'fsrsRetention', 'reasoningEffort']) {
         if (optimisticPatch && optimisticPatch[key] !== undefined) scalarPatch[key] = optimisticPatch[key]
       }
       const hasOptimisticTopics = Boolean(optimisticPatch && Array.isArray(optimisticPatch.customTopics))
@@ -164,10 +172,19 @@ export function useSettings({ onTopicChange, onPhraseConfigChange, onReportConfi
     const fb = FALLBACK_RETENTIONS.find((f) => f.id === item.id)
     return item.detail || !fb ? item : { ...item, detail: fb.detail }
   })
+  const reasoningEfforts = (
+    data && Array.isArray(data.reasoningEfforts) && data.reasoningEfforts.length
+      ? data.reasoningEfforts
+      : FALLBACK_REASONING_EFFORTS
+  ).map((item) => {
+    const fb = FALLBACK_REASONING_EFFORTS.find((f) => f.id === item.id)
+    return item.detail || !fb ? item : { ...item, detail: fb.detail }
+  })
   const customTopics = settings.customTopics || []
   const activeId = settings.topicId
   const activeLevel = settings.reportLevel || 'B1'
   const activeRetention = Number.isFinite(Number(settings.fsrsRetention)) ? Number(settings.fsrsRetention) : 0.9
+  const activeReasoningEffort = settings.reasoningEffort || 'off'
 
   const chooseDirection = (id) => {
     if (id === activeId) return
@@ -182,6 +199,11 @@ export function useSettings({ onTopicChange, onPhraseConfigChange, onReportConfi
   const chooseRetention = (value) => {
     if (value === activeRetention) return
     save({ fsrsRetention: value }, false)
+  }
+
+  const chooseReasoningEffort = (value) => {
+    if (!value || value === activeReasoningEffort) return
+    save({ reasoningEffort: value }, false)
   }
 
   const addCustom = (rawLabel) => {
@@ -304,10 +326,12 @@ export function useSettings({ onTopicChange, onPhraseConfigChange, onReportConfi
     directions,
     levels,
     retentions,
+    reasoningEfforts,
     customTopics,
     activeId,
     activeLevel,
     activeRetention,
+    activeReasoningEffort,
     banks,
     activeBankId,
     builtinBanks,
@@ -319,6 +343,7 @@ export function useSettings({ onTopicChange, onPhraseConfigChange, onReportConfi
     chooseDirection,
     chooseReportLevel,
     chooseRetention,
+    chooseReasoningEffort,
     addCustom,
     removeCustom,
     setRetries,

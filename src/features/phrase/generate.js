@@ -20,7 +20,7 @@ const QUESTION_SYSTEM =
  * current conversation workflow instead of `topic` and `words`.
  * @returns {Promise<{zh:string, en:string, hint:string, used:string[], fallback?:boolean}>}
  */
-export async function generateQuestion(ctx, config, { level, topic, words, sessionContext, avoid } = {}) {
+export async function generateQuestion(ctx, config, { level, topic, words, sessionContext, avoid, reasoningEffort } = {}) {
   const lvl = pickLevel(level, config && config.level)
   const excerpt = typeof sessionContext === 'string' ? sessionContext.trim() : ''
   const avoidList = Array.isArray(avoid) ? avoid.map((s) => String(s || '').trim()).filter(Boolean).slice(0, 6) : []
@@ -68,6 +68,7 @@ export async function generateQuestion(ctx, config, { level, topic, words, sessi
       prompt,
       temperature: 0.8,
       maxTokens: 700,
+      reasoningEffort,
     })
     const parsed = extractJson(text)
     if (parsed && parsed.zh && parsed.en) {

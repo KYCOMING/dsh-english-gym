@@ -1,6 +1,31 @@
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
-export function PracticePrefsSection({ settings, onSave, onSetRetries }) {
+export function PracticePrefsSection({
+  settings,
+  reasoningEfforts,
+  activeReasoningEffort,
+  onSave,
+  onSetRetries,
+  onChooseReasoningEffort,
+}) {
+  const effortOptions = Array.isArray(reasoningEfforts) ? reasoningEfforts : []
+  const selectableEfforts = effortOptions.filter((item) => item.id !== 'off')
+  const currentEffort = activeReasoningEffort || 'off'
+  const thinkingOn = currentEffort !== 'off'
+  const lastEnabledRef = useRef('low')
+  const [hoverEffort, setHoverEffort] = useState(null)
+
+  useEffect(() => {
+    if (currentEffort && currentEffort !== 'off') {
+      lastEnabledRef.current = currentEffort
+    }
+  }, [currentEffort])
+
+  const activeEffortObj =
+    selectableEfforts.find((item) => item.id === currentEffort) || selectableEfforts[0] || null
+  const shownEffortObj =
+    (hoverEffort ? selectableEfforts.find((item) => item.id === hoverEffort) : null) || activeEffortObj
+
   return (
     <div className="eg-setting-section">
       <div className="eg-section-head">
@@ -21,6 +46,63 @@ export function PracticePrefsSection({ settings, onSave, onSetRetries }) {
               aria-label="彩带庆祝"
               onClick={() => onSave({ confetti: !settings.confetti }, false)}
             />
+          </div>
+        </div>
+        <div className="eg-setting-row">
+          <div className="eg-setting-head">
+            <div className="eg-setting-info">
+              <div className="eg-setting-title">深度思考</div>
+              <div className="eg-setting-desc">
+                关闭后将跳过思考过程以大幅加快文章生成、出题与讲解速度；开启后可按需调节模型思考强度（仅对支持思考的模型生效）。
+              </div>
+            </div>
+            <button
+              type="button"
+              className="eg-switch"
+              role="switch"
+              aria-checked={thinkingOn ? 'true' : 'false'}
+              aria-label="深度思考"
+              onClick={() => onChooseReasoningEffort(thinkingOn ? 'off' : lastEnabledRef.current || 'low')}
+            />
+          </div>
+          <div className={'eg-collapse' + (thinkingOn ? ' open' : '')} aria-hidden={thinkingOn ? 'false' : 'true'}>
+            <div className="eg-collapse-inner">
+              <div className="eg-setting-sub is-stack">
+                <div className="eg-effort-head">
+                  <div className="eg-sub-title">思考强度</div>
+                  {activeEffortObj ? (
+                    <span className="eg-effort-badge">
+                      {activeEffortObj.label + (activeEffortObj.desc ? ' · ' + activeEffortObj.desc : '')}
+                    </span>
+                  ) : null}
+                </div>
+                <div className="eg-effort-list" onMouseLeave={() => setHoverEffort(null)}>
+                  {selectableEfforts.map((item) => {
+                    const isActive = item.id === currentEffort
+                    return (
+                      <button
+                        type="button"
+                        key={item.id}
+                        className={'eg-effort-btn' + (isActive ? ' active' : '')}
+                        aria-pressed={isActive ? 'true' : 'false'}
+                        tabIndex={thinkingOn ? undefined : -1}
+                        title={item.label + (item.desc ? ' · ' + item.desc : '')}
+                        onMouseEnter={() => setHoverEffort(item.id)}
+                        onFocus={() => setHoverEffort(item.id)}
+                        onBlur={() => setHoverEffort((prev) => (prev === item.id ? null : prev))}
+                        onClick={() => onChooseReasoningEffort(item.id)}
+                      >
+                        <span className="eg-effort-label">{item.label}</span>
+                        {item.desc ? <span className="eg-effort-desc">{item.desc}</span> : null}
+                      </button>
+                    )
+                  })}
+                </div>
+                {shownEffortObj && shownEffortObj.detail ? (
+                  <div className="eg-effort-detail">{shownEffortObj.detail}</div>
+                ) : null}
+              </div>
+            </div>
           </div>
         </div>
         <div className="eg-setting-row">

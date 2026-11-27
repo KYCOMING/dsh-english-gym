@@ -7,7 +7,7 @@ export const store = {
   stats: null,
   sessionId: '',
   wordModeRequest: null,
-  settings: { confetti: true, topicId: 'ai', customTopics: [], bankLink: true, bankRetries: 1, sessionLink: false, reportLevel: 'B1', fsrsRetention: 0.9 },
+  settings: { confetti: true, topicId: 'ai', customTopics: [], bankLink: true, bankRetries: 1, sessionLink: false, reportLevel: 'B1', fsrsRetention: 0.9, reasoningEffort: 'off' },
   burst: 0,
   listeners: new Set(),
   emit() {

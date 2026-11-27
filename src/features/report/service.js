@@ -1,15 +1,39 @@
 import { dayKey, loadReport, loadState, saveReport } from '../../core/store.js'
 import { generateReport } from './generate.js'
+import { enrichReportContent } from './enrich.js'
 import { explainReportSentence, normalizeExplanation } from './explain.js'
 import { REPORT_SCHEMA } from './structure.js'
 import { normalizeSettings } from '../settings/service.js'
 import { pickBankCandidates } from '../word/sample.js'
 import { pruneOldReports } from '../activity/cleanup.js'
 
+function applyEnrichmentPreservingExplain(latest, enriched) {
+  const latestParas = latest && Array.isArray(latest.paragraphs) ? latest.paragraphs : []
+  const nextParas = (Array.isArray(enriched.paragraphs) ? enriched.paragraphs : []).map((p, pi) => {
+    const lp = latestParas[pi]
+    const latestSents = lp && Array.isArray(lp.sentences) ? lp.sentences : []
+    return {
+      ...p,
+      sentences: (Array.isArray(p.sentences) ? p.sentences : []).map((s, si) => {
+        const ls = latestSents[si]
+        if (ls && ls.explain && ls.en === s.en && !s.explain) {
+          return { ...s, explain: ls.explain }
+        }
+        return s
+      }),
+    }
+  })
+  return { ...latest, ...enriched, paragraphs: nextParas }
+}
+
 /** Daily AI/tech report: cache per day, generate on demand, warm in the background. */
-export function createReportService({ ctx, conf, dir, getTopic, getReportLevel }) {
+export function createReportService({ ctx, conf, dir, getTopic, getReportLevel, getReasoningEffort }) {
   const reportInflight = new Map()
+  const enrichInflight = new Map()
   const explainInflight = new Map()
+
+  const resolveReasoningEffort = () =>
+    typeof getReasoningEffort === 'function' ? getReasoningEffort() : normalizeSettings(loadState(dir).settings).reasoningEffort
 
   async function getReport(force) {
     const day = dayKey()
@@ -42,12 +66,13 @@ export function createReportService({ ctx, conf, dir, getTopic, getReportLevel }
     const key = `${day}|${level}|${topic}|${bankLink ? bankId : 'off'}`
     if (reportInflight.has(key)) return reportInflight.get(key)
     const job = (async () => {
-      const words = bankLink ? pickBankCandidates(dir, state, 30) : []
+      const words = bankLink ? pickBankCandidates(dir, state, 15) : []
       const retries = bankLink ? opts.bankRetries : 0
+      const reasoningEffort = resolveReasoningEffort()
       let best = null
       let last = null
       for (let attempt = 0; attempt <= retries; attempt += 1) {
-        const r = await generateReport(ctx, conf, { level, date: day, topic, words })
+        const r = await generateReport(ctx, conf, { level, date: day, topic, words, reasoningEffort })
         last = r
         if (!r || r.fallback) break
         const usedCount = Array.isArray(r.bankWords) ? r.bankWords.length : 0
@@ -75,6 +100,50 @@ export function createReportService({ ctx, conf, dir, getTopic, getReportLevel }
       return await job
     } finally {
       reportInflight.delete(key)
+    }
+  }
+
+  async function enrichReport(payload = {}) {
+    const day =
+      typeof payload.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(payload.date.trim())
+        ? payload.date.trim()
+        : dayKey()
+    const cached = loadReport(dir, day)
+    if (!cached || cached.fallback) {
+      const err = new Error('report not found')
+      err.status = 404
+      throw err
+    }
+    if (payload.id && cached.id && cached.id !== payload.id) {
+      return cached
+    }
+    if (cached.enriched !== false) {
+      return cached
+    }
+
+    const key = `${day}|${cached.id || cached.title || ''}`
+    let job = enrichInflight.get(key)
+    if (!job) {
+      job = (async () => {
+        const enriched = await enrichReportContent(ctx, conf, cached, { reasoningEffort: resolveReasoningEffort() })
+        const latest = loadReport(dir, day)
+        if (latest && !latest.fallback && (!cached.id || !latest.id || latest.id === cached.id)) {
+          const finalReport = applyEnrichmentPreservingExplain(latest, enriched)
+          saveReport(dir, day, finalReport)
+          return finalReport
+        }
+        return enriched
+      })()
+      enrichInflight.set(key, job)
+    }
+
+    try {
+      return await job
+    } catch (err) {
+      console.warn('[english-gym] enrichReport failed:', err && err.message ? err.message : err)
+      throw err
+    } finally {
+      if (enrichInflight.get(key) === job) enrichInflight.delete(key)
     }
   }
 
@@ -127,7 +196,13 @@ export function createReportService({ ctx, conf, dir, getTopic, getReportLevel }
     let job = explainInflight.get(key)
     if (!job) {
       job = (async () => {
-        const explain = await explainReportSentence(ctx, conf, { en, zh, context, level: lvl })
+        const explain = await explainReportSentence(ctx, conf, {
+          en,
+          zh,
+          context,
+          level: lvl,
+          reasoningEffort: resolveReasoningEffort(),
+        })
         const latest = loadReport(dir, day)
         if (latest && !latest.fallback) {
           const target = findSentence(latest)
@@ -160,7 +235,10 @@ export function createReportService({ ctx, conf, dir, getTopic, getReportLevel }
       // getReport(false) reuses a valid cached report and only calls the model
       // when today's report is missing or the word-bank mode changed.
       try {
-        await getReport(false)
+        const r = await getReport(false)
+        if (r && !r.fallback && r.enriched === false) {
+          await enrichReport({ date: r.date, id: r.id })
+        }
       } catch {
         /* ignore, retry next tick */
       }
@@ -181,5 +259,5 @@ export function createReportService({ ctx, conf, dir, getTopic, getReportLevel }
     }
   }
 
-  return { getReport, explainSentence, startDailyReporter }
+  return { getReport, enrichReport, explainSentence, startDailyReporter }
 }

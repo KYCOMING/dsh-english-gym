@@ -23,12 +23,16 @@ export function useWordPopover({ report, reportRef }) {
     }, 140)
   }, [cancelClose])
 
+  const reportKey = report
+    ? report.id || `${report.date || ''}|${report.title || ''}|${report.body || ''}`
+    : ''
+
   useEffect(() => {
     cancelClose()
     setActive(null)
     setPopPos(null)
     termRefs.current = {}
-  }, [report, cancelClose])
+  }, [reportKey, cancelClose])
 
   useEffect(() => () => cancelClose(), [cancelClose])
 

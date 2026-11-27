@@ -15,6 +15,30 @@ function clean(value) {
 }
 
 /**
+ * Parse a sentence that may contain inline `|` chunk delimiters into clean `en`
+ * and validated `chunks`.
+ *
+ * @returns {{en:string, chunks:string[]}}
+ */
+export function parseDelimitedSentence(rawEn) {
+  const cleaned = clean(rawEn)
+  if (!cleaned || !cleaned.includes('|')) {
+    return { en: cleaned, chunks: [] }
+  }
+  const parts = cleaned
+    .split('|')
+    .map((part) => clean(part).replace(/\s+([,.;:!?)\]])/g, '$1'))
+    .filter(Boolean)
+  if (parts.length < 2) {
+    const en = clean(cleaned.replace(/\|/g, ' ').replace(/\s+([,.;:!?)\]])/g, '$1'))
+    return { en, chunks: [] }
+  }
+  const en = parts.join(' ').replace(/\s+([,.;:!?)\]])/g, '$1')
+  const chunks = normalizeChunks(parts, en)
+  return { en, chunks }
+}
+
+/**
  * Validate model-provided reading chunks (`chunks`) against the exact sentence `en`.
  * Requires 2–6 non-empty chunks that cover `en` sequentially (ignoring spaces between them).
  *
@@ -79,6 +103,35 @@ export function normalizeCore(rawCore, en) {
   return matched
 }
 
+const ABBREV_RE = /(?:^|[\s(])(?:Mr|Mrs|Ms|Dr|Prof|Sr|Jr|St|vs|etc|e\.g|i\.e|[A-Z])\.$/
+
+/**
+ * Split a plain paragraph string into sentence strings on terminal punctuation,
+ * avoiding splits after common abbreviations or single-letter initials.
+ *
+ * @returns {string[]}
+ */
+export function splitParagraphSentences(rawText) {
+  const text = clean(rawText)
+  if (!text) return []
+  const out = []
+  const re = /[.!?]["'”’)\]]*(?=\s|$)/g
+  let start = 0
+  let m
+  while ((m = re.exec(text)) !== null) {
+    const end = m.index + m[0].length
+    const prefix = text.slice(start, m.index + 1)
+    if (ABBREV_RE.test(prefix) && end < text.length) continue
+    const sent = clean(text.slice(start, end))
+    if (sent) out.push(sent)
+    start = end
+    while (start < text.length && /\s/.test(text[start])) start += 1
+  }
+  const tail = clean(text.slice(start))
+  if (tail) out.push(tail)
+  return out
+}
+
 /**
  * Validate model-provided paragraphs.
  * Sentences without a usable Chinese translation are kept (so the article stays
@@ -87,25 +140,61 @@ export function normalizeCore(rawCore, en) {
  * @returns {Array<{gist_zh:string, sentences:Array<{en:string, zh:string, chunks?:string[], core?:string[]}>}> | null}
  */
 export function normalizeReportParagraphs(raw) {
-  if (!Array.isArray(raw)) return null
+  const list =
+    typeof raw === 'string'
+      ? raw.split(/\n{2,}/).filter(Boolean)
+      : Array.isArray(raw)
+        ? raw
+        : null
+  if (!list) return null
+
   const paragraphs = []
-  for (const p of raw.slice(0, MAX_PARAGRAPHS)) {
-    if (!p || typeof p !== 'object') continue
+  for (const p of list.slice(0, MAX_PARAGRAPHS)) {
+    let rawSentences = null
+    let gist = ''
+    if (Array.isArray(p)) {
+      rawSentences = p
+    } else if (typeof p === 'string') {
+      rawSentences = splitParagraphSentences(p)
+    } else if (p && typeof p === 'object') {
+      gist = clean(p.gist_zh || p.gist)
+      if (Array.isArray(p.sentences)) {
+        rawSentences = p.sentences
+      } else if (typeof p.sentences === 'string') {
+        rawSentences = splitParagraphSentences(p.sentences)
+      } else if (typeof p.text === 'string' || typeof p.en === 'string' || typeof p.content === 'string') {
+        rawSentences = splitParagraphSentences(p.text || p.en || p.content)
+      } else {
+        rawSentences = []
+      }
+    } else {
+      continue
+    }
+
     const sentences = []
-    for (const s of Array.isArray(p.sentences) ? p.sentences.slice(0, MAX_SENTENCES) : []) {
+    for (const s of rawSentences.slice(0, MAX_SENTENCES)) {
+      if (typeof s === 'string') {
+        const parsed = parseDelimitedSentence(s)
+        if (!parsed.en || !/[A-Za-z]/.test(parsed.en)) continue
+        const entry = { en: parsed.en, zh: '' }
+        if (parsed.chunks.length >= 2) entry.chunks = parsed.chunks
+        sentences.push(entry)
+        continue
+      }
       if (!s || typeof s !== 'object') continue
-      const en = clean(s.en)
+      const parsed = parseDelimitedSentence(s.en)
+      const en = parsed.en
       if (!en || !/[A-Za-z]/.test(en)) continue
       const zh = clean(s.zh)
       const entry = { en, zh: HAS_CJK.test(zh) ? zh.slice(0, 240) : '' }
-      const chunks = normalizeChunks(s.chunks, en)
+      const explicitChunks = normalizeChunks(s.chunks, en)
+      const chunks = explicitChunks.length >= 2 ? explicitChunks : parsed.chunks
       const core = normalizeCore(s.core, en)
       if (chunks.length >= 2) entry.chunks = chunks
       if (core.length >= 1) entry.core = core
       sentences.push(entry)
     }
     if (!sentences.length) continue
-    const gist = clean(p.gist_zh || p.gist)
     paragraphs.push({ gist_zh: HAS_CJK.test(gist) ? gist.slice(0, 80) : '', sentences })
   }
   return paragraphs.length ? paragraphs : null

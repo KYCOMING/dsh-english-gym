@@ -42,7 +42,7 @@ export function normalizeExplanation(raw) {
 /**
  * Request an on-demand explanation of sentence grammar and translation choices.
  */
-export async function explainReportSentence(ctx, config, { en, zh, context, level } = {}) {
+export async function explainReportSentence(ctx, config, { en, zh, context, level, reasoningEffort } = {}) {
   const lvl = (typeof level === 'string' && level.trim()) || (config && config.level) || 'B1'
   const sentenceEn = clean(en).slice(0, 1000)
   const sentenceZh = clean(zh).slice(0, 1000)
@@ -62,6 +62,7 @@ export async function explainReportSentence(ctx, config, { en, zh, context, leve
     temperature: 0.3,
     maxTokens: 900,
     purpose: 'english-gym-explain',
+    reasoningEffort,
   })
 
   const parsed = extractJson(text)

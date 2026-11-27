@@ -56,7 +56,7 @@ var shell_default = '/* ===== pill (composer strip) ===== */\n.eg-pill {\n  disp
 var phrase_default = '/* ===== drill ===== */\n.eg-cap { color: var(--eg-ink-2); font-size: var(--eg-fs-xs); font-weight: 600; letter-spacing: .02em; }\n.eg-zh {\n  margin-top: 14px; font-family: var(--eg-font); font-size: 18px; line-height: 1.6; font-weight: 650;\n  letter-spacing: -.005em; color: var(--eg-ink); overflow-wrap: break-word;\n}\n.eg-hintbtn { appearance: none; -webkit-appearance: none;\n  margin-top: 14px; display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 5px 11px;\n  border: 1px solid var(--eg-line); background: var(--eg-bg); border-radius: 999px;\n  color: var(--eg-ink-2); font: 600 var(--eg-fs-xs)/1 var(--eg-font); cursor: pointer;\n  transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease, background var(--eg-dur) ease;\n}\n.eg-hintbtn:hover { border-color: var(--eg-line-2); background: var(--eg-bg-2); color: var(--eg-ink); }\n.eg-hintbtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-hintbtn .caret { display: inline-block; transition: transform .22s var(--eg-ease); }\n.eg-hintbtn[aria-expanded="true"] .caret { transform: rotate(90deg); }\n.eg-hint-collapse { width: 100%; }\n.eg-hintbox {\n  max-width: 520px; margin: 10px auto 0; padding: 2px 8px;\n  color: var(--eg-ink-2); font-family: var(--eg-en); font-size: var(--eg-fs-sm); line-height: 1.6;\n  text-align: center; overflow-wrap: break-word;\n}\n.eg-inputwrap { position: relative; margin-top: 22px; }\n.eg-input {\n  --eg-line-h: 40px;\n  --eg-rule-color: var(--eg-line-2);\n  display: block;\n  width: 100%;\n  height: var(--eg-line-h);\n  min-height: var(--eg-line-h);\n  resize: none;\n  overflow: hidden;\n  padding: 0 4px;\n  border: none;\n  border-radius: 0;\n  background-color: transparent;\n  background-image: repeating-linear-gradient(\n    to bottom,\n    transparent 0,\n    transparent calc(var(--eg-line-h) - 1.5px),\n    var(--eg-rule-color) calc(var(--eg-line-h) - 1.5px),\n    var(--eg-rule-color) var(--eg-line-h)\n  );\n  background-size: 100% var(--eg-line-h);\n  background-position: 0 0;\n  background-attachment: local;\n  color: var(--eg-ink);\n  font: 400 16px/var(--eg-line-h) var(--eg-font);\n  outline: none;\n  transition: color var(--eg-dur) ease;\n}\n.eg-input::placeholder { color: var(--eg-ink-2); opacity: .68; }\n.eg-input:hover { --eg-rule-color: var(--eg-ink-2); }\n.eg-input:focus { --eg-rule-color: var(--eg-accent); background-color: transparent; box-shadow: none; }\n.eg-input.error { --eg-rule-color: var(--eg-bad); box-shadow: none; }\n.eg-foot { display: flex; align-items: center; gap: 10px; margin-top: 16px; }\n.eg-foot .eg-kbd { margin-left: auto; }\n.eg-err { color: var(--eg-bad); font-size: var(--eg-fs-xs); margin-top: 8px; }\n.eg-kbd { color: var(--eg-ink-2); font-size: var(--eg-fs-xs); white-space: nowrap; }\n.eg-kbd kbd {\n  font: 600 11.5px/1 var(--eg-font); padding: 2px 5px; border: 1px solid var(--eg-line); border-bottom-width: 2px;\n  border-radius: 4px; background: var(--eg-bg); color: var(--eg-ink-2);\n}\n.eg-actions { display: flex; gap: 8px; margin-top: 16px; }\n.eg-btn {\n  display: inline-flex; align-items: center; justify-content: center; gap: 6px;\n  min-height: 36px; min-width: 76px; padding: 0 15px; border-radius: var(--eg-r-sm); cursor: pointer;\n  appearance: none; -webkit-appearance: none;\n  font: 600 var(--eg-fs-sm)/1 var(--eg-font);\n  transition: background var(--eg-dur) ease, filter var(--eg-dur) ease, border-color var(--eg-dur) ease, transform .26s var(--eg-spring);\n  border: 1px solid var(--eg-line-2); background: var(--eg-bg); color: var(--eg-ink);\n}\n.eg-btn:hover { background: var(--eg-bg-2); }\n.eg-btn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }\n.eg-btn:active { transform: scale(.94); transition-duration: .06s; }\n.eg-btn.is-bouncing { animation: eg-btn-bounce .34s var(--eg-spring); }\n@keyframes eg-btn-bounce {\n  0% { transform: scale(.93); }\n  55% { transform: scale(1.04); }\n  100% { transform: scale(1); }\n}\n.eg-btn.primary { border-color: transparent; background: var(--eg-accent); color: var(--eg-on-accent); }\n.eg-btn.primary:hover { filter: brightness(1.08); }\n.eg-btn:disabled { opacity: .48; cursor: not-allowed; pointer-events: none; }\n.eg-btn.primary:disabled { background: var(--eg-accent); color: var(--eg-on-accent); border-color: transparent; }\n.eg-btn:not(.primary):disabled { background: var(--eg-bg-2); color: var(--eg-ink-2); border-color: var(--eg-line); }\n.eg-btn.primary.is-loading { color: transparent; position: relative; }\n.eg-btn.primary.is-loading::after {\n  content: ""; position: absolute; width: 15px; height: 15px; border-radius: 50%;\n  border: 2px solid rgba(255, 255, 255, .45); border-top-color: #fff; animation: eg-spin .7s linear infinite;\n}\n.eg-btn.ghost { border-color: transparent; background: transparent; color: var(--eg-ink-2); padding: 0 10px; }\n.eg-btn.ghost:hover { background: var(--eg-bg-2); color: var(--eg-ink); }\n\n/* ===== confetti ===== */\n.eg-confetti { position: absolute; inset: 0; z-index: 6; pointer-events: none; overflow: hidden; border-radius: inherit; }\n.eg-confetti-piece {\n  position: absolute; display: block; border-radius: 1.5px; opacity: 0;\n  transform: translate(-50%, -50%) rotate(var(--r0, 0deg));\n  animation: eg-confetti-fly var(--dur, 900ms) cubic-bezier(.15, .7, .3, 1) var(--delay, 0ms) forwards;\n  will-change: transform, opacity;\n}\n@keyframes eg-confetti-fly {\n  0%   { opacity: 1; transform: translate(-50%, -50%) rotate(var(--r0, 0deg)) scale(.65); }\n  18%  { opacity: 1; }\n  100% { opacity: 0; transform: translate(calc(-50% + var(--dx, 0px)), calc(-50% + var(--dy, 0px))) rotate(calc(var(--r0, 0deg) + var(--rot, 360deg))) scale(1); }\n}\n\n/* ===== feedback ===== */\n.eg-fb {\n  --eg-tone: var(--eg-line-2);\n  margin-top: 8px; padding: 18px 20px; border: 1px solid var(--eg-line);\n  border-top: 3px solid var(--eg-line); border-radius: 12px; background: var(--eg-bg);\n  text-align: left; animation: eg-stage-in .24s var(--eg-ease) both;\n}\n.eg-fb.ok { --eg-tone: var(--eg-ok); border-top-color: var(--eg-ok); }\n.eg-fb.warn { --eg-tone: var(--eg-warn); border-top-color: var(--eg-warn); }\n.eg-fb.bad { --eg-tone: var(--eg-bad); border-top-color: var(--eg-bad); }\n.eg-fb-top { display: flex; align-items: baseline; gap: 10px; }\n.eg-score { font: 700 var(--eg-fs-xl)/1 var(--eg-font); font-variant-numeric: tabular-nums; letter-spacing: -.02em; color: var(--eg-tone); }\n.eg-score small { font-size: var(--eg-fs-xs); font-weight: 700; opacity: .9; color: inherit; margin-left: 2px; }\n.eg-fb-status { font-weight: 700; font-size: 16px; color: var(--eg-tone); line-height: 1.25; }\n.eg-fb-ref {\n  margin-top: 14px; padding: 12px 14px; border-radius: 10px; background: var(--eg-bg-2);\n  font-family: var(--eg-en); font-size: 17px; line-height: 1.65; color: var(--eg-ink); overflow-wrap: break-word;\n  animation: eg-view-in .24s var(--eg-ease) .05s both;\n}\n.eg-fb-ref .lbl { display: block; font: 600 11.5px/1 var(--eg-font); color: var(--eg-ink-2); letter-spacing: .02em; margin-bottom: 6px; }\n.eg-fb-tip {\n  margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--eg-line);\n  color: var(--eg-ink-2); font-size: var(--eg-fs-sm); line-height: 1.65;\n  display: flex; gap: 8px; align-items: flex-start;\n  animation: eg-view-in .24s var(--eg-ease) .1s both;\n}\n.eg-fb-tip .b {\n  padding: 2px 7px; border-radius: 6px; background: var(--eg-bg-2); border: 1px solid var(--eg-line);\n  color: var(--eg-ink); font-size: 11px; font-weight: 650; line-height: 1.3;\n  white-space: nowrap; flex: 0 0 auto; margin-top: 2px;\n}\n.eg-fb-actions { margin-top: 16px; display: flex; gap: 10px; animation: eg-view-in .24s var(--eg-ease) .14s both; }\n\n/* phrase feedback: frameless editorial canvas matching word practice & daily report */\n.eg-fb.is-phrase {\n  container-type: inline-size;\n  display: flex; flex-direction: column;\n  flex: 1 1 auto; height: 100%; min-height: 0; max-height: 100%;\n  margin-top: 0; padding: 0; border: none; border-radius: 0;\n  background: transparent; box-shadow: none; overflow: hidden;\n}\n.eg-fb-hero {\n  flex: 0 0 auto;\n  display: flex; align-items: center; gap: 14px; padding: 2px 0 14px;\n  background: transparent;\n  border-bottom: 1px solid var(--eg-line);\n}\n.eg-ring {\n  position: relative; width: 46px; height: 46px; flex: 0 0 auto;\n  display: flex; align-items: center; justify-content: center;\n}\n.eg-ring svg { width: 46px; height: 46px; display: block; }\n.eg-ring-track { fill: transparent; stroke: color-mix(in srgb, var(--eg-tone) 15%, var(--eg-line)); stroke-width: 3.5; }\n.eg-ring-arc {\n  fill: none; stroke: var(--eg-tone); stroke-width: 3.5; stroke-linecap: round;\n  transform: rotate(-90deg); transform-origin: 50% 50%;\n  transition: stroke-dashoffset .55s var(--eg-ease);\n}\n.eg-ring-val {\n  position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;\n  color: var(--eg-tone); font-variant-numeric: tabular-nums; pointer-events: none;\n}\n.eg-ring-val strong { font: 750 15px/1 var(--eg-font); letter-spacing: -.03em; }\n.eg-ring-val small { font: 650 9px/1 var(--eg-font); opacity: .78; margin-top: 2px; }\n.eg-fb-verdict { min-width: 0; flex: 1 1 auto; }\n.eg-fb-headline { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; }\n.eg-fb-pill {\n  display: inline-flex; align-items: center; gap: 3px;\n  padding: 2px 8px; border-radius: 999px;\n  background: var(--eg-bg-2); border: none;\n  color: var(--eg-ink-2); font: 600 11px/1.35 var(--eg-font); font-variant-numeric: tabular-nums;\n}\n.eg-fb-pill.tone {\n  background: color-mix(in srgb, var(--eg-tone) 12%, transparent);\n  color: var(--eg-tone);\n}\n.eg-fb-pill.up {\n  background: color-mix(in srgb, var(--eg-ok) 12%, transparent);\n  color: var(--eg-ok);\n}\n.eg-fb-sub { margin-top: 3px; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); line-height: 1.45; }\n.eg-fb-body {\n  flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain;\n  padding: 16px 0 18px; display: flex; flex-direction: column; gap: 15px;\n  scrollbar-width: none; -ms-overflow-style: none;\n}\n.eg-fb-body::-webkit-scrollbar { display: none; width: 0; height: 0; }\n.eg-fb-prompt {\n  display: flex; align-items: baseline; gap: 9px;\n  padding-bottom: 0; border-bottom: none;\n}\n.eg-fb-tag {\n  flex: 0 0 auto; padding: 2px 7px; border-radius: 5px;\n  background: var(--eg-bg-2); border: none;\n  color: var(--eg-ink-2); font: 650 11px/1.35 var(--eg-font); letter-spacing: .02em;\n}\n.eg-fb-zh { font-size: 15.5px; font-weight: 650; color: var(--eg-ink); line-height: 1.55; overflow-wrap: break-word; min-width: 0; }\n.eg-fb-boxhead { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 5px; flex-wrap: wrap; }\n.eg-fb-boxhead-left { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; min-width: 0; }\n.eg-fb.is-phrase .lbl {\n  display: inline-flex; align-items: center; gap: 5px; margin-bottom: 0;\n  font: 650 11.5px/1.2 var(--eg-font); color: var(--eg-ink-2); letter-spacing: .02em;\n}\n.eg-fb-mine {\n  padding: 9px 14px; border: none;\n  border-left: 2.5px solid color-mix(in srgb, var(--eg-tone) 75%, transparent);\n  border-radius: 0 9px 9px 0;\n  background: color-mix(in srgb, var(--eg-tone) 4.5%, transparent);\n  animation: eg-view-in .22s var(--eg-ease) .03s both;\n}\n.eg-fb-mine .lbl { color: var(--eg-tone); }\n.eg-fb-mine-text { font-family: var(--eg-en); font-size: 14.5px; line-height: 1.55; color: var(--eg-ink); overflow-wrap: break-word; }\n.eg-fb-mine-text.empty { font-family: var(--eg-font); font-size: var(--eg-fs-sm); color: var(--eg-ink-2); font-style: italic; }\n.eg-fb.is-phrase .eg-fb-ref {\n  margin-top: 0; padding: 12px 15px; border: none; border-radius: 10px;\n  background: var(--eg-bg-2);\n  font-family: var(--eg-font); font-size: var(--eg-fs-sm); line-height: 1.5;\n  animation: eg-view-in .24s var(--eg-ease) .06s both;\n}\n.eg-fb-ref-text { font-family: var(--eg-en); font-size: 17px; line-height: 1.62; color: var(--eg-ink); overflow-wrap: break-word; }\n.eg-fb-banktag {\n  display: inline-flex; align-items: center; padding: 1px 7px; border-radius: 999px;\n  background: color-mix(in srgb, var(--eg-accent) 10%, var(--eg-bg));\n  border: none;\n  color: var(--eg-ink-2); font: 600 10.5px/1.4 var(--eg-font);\n}\n.eg-copybtn {\n  appearance: none; -webkit-appearance: none;\n  display: inline-flex; align-items: center; gap: 4px;\n  height: 22px; padding: 0 9px; border-radius: 999px;\n  border: none; background: color-mix(in srgb, var(--eg-ink) 6%, transparent); color: var(--eg-ink-2);\n  font: 600 11px/1 var(--eg-font); cursor: pointer;\n  transition: color var(--eg-dur) ease, background var(--eg-dur) ease;\n}\n.eg-copybtn:hover { background: color-mix(in srgb, var(--eg-ink) 11%, transparent); color: var(--eg-ink); }\n.eg-copybtn.copied { background: color-mix(in srgb, var(--eg-ok) 12%, transparent); color: var(--eg-ok); }\n.eg-copybtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-fb-corr {\n  padding: 9px 14px; border: none;\n  border-left: 2.5px solid var(--eg-accent);\n  border-radius: 0 9px 9px 0;\n  background: color-mix(in srgb, var(--eg-accent) 4.5%, transparent);\n  animation: eg-view-in .24s var(--eg-ease) .08s both;\n}\n.eg-fb-corr-text { font-family: var(--eg-en); font-size: 15px; line-height: 1.55; color: var(--eg-ink); overflow-wrap: break-word; }\n.eg-fb.is-phrase .eg-fb-tip {\n  margin-top: 0; padding: 2px 0 0; border: none; border-radius: 0;\n  background: transparent;\n  color: var(--eg-ink-2); font-size: var(--eg-fs-sm); line-height: 1.68;\n  display: flex; gap: 9px; align-items: flex-start;\n  animation: eg-view-in .24s var(--eg-ease) .1s both;\n}\n.eg-fb.is-phrase .eg-fb-tip .b {\n  background: color-mix(in srgb, var(--eg-tone) 10%, transparent);\n  border: none;\n  color: var(--eg-tone); margin-top: 2px;\n}\n.eg-fb-hl { display: flex; flex-direction: column; gap: 7px; animation: eg-view-in .24s var(--eg-ease) .12s both; }\n.eg-fb-hl-lbl { font: 650 11.5px/1.2 var(--eg-font); color: var(--eg-ink-2); letter-spacing: .02em; }\n.eg-fb-hl-list { display: flex; flex-wrap: wrap; gap: 6px; }\n.eg-hl-chip {\n  display: inline-flex; align-items: baseline; gap: 6px; padding: 4px 10px; border-radius: 8px;\n  background: var(--eg-bg-2); border: none;\n  font-size: var(--eg-fs-xs); line-height: 1.4; max-width: 100%;\n}\n.eg-hl-chip .en { font-family: var(--eg-en); font-weight: 700; font-size: 13px; color: var(--eg-ink); }\n.eg-hl-chip .zh { color: var(--eg-ink-2); }\n.eg-fb.is-phrase .eg-fb-actions {\n  flex: 0 0 auto;\n  margin-top: 6px; padding: 10px 0 0;\n  border-top: 1px solid var(--eg-line); background: transparent;\n  display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;\n}\n.eg-fb.is-phrase .eg-fb-actions .eg-btn { padding: 0 14px; }\n.eg-fb.is-phrase .eg-fb-actions .eg-kbd { margin-left: 4px; }\n@container (max-width: 340px) {\n  .eg-fb-hero { padding: 0 0 11px; gap: 10px; }\n  .eg-fb-body { padding: 12px 0 14px; gap: 12px; }\n  .eg-fb.is-phrase .eg-fb-actions { padding: 9px 0 0; }\n  .eg-fb.is-phrase .eg-fb-actions .eg-kbd { display: none; }\n}\n.eg-cap-row { display: inline-flex; align-items: center; justify-content: center; gap: 7px; flex-wrap: wrap; }\n.eg-attempt-pill, .eg-source-pill {\n  display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 999px;\n  background: color-mix(in srgb, var(--eg-accent) 10%, var(--eg-bg));\n  border: 1px solid color-mix(in srgb, var(--eg-accent) 22%, transparent);\n  color: var(--eg-ink-2); font: 600 11px/1.3 var(--eg-font); font-variant-numeric: tabular-nums;\n}\n.eg-source-pill { color: var(--eg-ink); }\n.eg-source-pill::before {\n  content: ""; width: 6px; height: 6px; border-radius: 50%; flex: 0 0 auto;\n  background: var(--eg-accent);\n}\n\n/* phrase drill: centred prompt, left-aligned reading feedback */\n.eg-drill { flex: 1 0 auto; width: 100%; max-width: 640px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; padding-top: 0; }\n.eg-view:has(.eg-fb.is-phrase) .eg-drill { flex: 1 1 0; height: 100%; min-height: 0; }\n.eg-drill > div { width: 100%; }\n.eg-drill-stage { width: 100%; margin: auto 0; padding: 12px 0 22px; }\n.eg-drill .eg-zh { max-width: 540px; margin-left: auto; margin-right: auto; text-wrap: balance; }\n.eg-drill .eg-cap { justify-content: center; }\n.eg-drill .eg-foot { justify-content: center; width: 100%; margin-top: 22px; }\n.eg-drill .eg-foot .eg-kbd { margin-left: 0; }\n.eg-drill .eg-inputwrap { width: 100%; max-width: 520px; margin: 22px auto 0; }\n.eg-drill .eg-input { text-align: left; }\n.eg-drill .eg-err { text-align: center; }\n\n';
 
 // src/client/styles/report.css
-var report_default = '/* ===== report ===== */\n.eg-report { position: relative; text-align: left; width: 100%; }\n.eg-report .r-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }\n.eg-rtitle {\n  font-family: var(--eg-en); font-size: 22px; line-height: 1.32; font-weight: 700;\n  letter-spacing: -.01em; margin: 0; overflow-wrap: break-word; min-width: 0; text-align: left; color: var(--eg-ink);\n}\n.eg-rmeta-row {\n  display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;\n  margin-top: 9px;\n}\n.eg-rmeta {\n  display: inline-flex; align-items: center; gap: 6px;\n  padding: 3px 10px; border-radius: 999px; background: var(--eg-bg-2); border: 1px solid var(--eg-line);\n  color: var(--eg-ink-2); font-size: 11.5px; font-weight: 600; font-variant-numeric: tabular-nums;\n}\n.eg-rrefresh {\n  appearance: none; -webkit-appearance: none;\n  display: inline-flex; align-items: center; gap: 5px;\n  height: 26px; padding: 0 10px; border-radius: 999px;\n  border: 1px solid var(--eg-line); background: var(--eg-bg); color: var(--eg-ink-2);\n  font: 600 11.5px/1 var(--eg-font); cursor: pointer;\n  transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease, background var(--eg-dur) ease, transform .14s ease;\n}\n.eg-rrefresh:hover:not(:disabled) { border-color: var(--eg-line-2); background: var(--eg-bg-2); color: var(--eg-ink); }\n.eg-rrefresh:active:not(:disabled) { transform: scale(.96); }\n.eg-rrefresh:disabled { opacity: .48; cursor: not-allowed; }\n.eg-rrefresh:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }\n.eg-rsum {\n  margin: 14px 0 0; padding: 11px 14px;\n  border: 1px solid var(--eg-line); border-left: 3px solid var(--eg-accent); border-radius: 10px;\n  background: var(--eg-bg-2); color: var(--eg-ink-2);\n  font-family: var(--eg-font); font-size: var(--eg-fs-sm); line-height: 1.65; text-align: left;\n}\n.eg-rp {\n  margin: 15px 0 0; width: 100%;\n  font-family: var(--eg-en); font-size: 15.5px; line-height: 1.78; color: var(--eg-ink); text-align: left;\n}\n.eg-rword {\n  display: inline;\n  padding: 0 3px;\n  border-radius: 4px;\n  background: var(--eg-hl-bg);\n  color: inherit;\n  border-bottom: 1.5px dotted var(--eg-hl-line);\n  cursor: pointer;\n  transition: background var(--eg-dur) ease, border-color var(--eg-dur) ease;\n}\n.eg-rword:hover,\n.eg-rword.is-active {\n  background: var(--eg-hl-bg-active);\n  border-bottom-style: solid;\n  border-bottom-color: var(--eg-warn);\n}\n.eg-rword:focus-visible {\n  outline: 2px solid var(--eg-accent);\n  outline-offset: 1px;\n}\n/* ----- progressive translation: sentence → slot under the paragraph ----- */\n.eg-rsent {\n  border-radius: 4px;\n  -webkit-box-decoration-break: clone;\n  box-decoration-break: clone;\n  transition: background var(--eg-dur) ease;\n}\n.eg-rsent.can-reveal { cursor: pointer; }\n.eg-rsent.can-reveal:hover:not(:has(.eg-rword:hover)) { background: var(--eg-bg-2); }\n.eg-rsent.is-open { background: color-mix(in srgb, var(--eg-accent) 7%, transparent); }\n.eg-rsent.is-open:hover:not(:has(.eg-rword:hover)) { background: color-mix(in srgb, var(--eg-accent) 12%, transparent); }\n.eg-rsent:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }\n.eg-rslash {\n  margin: 0 1px 0 4px;\n  color: var(--eg-accent-ink);\n  font-family: var(--eg-font);\n  font-weight: 600;\n  font-size: .86em;\n  opacity: .62;\n  user-select: none;\n  pointer-events: none;\n}\n.eg-rcore {\n  font-weight: 650;\n  text-decoration: underline;\n  text-decoration-color: color-mix(in srgb, var(--eg-accent) 44%, transparent);\n  text-decoration-thickness: 1.5px;\n  text-underline-offset: 3px;\n}\n.eg-rword.is-core { font-weight: 650; }\n.eg-rsent-n {\n  margin-left: 2px;\n  font: 700 9.5px/1 var(--eg-font);\n  color: var(--eg-accent-ink);\n  font-variant-numeric: tabular-nums;\n}\n.eg-rgist-btn {\n  appearance: none; -webkit-appearance: none;\n  display: inline-flex; align-items: center;\n  height: 19px; margin-left: 7px; padding: 0 7px; vertical-align: 2px;\n  border-radius: 999px; border: 1px solid var(--eg-line); background: transparent;\n  color: var(--eg-ink-2); font: 600 10.5px/1 var(--eg-font); cursor: pointer;\n  transition: background var(--eg-dur) ease, border-color var(--eg-dur) ease, color var(--eg-dur) ease;\n}\n.eg-rgist-btn:hover { background: var(--eg-bg-2); border-color: var(--eg-line-2); color: var(--eg-ink); }\n.eg-rgist-btn[aria-expanded="true"] {\n  background: color-mix(in srgb, var(--eg-accent) 9%, var(--eg-bg));\n  border-color: color-mix(in srgb, var(--eg-accent) 32%, transparent);\n  color: var(--eg-accent-ink);\n}\n.eg-rgist-btn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }\n.eg-rslot {\n  margin: 8px 0 0; padding: 8px 8px 8px 10px;\n  display: flex; flex-direction: column; gap: 6px;\n  border: 1px solid var(--eg-line); border-radius: 10px; background: var(--eg-bg-2);\n  animation: eg-rslot-in .18s var(--eg-ease) both;\n}\n.eg-rslot-row {\n  display: flex; align-items: flex-start; gap: 8px;\n  font: 500 var(--eg-fs-sm)/1.6 var(--eg-font); color: var(--eg-ink); text-align: left;\n  animation: eg-rslot-in .18s var(--eg-ease) both;\n}\n@keyframes eg-rslot-in {\n  from { opacity: 0; transform: translateY(-3px); }\n  to { opacity: 1; transform: none; }\n}\n.eg-rslot-tag {\n  flex: 0 0 auto; min-width: 20px; height: 18px; margin-top: 2px; padding: 0 5px; box-sizing: border-box;\n  display: inline-flex; align-items: center; justify-content: center;\n  border-radius: 5px; font: 700 10.5px/1 var(--eg-font); font-variant-numeric: tabular-nums;\n  background: color-mix(in srgb, var(--eg-accent) 12%, var(--eg-bg)); color: var(--eg-accent-ink);\n}\n.eg-rslot-row.is-gist .eg-rslot-tag { background: var(--eg-bg); border: 1px solid var(--eg-line); color: var(--eg-ink-2); }\n.eg-rslot-row.is-gist .eg-rslot-zh { color: var(--eg-ink-2); }\n.eg-rslot-body { flex: 1 1 auto; min-width: 0; }\n.eg-rslot-zh { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }\n.eg-rslot-tools { margin-top: 5px; display: flex; align-items: center; gap: 6px; }\n.eg-rslot-btn {\n  appearance: none; -webkit-appearance: none;\n  flex: 0 0 auto;\n  display: inline-flex; align-items: center; justify-content: center;\n  height: 21px; padding: 0 8px; border-radius: 999px;\n  border: 1px solid var(--eg-line); background: var(--eg-bg); color: var(--eg-ink-2);\n  font: 600 11px/1 var(--eg-font); cursor: pointer;\n  transition: background var(--eg-dur) ease, border-color var(--eg-dur) ease, color var(--eg-dur) ease;\n}\n.eg-rslot-btn:hover:not(:disabled) { border-color: var(--eg-line-2); color: var(--eg-ink); }\n.eg-rslot-btn.is-active {\n  background: color-mix(in srgb, var(--eg-accent) 9%, var(--eg-bg));\n  border-color: color-mix(in srgb, var(--eg-accent) 32%, transparent);\n  color: var(--eg-accent-ink);\n}\n.eg-rslot-btn:disabled { opacity: .55; cursor: wait; }\n.eg-rslot-btn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }\n.eg-rexplain {\n  margin-top: 7px; padding: 8px 10px; border-radius: 8px;\n  border: 1px solid var(--eg-line); background: var(--eg-bg);\n  display: flex; flex-direction: column; gap: 6px;\n  font-size: var(--eg-fs-xs); line-height: 1.6;\n  animation: eg-rslot-in .18s var(--eg-ease) both;\n}\n.eg-rexplain-sec { display: flex; align-items: flex-start; gap: 7px; }\n.eg-rexplain-label {\n  flex: 0 0 auto; margin-top: 2px; padding: 1px 6px; border-radius: 4px;\n  background: var(--eg-bg-2); border: 1px solid var(--eg-line);\n  color: var(--eg-ink-2); font: 600 10.5px/1.3 var(--eg-font);\n}\n.eg-rexplain-text { flex: 1 1 auto; min-width: 0; color: var(--eg-ink); overflow-wrap: anywhere; }\n.eg-rexplain-pts { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 4px; }\n.eg-rexplain-pt { overflow-wrap: anywhere; }\n.eg-rexplain-phrase {\n  font-family: var(--eg-en); font-weight: 700; color: var(--eg-ink); margin-right: 6px;\n}\n.eg-rexplain-note { color: var(--eg-ink-2); }\n.eg-rexplain-loading { display: flex; align-items: center; gap: 7px; color: var(--eg-ink-2); }\n.eg-rexplain-loading .eg-spin { width: 12px; height: 12px; border-width: 1.5px; }\n.eg-rexplain-err { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--eg-bad); }\n.eg-rslot-x {\n  appearance: none; -webkit-appearance: none;\n  flex: 0 0 auto; width: 20px; height: 20px; margin-top: 1px; padding: 0;\n  display: inline-flex; align-items: center; justify-content: center;\n  border: none; border-radius: 5px; background: transparent; color: var(--eg-ink-2);\n  font: 600 13px/1 var(--eg-font); cursor: pointer; opacity: 0;\n  transition: opacity var(--eg-dur) ease, background var(--eg-dur) ease, color var(--eg-dur) ease;\n}\n.eg-rslot-row:hover .eg-rslot-x, .eg-rslot-x:focus-visible { opacity: 1; }\n.eg-rslot-x:hover { background: var(--eg-bg-3); color: var(--eg-ink); }\n.eg-rslot-x:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n@media (hover: none) { .eg-rslot-x { opacity: 1; } }\n.eg-rpop {\n  position: absolute;\n  z-index: 20;\n  width: max-content;\n  min-width: 152px;\n  max-width: min(244px, 100%);\n  padding: 10px 16px;\n  border-radius: 10px;\n  border: 1px solid var(--eg-line-2);\n  background: var(--eg-bg);\n  box-shadow: 0 10px 28px rgba(17, 22, 31, .16), 0 2px 6px rgba(17, 22, 31, .08);\n  color: var(--eg-ink);\n  text-align: center;\n  visibility: hidden;\n  pointer-events: auto;\n}\n.eg-rpop.is-pinned {\n  padding-left: 24px;\n  padding-right: 24px;\n}\n.eg-rpop.is-ready {\n  visibility: visible;\n  animation: eg-rpop-in .14s var(--eg-ease) both;\n}\n@keyframes eg-rpop-in {\n  from { opacity: 0; transform: translateY(4px) scale(.97); }\n  to { opacity: 1; transform: none; }\n}\n.eg-rpop::after {\n  content: "";\n  position: absolute;\n  left: var(--eg-arrow-x, 20px);\n  bottom: -5px;\n  width: 8px;\n  height: 8px;\n  background: var(--eg-bg);\n  border-right: 1px solid var(--eg-line-2);\n  border-bottom: 1px solid var(--eg-line-2);\n  transform: translateX(-50%) rotate(45deg);\n}\n.eg-rpop.is-below::after {\n  bottom: auto;\n  top: -5px;\n  border-right: none;\n  border-bottom: none;\n  border-left: 1px solid var(--eg-line-2);\n  border-top: 1px solid var(--eg-line-2);\n}\n.eg-rpop-head {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 8px;\n}\n.eg-rpop-title {\n  display: flex;\n  align-items: baseline;\n  justify-content: center;\n  flex-wrap: wrap;\n  gap: 5px;\n  min-width: 0;\n}\n.eg-rpop-word {\n  font-family: var(--eg-en);\n  font-size: 14.5px;\n  font-weight: 700;\n  line-height: 1.3;\n  color: var(--eg-ink);\n  overflow-wrap: anywhere;\n}\n.eg-rpop-lemma {\n  font-family: var(--eg-en);\n  font-size: 11.5px;\n  color: var(--eg-ink-2);\n}\n.eg-rpop-close {\n  appearance: none; -webkit-appearance: none;\n  position: absolute;\n  top: 6px;\n  right: 6px;\n  width: 18px;\n  height: 18px;\n  margin: 0;\n  padding: 0;\n  border: none;\n  border-radius: 5px;\n  background: transparent;\n  color: var(--eg-ink-2);\n  font: 600 13px/1 var(--eg-font);\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  transition: background var(--eg-dur) ease, color var(--eg-dur) ease;\n}\n.eg-rpop-close:hover { background: var(--eg-bg-2); color: var(--eg-ink); }\n.eg-rpop-close:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-rpop-tags {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  flex-wrap: wrap;\n  gap: 5px;\n  margin-top: 4px;\n}\n.eg-rpop-pos,\n.eg-rpop-bank {\n  display: inline-flex;\n  align-items: center;\n  padding: 1px 6px;\n  border-radius: 999px;\n  font: 600 10.5px/1.35 var(--eg-font);\n}\n.eg-rpop-pos {\n  background: var(--eg-bg-2);\n  border: 1px solid var(--eg-line);\n  color: var(--eg-ink-2);\n}\n.eg-rpop-bank {\n  background: color-mix(in srgb, var(--eg-accent) 10%, var(--eg-bg));\n  border: 1px solid color-mix(in srgb, var(--eg-accent) 24%, transparent);\n  color: var(--eg-accent-ink);\n}\n.eg-rpop-zh {\n  margin-top: 5px;\n  font: 500 var(--eg-fs-xs)/1.5 var(--eg-font);\n  color: var(--eg-ink);\n  text-align: center;\n  overflow-wrap: anywhere;\n}\n.eg-practice { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--eg-line); }\n.eg-ptitle {\n  display: flex; align-items: center; justify-content: flex-start; gap: 7px;\n  font-size: var(--eg-fs-xs); font-weight: 650; letter-spacing: .03em; color: var(--eg-ink-2);\n  margin-bottom: 10px;\n}\n.eg-q {\n  margin: 0; padding: 13px 15px; border: 1px solid var(--eg-line); border-radius: 11px;\n  background: var(--eg-bg); transition: border-color var(--eg-dur) ease;\n}\n.eg-q + .eg-q { margin-top: 10px; }\n.eg-q.reveal { border-color: var(--eg-line-2); }\n.eg-q-head { display: flex; gap: 9px; align-items: flex-start; justify-content: flex-start; text-align: left; }\n.eg-q-n {\n  flex: 0 0 auto; width: 20px; height: 20px; margin-top: 1px; border-radius: 6px;\n  background: var(--eg-bg-2); border: 1px solid var(--eg-line); color: var(--eg-ink);\n  display: inline-flex; align-items: center; justify-content: center;\n  font: 700 11px/1 var(--eg-font); font-variant-numeric: tabular-nums;\n}\n.eg-q-zh { font-size: var(--eg-fs-sm); font-weight: 500; line-height: 1.6; color: var(--eg-ink); text-align: left; }\n.eg-q-toggle {\n  appearance: none; -webkit-appearance: none;\n  margin-top: 10px; display: inline-flex; align-items: center; gap: 5px;\n  min-height: 27px; padding: 4px 10px; border-radius: 7px;\n  background: var(--eg-bg); border: 1px solid var(--eg-line); color: var(--eg-ink-2);\n  cursor: pointer; font: 600 var(--eg-fs-xs)/1 var(--eg-font);\n  transition: background var(--eg-dur) ease, color var(--eg-dur) ease, border-color var(--eg-dur) ease;\n}\n.eg-q-toggle:hover { background: var(--eg-bg-2); border-color: var(--eg-line-2); color: var(--eg-ink); }\n.eg-q-toggle:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }\n.eg-q-toggle .caret { display: inline-block; transition: transform .22s var(--eg-ease); }\n.eg-q.reveal .eg-q-toggle .caret { transform: rotate(90deg); }\n.eg-q-en {\n  margin-top: 10px; padding: 10px 13px; border-radius: 8px;\n  border: 1px solid var(--eg-line); border-left: 2.5px solid var(--eg-accent);\n  background: var(--eg-bg-2); font-family: var(--eg-en); font-size: 14.5px; line-height: 1.6;\n  color: var(--eg-ink); text-align: left;\n}\n.eg-report-foot {\n  margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--eg-line);\n  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;\n}\n.eg-report-foot-hint { color: var(--eg-ink-2); font-size: var(--eg-fs-xs); line-height: 1.4; }\n.eg-report .eg-actions { justify-content: flex-start; margin-top: 18px; }\n\n';
+var report_default = '/* ===== report ===== */\n.eg-report { position: relative; text-align: left; width: 100%; }\n.eg-report .r-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }\n.eg-rtitle {\n  font-family: var(--eg-en); font-size: 22px; line-height: 1.32; font-weight: 700;\n  letter-spacing: -.01em; margin: 0; overflow-wrap: break-word; min-width: 0; text-align: left; color: var(--eg-ink);\n}\n.eg-rmeta-row {\n  display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;\n  margin-top: 9px;\n}\n.eg-rmeta-left {\n  display: inline-flex; align-items: center; gap: 7px; flex-wrap: wrap; min-width: 0;\n}\n.eg-rmeta {\n  display: inline-flex; align-items: center; gap: 6px;\n  padding: 3px 10px; border-radius: 999px; background: var(--eg-bg-2); border: 1px solid var(--eg-line);\n  color: var(--eg-ink-2); font-size: 11.5px; font-weight: 600; font-variant-numeric: tabular-nums;\n}\n.eg-renrich-pill {\n  display: inline-flex; align-items: center; gap: 5px;\n  padding: 3px 9px; border-radius: 999px;\n  background: color-mix(in srgb, var(--eg-accent) 9%, var(--eg-bg));\n  border: 1px solid color-mix(in srgb, var(--eg-accent) 24%, transparent);\n  color: var(--eg-accent-ink); font-size: 11.5px; font-weight: 600; line-height: 1.3;\n}\n.eg-renrich-pill .eg-spin { width: 10px; height: 10px; border-width: 1.5px; }\n.eg-rrefresh {\n  appearance: none; -webkit-appearance: none;\n  display: inline-flex; align-items: center; gap: 5px;\n  height: 26px; padding: 0 10px; border-radius: 999px;\n  border: 1px solid var(--eg-line); background: var(--eg-bg); color: var(--eg-ink-2);\n  font: 600 11.5px/1 var(--eg-font); cursor: pointer;\n  transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease, background var(--eg-dur) ease, transform .14s ease;\n}\n.eg-rrefresh:hover:not(:disabled) { border-color: var(--eg-line-2); background: var(--eg-bg-2); color: var(--eg-ink); }\n.eg-rrefresh:active:not(:disabled) { transform: scale(.96); }\n.eg-rrefresh:disabled { opacity: .48; cursor: not-allowed; }\n.eg-rrefresh:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }\n.eg-rnotice {\n  margin: 12px 0 0; padding: 8px 12px;\n  display: flex; align-items: center; justify-content: space-between; gap: 10px;\n  border: 1px solid color-mix(in srgb, var(--eg-warn) 35%, var(--eg-line)); border-radius: 9px;\n  background: color-mix(in srgb, var(--eg-warn) 8%, var(--eg-bg-2));\n  color: var(--eg-ink-2); font-size: var(--eg-fs-xs); line-height: 1.5;\n}\n.eg-rnotice-text { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }\n.eg-rnotice.is-err {\n  border-color: color-mix(in srgb, var(--eg-bad) 32%, var(--eg-line));\n  background: color-mix(in srgb, var(--eg-bad) 7%, var(--eg-bg-2));\n  color: var(--eg-bad);\n}\n.eg-rsum {\n  margin: 14px 0 0; padding: 11px 14px;\n  border: 1px solid var(--eg-line); border-left: 3px solid var(--eg-accent); border-radius: 10px;\n  background: var(--eg-bg-2); color: var(--eg-ink-2);\n  font-family: var(--eg-font); font-size: var(--eg-fs-sm); line-height: 1.65; text-align: left;\n}\n.eg-rp {\n  margin: 15px 0 0; width: 100%;\n  font-family: var(--eg-en); font-size: 15.5px; line-height: 1.78; color: var(--eg-ink); text-align: left;\n}\n.eg-rword {\n  display: inline;\n  padding: 0 3px;\n  border-radius: 4px;\n  background: var(--eg-hl-bg);\n  color: inherit;\n  border-bottom: 1.5px dotted var(--eg-hl-line);\n  cursor: pointer;\n  transition: background var(--eg-dur) ease, border-color var(--eg-dur) ease;\n}\n.eg-rword:hover,\n.eg-rword.is-active {\n  background: var(--eg-hl-bg-active);\n  border-bottom-style: solid;\n  border-bottom-color: var(--eg-warn);\n}\n.eg-rword:focus-visible {\n  outline: 2px solid var(--eg-accent);\n  outline-offset: 1px;\n}\n/* ----- progressive translation: sentence → slot under the paragraph ----- */\n.eg-rsent {\n  border-radius: 4px;\n  -webkit-box-decoration-break: clone;\n  box-decoration-break: clone;\n  transition: background var(--eg-dur) ease;\n}\n.eg-rsent.can-reveal { cursor: pointer; }\n.eg-rsent.can-reveal:hover:not(:has(.eg-rword:hover)) { background: var(--eg-bg-2); }\n.eg-rsent.is-open { background: color-mix(in srgb, var(--eg-accent) 7%, transparent); }\n.eg-rsent.is-open:hover:not(:has(.eg-rword:hover)) { background: color-mix(in srgb, var(--eg-accent) 12%, transparent); }\n.eg-rsent:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }\n.eg-rslash {\n  margin: 0 1px 0 4px;\n  color: var(--eg-accent-ink);\n  font-family: var(--eg-font);\n  font-weight: 600;\n  font-size: .86em;\n  opacity: .62;\n  user-select: none;\n  pointer-events: none;\n}\n.eg-rcore {\n  font-weight: 650;\n  text-decoration: underline;\n  text-decoration-color: color-mix(in srgb, var(--eg-accent) 44%, transparent);\n  text-decoration-thickness: 1.5px;\n  text-underline-offset: 3px;\n}\n.eg-rword.is-core { font-weight: 650; }\n.eg-rsent-n {\n  margin-left: 2px;\n  font: 700 9.5px/1 var(--eg-font);\n  color: var(--eg-accent-ink);\n  font-variant-numeric: tabular-nums;\n}\n.eg-rgist-btn {\n  appearance: none; -webkit-appearance: none;\n  display: inline-flex; align-items: center;\n  height: 19px; margin-left: 7px; padding: 0 7px; vertical-align: 2px;\n  border-radius: 999px; border: 1px solid var(--eg-line); background: transparent;\n  color: var(--eg-ink-2); font: 600 10.5px/1 var(--eg-font); cursor: pointer;\n  transition: background var(--eg-dur) ease, border-color var(--eg-dur) ease, color var(--eg-dur) ease;\n}\n.eg-rgist-btn:hover { background: var(--eg-bg-2); border-color: var(--eg-line-2); color: var(--eg-ink); }\n.eg-rgist-btn[aria-expanded="true"] {\n  background: color-mix(in srgb, var(--eg-accent) 9%, var(--eg-bg));\n  border-color: color-mix(in srgb, var(--eg-accent) 32%, transparent);\n  color: var(--eg-accent-ink);\n}\n.eg-rgist-btn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }\n.eg-rslot {\n  margin: 8px 0 0; padding: 8px 8px 8px 10px;\n  display: flex; flex-direction: column; gap: 6px;\n  border: 1px solid var(--eg-line); border-radius: 10px; background: var(--eg-bg-2);\n  animation: eg-rslot-in .18s var(--eg-ease) both;\n}\n.eg-rslot-row {\n  display: flex; align-items: flex-start; gap: 8px;\n  font: 500 var(--eg-fs-sm)/1.6 var(--eg-font); color: var(--eg-ink); text-align: left;\n  animation: eg-rslot-in .18s var(--eg-ease) both;\n}\n@keyframes eg-rslot-in {\n  from { opacity: 0; transform: translateY(-3px); }\n  to { opacity: 1; transform: none; }\n}\n.eg-rslot-tag {\n  flex: 0 0 auto; min-width: 20px; height: 18px; margin-top: 2px; padding: 0 5px; box-sizing: border-box;\n  display: inline-flex; align-items: center; justify-content: center;\n  border-radius: 5px; font: 700 10.5px/1 var(--eg-font); font-variant-numeric: tabular-nums;\n  background: color-mix(in srgb, var(--eg-accent) 12%, var(--eg-bg)); color: var(--eg-accent-ink);\n}\n.eg-rslot-row.is-gist .eg-rslot-tag { background: var(--eg-bg); border: 1px solid var(--eg-line); color: var(--eg-ink-2); }\n.eg-rslot-row.is-gist .eg-rslot-zh { color: var(--eg-ink-2); }\n.eg-rslot-body { flex: 1 1 auto; min-width: 0; }\n.eg-rslot-zh { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }\n.eg-rslot-zh.is-pending { display: inline-flex; align-items: center; gap: 7px; color: var(--eg-ink-2); }\n.eg-rslot-zh.is-pending .eg-spin { width: 12px; height: 12px; border-width: 1.5px; }\n.eg-rslot-tools { margin-top: 5px; display: flex; align-items: center; gap: 6px; }\n.eg-rslot-btn {\n  appearance: none; -webkit-appearance: none;\n  flex: 0 0 auto;\n  display: inline-flex; align-items: center; justify-content: center;\n  height: 21px; padding: 0 8px; border-radius: 999px;\n  border: 1px solid var(--eg-line); background: var(--eg-bg); color: var(--eg-ink-2);\n  font: 600 11px/1 var(--eg-font); cursor: pointer;\n  transition: background var(--eg-dur) ease, border-color var(--eg-dur) ease, color var(--eg-dur) ease;\n}\n.eg-rslot-btn:hover:not(:disabled) { border-color: var(--eg-line-2); color: var(--eg-ink); }\n.eg-rslot-btn.is-active {\n  background: color-mix(in srgb, var(--eg-accent) 9%, var(--eg-bg));\n  border-color: color-mix(in srgb, var(--eg-accent) 32%, transparent);\n  color: var(--eg-accent-ink);\n}\n.eg-rslot-btn:disabled { opacity: .55; cursor: wait; }\n.eg-rslot-btn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }\n.eg-rexplain {\n  margin-top: 7px; padding: 8px 10px; border-radius: 8px;\n  border: 1px solid var(--eg-line); background: var(--eg-bg);\n  display: flex; flex-direction: column; gap: 6px;\n  font-size: var(--eg-fs-xs); line-height: 1.6;\n  animation: eg-rslot-in .18s var(--eg-ease) both;\n}\n.eg-rexplain-sec { display: flex; align-items: flex-start; gap: 7px; }\n.eg-rexplain-label {\n  flex: 0 0 auto; margin-top: 2px; padding: 1px 6px; border-radius: 4px;\n  background: var(--eg-bg-2); border: 1px solid var(--eg-line);\n  color: var(--eg-ink-2); font: 600 10.5px/1.3 var(--eg-font);\n}\n.eg-rexplain-text { flex: 1 1 auto; min-width: 0; color: var(--eg-ink); overflow-wrap: anywhere; }\n.eg-rexplain-pts { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 4px; }\n.eg-rexplain-pt { overflow-wrap: anywhere; }\n.eg-rexplain-phrase {\n  font-family: var(--eg-en); font-weight: 700; color: var(--eg-ink); margin-right: 6px;\n}\n.eg-rexplain-note { color: var(--eg-ink-2); }\n.eg-rexplain-loading { display: flex; align-items: center; gap: 7px; color: var(--eg-ink-2); }\n.eg-rexplain-loading .eg-spin { width: 12px; height: 12px; border-width: 1.5px; }\n.eg-rexplain-err { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--eg-bad); }\n.eg-rslot-x {\n  appearance: none; -webkit-appearance: none;\n  flex: 0 0 auto; width: 20px; height: 20px; margin-top: 1px; padding: 0;\n  display: inline-flex; align-items: center; justify-content: center;\n  border: none; border-radius: 5px; background: transparent; color: var(--eg-ink-2);\n  font: 600 13px/1 var(--eg-font); cursor: pointer; opacity: 0;\n  transition: opacity var(--eg-dur) ease, background var(--eg-dur) ease, color var(--eg-dur) ease;\n}\n.eg-rslot-row:hover .eg-rslot-x, .eg-rslot-x:focus-visible { opacity: 1; }\n.eg-rslot-x:hover { background: var(--eg-bg-3); color: var(--eg-ink); }\n.eg-rslot-x:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n@media (hover: none) { .eg-rslot-x { opacity: 1; } }\n.eg-rpop {\n  position: absolute;\n  z-index: 20;\n  width: max-content;\n  min-width: 152px;\n  max-width: min(244px, 100%);\n  padding: 10px 16px;\n  border-radius: 10px;\n  border: 1px solid var(--eg-line-2);\n  background: var(--eg-bg);\n  box-shadow: 0 10px 28px rgba(17, 22, 31, .16), 0 2px 6px rgba(17, 22, 31, .08);\n  color: var(--eg-ink);\n  text-align: center;\n  visibility: hidden;\n  pointer-events: auto;\n}\n.eg-rpop.is-pinned {\n  padding-left: 24px;\n  padding-right: 24px;\n}\n.eg-rpop.is-ready {\n  visibility: visible;\n  animation: eg-rpop-in .14s var(--eg-ease) both;\n}\n@keyframes eg-rpop-in {\n  from { opacity: 0; transform: translateY(4px) scale(.97); }\n  to { opacity: 1; transform: none; }\n}\n.eg-rpop::after {\n  content: "";\n  position: absolute;\n  left: var(--eg-arrow-x, 20px);\n  bottom: -5px;\n  width: 8px;\n  height: 8px;\n  background: var(--eg-bg);\n  border-right: 1px solid var(--eg-line-2);\n  border-bottom: 1px solid var(--eg-line-2);\n  transform: translateX(-50%) rotate(45deg);\n}\n.eg-rpop.is-below::after {\n  bottom: auto;\n  top: -5px;\n  border-right: none;\n  border-bottom: none;\n  border-left: 1px solid var(--eg-line-2);\n  border-top: 1px solid var(--eg-line-2);\n}\n.eg-rpop-head {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 8px;\n}\n.eg-rpop-title {\n  display: flex;\n  align-items: baseline;\n  justify-content: center;\n  flex-wrap: wrap;\n  gap: 5px;\n  min-width: 0;\n}\n.eg-rpop-word {\n  font-family: var(--eg-en);\n  font-size: 14.5px;\n  font-weight: 700;\n  line-height: 1.3;\n  color: var(--eg-ink);\n  overflow-wrap: anywhere;\n}\n.eg-rpop-lemma {\n  font-family: var(--eg-en);\n  font-size: 11.5px;\n  color: var(--eg-ink-2);\n}\n.eg-rpop-close {\n  appearance: none; -webkit-appearance: none;\n  position: absolute;\n  top: 6px;\n  right: 6px;\n  width: 18px;\n  height: 18px;\n  margin: 0;\n  padding: 0;\n  border: none;\n  border-radius: 5px;\n  background: transparent;\n  color: var(--eg-ink-2);\n  font: 600 13px/1 var(--eg-font);\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  transition: background var(--eg-dur) ease, color var(--eg-dur) ease;\n}\n.eg-rpop-close:hover { background: var(--eg-bg-2); color: var(--eg-ink); }\n.eg-rpop-close:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-rpop-tags {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  flex-wrap: wrap;\n  gap: 5px;\n  margin-top: 4px;\n}\n.eg-rpop-pos,\n.eg-rpop-bank {\n  display: inline-flex;\n  align-items: center;\n  padding: 1px 6px;\n  border-radius: 999px;\n  font: 600 10.5px/1.35 var(--eg-font);\n}\n.eg-rpop-pos {\n  background: var(--eg-bg-2);\n  border: 1px solid var(--eg-line);\n  color: var(--eg-ink-2);\n}\n.eg-rpop-bank {\n  background: color-mix(in srgb, var(--eg-accent) 10%, var(--eg-bg));\n  border: 1px solid color-mix(in srgb, var(--eg-accent) 24%, transparent);\n  color: var(--eg-accent-ink);\n}\n.eg-rpop-zh {\n  margin-top: 5px;\n  font: 500 var(--eg-fs-xs)/1.5 var(--eg-font);\n  color: var(--eg-ink);\n  text-align: center;\n  overflow-wrap: anywhere;\n}\n.eg-practice { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--eg-line); }\n.eg-ptitle {\n  display: flex; align-items: center; justify-content: flex-start; gap: 7px;\n  font-size: var(--eg-fs-xs); font-weight: 650; letter-spacing: .03em; color: var(--eg-ink-2);\n  margin-bottom: 10px;\n}\n.eg-q {\n  margin: 0; padding: 13px 15px; border: 1px solid var(--eg-line); border-radius: 11px;\n  background: var(--eg-bg); transition: border-color var(--eg-dur) ease;\n}\n.eg-q + .eg-q { margin-top: 10px; }\n.eg-q.reveal { border-color: var(--eg-line-2); }\n.eg-q-head { display: flex; gap: 9px; align-items: flex-start; justify-content: flex-start; text-align: left; }\n.eg-q-n {\n  flex: 0 0 auto; width: 20px; height: 20px; margin-top: 1px; border-radius: 6px;\n  background: var(--eg-bg-2); border: 1px solid var(--eg-line); color: var(--eg-ink);\n  display: inline-flex; align-items: center; justify-content: center;\n  font: 700 11px/1 var(--eg-font); font-variant-numeric: tabular-nums;\n}\n.eg-q-zh { font-size: var(--eg-fs-sm); font-weight: 500; line-height: 1.6; color: var(--eg-ink); text-align: left; }\n.eg-q-toggle {\n  appearance: none; -webkit-appearance: none;\n  margin-top: 10px; display: inline-flex; align-items: center; gap: 5px;\n  min-height: 27px; padding: 4px 10px; border-radius: 7px;\n  background: var(--eg-bg); border: 1px solid var(--eg-line); color: var(--eg-ink-2);\n  cursor: pointer; font: 600 var(--eg-fs-xs)/1 var(--eg-font);\n  transition: background var(--eg-dur) ease, color var(--eg-dur) ease, border-color var(--eg-dur) ease;\n}\n.eg-q-toggle:hover { background: var(--eg-bg-2); border-color: var(--eg-line-2); color: var(--eg-ink); }\n.eg-q-toggle:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }\n.eg-q-toggle .caret { display: inline-block; transition: transform .22s var(--eg-ease); }\n.eg-q.reveal .eg-q-toggle .caret { transform: rotate(90deg); }\n.eg-q-en {\n  margin-top: 10px; padding: 10px 13px; border-radius: 8px;\n  border: 1px solid var(--eg-line); border-left: 2.5px solid var(--eg-accent);\n  background: var(--eg-bg-2); font-family: var(--eg-en); font-size: 14.5px; line-height: 1.6;\n  color: var(--eg-ink); text-align: left;\n}\n.eg-practice-pending {\n  display: flex; align-items: center; gap: 8px; padding: 12px 14px;\n  border: 1px solid var(--eg-line); border-radius: 11px; background: var(--eg-bg-2);\n  color: var(--eg-ink-2); font-size: var(--eg-fs-xs);\n}\n.eg-practice-pending .eg-spin { width: 12px; height: 12px; border-width: 1.5px; }\n.eg-practice-err {\n  display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 14px;\n  border: 1px solid var(--eg-line); border-radius: 11px; background: var(--eg-bg-2);\n  color: var(--eg-bad); font-size: var(--eg-fs-xs);\n}\n.eg-report-foot {\n  margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--eg-line);\n  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;\n}\n.eg-report-foot-hint { color: var(--eg-ink-2); font-size: var(--eg-fs-xs); line-height: 1.4; }\n.eg-report-foot-err { display: inline-flex; align-items: center; gap: 8px; color: var(--eg-bad); font-size: var(--eg-fs-xs); line-height: 1.4; }\n.eg-report .eg-actions { justify-content: flex-start; margin-top: 18px; }\n\n';
 
 // src/client/styles/word.css
 var word_default = "/* ===== word training ===== */\n.eg-letters { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }\n.eg-letters.is-bad { animation: eg-shake .32s cubic-bezier(.36, .07, .19, .97) both; }\n@keyframes eg-shake {\n  0%, 100% { transform: translateX(0); }\n  20% { transform: translateX(-5px); }\n  42% { transform: translateX(5px); }\n  64% { transform: translateX(-3px); }\n  84% { transform: translateX(2px); }\n}\n.eg-letter {\n  flex: 1 1 0; min-width: 8px; max-width: 38px; width: auto; height: 48px; padding: 0; text-align: center;\n  border: none; border-bottom: 2px solid var(--eg-line-2); border-radius: 6px 6px 0 0;\n  background: transparent; color: var(--eg-ink);\n  font: 600 22px/1 var(--eg-font); text-transform: lowercase; outline: none;\n  transition: border-color var(--eg-dur) ease, background var(--eg-dur) ease, color var(--eg-dur) ease, box-shadow var(--eg-dur) ease, transform .14s var(--eg-spring);\n}\n.eg-letter:hover { border-bottom-color: var(--eg-ink-2); background: var(--eg-bg-2); }\n.eg-letter:focus { border-bottom-color: var(--eg-accent); background: var(--eg-bg-2); box-shadow: 0 3px 0 -1px color-mix(in srgb, var(--eg-accent) 26%, transparent); }\n.eg-letter.is-pop { animation: eg-letter-pop .16s var(--eg-spring); }\n@keyframes eg-letter-pop {\n  0% { transform: scale(.9); }\n  55% { transform: scale(1.1); }\n  100% { transform: scale(1); }\n}\n.eg-letter.ok { border-bottom-color: var(--eg-ok); color: var(--eg-ok); }\n.eg-letters.is-ok .eg-letter.ok {\n  animation: eg-letter-ok .34s var(--eg-spring) calc(var(--i, 0) * 34ms) both;\n}\n@keyframes eg-letter-ok {\n  0% { transform: translateY(0) scale(1); }\n  45% { transform: translateY(-5px) scale(1.08); }\n  100% { transform: translateY(0) scale(1); }\n}\n.eg-letter.bad { border-bottom-color: var(--eg-bad); color: var(--eg-bad); }\n.eg-letters.answered .eg-letter { cursor: default; }\n/* word training: centred column */\n.eg-word {\n  container-type: inline-size;\n  width: 100%; max-width: 640px; margin-left: auto; margin-right: auto;\n  height: 100%; min-height: 0; display: flex; flex-direction: column; align-items: stretch; text-align: center;\n}\n.eg-word-main {\n  flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center;\n  min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 10px 0 14px;\n  scrollbar-width: none; -ms-overflow-style: none;\n}\n.eg-word-main::-webkit-scrollbar { display: none; width: 0; height: 0; }\n.eg-word-stage { width: 100%; margin: auto 0; display: flex; flex-direction: column; align-items: center; animation: eg-view-in .18s var(--eg-ease) both; }\n.eg-word .eg-pos {\n  display: inline-flex; align-items: center; margin: 0 0 4px; padding: 3px 10px;\n  border-radius: 999px; background: var(--eg-bg-2); border: 1px solid var(--eg-line);\n  color: var(--eg-ink-2); font: 600 11.5px/1.2 var(--eg-font);\n}\n.eg-word .eg-zh {\n  max-width: 500px;\n  font-family: var(--eg-font); font-size: 23px; font-weight: 700; letter-spacing: -.01em; line-height: 1.42;\n  margin-top: 6px; color: var(--eg-ink); text-wrap: balance; overflow-wrap: break-word;\n}\n.eg-word .eg-zh.is-long { font-size: 20px; }\n.eg-word .eg-zh.is-xlong { font-size: 18px; line-height: 1.48; }\n.eg-word .eg-letters { justify-content: center; margin-top: 18px; width: 100%; }\n.eg-word .eg-foot { justify-content: center; width: 100%; margin-top: 24px; }\n.eg-word .eg-foot .eg-kbd { margin-left: 0; }\n.eg-word .eg-fb {\n  width: 100%; text-align: center; margin-top: 14px; padding: 0; border: none; border-radius: 0; background: transparent;\n}\n.eg-word .eg-fb-top { justify-content: center; align-items: center; flex-wrap: wrap; gap: 8px; }\n.eg-word .eg-fb-actions { justify-content: center; }\n.eg-word .eg-fb > .eg-fb-actions:first-child { margin-top: 0; gap: 8px; flex-wrap: wrap; justify-content: center; }\n.eg-word .eg-fb-actions .eg-btn { padding: 0 10px; }\n.eg-word-miss-wrap {\n  width: 100%;\n  pointer-events: none;\n  transition: grid-template-rows .13s var(--eg-ease) .08s, opacity .08s ease;\n}\n.eg-word-miss-wrap.open {\n  pointer-events: auto;\n  transition: grid-template-rows .14s var(--eg-ease) .1s, opacity .14s ease .16s;\n}\n.eg-word-miss { padding-top: 12px; font-size: var(--eg-fs-xs); font-weight: 550; color: var(--eg-bad); }\n.eg-word-reveal {\n  width: 100%;\n  pointer-events: none;\n  transition: grid-template-rows .14s var(--eg-ease) .095s, opacity .09s ease;\n}\n.eg-word-reveal .eg-collapse-inner {\n  transform: translateY(-4px);\n  transition: transform .09s ease;\n}\n.eg-word-reveal.open {\n  pointer-events: auto;\n  transition: grid-template-rows .14s var(--eg-ease), opacity .14s ease .12s;\n}\n.eg-word-reveal.open .eg-collapse-inner {\n  transform: none;\n  transition: transform .15s var(--eg-ease) .12s;\n}\n.eg-word-foot { flex: 0 0 auto; display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 6px; padding-top: 10px; border-top: 1px solid var(--eg-line); }\n.eg-word-foot .eg-btn { padding: 0 12px; }\n.eg-word .eg-fb-ref {\n  margin-top: 8px; padding: 0; background: transparent; font-family: var(--eg-en); font-size: 24px; font-weight: 600; text-align: center;\n}\n.eg-word .eg-eg {\n  width: 100%; max-width: 480px; margin: 12px auto 0; padding: 10px 15px;\n  border: none; border-radius: 10px; background: var(--eg-bg-2); text-align: center;\n  transition: background var(--eg-dur) ease;\n}\n.eg-word .eg-eg.done { animation: eg-view-in .22s var(--eg-ease) both; }\n.eg-word .eg-word-reveal .eg-fb-ref,\n.eg-word .eg-word-reveal .eg-eg.done {\n  animation: none;\n}\n.eg-word .eg-eg-en { font: 15px/1.65 var(--eg-en); color: var(--eg-ink); overflow-wrap: anywhere; }\n.eg-word .eg-eg-zh { margin-top: 5px; font: var(--eg-fs-xs)/1.6 var(--eg-font); color: var(--eg-ink-2); }\n.eg-eg-hit {\n  padding: 1px 4px; border-radius: 4px;\n  background: color-mix(in srgb, var(--eg-accent) 13%, transparent);\n  color: var(--eg-ink); font-weight: 700;\n}\n/* ===== word bank bar ===== */\n.eg-bankbar { width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px; padding: 0 0 10px; margin: 0; border-bottom: 1px solid var(--eg-line); }\n.eg-srs-bar {\n  width: 100%; display: flex; flex-direction: column; align-items: center; gap: 5px;\n  padding: 2px 2px 10px; margin: 0 0 6px; border-bottom: 1px solid var(--eg-line);\n}\n.eg-srs-hint {\n  font: 400 11px/1.4 var(--eg-font); color: var(--eg-ink-2); text-align: center;\n}\n.eg-srs-meta {\n  font: 500 11px/1.3 var(--eg-font); color: var(--eg-ink-2); font-variant-numeric: tabular-nums;\n  opacity: .82; text-align: center;\n}\n.eg-srs-modes {\n  position: relative; display: inline-flex; align-items: center; gap: 3px; padding: 2px;\n  border-radius: 999px; background: var(--eg-bg-2); border: 1px solid var(--eg-line);\n}\n.eg-srs-indicator {\n  position: absolute; top: 2px; bottom: 2px; left: 0; z-index: 0;\n  border-radius: 999px; background: var(--eg-bg);\n  box-shadow: 0 1px 2px rgba(17, 22, 31, .08); pointer-events: none;\n  transition: transform .24s var(--eg-ease), width .24s var(--eg-ease), opacity .16s ease;\n  will-change: transform, width;\n}\n.eg-srs-mode {\n  position: relative; z-index: 1;\n  appearance: none; -webkit-appearance: none;\n  display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 10px;\n  border: none; border-radius: 999px; background: transparent; color: var(--eg-ink-2);\n  font: 600 11.5px/1 var(--eg-font); cursor: pointer; white-space: nowrap;\n  transition: background var(--eg-dur) ease, color var(--eg-dur) ease;\n}\n.eg-srs-mode:hover:not(.active):not(:disabled) { color: var(--eg-ink); }\n.eg-srs-mode.active { color: var(--eg-ink); }\n.eg-srs-modes:not(.has-slider) .eg-srs-mode.active { background: var(--eg-bg); box-shadow: 0 1px 2px rgba(17, 22, 31, .08); }\n.eg-srs-mode:disabled { opacity: .6; cursor: not-allowed; }\n.eg-srs-mode:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-srs-due {\n  display: inline-flex; align-items: center; justify-content: center;\n  min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px;\n  background: color-mix(in srgb, var(--eg-warn) 18%, transparent);\n  color: var(--eg-warn); font: 700 10.5px/1 var(--eg-font); font-variant-numeric: tabular-nums;\n}\n.eg-word-meta {\n  display: inline-flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px; margin: 0 0 2px;\n  color: var(--eg-ink-2); font: 500 12px/1.3 var(--eg-font);\n}\n.eg-pos-text { color: var(--eg-ink-2); }\n.eg-meta-sep { opacity: .45; }\n.eg-srs-tag {\n  display: inline-flex; align-items: center; gap: 6px;\n  color: var(--eg-ink-2); font: 500 12px/1.3 var(--eg-font);\n}\n.eg-srs-tag.is-review {\n  color: var(--eg-warn); font-weight: 600;\n}\n.eg-srs-dots { display: inline-flex; align-items: center; gap: 2.5px; }\n.eg-srs-dot {\n  width: 4.5px; height: 4.5px; border-radius: 50%; background: var(--eg-line-2); display: inline-block;\n}\n.eg-srs-dot.on { background: currentColor; }\n.eg-srs-hard {\n  display: inline-flex; align-items: center; padding: 1px 6px; border-radius: 999px;\n  background: color-mix(in srgb, var(--eg-bad) 10%, transparent);\n  border: 1px solid color-mix(in srgb, var(--eg-bad) 26%, transparent);\n  color: var(--eg-bad); font: 600 10.5px/1.25 var(--eg-font);\n}\n.eg-srs-next {\n  display: inline-flex; align-items: center; padding: 2px 9px; border-radius: 999px;\n  background: color-mix(in srgb, var(--eg-ok) 12%, var(--eg-bg));\n  border: 1px solid color-mix(in srgb, var(--eg-ok) 26%, transparent);\n  color: var(--eg-ok); font: 600 11.5px/1.3 var(--eg-font);\n}\n.eg-fsrs-rate {\n  display: inline-flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 7px;\n  margin-top: 9px; padding: 4px 8px; border-radius: 999px;\n  background: var(--eg-bg-2); border: 1px solid var(--eg-line);\n}\n.eg-fsrs-rate-lbl {\n  font: 600 11px/1 var(--eg-font); color: var(--eg-ink-2); padding-left: 2px;\n}\n.eg-fsrs-rate-btns {\n  display: inline-flex; align-items: center; flex-wrap: wrap; justify-content: center; gap: 4px;\n}\n.eg-fsrs-btn {\n  appearance: none; -webkit-appearance: none;\n  display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 8px;\n  border: 1px solid transparent; border-radius: 999px; background: transparent; color: var(--eg-ink-2);\n  font: 600 11.5px/1 var(--eg-font); cursor: pointer;\n  transition: background var(--eg-dur) ease, border-color var(--eg-dur) ease, color var(--eg-dur) ease, transform .12s ease;\n}\n.eg-fsrs-btn:hover:not(.active):not(:disabled) {\n  background: var(--eg-bg); border-color: var(--eg-line); color: var(--eg-ink);\n}\n.eg-fsrs-btn:active:not(:disabled) { transform: scale(.96); }\n.eg-fsrs-btn.active {\n  background: var(--eg-bg); border-color: color-mix(in srgb, var(--eg-accent) 42%, var(--eg-line));\n  color: var(--eg-ink); box-shadow: 0 1px 2px rgba(17, 22, 31, .08);\n}\n.eg-fsrs-btn:disabled { opacity: .6; cursor: not-allowed; }\n.eg-fsrs-btn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-fsrs-key {\n  display: inline-flex; align-items: center; justify-content: center;\n  min-width: 14px; height: 14px; padding: 0 3px; border-radius: 4px;\n  background: var(--eg-bg-2); border: 1px solid var(--eg-line);\n  font: 600 10px/1 var(--eg-font); color: var(--eg-ink-2);\n}\n.eg-fsrs-btn.active .eg-fsrs-key {\n  background: color-mix(in srgb, var(--eg-accent) 12%, var(--eg-bg));\n  border-color: color-mix(in srgb, var(--eg-accent) 30%, transparent);\n  color: var(--eg-accent);\n}\n.eg-fsrs-iv {\n  font: 500 11px/1 var(--eg-font); color: var(--eg-ink-2); font-variant-numeric: tabular-nums;\n}\n.eg-fsrs-btn.active .eg-fsrs-iv { color: var(--eg-ok); font-weight: 600; }\n.eg-srs-done {\n  margin: auto; padding: 22px 20px; max-width: 380px; width: 100%;\n  border: 1px solid var(--eg-line); border-radius: 12px; background: var(--eg-bg-2);\n  display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center;\n  animation: eg-view-in .18s var(--eg-ease) both;\n}\n.eg-srs-done-title { font: 700 15px/1.35 var(--eg-font); color: var(--eg-ink); }\n.eg-srs-done-sub { font: 500 var(--eg-fs-xs)/1.5 var(--eg-font); color: var(--eg-ink-2); font-variant-numeric: tabular-nums; }\n.eg-banklabel { flex: 0 0 auto; font-size: var(--eg-fs-xs); font-weight: 600; color: var(--eg-ink-2); }\n@container (max-width: 315px) {\n  .eg-banklabel { display: none; }\n}\n.eg-select {\n  flex: 1 1 auto; min-width: 0; max-width: 280px; height: 34px; padding: 0 26px 0 12px; border: 1px solid var(--eg-line);\n  border-radius: 999px; background: var(--eg-bg-2); color: var(--eg-ink); cursor: pointer;\n  font: 600 var(--eg-fs-xs)/1 var(--eg-font); outline: none; appearance: none;\n  background-image: linear-gradient(45deg, transparent 50%, var(--eg-ink-2) 50%), linear-gradient(135deg, var(--eg-ink-2) 50%, transparent 50%);\n  background-position: calc(100% - 13px) 13px, calc(100% - 9px) 13px; background-size: 4px 4px, 4px 4px; background-repeat: no-repeat;\n  transition: border-color var(--eg-dur) ease, background-color var(--eg-dur) ease;\n}\n.eg-select:hover { border-color: var(--eg-line-2); }\n.eg-select:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-bankbtn { appearance: none; -webkit-appearance: none;\n  flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: 4px;\n  min-height: 34px; padding: 0 12px; border: 1px solid var(--eg-line); border-radius: 999px;\n  background: var(--eg-bg); color: var(--eg-ink-2); cursor: pointer;\n  font: 600 var(--eg-fs-xs)/1 var(--eg-font);\n  transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease, background var(--eg-dur) ease, transform .14s ease;\n}\n.eg-bankbtn:hover { border-color: var(--eg-line-2); color: var(--eg-ink); background: var(--eg-bg-2); }\n.eg-bankbtn:active { transform: scale(.95); }\n.eg-bankbtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-notice { margin: 0 0 12px; padding: 8px 11px; border-radius: 9px; background: color-mix(in srgb, var(--eg-ok) 9%, transparent); border: 1px solid color-mix(in srgb, var(--eg-ok) 28%, transparent); color: var(--eg-ink); font-size: var(--eg-fs-xs); line-height: 1.5; animation: eg-view-in .2s var(--eg-ease) both; }\n\n/* ===== word bank import ===== */\n.eg-import { width: 100%; max-width: 520px; margin: 0 auto; text-align: left; animation: eg-view-in .2s var(--eg-ease) both; }\n.eg-import-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }\n.eg-import-title { font-size: var(--eg-fs-md); font-weight: 700; color: var(--eg-ink); line-height: 1.3; }\n.eg-import-actions { flex: 0 0 auto; display: flex; align-items: center; gap: 6px; }\n.eg-import-back, .eg-filebtn { appearance: none; -webkit-appearance: none;\n  flex: 0 0 auto; display: inline-flex; align-items: center; min-height: 30px; padding: 4px 10px;\n  border: 1px solid var(--eg-line); border-radius: 8px; background: var(--eg-bg);\n  color: var(--eg-ink-2); cursor: pointer; font: 600 var(--eg-fs-xs)/1 var(--eg-font); white-space: nowrap;\n  transition: border-color var(--eg-dur) ease, color var(--eg-dur) ease, background var(--eg-dur) ease;\n}\n.eg-import-back:hover, .eg-filebtn:hover { border-color: var(--eg-line-2); background: var(--eg-bg-2); color: var(--eg-ink); }\n.eg-import-back:focus-visible, .eg-filebtn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }\n.eg-import-sub { margin-top: 4px; color: var(--eg-ink-2); font-size: var(--eg-fs-xs); line-height: 1.5; }\n.eg-field { margin-top: 10px; }\n.eg-field label { display: block; margin-bottom: 6px; font-size: var(--eg-fs-xs); font-weight: 600; color: var(--eg-ink-2); }\n.eg-text {\n  width: 100%; height: 34px; padding: 0 11px; border: 1px solid var(--eg-line); border-radius: 8px;\n  background: var(--eg-bg-2); color: var(--eg-ink); font: var(--eg-fs-sm)/1 var(--eg-font); outline: none;\n  transition: border-color var(--eg-dur) ease, background var(--eg-dur) ease, box-shadow var(--eg-dur) ease;\n}\n.eg-text:hover { border-color: var(--eg-line-2); }\n.eg-text:focus { border-color: var(--eg-accent); background: var(--eg-bg); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 16%, transparent); }\n.eg-textarea-wrap { position: relative; margin-top: 10px; }\n.eg-textarea {\n  width: 100%; min-height: 86px; resize: vertical; padding: 9px 11px; border: 1px solid var(--eg-line); border-radius: 10px;\n  background: var(--eg-bg-2); color: var(--eg-ink); font: var(--eg-fs-xs)/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; outline: none;\n  transition: border-color var(--eg-dur) ease, background var(--eg-dur) ease, box-shadow var(--eg-dur) ease;\n}\n.eg-textarea-wrap.over .eg-textarea, .eg-textarea-wrap:hover .eg-textarea { border-color: var(--eg-accent); background: color-mix(in srgb, var(--eg-accent) 5%, var(--eg-bg-2)); }\n.eg-textarea:focus { border-color: var(--eg-accent); background: var(--eg-bg); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eg-accent) 16%, transparent); }\n.eg-preview { margin-top: 12px; border: 1px solid var(--eg-line); border-radius: 10px; overflow: hidden; animation: eg-view-in .2s var(--eg-ease) both; }\n.eg-preview-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; background: var(--eg-bg-2); font-size: var(--eg-fs-xs); color: var(--eg-ink-2); }\n.eg-preview-top strong { color: var(--eg-ink); }\n.eg-preview-row { display: flex; flex-wrap: wrap; gap: 10px; padding: 7px 10px; border-top: 1px solid var(--eg-line); font-size: var(--eg-fs-xs); line-height: 1.5; }\n.eg-preview-row .w { flex: 0 0 38%; font-weight: 650; overflow-wrap: anywhere; }\n.eg-preview-row .m { flex: 1 1 auto; color: var(--eg-ink-2); overflow-wrap: anywhere; }\n.eg-preview-row .ex { flex: 1 0 100%; color: var(--eg-ink-2); font-family: var(--eg-en); font-style: italic; overflow-wrap: anywhere; }\n.eg-preview-errors { margin-top: 8px; padding: 8px 10px; border-radius: 8px; background: color-mix(in srgb, var(--eg-bad) 7%, transparent); border: 1px solid color-mix(in srgb, var(--eg-bad) 24%, transparent); }\n.eg-preview-errors .er { font-size: var(--eg-fs-xs); line-height: 1.55; color: var(--eg-bad); }\n.eg-import-foot { display: flex; gap: 8px; margin-top: 10px; }\n\n";
@@ -124,6 +124,44 @@ var settings_default = `/* ===== settings ===== */
 .eg-setting-sub {
   display: flex; align-items: center; justify-content: space-between; gap: 14px;
   margin-top: 12px; padding: 10px 12px; border-radius: 9px; background: var(--eg-bg-2);
+}
+.eg-setting-sub.is-stack {
+  flex-direction: column; align-items: stretch; gap: 9px;
+}
+.eg-effort-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+}
+.eg-effort-badge {
+  font-size: 11px; font-weight: 600; color: var(--eg-ink-2);
+}
+.eg-effort-list {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px;
+}
+@container (max-width: 279px) {
+  .eg-effort-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.eg-effort-btn {
+  appearance: none; -webkit-appearance: none;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  min-height: 40px; padding: 5px 8px;
+  border: 1px solid var(--eg-line); border-radius: 8px; background: var(--eg-bg);
+  color: var(--eg-ink-2); cursor: pointer;
+  transition: background var(--eg-dur) ease, border-color var(--eg-dur) ease, color var(--eg-dur) ease, transform .14s ease;
+}
+.eg-effort-label { font: 650 12.5px/1.2 var(--eg-font); color: var(--eg-ink); }
+.eg-effort-desc { font: 500 10.5px/1.2 var(--eg-font); color: var(--eg-ink-2); }
+.eg-effort-btn:hover:not(.active):not(:disabled) {
+  background: var(--eg-bg-3, var(--eg-bg-2)); border-color: var(--eg-line-2); color: var(--eg-ink);
+}
+.eg-effort-btn:active:not(:disabled) { transform: scale(.96); }
+.eg-effort-btn.active {
+  border-color: var(--eg-accent); background: var(--eg-accent); color: var(--eg-on-accent);
+}
+.eg-effort-btn.active .eg-effort-label,
+.eg-effort-btn.active .eg-effort-desc { color: var(--eg-on-accent); }
+.eg-effort-btn:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 2px; }
+.eg-effort-detail {
+  color: var(--eg-ink-2); font-size: var(--eg-fs-xs); line-height: 1.5;
 }
 .eg-sub-title { font-size: var(--eg-fs-sm); font-weight: 600; color: var(--eg-ink); line-height: 1.35; }
 .eg-stepper {
@@ -427,7 +465,7 @@ var store = {
   stats: null,
   sessionId: "",
   wordModeRequest: null,
-  settings: { confetti: true, topicId: "ai", customTopics: [], bankLink: true, bankRetries: 1, sessionLink: false, reportLevel: "B1", fsrsRetention: 0.9 },
+  settings: { confetti: true, topicId: "ai", customTopics: [], bankLink: true, bankRetries: 1, sessionLink: false, reportLevel: "B1", fsrsRetention: 0.9, reasoningEffort: "off" },
   burst: 0,
   listeners: /* @__PURE__ */ new Set(),
   emit() {
@@ -1975,38 +2013,86 @@ var import_react17 = require("react");
 function useDailyReport({ open, active }) {
   const [report, setReport] = (0, import_react17.useState)(null);
   const [loading, setLoading] = (0, import_react17.useState)(false);
+  const [enriching, setEnriching] = (0, import_react17.useState)(false);
+  const [enrichError, setEnrichError] = (0, import_react17.useState)("");
   const [error, setError] = (0, import_react17.useState)("");
   const genRef = (0, import_react17.useRef)(0);
   const abortRef = (0, import_react17.useRef)(null);
+  const enrichAbortRef = (0, import_react17.useRef)(null);
   const startedRef = (0, import_react17.useRef)(false);
+  const reportRef = (0, import_react17.useRef)(null);
+  (0, import_react17.useEffect)(() => {
+    reportRef.current = report;
+  }, [report]);
   (0, import_react17.useEffect)(() => {
     return () => {
       if (abortRef.current) abortRef.current.abort();
+      if (enrichAbortRef.current) enrichAbortRef.current.abort();
     };
   }, []);
-  const refresh = (0, import_react17.useCallback)(async (force) => {
-    const gen = ++genRef.current;
-    if (abortRef.current) abortRef.current.abort();
+  const runEnrich = (0, import_react17.useCallback)(async (target, gen) => {
+    if (!target || target.fallback || target.enriched !== false) return;
+    if (enrichAbortRef.current) enrichAbortRef.current.abort();
     const ac = new AbortController();
-    abortRef.current = ac;
-    startedRef.current = true;
-    setLoading(true);
-    setError("");
-    if (force) setReport(null);
+    enrichAbortRef.current = ac;
+    setEnriching(true);
+    setEnrichError("");
     try {
-      const next = force ? await api("/report/refresh", { method: "POST", signal: ac.signal }) : await api("/report", { signal: ac.signal });
+      const next = await api("/report/enrich", {
+        method: "POST",
+        body: JSON.stringify({ date: target.date, id: target.id }),
+        signal: ac.signal
+      });
       if (gen !== genRef.current || ac.signal.aborted) return;
+      if (target.id && next && next.id && next.id !== target.id) return;
       setReport(next);
     } catch (e) {
       if (gen !== genRef.current || ac.signal.aborted || e && e.name === "AbortError") return;
-      setError(e.message || "文章加载失败");
+      const msg = String(e && e.message || "");
+      setEnrichError(/timed out/i.test(msg) ? "后台补全超时，请点击重试" : msg || "译文与练习加载失败");
     } finally {
-      if (gen === genRef.current) {
-        abortRef.current = null;
-        setLoading(false);
-      }
+      if (enrichAbortRef.current === ac) enrichAbortRef.current = null;
+      if (gen === genRef.current) setEnriching(false);
     }
   }, []);
+  const refresh = (0, import_react17.useCallback)(
+    async (force) => {
+      const gen = ++genRef.current;
+      if (abortRef.current) abortRef.current.abort();
+      if (enrichAbortRef.current) {
+        enrichAbortRef.current.abort();
+        enrichAbortRef.current = null;
+      }
+      const ac = new AbortController();
+      abortRef.current = ac;
+      startedRef.current = true;
+      setLoading(true);
+      setEnriching(false);
+      setEnrichError("");
+      setError("");
+      if (force) setReport(null);
+      try {
+        const next = force ? await api("/report/refresh", { method: "POST", signal: ac.signal }) : await api("/report", { signal: ac.signal });
+        if (gen !== genRef.current || ac.signal.aborted) return;
+        setReport(next);
+        if (next && !next.fallback && next.enriched === false) {
+          runEnrich(next, gen);
+        }
+      } catch (e) {
+        if (gen !== genRef.current || ac.signal.aborted || e && e.name === "AbortError") return;
+        setError(e.message || "文章加载失败");
+      } finally {
+        if (abortRef.current === ac) abortRef.current = null;
+        if (gen === genRef.current) setLoading(false);
+      }
+    },
+    [runEnrich]
+  );
+  const retryEnrich = (0, import_react17.useCallback)(() => {
+    const current = reportRef.current;
+    if (!current || current.fallback || current.enriched !== false) return;
+    runEnrich(current, genRef.current);
+  }, [runEnrich]);
   (0, import_react17.useEffect)(() => {
     if (open && active && !report && !loading && !error && !startedRef.current) {
       refresh(false);
@@ -2024,12 +2110,18 @@ function useDailyReport({ open, active }) {
       abortRef.current.abort();
       abortRef.current = null;
     }
+    if (enrichAbortRef.current) {
+      enrichAbortRef.current.abort();
+      enrichAbortRef.current = null;
+    }
     startedRef.current = false;
     setReport(null);
     setError("");
+    setEnrichError("");
     setLoading(false);
+    setEnriching(false);
   }, []);
-  return { report, loading, error, refresh, invalidate };
+  return { report, loading, enriching, enrichError, error, refresh, retryEnrich, invalidate };
 }
 
 // src/client/features/report/Report.jsx
@@ -2262,12 +2354,13 @@ function useWordPopover({ report, reportRef }) {
       setActive((prev) => prev && !prev.pinned ? null : prev);
     }, 140);
   }, [cancelClose]);
+  const reportKey = report ? report.id || `${report.date || ""}|${report.title || ""}|${report.body || ""}` : "";
   (0, import_react18.useEffect)(() => {
     cancelClose();
     setActive(null);
     setPopPos(null);
     termRefs.current = {};
-  }, [report, cancelClose]);
+  }, [reportKey, cancelClose]);
   (0, import_react18.useEffect)(() => () => cancelClose(), [cancelClose]);
   (0, import_react18.useEffect)(() => {
     if (!active) return void 0;
@@ -2440,6 +2533,7 @@ function ReportParagraph({
   segs,
   paragraphText,
   info,
+  enriching,
   reveal,
   explains,
   activeTermId,
@@ -2479,7 +2573,7 @@ function ReportParagraph({
       seg.text
     );
   };
-  if (!info || !info.groups && !info.gist) {
+  if (!info || !info.groups && !info.gist && !enriching) {
     return /* @__PURE__ */ import_react20.default.createElement("p", { className: "eg-rp" }, segs.map(renderSeg));
   }
   const handleSentenceClick = (e, key) => {
@@ -2503,7 +2597,7 @@ function ReportParagraph({
     const n = info.base + g.index;
     const s = info.sentences[g.index] || {};
     const key = "s" + n;
-    const canReveal = !!(s && s.zh);
+    const canReveal = Boolean(s && s.zh || enriching && s && s.en);
     const isOpen = canReveal && !!reveal[key];
     const segList = isOpen && hasSentenceHint(s) ? annotateSentenceSegments(s.en, g.segs, s) : g.segs;
     return /* @__PURE__ */ import_react20.default.createElement(
@@ -2522,9 +2616,10 @@ function ReportParagraph({
     );
   }) : segs.map(renderSeg);
   const gistKey = "g" + index;
-  const gistOpen = !!(info.gist && reveal[gistKey]);
-  const openSentences = info.sentences.map((s, si) => ({ s, si, n: info.base + si })).filter(({ s, n }) => s && s.zh && reveal["s" + n]);
-  return /* @__PURE__ */ import_react20.default.createElement(import_react20.default.Fragment, null, /* @__PURE__ */ import_react20.default.createElement("p", { className: "eg-rp" }, children, info.gist ? /* @__PURE__ */ import_react20.default.createElement(
+  const canShowGist = Boolean(info.gist || enriching);
+  const gistOpen = !!(canShowGist && reveal[gistKey]);
+  const openSentences = info.sentences.map((s, si) => ({ s, si, n: info.base + si })).filter(({ s, n }) => reveal["s" + n] && (s && s.zh || enriching && s && s.en));
+  return /* @__PURE__ */ import_react20.default.createElement(import_react20.default.Fragment, null, /* @__PURE__ */ import_react20.default.createElement("p", { className: "eg-rp" }, children, canShowGist ? /* @__PURE__ */ import_react20.default.createElement(
     "button",
     {
       type: "button",
@@ -2534,13 +2629,13 @@ function ReportParagraph({
       onClick: () => onToggleGist(gistKey)
     },
     "段意"
-  ) : null), gistOpen || openSentences.length ? /* @__PURE__ */ import_react20.default.createElement("div", { className: "eg-rslot", "aria-live": "polite" }, gistOpen ? /* @__PURE__ */ import_react20.default.createElement("div", { key: gistKey, className: "eg-rslot-row is-gist" }, /* @__PURE__ */ import_react20.default.createElement("span", { className: "eg-rslot-tag" }, "段意"), /* @__PURE__ */ import_react20.default.createElement("span", { className: "eg-rslot-zh" }, info.gist), /* @__PURE__ */ import_react20.default.createElement("button", { type: "button", className: "eg-rslot-x", "aria-label": "收起段意", onClick: () => onToggleGist(gistKey) }, "×")) : null, openSentences.map(({ s, si, n }) => {
+  ) : null), gistOpen || openSentences.length ? /* @__PURE__ */ import_react20.default.createElement("div", { className: "eg-rslot", "aria-live": "polite" }, gistOpen ? /* @__PURE__ */ import_react20.default.createElement("div", { key: gistKey, className: "eg-rslot-row is-gist" }, /* @__PURE__ */ import_react20.default.createElement("span", { className: "eg-rslot-tag" }, "段意"), info.gist ? /* @__PURE__ */ import_react20.default.createElement("span", { className: "eg-rslot-zh" }, info.gist) : /* @__PURE__ */ import_react20.default.createElement("span", { className: "eg-rslot-zh is-pending" }, /* @__PURE__ */ import_react20.default.createElement("span", { className: "eg-spin" }), "正在加载本段大意…"), /* @__PURE__ */ import_react20.default.createElement("button", { type: "button", className: "eg-rslot-x", "aria-label": "收起段意", onClick: () => onToggleGist(gistKey) }, "×")) : null, openSentences.map(({ s, si, n }) => {
     const skey = "s" + n;
     const exp = explains[skey] || null;
     const expOpen = !!(exp && exp.open);
     const expLoading = !!(exp && exp.loading);
     const explainPayload = { key: skey, pIdx: index, sIdx: si, sentence: s, paragraphText };
-    return /* @__PURE__ */ import_react20.default.createElement("div", { key: skey, className: "eg-rslot-row" }, /* @__PURE__ */ import_react20.default.createElement("span", { className: "eg-rslot-tag" }, String(n + 1)), /* @__PURE__ */ import_react20.default.createElement("div", { className: "eg-rslot-body" }, /* @__PURE__ */ import_react20.default.createElement("div", { className: "eg-rslot-zh" }, s.zh), /* @__PURE__ */ import_react20.default.createElement("div", { className: "eg-rslot-tools" }, /* @__PURE__ */ import_react20.default.createElement(
+    return /* @__PURE__ */ import_react20.default.createElement("div", { key: skey, className: "eg-rslot-row" }, /* @__PURE__ */ import_react20.default.createElement("span", { className: "eg-rslot-tag" }, String(n + 1)), /* @__PURE__ */ import_react20.default.createElement("div", { className: "eg-rslot-body" }, s.zh ? /* @__PURE__ */ import_react20.default.createElement(import_react20.default.Fragment, null, /* @__PURE__ */ import_react20.default.createElement("div", { className: "eg-rslot-zh" }, s.zh), /* @__PURE__ */ import_react20.default.createElement("div", { className: "eg-rslot-tools" }, /* @__PURE__ */ import_react20.default.createElement(
       "button",
       {
         type: "button",
@@ -2556,7 +2651,7 @@ function ReportParagraph({
         exp,
         onRetry: () => onExplainToggle({ ...explainPayload, retry: true })
       }
-    ) : null), /* @__PURE__ */ import_react20.default.createElement(
+    ) : null) : /* @__PURE__ */ import_react20.default.createElement("div", { className: "eg-rslot-zh is-pending" }, /* @__PURE__ */ import_react20.default.createElement("span", { className: "eg-spin" }), "正在加载本句译文…")), /* @__PURE__ */ import_react20.default.createElement(
       "button",
       {
         type: "button",
@@ -2571,12 +2666,21 @@ function ReportParagraph({
 
 // src/client/features/report/ReportPractice.jsx
 var import_react21 = __toESM(require("react"), 1);
-function ReportPractice({ report, questions }) {
+function ReportPractice({ report, questions, enriching, enrichError, onRetryEnrich }) {
   const [openMap, setOpenMap] = (0, import_react21.useState)({});
+  const reportKey = report ? report.id || `${report.date || ""}|${report.title || ""}|${report.body || ""}` : "";
   (0, import_react21.useEffect)(() => {
     setOpenMap({});
-  }, [report]);
-  if (!questions.length) return null;
+  }, [reportKey]);
+  if (!questions.length) {
+    if (enriching) {
+      return /* @__PURE__ */ import_react21.default.createElement("div", { className: "eg-practice" }, /* @__PURE__ */ import_react21.default.createElement("div", { className: "eg-ptitle" }, "练一练"), /* @__PURE__ */ import_react21.default.createElement("div", { className: "eg-practice-pending" }, /* @__PURE__ */ import_react21.default.createElement("span", { className: "eg-spin" }), "正在准备翻译小题…"));
+    }
+    if (enrichError) {
+      return /* @__PURE__ */ import_react21.default.createElement("div", { className: "eg-practice" }, /* @__PURE__ */ import_react21.default.createElement("div", { className: "eg-ptitle" }, "练一练"), /* @__PURE__ */ import_react21.default.createElement("div", { className: "eg-practice-err" }, /* @__PURE__ */ import_react21.default.createElement("span", null, enrichError), onRetryEnrich ? /* @__PURE__ */ import_react21.default.createElement("button", { type: "button", className: "eg-rslot-btn", onClick: onRetryEnrich }, "重试") : null));
+    }
+    return null;
+  }
   return /* @__PURE__ */ import_react21.default.createElement("div", { className: "eg-practice" }, /* @__PURE__ */ import_react21.default.createElement("div", { className: "eg-ptitle" }, "练一练"), questions.map((q, i) => {
     const isOpen = !!openMap[i];
     return /* @__PURE__ */ import_react21.default.createElement("div", { key: i, className: "eg-q" + (isOpen ? " reveal" : "") }, /* @__PURE__ */ import_react21.default.createElement("div", { className: "eg-q-head" }, /* @__PURE__ */ import_react21.default.createElement("span", { className: "eg-q-n" }, String(i + 1)), /* @__PURE__ */ import_react21.default.createElement("span", { className: "eg-q-zh" }, q.zh)), /* @__PURE__ */ import_react21.default.createElement(
@@ -2594,7 +2698,7 @@ function ReportPractice({ report, questions }) {
 }
 
 // src/client/features/report/Report.jsx
-function Report({ report, loading, error, onRefresh }) {
+function Report({ report, loading, enriching, enrichError, error, onRefresh, onRetryEnrich }) {
   const [reveal, setReveal] = (0, import_react22.useState)({});
   const [explains, setExplains] = (0, import_react22.useState)({});
   const reportRef = (0, import_react22.useRef)(null);
@@ -2603,11 +2707,12 @@ function Report({ report, loading, error, onRefresh }) {
     report,
     reportRef
   });
+  const reportKey = report ? report.id || `${report.date || ""}|${report.title || ""}|${report.body || ""}` : "";
   (0, import_react22.useEffect)(() => {
     reportGenRef.current += 1;
     setReveal({});
     setExplains({});
-  }, [report]);
+  }, [reportKey]);
   const body = report ? String(report.body || "") : "";
   const highlights = report && Array.isArray(report.highlights) ? report.highlights : [];
   const paragraphs = (0, import_react22.useMemo)(() => body.split(/\n{2,}/).filter(Boolean), [body]);
@@ -2631,8 +2736,8 @@ function Report({ report, loading, error, onRefresh }) {
       }
       return item;
     });
-    return revealable || items.some((it) => it.gist) ? { items, revealable } : null;
-  }, [report, paragraphs, segmentsByParagraph]);
+    return revealable || items.some((it) => it.gist) || enriching && items.some((it) => it.groups) ? { items, revealable } : null;
+  }, [report, paragraphs, segmentsByParagraph, enriching]);
   const toggleGist = (0, import_react22.useCallback)((key) => {
     setReveal((prev) => {
       const next = { ...prev };
@@ -2716,8 +2821,8 @@ function Report({ report, loading, error, onRefresh }) {
     (sum, it) => sum + it.sentences.filter((s, si) => s && s.zh && reveal["s" + (it.base + si)]).length,
     0
   ) : 0;
-  const footHint = structure ? revealedCount ? `已看 ${revealedCount}/${structure.revealable} 句译文 · 点「为什么？」看语法与译法讲解` : "读不懂时点句子看译文，点「段意」看段落大意" : matchedCount ? "标黄词可悬停或点击查译，可随时换一篇" : "按当前内容方向生成，可随时换一篇";
-  return /* @__PURE__ */ import_react22.default.createElement("div", { className: "eg-report", ref: reportRef, "data-nodrag": "true" }, /* @__PURE__ */ import_react22.default.createElement("div", { className: "r-top" }, /* @__PURE__ */ import_react22.default.createElement("h2", { className: "eg-rtitle" }, report.title || "Daily Report")), /* @__PURE__ */ import_react22.default.createElement("div", { className: "eg-rmeta-row" }, meta ? /* @__PURE__ */ import_react22.default.createElement("div", { className: "eg-rmeta" }, meta) : /* @__PURE__ */ import_react22.default.createElement("span", null), /* @__PURE__ */ import_react22.default.createElement(
+  const footHint = enriching ? "中文译文、段意与翻译小题生成中…" : structure ? revealedCount ? `已看 ${revealedCount}/${structure.revealable} 句译文 · 点「为什么？」看语法与译法讲解` : "读不懂时点句子看译文，点「段意」看段落大意" : matchedCount ? "标黄词可悬停或点击查译，可随时换一篇" : "按当前内容方向生成，可随时换一篇";
+  return /* @__PURE__ */ import_react22.default.createElement("div", { className: "eg-report", ref: reportRef, "data-nodrag": "true" }, /* @__PURE__ */ import_react22.default.createElement("div", { className: "r-top" }, /* @__PURE__ */ import_react22.default.createElement("h2", { className: "eg-rtitle" }, report.title || "Daily Report")), /* @__PURE__ */ import_react22.default.createElement("div", { className: "eg-rmeta-row" }, meta || enriching ? /* @__PURE__ */ import_react22.default.createElement("div", { className: "eg-rmeta-left" }, meta ? /* @__PURE__ */ import_react22.default.createElement("div", { className: "eg-rmeta" }, meta) : null, enriching ? /* @__PURE__ */ import_react22.default.createElement("span", { className: "eg-renrich-pill", role: "status", "aria-live": "polite" }, /* @__PURE__ */ import_react22.default.createElement("span", { className: "eg-spin" }), "中文译文生成中…") : null) : /* @__PURE__ */ import_react22.default.createElement("span", null), /* @__PURE__ */ import_react22.default.createElement(
     "button",
     {
       type: "button",
@@ -2727,7 +2832,7 @@ function Report({ report, loading, error, onRefresh }) {
       title: "重新生成一篇今日文章"
     },
     loading ? "生成中…" : "↻ 换一篇"
-  )), report.summary_zh ? /* @__PURE__ */ import_react22.default.createElement("p", { className: "eg-rsum" }, report.summary_zh) : null, segmentsByParagraph.map((segs, i) => /* @__PURE__ */ import_react22.default.createElement(
+  )), report.fallback ? /* @__PURE__ */ import_react22.default.createElement("div", { className: "eg-rnotice" }, /* @__PURE__ */ import_react22.default.createElement("span", { className: "eg-rnotice-text" }, "生成未成功，当前显示内置示例文章", report.fallbackReason ? `（${report.fallbackReason}）` : ""), /* @__PURE__ */ import_react22.default.createElement("button", { type: "button", className: "eg-rslot-btn", onClick: onRefresh, disabled: loading }, "重试")) : null, enrichError && !enriching && !report.fallback ? /* @__PURE__ */ import_react22.default.createElement("div", { className: "eg-rnotice is-err" }, /* @__PURE__ */ import_react22.default.createElement("span", { className: "eg-rnotice-text" }, enrichError), onRetryEnrich ? /* @__PURE__ */ import_react22.default.createElement("button", { type: "button", className: "eg-rslot-btn", onClick: onRetryEnrich }, "重试") : null) : null, error ? /* @__PURE__ */ import_react22.default.createElement("div", { className: "eg-rnotice is-err" }, error) : null, report.summary_zh ? /* @__PURE__ */ import_react22.default.createElement("p", { className: "eg-rsum" }, report.summary_zh) : null, segmentsByParagraph.map((segs, i) => /* @__PURE__ */ import_react22.default.createElement(
     ReportParagraph,
     {
       key: i,
@@ -2735,6 +2840,7 @@ function Report({ report, loading, error, onRefresh }) {
       segs,
       paragraphText: paragraphs[i],
       info: structure ? structure.items[i] : null,
+      enriching,
       reveal,
       explains,
       activeTermId: active ? active.id : null,
@@ -2754,7 +2860,16 @@ function Report({ report, loading, error, onRefresh }) {
       onLeave: termHandlers.onLeave,
       onClose: closePopover
     }
-  ), /* @__PURE__ */ import_react22.default.createElement(ReportPractice, { report, questions }), /* @__PURE__ */ import_react22.default.createElement("div", { className: "eg-report-foot" }, /* @__PURE__ */ import_react22.default.createElement("span", { className: "eg-report-foot-hint" }, footHint), /* @__PURE__ */ import_react22.default.createElement("button", { type: "button", className: "eg-btn", onClick: onRefresh, onPointerDown: bounceButton, disabled: loading }, loading ? "生成中…" : "↻ 换一篇")));
+  ), /* @__PURE__ */ import_react22.default.createElement(
+    ReportPractice,
+    {
+      report,
+      questions,
+      enriching,
+      enrichError,
+      onRetryEnrich
+    }
+  ), /* @__PURE__ */ import_react22.default.createElement("div", { className: "eg-report-foot" }, enrichError && !enriching ? /* @__PURE__ */ import_react22.default.createElement("span", { className: "eg-report-foot-err" }, /* @__PURE__ */ import_react22.default.createElement("span", null, enrichError), onRetryEnrich ? /* @__PURE__ */ import_react22.default.createElement("button", { type: "button", className: "eg-rslot-btn", onClick: onRetryEnrich }, "重试") : null) : /* @__PURE__ */ import_react22.default.createElement("span", { className: "eg-report-foot-hint" }, footHint), /* @__PURE__ */ import_react22.default.createElement("button", { type: "button", className: "eg-btn", onClick: onRefresh, onPointerDown: bounceButton, disabled: loading }, loading ? "生成中…" : "↻ 换一篇")));
 }
 
 // src/client/features/dashboard/Dashboard.jsx
@@ -3370,6 +3485,13 @@ var FALLBACK_RETENTIONS = [
   { id: 0.93, label: "93%", desc: "强化", detail: "复习频率适度提高、遗忘率更低，适合四六级 / 雅思 / 托福备考" },
   { id: 0.95, label: "95%", desc: "极致", detail: "高频巩固以维持极高记住率，适合考前冲刺（每日复习量明显增加）" }
 ];
+var FALLBACK_REASONING_EFFORTS = [
+  { id: "off", label: "关闭", desc: "极速", detail: "关闭思考过程，生成文章、出题与讲解响应最快（推荐）" },
+  { id: "low", label: "低", desc: "轻量", detail: "少量思考，在保持较快响应的同时略微提升表达准确度" },
+  { id: "medium", label: "中", desc: "均衡", detail: "适度思考，兼顾响应速度与句式、译文及讲解质量" },
+  { id: "high", label: "高", desc: "深度", detail: "深度思考，表达更细腻严谨，但等待时间会明显变长" },
+  { id: "auto", label: "跟随", desc: "默认", detail: "不覆盖思考强度，跟随 DSH 当前默认模型的思考设置" }
+];
 function shortBankName2(name) {
   return String(name || "").replace(/^内置\s*·\s*/, "");
 }
@@ -3422,7 +3544,7 @@ function useSettings({ onTopicChange, onPhraseConfigChange, onReportConfigChange
       setError("");
       const optimisticPatch = optimisticOverride !== void 0 ? optimisticOverride : typeof patchOrBuilder === "function" ? null : patchOrBuilder;
       const scalarPatch = {};
-      for (const key of ["confetti", "sessionLink", "bankLink", "bankRetries", "reportLevel", "topicId", "fsrsRetention"]) {
+      for (const key of ["confetti", "sessionLink", "bankLink", "bankRetries", "reportLevel", "topicId", "fsrsRetention", "reasoningEffort"]) {
         if (optimisticPatch && optimisticPatch[key] !== void 0) scalarPatch[key] = optimisticPatch[key];
       }
       const hasOptimisticTopics = Boolean(optimisticPatch && Array.isArray(optimisticPatch.customTopics));
@@ -3499,10 +3621,15 @@ function useSettings({ onTopicChange, onPhraseConfigChange, onReportConfigChange
     const fb = FALLBACK_RETENTIONS.find((f) => f.id === item.id);
     return item.detail || !fb ? item : { ...item, detail: fb.detail };
   });
+  const reasoningEfforts = (data && Array.isArray(data.reasoningEfforts) && data.reasoningEfforts.length ? data.reasoningEfforts : FALLBACK_REASONING_EFFORTS).map((item) => {
+    const fb = FALLBACK_REASONING_EFFORTS.find((f) => f.id === item.id);
+    return item.detail || !fb ? item : { ...item, detail: fb.detail };
+  });
   const customTopics = settings.customTopics || [];
   const activeId = settings.topicId;
   const activeLevel = settings.reportLevel || "B1";
   const activeRetention = Number.isFinite(Number(settings.fsrsRetention)) ? Number(settings.fsrsRetention) : 0.9;
+  const activeReasoningEffort = settings.reasoningEffort || "off";
   const chooseDirection = (id) => {
     if (id === activeId) return;
     save({ topicId: id }, true);
@@ -3514,6 +3641,10 @@ function useSettings({ onTopicChange, onPhraseConfigChange, onReportConfigChange
   const chooseRetention = (value) => {
     if (value === activeRetention) return;
     save({ fsrsRetention: value }, false);
+  };
+  const chooseReasoningEffort = (value) => {
+    if (!value || value === activeReasoningEffort) return;
+    save({ reasoningEffort: value }, false);
   };
   const addCustom = (rawLabel) => {
     const label = String(rawLabel || "").trim();
@@ -3628,10 +3759,12 @@ function useSettings({ onTopicChange, onPhraseConfigChange, onReportConfigChange
     directions,
     levels,
     retentions,
+    reasoningEfforts,
     customTopics,
     activeId,
     activeLevel,
     activeRetention,
+    activeReasoningEffort,
     banks,
     activeBankId,
     builtinBanks,
@@ -3643,6 +3776,7 @@ function useSettings({ onTopicChange, onPhraseConfigChange, onReportConfigChange
     chooseDirection,
     chooseReportLevel,
     chooseRetention,
+    chooseReasoningEffort,
     addCustom,
     removeCustom,
     setRetries,
@@ -3654,7 +3788,27 @@ function useSettings({ onTopicChange, onPhraseConfigChange, onReportConfigChange
 
 // src/client/features/settings/PracticePrefsSection.jsx
 var import_react28 = __toESM(require("react"), 1);
-function PracticePrefsSection({ settings, onSave, onSetRetries }) {
+function PracticePrefsSection({
+  settings,
+  reasoningEfforts,
+  activeReasoningEffort,
+  onSave,
+  onSetRetries,
+  onChooseReasoningEffort
+}) {
+  const effortOptions = Array.isArray(reasoningEfforts) ? reasoningEfforts : [];
+  const selectableEfforts = effortOptions.filter((item) => item.id !== "off");
+  const currentEffort = activeReasoningEffort || "off";
+  const thinkingOn = currentEffort !== "off";
+  const lastEnabledRef = (0, import_react28.useRef)("low");
+  const [hoverEffort, setHoverEffort] = (0, import_react28.useState)(null);
+  (0, import_react28.useEffect)(() => {
+    if (currentEffort && currentEffort !== "off") {
+      lastEnabledRef.current = currentEffort;
+    }
+  }, [currentEffort]);
+  const activeEffortObj = selectableEfforts.find((item) => item.id === currentEffort) || selectableEfforts[0] || null;
+  const shownEffortObj = (hoverEffort ? selectableEfforts.find((item) => item.id === hoverEffort) : null) || activeEffortObj;
   return /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-section" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-section-head" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-section-label" }, "练习偏好")), /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-card" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-row" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-head" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-info" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-title" }, "庆祝效果"), /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-desc" }, "答对时从四周喷射彩带。")), /* @__PURE__ */ import_react28.default.createElement(
     "button",
     {
@@ -3665,7 +3819,36 @@ function PracticePrefsSection({ settings, onSave, onSetRetries }) {
       "aria-label": "彩带庆祝",
       onClick: () => onSave({ confetti: !settings.confetti }, false)
     }
-  ))), /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-row" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-head" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-info" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-title" }, "会话关联"), /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-desc" }, "开启后，短语训练会读取当前会话并截取部分对话内容作为翻译素材（自动过滤代码与过长文本），不再关注词库关联和内容方向；当前会话暂无可用内容时自动回退。")), /* @__PURE__ */ import_react28.default.createElement(
+  ))), /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-row" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-head" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-info" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-title" }, "深度思考"), /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-desc" }, "关闭后将跳过思考过程以大幅加快文章生成、出题与讲解速度；开启后可按需调节模型思考强度（仅对支持思考的模型生效）。")), /* @__PURE__ */ import_react28.default.createElement(
+    "button",
+    {
+      type: "button",
+      className: "eg-switch",
+      role: "switch",
+      "aria-checked": thinkingOn ? "true" : "false",
+      "aria-label": "深度思考",
+      onClick: () => onChooseReasoningEffort(thinkingOn ? "off" : lastEnabledRef.current || "low")
+    }
+  )), /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-collapse" + (thinkingOn ? " open" : ""), "aria-hidden": thinkingOn ? "false" : "true" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-collapse-inner" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-sub is-stack" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-effort-head" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-sub-title" }, "思考强度"), activeEffortObj ? /* @__PURE__ */ import_react28.default.createElement("span", { className: "eg-effort-badge" }, activeEffortObj.label + (activeEffortObj.desc ? " · " + activeEffortObj.desc : "")) : null), /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-effort-list", onMouseLeave: () => setHoverEffort(null) }, selectableEfforts.map((item) => {
+    const isActive = item.id === currentEffort;
+    return /* @__PURE__ */ import_react28.default.createElement(
+      "button",
+      {
+        type: "button",
+        key: item.id,
+        className: "eg-effort-btn" + (isActive ? " active" : ""),
+        "aria-pressed": isActive ? "true" : "false",
+        tabIndex: thinkingOn ? void 0 : -1,
+        title: item.label + (item.desc ? " · " + item.desc : ""),
+        onMouseEnter: () => setHoverEffort(item.id),
+        onFocus: () => setHoverEffort(item.id),
+        onBlur: () => setHoverEffort((prev) => prev === item.id ? null : prev),
+        onClick: () => onChooseReasoningEffort(item.id)
+      },
+      /* @__PURE__ */ import_react28.default.createElement("span", { className: "eg-effort-label" }, item.label),
+      item.desc ? /* @__PURE__ */ import_react28.default.createElement("span", { className: "eg-effort-desc" }, item.desc) : null
+    );
+  })), shownEffortObj && shownEffortObj.detail ? /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-effort-detail" }, shownEffortObj.detail) : null)))), /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-row" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-head" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-info" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-title" }, "会话关联"), /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-desc" }, "开启后，短语训练会读取当前会话并截取部分对话内容作为翻译素材（自动过滤代码与过长文本），不再关注词库关联和内容方向；当前会话暂无可用内容时自动回退。")), /* @__PURE__ */ import_react28.default.createElement(
     "button",
     {
       type: "button",
@@ -3983,10 +4166,12 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChan
     directions,
     levels,
     retentions,
+    reasoningEfforts,
     customTopics,
     activeId,
     activeLevel,
     activeRetention,
+    activeReasoningEffort,
     activeBankId,
     builtinBanks,
     customBanks,
@@ -3997,6 +4182,7 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChan
     chooseDirection,
     chooseReportLevel,
     chooseRetention,
+    chooseReasoningEffort,
     addCustom,
     removeCustom,
     setRetries,
@@ -4024,7 +4210,17 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChan
   const activeDirection = directions.find((item) => item.id === activeId);
   const fallbackLevel = levels[2] || { id: activeLevel, label: activeLevel, desc: "", detail: "" };
   const fallbackRetention = retentions.find((item) => item.id === 0.9) || { id: activeRetention, label: Math.round(activeRetention * 100) + "%", desc: "自定义", detail: "目标记忆保留率越高，复习安排越紧密。" };
-  return /* @__PURE__ */ import_react33.default.createElement("div", { className: "eg-settings" }, /* @__PURE__ */ import_react33.default.createElement(PracticePrefsSection, { settings, onSave: save, onSetRetries: setRetries }), /* @__PURE__ */ import_react33.default.createElement(
+  return /* @__PURE__ */ import_react33.default.createElement("div", { className: "eg-settings" }, /* @__PURE__ */ import_react33.default.createElement(
+    PracticePrefsSection,
+    {
+      settings,
+      reasoningEfforts,
+      activeReasoningEffort,
+      onSave: save,
+      onSetRetries: setRetries,
+      onChooseReasoningEffort: chooseReasoningEffort
+    }
+  ), /* @__PURE__ */ import_react33.default.createElement(
     WordBankSection,
     {
       activeBankId,
@@ -4237,8 +4433,11 @@ function EnglishGymBoard() {
       {
         report: dailyReport.report,
         loading: dailyReport.loading,
+        enriching: dailyReport.enriching,
+        enrichError: dailyReport.enrichError,
         error: dailyReport.error,
-        onRefresh: () => dailyReport.refresh(true)
+        onRefresh: () => dailyReport.refresh(true),
+        onRetryEnrich: dailyReport.retryEnrich
       }
     ) : tab === "dashboard" ? /* @__PURE__ */ import_react34.default.createElement(Dashboard, { key: "dashboard" }) : /* @__PURE__ */ import_react34.default.createElement(
       SettingsPanel,

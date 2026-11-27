@@ -1,13 +1,44 @@
 import React, { useEffect, useState } from 'react'
 
-export function ReportPractice({ report, questions }) {
+export function ReportPractice({ report, questions, enriching, enrichError, onRetryEnrich }) {
   const [openMap, setOpenMap] = useState({})
+  const reportKey = report
+    ? report.id || `${report.date || ''}|${report.title || ''}|${report.body || ''}`
+    : ''
 
   useEffect(() => {
     setOpenMap({})
-  }, [report])
+  }, [reportKey])
 
-  if (!questions.length) return null
+  if (!questions.length) {
+    if (enriching) {
+      return (
+        <div className="eg-practice">
+          <div className="eg-ptitle">练一练</div>
+          <div className="eg-practice-pending">
+            <span className="eg-spin" />
+            正在准备翻译小题…
+          </div>
+        </div>
+      )
+    }
+    if (enrichError) {
+      return (
+        <div className="eg-practice">
+          <div className="eg-ptitle">练一练</div>
+          <div className="eg-practice-err">
+            <span>{enrichError}</span>
+            {onRetryEnrich ? (
+              <button type="button" className="eg-rslot-btn" onClick={onRetryEnrich}>
+                重试
+              </button>
+            ) : null}
+          </div>
+        </div>
+      )
+    }
+    return null
+  }
 
   return (
     <div className="eg-practice">

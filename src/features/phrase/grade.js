@@ -37,7 +37,7 @@ function normalizeHighlights(raw) {
  * deterministic fuzzy fallback if no model is available.
  * @returns {Promise<{correct:boolean, exact:boolean, score:number, reference:string, tip:string, corrected?:string, highlights?:Array<{en:string, zh:string}>}>}
  */
-export async function gradeAnswer(ctx, config, { zh, reference, answer }) {
+export async function gradeAnswer(ctx, config, { zh, reference, answer, reasoningEffort }) {
   const local = localGrade(answer, reference)
   if (!normalize(answer)) {
     return { correct: false, exact: false, score: 0, reference, tip: '请先输入你的英文译文再提交。', corrected: reference, highlights: [] }
@@ -62,6 +62,7 @@ export async function gradeAnswer(ctx, config, { zh, reference, answer }) {
       prompt,
       temperature: 0,
       maxTokens: 800,
+      reasoningEffort,
     })
     const parsed = extractJson(text)
     if (parsed && typeof parsed.correct === 'boolean') {

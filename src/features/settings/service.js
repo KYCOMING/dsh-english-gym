@@ -53,6 +53,22 @@ export function normalizeFsrsRetention(value, fallback = 0.9) {
   return Math.round(Math.min(0.97, Math.max(0.75, num)) * 100) / 100
 }
 
+export const REASONING_EFFORTS = [
+  { id: 'off', label: '关闭', desc: '极速', detail: '关闭思考过程，生成文章、出题与讲解响应最快（推荐）' },
+  { id: 'low', label: '低', desc: '轻量', detail: '少量思考，在保持较快响应的同时略微提升表达准确度' },
+  { id: 'medium', label: '中', desc: '均衡', detail: '适度思考，兼顾响应速度与句式、译文及讲解质量' },
+  { id: 'high', label: '高', desc: '深度', detail: '深度思考，表达更细腻严谨，但等待时间会明显变长' },
+  { id: 'auto', label: '跟随', desc: '默认', detail: '不覆盖思考强度，跟随 DSH 当前默认模型的思考设置' },
+]
+
+export function normalizeReasoningEffort(value, fallback = 'off') {
+  const id = String(value || '').trim().toLowerCase()
+  if (REASONING_EFFORTS.some((item) => item.id === id)) return id
+  const fb = String(fallback || '').trim().toLowerCase()
+  if (REASONING_EFFORTS.some((item) => item.id === fb)) return fb
+  return 'off'
+}
+
 export const DEFAULT_SETTINGS = {
   confetti: true,
   topicId: 'ai',
@@ -62,6 +78,7 @@ export const DEFAULT_SETTINGS = {
   sessionLink: false,
   reportLevel: 'B1',
   fsrsRetention: 0.9,
+  reasoningEffort: 'off',
 }
 
 export const MAX_BANK_RETRIES = 5
@@ -119,6 +136,7 @@ export function normalizeSettings(raw, fallbackLevel) {
     sessionLink: source.sessionLink === true,
     reportLevel: normalizeReportLevel(source.reportLevel, fallbackLevel || DEFAULT_SETTINGS.reportLevel),
     fsrsRetention: normalizeFsrsRetention(source.fsrsRetention, DEFAULT_SETTINGS.fsrsRetention),
+    reasoningEffort: normalizeReasoningEffort(source.reasoningEffort, DEFAULT_SETTINGS.reasoningEffort),
   }
 }
 
@@ -143,7 +161,13 @@ export function createSettingsService({ dir, conf }) {
   function get() {
     const state = loadState(dir)
     const settings = normalizeSettings(state.settings, defaultLevel)
-    return { settings, directions: listDirections(settings), levels: REPORT_LEVELS, retentions: FSRS_RETENTIONS }
+    return {
+      settings,
+      directions: listDirections(settings),
+      levels: REPORT_LEVELS,
+      retentions: FSRS_RETENTIONS,
+      reasoningEfforts: REASONING_EFFORTS,
+    }
   }
 
   function update(patch) {
@@ -161,6 +185,9 @@ export function createSettingsService({ dir, conf }) {
     }
     if (body.fsrsRetention !== undefined) {
       next.fsrsRetention = normalizeFsrsRetention(body.fsrsRetention, next.fsrsRetention)
+    }
+    if (body.reasoningEffort !== undefined) {
+      next.reasoningEffort = normalizeReasoningEffort(body.reasoningEffort, next.reasoningEffort)
     }
     if (Array.isArray(body.customTopics)) next.customTopics = normalizeCustomTopics(body.customTopics)
     if (typeof body.topicId === 'string' && body.topicId) {
@@ -185,5 +212,9 @@ export function createSettingsService({ dir, conf }) {
     return get().settings.reportLevel
   }
 
-  return { get, update, getTopic, getReportLevel }
+  function getReasoningEffort() {
+    return get().settings.reasoningEffort
+  }
+
+  return { get, update, getTopic, getReportLevel, getReasoningEffort }
 }

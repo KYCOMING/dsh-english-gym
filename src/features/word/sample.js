@@ -103,19 +103,83 @@ function escapeRegExp(text) {
   return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
+function buildInflectionVariants(term) {
+  if (!/^[a-z]+$/i.test(term)) return [term]
+  const variants = new Set([term])
+  const len = term.length
+
+  if (len >= 3) {
+    variants.add(term + 's')
+    if (/(?:s|x|z|ch|sh|o)$/i.test(term)) variants.add(term + 'es')
+    if (/[bcdfghjklmnpqrstvwxyz]y$/i.test(term)) variants.add(term.slice(0, -1) + 'ies')
+  }
+
+  if (/[bcdfghjklmnpqrstvwxyz]y$/i.test(term)) {
+    if (len >= 3) {
+      const stem = term.slice(0, -1)
+      variants.add(stem + 'ied')
+      variants.add(stem + 'ier')
+      variants.add(stem + 'iest')
+      variants.add(term + 'ing')
+    }
+  } else if (/e$/i.test(term)) {
+    if (len >= 3) {
+      variants.add(term + 'd')
+      variants.add(term + 'r')
+      variants.add(term + 'st')
+      if (!/(?:ee|ye|oe)$/i.test(term)) {
+        variants.add(term.slice(0, -1) + 'ing')
+      }
+    }
+  } else if (len >= 4) {
+    variants.add(term + 'ed')
+    variants.add(term + 'ing')
+    variants.add(term + 'er')
+    variants.add(term + 'est')
+    if (/[bcdfghjklmnpqrstvwxyz][aeiou][bcdfghjklmnpqrstvz]$/i.test(term)) {
+      const doubled = term + term[term.length - 1]
+      variants.add(doubled + 'ed')
+      variants.add(doubled + 'ing')
+      variants.add(doubled + 'er')
+      variants.add(doubled + 'est')
+    }
+  }
+
+  return Array.from(variants)
+}
+
 /** Which of the candidate words actually appear in the generated English text. */
-export function usedBankWords(text, candidates) {
+export function usedBankWords(text, candidates, highlights = []) {
   const source = String(text || '')
   const lower = source.toLowerCase()
+  const confirmed = new Set()
+  for (const h of Array.isArray(highlights) ? highlights : []) {
+    if (!h || !h.fromBank) continue
+    const w = clean(h.word).toLowerCase()
+    if (w) confirmed.add(w)
+    const lemma = clean(h.lemma).toLowerCase()
+    if (lemma) confirmed.add(lemma)
+  }
+
   const used = []
+  const seen = new Set()
   for (const item of candidates || []) {
-    const term = clean(item && item.word).toLowerCase()
-    if (!term) continue
-    if (/\s/.test(term)) {
-      if (lower.includes(term)) used.push(item.word)
+    const rawWord = clean(item && item.word)
+    const term = rawWord.toLowerCase()
+    if (!term || seen.has(term)) continue
+    let matched = false
+    if (confirmed.has(term)) {
+      matched = true
+    } else if (/\s/.test(term)) {
+      matched = lower.includes(term)
     } else {
-      const re = new RegExp(`\\b${escapeRegExp(term)}\\b`, 'i')
-      if (re.test(source)) used.push(item.word)
+      const alts = buildInflectionVariants(term).map(escapeRegExp).join('|')
+      const re = new RegExp(`\\b(?:${alts})\\b`, 'i')
+      matched = re.test(source)
+    }
+    if (matched) {
+      seen.add(term)
+      used.push(rawWord)
     }
   }
   return used
@@ -126,4 +190,11 @@ export function formatCandidateList(candidates) {
   return (candidates || [])
     .map((item) => `- ${item.word}${item.pos ? ` (${item.pos})` : ''}: ${item.meaning}`)
     .join('\n')
+}
+
+/** Compact single-line candidate list without meanings, for faster report prompts. */
+export function formatCompactCandidateList(candidates) {
+  return (candidates || [])
+    .map((item) => `${item.word}${item.pos ? ` (${item.pos})` : ''}`)
+    .join(', ')
 }

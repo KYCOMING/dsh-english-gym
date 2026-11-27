@@ -61,6 +61,7 @@ export function ReportParagraph({
   segs,
   paragraphText,
   info,
+  enriching,
   reveal,
   explains,
   activeTermId,
@@ -111,7 +112,7 @@ export function ReportParagraph({
     )
   }
 
-  if (!info || (!info.groups && !info.gist)) {
+  if (!info || (!info.groups && !info.gist && !enriching)) {
     return <p className="eg-rp">{segs.map(renderSeg)}</p>
   }
 
@@ -139,7 +140,7 @@ export function ReportParagraph({
         const n = info.base + g.index
         const s = info.sentences[g.index] || {}
         const key = 's' + n
-        const canReveal = !!(s && s.zh)
+        const canReveal = Boolean((s && s.zh) || (enriching && s && s.en))
         const isOpen = canReveal && !!reveal[key]
         const segList = isOpen && hasSentenceHint(s) ? annotateSentenceSegments(s.en, g.segs, s) : g.segs
 
@@ -165,16 +166,17 @@ export function ReportParagraph({
     : segs.map(renderSeg)
 
   const gistKey = 'g' + index
-  const gistOpen = !!(info.gist && reveal[gistKey])
+  const canShowGist = Boolean(info.gist || enriching)
+  const gistOpen = !!(canShowGist && reveal[gistKey])
   const openSentences = info.sentences
     .map((s, si) => ({ s, si, n: info.base + si }))
-    .filter(({ s, n }) => s && s.zh && reveal['s' + n])
+    .filter(({ s, n }) => reveal['s' + n] && ((s && s.zh) || (enriching && s && s.en)))
 
   return (
     <>
       <p className="eg-rp">
         {children}
-        {info.gist ? (
+        {canShowGist ? (
           <button
             type="button"
             className="eg-rgist-btn"
@@ -191,7 +193,14 @@ export function ReportParagraph({
           {gistOpen ? (
             <div key={gistKey} className="eg-rslot-row is-gist">
               <span className="eg-rslot-tag">段意</span>
-              <span className="eg-rslot-zh">{info.gist}</span>
+              {info.gist ? (
+                <span className="eg-rslot-zh">{info.gist}</span>
+              ) : (
+                <span className="eg-rslot-zh is-pending">
+                  <span className="eg-spin" />
+                  正在加载本段大意…
+                </span>
+              )}
               <button type="button" className="eg-rslot-x" aria-label="收起段意" onClick={() => onToggleGist(gistKey)}>
                 ×
               </button>
@@ -208,24 +217,33 @@ export function ReportParagraph({
               <div key={skey} className="eg-rslot-row">
                 <span className="eg-rslot-tag">{String(n + 1)}</span>
                 <div className="eg-rslot-body">
-                  <div className="eg-rslot-zh">{s.zh}</div>
-                  <div className="eg-rslot-tools">
-                    <button
-                      type="button"
-                      className={'eg-rslot-btn' + (expOpen ? ' is-active' : '')}
-                      aria-expanded={expOpen ? 'true' : 'false'}
-                      disabled={expLoading}
-                      onClick={() => onExplainToggle(explainPayload)}
-                    >
-                      {expLoading ? '解析中…' : expOpen ? '收起讲解' : '为什么？'}
-                    </button>
-                  </div>
-                  {expOpen ? (
-                    <SentenceExplainBox
-                      exp={exp}
-                      onRetry={() => onExplainToggle({ ...explainPayload, retry: true })}
-                    />
-                  ) : null}
+                  {s.zh ? (
+                    <>
+                      <div className="eg-rslot-zh">{s.zh}</div>
+                      <div className="eg-rslot-tools">
+                        <button
+                          type="button"
+                          className={'eg-rslot-btn' + (expOpen ? ' is-active' : '')}
+                          aria-expanded={expOpen ? 'true' : 'false'}
+                          disabled={expLoading}
+                          onClick={() => onExplainToggle(explainPayload)}
+                        >
+                          {expLoading ? '解析中…' : expOpen ? '收起讲解' : '为什么？'}
+                        </button>
+                      </div>
+                      {expOpen ? (
+                        <SentenceExplainBox
+                          exp={exp}
+                          onRetry={() => onExplainToggle({ ...explainPayload, retry: true })}
+                        />
+                      ) : null}
+                    </>
+                  ) : (
+                    <div className="eg-rslot-zh is-pending">
+                      <span className="eg-spin" />
+                      正在加载本句译文…
+                    </div>
+                  )}
                 </div>
                 <button
                   type="button"

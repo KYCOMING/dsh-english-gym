@@ -57,11 +57,12 @@ function recentPrompts(state, limit = 6) {
 }
 
 /** Phrase translation drill: generate one prompt, grade one answer. */
-export function createPhraseService({ ctx, conf, dir, getTopic }) {
+export function createPhraseService({ ctx, conf, dir, getTopic, getReasoningEffort }) {
   async function nextQuestion(input) {
     const sessionId = typeof input === 'object' && input ? input.sessionId : ''
     const snapshot = loadState(dir)
     const opts = normalizeSettings(snapshot.settings)
+    const reasoningEffort = typeof getReasoningEffort === 'function' ? getReasoningEffort() : opts.reasoningEffort
     const sessionExcerpt = opts.sessionLink && sessionId ? await readSessionExcerpt(ctx, sessionId) : ''
     let picked
     if (sessionExcerpt) {
@@ -70,6 +71,7 @@ export function createPhraseService({ ctx, conf, dir, getTopic }) {
         level: conf.level,
         sessionContext: sessionExcerpt,
         avoid: recentPrompts(snapshot, 6),
+        reasoningEffort,
       })
       picked = {
         zh: q.zh,
@@ -85,7 +87,7 @@ export function createPhraseService({ ctx, conf, dir, getTopic }) {
       let best = null
       let last = null
       for (let attempt = 0; attempt <= retries; attempt += 1) {
-        const q = await generateQuestion(ctx, conf, { level: conf.level, topic, words })
+        const q = await generateQuestion(ctx, conf, { level: conf.level, topic, words, reasoningEffort })
         last = q
         if (!q || q.fallback) break
         const usedCount = Array.isArray(q.used) ? q.used.length : 0
@@ -137,7 +139,9 @@ export function createPhraseService({ ctx, conf, dir, getTopic }) {
       error.status = 409
       throw error
     }
-    const result = await gradeAnswer(ctx, conf, { zh: pending.zh, reference: pending.en, answer })
+    const reasoningEffort =
+      typeof getReasoningEffort === 'function' ? getReasoningEffort() : normalizeSettings(snapshot.settings).reasoningEffort
+    const result = await gradeAnswer(ctx, conf, { zh: pending.zh, reference: pending.en, answer, reasoningEffort })
     // Reload state after awaiting the grader so concurrent updates to state.json survive.
     const state = loadState(dir)
     if (state.pending[id]) {

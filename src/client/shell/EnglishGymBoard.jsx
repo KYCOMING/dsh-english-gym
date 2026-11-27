@@ -208,8 +208,11 @@ export function EnglishGymBoard() {
             <Report
               report={dailyReport.report}
               loading={dailyReport.loading}
+              enriching={dailyReport.enriching}
+              enrichError={dailyReport.enrichError}
               error={dailyReport.error}
               onRefresh={() => dailyReport.refresh(true)}
+              onRetryEnrich={dailyReport.retryEnrich}
             />
           ) : tab === 'dashboard' ? (
             <Dashboard key="dashboard" />

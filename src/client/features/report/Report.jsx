@@ -7,7 +7,7 @@ import { WordPopover } from './WordPopover.jsx'
 import { ReportParagraph } from './ReportParagraph.jsx'
 import { ReportPractice } from './ReportPractice.jsx'
 
-export function Report({ report, loading, error, onRefresh }) {
+export function Report({ report, loading, enriching, enrichError, error, onRefresh, onRetryEnrich }) {
   // Progressive reveals: 'g<p>' = paragraph gist, 's<n>' = sentence n translation + inline structure cues.
   const [reveal, setReveal] = useState({})
   // On-demand sentence explanations: { [key]: { open, loading, data, error } }
@@ -20,11 +20,15 @@ export function Report({ report, loading, error, onRefresh }) {
     reportRef,
   })
 
+  const reportKey = report
+    ? report.id || `${report.date || ''}|${report.title || ''}|${report.body || ''}`
+    : ''
+
   useEffect(() => {
     reportGenRef.current += 1
     setReveal({})
     setExplains({})
-  }, [report])
+  }, [reportKey])
 
   const body = report ? String(report.body || '') : ''
   const highlights = report && Array.isArray(report.highlights) ? report.highlights : []
@@ -50,8 +54,10 @@ export function Report({ report, loading, error, onRefresh }) {
       }
       return item
     })
-    return revealable || items.some((it) => it.gist) ? { items, revealable } : null
-  }, [report, paragraphs, segmentsByParagraph])
+    return revealable || items.some((it) => it.gist) || (enriching && items.some((it) => it.groups))
+      ? { items, revealable }
+      : null
+  }, [report, paragraphs, segmentsByParagraph, enriching])
 
   const toggleGist = useCallback((key) => {
     setReveal((prev) => {
@@ -161,13 +167,15 @@ export function Report({ report, loading, error, onRefresh }) {
         0,
       )
     : 0
-  const footHint = structure
-    ? revealedCount
-      ? `已看 ${revealedCount}/${structure.revealable} 句译文 · 点「为什么？」看语法与译法讲解`
-      : '读不懂时点句子看译文，点「段意」看段落大意'
-    : matchedCount
-      ? '标黄词可悬停或点击查译，可随时换一篇'
-      : '按当前内容方向生成，可随时换一篇'
+  const footHint = enriching
+    ? '中文译文、段意与翻译小题生成中…'
+    : structure
+      ? revealedCount
+        ? `已看 ${revealedCount}/${structure.revealable} 句译文 · 点「为什么？」看语法与译法讲解`
+        : '读不懂时点句子看译文，点「段意」看段落大意'
+      : matchedCount
+        ? '标黄词可悬停或点击查译，可随时换一篇'
+        : '按当前内容方向生成，可随时换一篇'
 
   return (
     <div className="eg-report" ref={reportRef} data-nodrag="true">
@@ -175,7 +183,19 @@ export function Report({ report, loading, error, onRefresh }) {
         <h2 className="eg-rtitle">{report.title || 'Daily Report'}</h2>
       </div>
       <div className="eg-rmeta-row">
-        {meta ? <div className="eg-rmeta">{meta}</div> : <span />}
+        {meta || enriching ? (
+          <div className="eg-rmeta-left">
+            {meta ? <div className="eg-rmeta">{meta}</div> : null}
+            {enriching ? (
+              <span className="eg-renrich-pill" role="status" aria-live="polite">
+                <span className="eg-spin" />
+                中文译文生成中…
+              </span>
+            ) : null}
+          </div>
+        ) : (
+          <span />
+        )}
         <button
           type="button"
           className="eg-rrefresh"
@@ -186,6 +206,27 @@ export function Report({ report, loading, error, onRefresh }) {
           {loading ? '生成中…' : '↻ 换一篇'}
         </button>
       </div>
+      {report.fallback ? (
+        <div className="eg-rnotice">
+          <span className="eg-rnotice-text">
+            生成未成功，当前显示内置示例文章{report.fallbackReason ? `（${report.fallbackReason}）` : ''}
+          </span>
+          <button type="button" className="eg-rslot-btn" onClick={onRefresh} disabled={loading}>
+            重试
+          </button>
+        </div>
+      ) : null}
+      {enrichError && !enriching && !report.fallback ? (
+        <div className="eg-rnotice is-err">
+          <span className="eg-rnotice-text">{enrichError}</span>
+          {onRetryEnrich ? (
+            <button type="button" className="eg-rslot-btn" onClick={onRetryEnrich}>
+              重试
+            </button>
+          ) : null}
+        </div>
+      ) : null}
+      {error ? <div className="eg-rnotice is-err">{error}</div> : null}
       {report.summary_zh ? <p className="eg-rsum">{report.summary_zh}</p> : null}
       {segmentsByParagraph.map((segs, i) => (
         <ReportParagraph
@@ -194,6 +235,7 @@ export function Report({ report, loading, error, onRefresh }) {
           segs={segs}
           paragraphText={paragraphs[i]}
           info={structure ? structure.items[i] : null}
+          enriching={enriching}
           reveal={reveal}
           explains={explains}
           activeTermId={active ? active.id : null}
@@ -212,9 +254,26 @@ export function Report({ report, loading, error, onRefresh }) {
         onLeave={termHandlers.onLeave}
         onClose={closePopover}
       />
-      <ReportPractice report={report} questions={questions} />
+      <ReportPractice
+        report={report}
+        questions={questions}
+        enriching={enriching}
+        enrichError={enrichError}
+        onRetryEnrich={onRetryEnrich}
+      />
       <div className="eg-report-foot">
-        <span className="eg-report-foot-hint">{footHint}</span>
+        {enrichError && !enriching ? (
+          <span className="eg-report-foot-err">
+            <span>{enrichError}</span>
+            {onRetryEnrich ? (
+              <button type="button" className="eg-rslot-btn" onClick={onRetryEnrich}>
+                重试
+              </button>
+            ) : null}
+          </span>
+        ) : (
+          <span className="eg-report-foot-hint">{footHint}</span>
+        )}
         <button type="button" className="eg-btn" onClick={onRefresh} onPointerDown={bounceButton} disabled={loading}>
           {loading ? '生成中…' : '↻ 换一篇'}
         </button>

@@ -19,10 +19,12 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportCon
     directions,
     levels,
     retentions,
+    reasoningEfforts,
     customTopics,
     activeId,
     activeLevel,
     activeRetention,
+    activeReasoningEffort,
     activeBankId,
     builtinBanks,
     customBanks,
@@ -33,6 +35,7 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportCon
     chooseDirection,
     chooseReportLevel,
     chooseRetention,
+    chooseReasoningEffort,
     addCustom,
     removeCustom,
     setRetries,
@@ -75,7 +78,14 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportCon
 
   return (
     <div className="eg-settings">
-      <PracticePrefsSection settings={settings} onSave={save} onSetRetries={setRetries} />
+      <PracticePrefsSection
+        settings={settings}
+        reasoningEfforts={reasoningEfforts}
+        activeReasoningEffort={activeReasoningEffort}
+        onSave={save}
+        onSetRetries={setRetries}
+        onChooseReasoningEffort={chooseReasoningEffort}
+      />
       <WordBankSection
         activeBankId={activeBankId}
         activeBankObj={activeBankObj}

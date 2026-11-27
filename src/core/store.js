@@ -60,7 +60,7 @@ export function defaultState() {
     wordMemory: {}, // lowercased word -> FSRS-6 { state, stability, difficulty, dueAt, lastAt, reps, lapses, mastered, fsrs }
     wordReviewStreak: 0,
     wordBankId: 'builtin', // active word bank (builtin or an imported bank id)
-    settings: { confetti: true, topicId: 'ai', customTopics: [], bankLink: true, bankRetries: 1, sessionLink: false, fsrsRetention: 0.9 },
+    settings: { confetti: true, topicId: 'ai', customTopics: [], bankLink: true, bankRetries: 1, sessionLink: false, fsrsRetention: 0.9, reasoningEffort: 'off' },
     // Per-day study log used by the dashboard:
     // dayKey -> { words: [{ en, zh, pos, ok, at }], phrases: [{ zh, en, answer, ok, score, at }] }
     log: {},
