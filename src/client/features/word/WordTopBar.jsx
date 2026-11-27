@@ -1,21 +1,60 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { MODES } from './srsFormat.js'
+
+const useIsoLayoutEffect = React.useLayoutEffect || useEffect
 
 export function WordTopBar({ mode, dueCount, busy, liveStats, learningCount, masteredCount, bankLabel, onSwitchMode }) {
   const [hoverMode, setHoverMode] = useState('')
+  const [slider, setSlider] = useState({ left: 0, width: 0, ready: false })
+  const listRef = useRef(null)
+  const tabRefs = useRef({})
   const shownMode = MODES.find((m) => m.id === (hoverMode || mode)) || MODES[0]
+
+  useIsoLayoutEffect(() => {
+    const measure = () => {
+      const el = tabRefs.current && tabRefs.current[mode]
+      if (!el) return
+      const left = el.offsetLeft
+      const width = el.offsetWidth
+      setSlider((prev) =>
+        prev.ready && prev.left === left && prev.width === width ? prev : { left, width, ready: true },
+      )
+    }
+    measure()
+    const raf = requestAnimationFrame(measure)
+    let ro = null
+    if (typeof ResizeObserver === 'function' && listRef.current) {
+      ro = new ResizeObserver(measure)
+      ro.observe(listRef.current)
+    }
+    return () => {
+      cancelAnimationFrame(raf)
+      if (ro) ro.disconnect()
+    }
+  }, [mode, dueCount])
 
   return (
     <div className="eg-srs-bar" data-nodrag="true">
       <div
-        className="eg-srs-modes"
+        ref={listRef}
+        className={'eg-srs-modes' + (slider.ready ? ' has-slider' : '')}
         role="tablist"
         aria-label="出词模式"
         onMouseLeave={() => setHoverMode('')}
       >
+        {slider.ready ? (
+          <span
+            className="eg-srs-indicator"
+            aria-hidden="true"
+            style={{ transform: 'translateX(' + slider.left + 'px)', width: slider.width + 'px' }}
+          />
+        ) : null}
         {MODES.map((m) => (
           <button
             key={m.id}
+            ref={(el) => {
+              tabRefs.current[m.id] = el
+            }}
             type="button"
             role="tab"
             aria-selected={mode === m.id ? 'true' : 'false'}

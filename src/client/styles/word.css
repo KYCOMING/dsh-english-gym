@@ -46,7 +46,7 @@
   scrollbar-width: none; -ms-overflow-style: none;
 }
 .eg-word-main::-webkit-scrollbar { display: none; width: 0; height: 0; }
-.eg-word-stage { width: 100%; margin: auto 0; display: flex; flex-direction: column; align-items: center; }
+.eg-word-stage { width: 100%; margin: auto 0; display: flex; flex-direction: column; align-items: center; animation: eg-view-in .18s var(--eg-ease) both; }
 .eg-word .eg-pos {
   display: inline-flex; align-items: center; margin: 0 0 4px; padding: 3px 10px;
   border-radius: 999px; background: var(--eg-bg-2); border: 1px solid var(--eg-line);
@@ -132,10 +132,18 @@
   opacity: .82; text-align: center;
 }
 .eg-srs-modes {
-  display: inline-flex; align-items: center; gap: 3px; padding: 2px;
+  position: relative; display: inline-flex; align-items: center; gap: 3px; padding: 2px;
   border-radius: 999px; background: var(--eg-bg-2); border: 1px solid var(--eg-line);
 }
+.eg-srs-indicator {
+  position: absolute; top: 2px; bottom: 2px; left: 0; z-index: 0;
+  border-radius: 999px; background: var(--eg-bg);
+  box-shadow: 0 1px 2px rgba(17, 22, 31, .08); pointer-events: none;
+  transition: transform .24s var(--eg-ease), width .24s var(--eg-ease), opacity .16s ease;
+  will-change: transform, width;
+}
 .eg-srs-mode {
+  position: relative; z-index: 1;
   appearance: none; -webkit-appearance: none;
   display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 10px;
   border: none; border-radius: 999px; background: transparent; color: var(--eg-ink-2);
@@ -143,7 +151,8 @@
   transition: background var(--eg-dur) ease, color var(--eg-dur) ease;
 }
 .eg-srs-mode:hover:not(.active):not(:disabled) { color: var(--eg-ink); }
-.eg-srs-mode.active { background: var(--eg-bg); color: var(--eg-ink); box-shadow: 0 1px 2px rgba(17, 22, 31, .08); }
+.eg-srs-mode.active { color: var(--eg-ink); }
+.eg-srs-modes:not(.has-slider) .eg-srs-mode.active { background: var(--eg-bg); box-shadow: 0 1px 2px rgba(17, 22, 31, .08); }
 .eg-srs-mode:disabled { opacity: .6; cursor: not-allowed; }
 .eg-srs-mode:focus-visible { outline: 2px solid var(--eg-accent); outline-offset: 1px; }
 .eg-srs-due {
@@ -229,6 +238,7 @@
   margin: auto; padding: 22px 20px; max-width: 380px; width: 100%;
   border: 1px solid var(--eg-line); border-radius: 12px; background: var(--eg-bg-2);
   display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center;
+  animation: eg-view-in .18s var(--eg-ease) both;
 }
 .eg-srs-done-title { font: 700 15px/1.35 var(--eg-font); color: var(--eg-ink); }
 .eg-srs-done-sub { font: 500 var(--eg-fs-xs)/1.5 var(--eg-font); color: var(--eg-ink-2); font-variant-numeric: tabular-nums; }

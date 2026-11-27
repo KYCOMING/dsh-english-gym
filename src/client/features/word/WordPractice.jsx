@@ -79,7 +79,7 @@ export function WordPractice({ bankRev = 0 } = {}) {
       <div className="eg-word">
         {topBar}
         <div className="eg-word-main">
-          <div className="eg-srs-done">
+          <div className="eg-srs-done" key={'done-' + mode}>
             <div className="eg-srs-done-title">到期单词已全部复习完成</div>
             <div className="eg-srs-done-sub">
               {(bankLabel ? bankLabel + '：' : '当前词库：') + '学习中 ' + learningCount + ' 词 · 已掌握 ' + masteredCount + ' 词'}
