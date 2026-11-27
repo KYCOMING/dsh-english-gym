@@ -40,7 +40,7 @@ __export(index_exports, {
 });
 module.exports = __toCommonJS(index_exports);
 
-// src/client/shell/EnglishGymPill.js
+// src/client/shell/EnglishGymPill.jsx
 var import_react3 = __toESM(require("react"), 1);
 
 // src/client/core/style.js
@@ -489,7 +489,7 @@ function useShared() {
   return store;
 }
 
-// src/client/shell/EnglishGymPill.js
+// src/client/shell/EnglishGymPill.jsx
 function EnglishGymPill(props) {
   useStyle();
   const shared = useShared();
@@ -521,39 +521,35 @@ function EnglishGymPill(props) {
     };
   }, []);
   const stats = shared.stats;
-  return import_react3.default.createElement(
-    "div",
-    { className: "eg-root eg-entry" },
-    import_react3.default.createElement(
-      "button",
+  return /* @__PURE__ */ import_react3.default.createElement("div", { className: "eg-root eg-entry" }, /* @__PURE__ */ import_react3.default.createElement(
+    "button",
+    {
+      className: "eg-pill",
+      onClick: () => store.toggle(),
+      title: "English Gym — 短语造句 + 单词拼写",
+      "aria-expanded": shared.open ? "true" : "false"
+    },
+    /* @__PURE__ */ import_react3.default.createElement("span", { className: "eg-mono" }, "EG"),
+    /* @__PURE__ */ import_react3.default.createElement("span", { className: "eg-wordmark" }, "English Gym"),
+    stats && stats.streakDays > 0 ? /* @__PURE__ */ import_react3.default.createElement("span", { className: "eg-streak" }, "连续 " + stats.streakDays + " 天") : null,
+    stats && stats.reviewCount > 0 ? /* @__PURE__ */ import_react3.default.createElement(
+      "span",
       {
-        className: "eg-pill",
-        onClick: () => store.toggle(),
-        title: "English Gym — 短语造句 + 单词拼写",
-        "aria-expanded": shared.open ? "true" : "false"
+        className: "eg-chip warn",
+        title: "有 " + stats.reviewCount + " 个单词到期复习，点击直接开始",
+        onClick: (e) => {
+          e.stopPropagation();
+          store.openWordReview();
+        }
       },
-      import_react3.default.createElement("span", { className: "eg-mono" }, "EG"),
-      import_react3.default.createElement("span", { className: "eg-wordmark" }, "English Gym"),
-      stats && stats.streakDays > 0 ? import_react3.default.createElement("span", { className: "eg-streak" }, "连续 " + stats.streakDays + " 天") : null,
-      stats && stats.reviewCount > 0 ? import_react3.default.createElement(
-        "span",
-        {
-          className: "eg-chip warn",
-          title: "有 " + stats.reviewCount + " 个单词到期复习，点击直接开始",
-          onClick: (e) => {
-            e.stopPropagation();
-            store.openWordReview();
-          }
-        },
-        "待复习 " + stats.reviewCount
-      ) : null,
-      import_react3.default.createElement("span", { className: "eg-chev", "aria-hidden": "true" }, "▸")
-    )
-  );
+      "待复习 " + stats.reviewCount
+    ) : null,
+    /* @__PURE__ */ import_react3.default.createElement("span", { className: "eg-chev", "aria-hidden": "true" }, "▸")
+  ));
 }
 
-// src/client/shell/EnglishGymBoard.js
-var import_react17 = __toESM(require("react"), 1);
+// src/client/shell/EnglishGymBoard.jsx
+var import_react34 = __toESM(require("react"), 1);
 
 // src/client/components/motion.js
 var import_react4 = require("react");
@@ -612,7 +608,7 @@ function useCountUp(target, active) {
   return val;
 }
 
-// src/client/components/Confetti.js
+// src/client/components/Confetti.jsx
 var import_react5 = __toESM(require("react"), 1);
 function makeConfettiPieces() {
   const colors = [
@@ -672,11 +668,7 @@ function makeConfettiPieces() {
 }
 function Confetti() {
   const [pieces] = (0, import_react5.useState)(makeConfettiPieces);
-  return import_react5.default.createElement(
-    "div",
-    { className: "eg-confetti", "aria-hidden": "true" },
-    pieces.map((piece) => import_react5.default.createElement("span", { key: piece.key, className: "eg-confetti-piece", style: piece.style }))
-  );
+  return /* @__PURE__ */ import_react5.default.createElement("div", { className: "eg-confetti", "aria-hidden": "true" }, pieces.map((piece) => /* @__PURE__ */ import_react5.default.createElement("span", { key: piece.key, className: "eg-confetti-piece", style: piece.style })));
 }
 
 // src/client/shell/useBoardGeom.js
@@ -698,16 +690,16 @@ function fitGeom(g) {
   const vw = window.innerWidth || 1200;
   const vh = window.innerHeight || 800;
   const w = clamp(g.w, 240, Math.max(240, vw - EDGE_PAD * 2));
-  const h3 = clamp(g.h, 170, Math.max(170, vh - MIN_TOP - EDGE_PAD));
+  const h = clamp(g.h, 170, Math.max(170, vh - MIN_TOP - EDGE_PAD));
   const x = clamp(g.x, EDGE_PAD, Math.max(EDGE_PAD, vw - w - EDGE_PAD));
   const y = clamp(g.y, MIN_TOP, Math.max(MIN_TOP, vh - 44));
-  return { x, y, w, h: h3 };
+  return { x, y, w, h };
 }
 function pillAnchorGeom() {
   const vw = window.innerWidth || 1200;
   const vh = window.innerHeight || 800;
   const w = 340;
-  const h3 = 440;
+  const h = 440;
   let cx = vw / 2;
   let bottom = vh - 120;
   try {
@@ -721,7 +713,7 @@ function pillAnchorGeom() {
     }
   } catch {
   }
-  return fitGeom({ w, h: h3, x: Math.round(cx - w / 2), y: Math.round(bottom - h3) });
+  return fitGeom({ w, h, x: Math.round(cx - w / 2), y: Math.round(bottom - h) });
 }
 
 // src/client/shell/useBoardGeom.js
@@ -804,8 +796,8 @@ function useBoardGeom(open) {
     const maxW = window.innerWidth - d.g0.x - EDGE_PAD;
     const maxH = window.innerHeight - d.g0.y - EDGE_PAD;
     const w = clamp(d.g0.w + (e.clientX - d.sx), 240, Math.max(240, maxW));
-    const h3 = clamp(d.g0.h + (e.clientY - d.sy), 170, Math.max(170, maxH));
-    setGeom({ x: d.g0.x, y: d.g0.y, w, h: h3 });
+    const h = clamp(d.g0.h + (e.clientY - d.sy), 170, Math.max(170, maxH));
+    setGeom({ x: d.g0.x, y: d.g0.y, w, h });
   }, []);
   const onResizeUp = (0, import_react6.useCallback)(
     (e) => {
@@ -983,7 +975,10 @@ function usePhraseDrill({ open, active }) {
   };
 }
 
-// src/client/features/phrase/Drill.js
+// src/client/features/phrase/Drill.jsx
+var import_react10 = __toESM(require("react"), 1);
+
+// src/client/features/phrase/PhraseFeedback.jsx
 var import_react9 = __toESM(require("react"), 1);
 
 // src/client/core/text.js
@@ -1095,7 +1090,7 @@ async function copyToClipboard(text) {
   }
 }
 
-// src/client/components/ScoreRing.js
+// src/client/components/ScoreRing.jsx
 var import_react8 = __toESM(require("react"), 1);
 function ScoreRing({ score, displayScore }) {
   const clamped = clamp(Number(score) || 0, 0, 100);
@@ -1118,29 +1113,17 @@ function ScoreRing({ score, displayScore }) {
   const r = 20;
   const c = 2 * Math.PI * r;
   const offset = drawn ? c * (1 - clamped / 100) : c;
-  return import_react8.default.createElement(
-    "div",
-    { className: "eg-ring", "aria-label": "得分 " + clamped + " 分" },
-    import_react8.default.createElement(
-      "svg",
-      { viewBox: "0 0 50 50", "aria-hidden": "true" },
-      import_react8.default.createElement("circle", { className: "eg-ring-track", cx: 25, cy: 25, r }),
-      clamped > 0 ? import_react8.default.createElement("circle", {
-        className: "eg-ring-arc",
-        cx: 25,
-        cy: 25,
-        r,
-        strokeDasharray: c.toFixed(2),
-        strokeDashoffset: offset.toFixed(2)
-      }) : null
-    ),
-    import_react8.default.createElement(
-      "span",
-      { className: "eg-ring-val" },
-      import_react8.default.createElement("strong", null, displayScore),
-      import_react8.default.createElement("small", null, "分")
-    )
-  );
+  return /* @__PURE__ */ import_react8.default.createElement("div", { className: "eg-ring", "aria-label": "得分 " + clamped + " 分" }, /* @__PURE__ */ import_react8.default.createElement("svg", { viewBox: "0 0 50 50", "aria-hidden": "true" }, /* @__PURE__ */ import_react8.default.createElement("circle", { className: "eg-ring-track", cx: 25, cy: 25, r }), clamped > 0 ? /* @__PURE__ */ import_react8.default.createElement(
+    "circle",
+    {
+      className: "eg-ring-arc",
+      cx: 25,
+      cy: 25,
+      r,
+      strokeDasharray: c.toFixed(2),
+      strokeDashoffset: offset.toFixed(2)
+    }
+  ) : null), /* @__PURE__ */ import_react8.default.createElement("span", { className: "eg-ring-val" }, /* @__PURE__ */ import_react8.default.createElement("strong", null, displayScore), /* @__PURE__ */ import_react8.default.createElement("small", null, "分")));
 }
 
 // src/client/features/phrase/verdict.js
@@ -1164,8 +1147,99 @@ function phraseVerdict(feedback) {
   return { tone: "bad", title: "暂未得分", sub: "对照原句和参考译文，重新组织英文再试一次。" };
 }
 
-// src/client/features/phrase/Drill.js
-var useIsoLayoutEffect = import_react9.default.useLayoutEffect || import_react9.useEffect;
+// src/client/features/phrase/PhraseFeedback.jsx
+function PhraseFeedback({
+  card,
+  answer,
+  submittedAnswer,
+  feedback,
+  attempt,
+  prevScore,
+  busy,
+  onRetry,
+  onNext
+}) {
+  const [copied, setCopied] = (0, import_react9.useState)(false);
+  const copyTimerRef = (0, import_react9.useRef)(null);
+  const displayScore = useCountUp(feedback ? feedback.score : 0, !!feedback);
+  (0, import_react9.useEffect)(() => {
+    setCopied(false);
+    return () => clearTimeout(copyTimerRef.current);
+  }, [feedback]);
+  (0, import_react9.useEffect)(() => {
+    if (!feedback || busy) return void 0;
+    const onKeyDown = (e) => {
+      if (e.key !== "Enter" || e.isComposing || e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;
+      const el = e.target;
+      if (el && el.closest && el.closest("textarea, input, select, button, a")) return;
+      e.preventDefault();
+      if (feedback.correct) onNext();
+      else if (onRetry) onRetry();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [feedback, busy, onNext, onRetry]);
+  const handleCopy = async () => {
+    if (!feedback || !feedback.reference) return;
+    const ok2 = await copyToClipboard(feedback.reference);
+    if (!ok2) return;
+    setCopied(true);
+    clearTimeout(copyTimerRef.current);
+    copyTimerRef.current = setTimeout(() => setCopied(false), 1600);
+  };
+  const ok = !!feedback.correct;
+  const verdict = phraseVerdict(feedback);
+  const promptZh = feedback.zh || card && card.zh || "";
+  const mine = String(submittedAnswer !== void 0 ? submittedAnswer : answer || "").trim();
+  const reference = feedback.reference || "";
+  const corrected = feedback.corrected || "";
+  const score = clamp(Number(feedback.score) || 0, 0, 100);
+  const hasEnglishAttempt = /[a-zA-Z]{2,}/.test(mine);
+  const showCorrected = score >= 40 && hasEnglishAttempt && corrected && normalizeEnglish(corrected) !== normalizeEnglish(reference) && normalizeEnglish(corrected) !== normalizeEnglish(mine);
+  const bankWords = Array.isArray(feedback.bankWords) && feedback.bankWords.length ? feedback.bankWords : card && Array.isArray(card.bankWords) ? card.bankWords : [];
+  const refParts = reference && bankWords.length ? splitByTerms(reference, bankWords) : [reference || "—"];
+  const highlights = Array.isArray(feedback.highlights) ? feedback.highlights : [];
+  const delta = prevScore !== null && prevScore !== void 0 ? score - prevScore : 0;
+  const canRetry = !!(card && onRetry);
+  const fromSession = (feedback.source || card && card.source) === "session";
+  return /* @__PURE__ */ import_react9.default.createElement("div", { className: "eg-fb is-phrase " + verdict.tone, "data-nodrag": "true" }, /* @__PURE__ */ import_react9.default.createElement("div", { className: "eg-fb-hero" }, /* @__PURE__ */ import_react9.default.createElement(ScoreRing, { score, displayScore }), /* @__PURE__ */ import_react9.default.createElement("div", { className: "eg-fb-verdict" }, /* @__PURE__ */ import_react9.default.createElement("div", { className: "eg-fb-headline" }, /* @__PURE__ */ import_react9.default.createElement("span", { className: "eg-fb-status" }, verdict.title), feedback.exact ? /* @__PURE__ */ import_react9.default.createElement("span", { className: "eg-fb-pill tone" }, "完全匹配") : null, fromSession ? /* @__PURE__ */ import_react9.default.createElement("span", { className: "eg-fb-pill" }, "结合当前会话") : null, attempt > 1 ? /* @__PURE__ */ import_react9.default.createElement("span", { className: "eg-fb-pill" }, "第 " + attempt + " 次尝试") : null, delta > 0 ? /* @__PURE__ */ import_react9.default.createElement("span", { className: "eg-fb-pill up" }, "↑ +" + delta + " 分") : null), /* @__PURE__ */ import_react9.default.createElement("div", { className: "eg-fb-sub" }, verdict.sub))), /* @__PURE__ */ import_react9.default.createElement("div", { className: "eg-fb-body" }, promptZh ? /* @__PURE__ */ import_react9.default.createElement("div", { className: "eg-fb-prompt" }, /* @__PURE__ */ import_react9.default.createElement("span", { className: "eg-fb-tag" }, "原句"), /* @__PURE__ */ import_react9.default.createElement("span", { className: "eg-fb-zh" }, promptZh)) : null, /* @__PURE__ */ import_react9.default.createElement("div", { className: "eg-fb-mine" }, /* @__PURE__ */ import_react9.default.createElement("div", { className: "eg-fb-boxhead" }, /* @__PURE__ */ import_react9.default.createElement("span", { className: "lbl" }, /* @__PURE__ */ import_react9.default.createElement("span", { "aria-hidden": "true" }, ok ? "✓" : "✗"), "你的作答")), /* @__PURE__ */ import_react9.default.createElement("div", { className: "eg-fb-mine-text" + (mine ? "" : " empty") }, mine || "（未输入有效内容）")), /* @__PURE__ */ import_react9.default.createElement("div", { className: "eg-fb-ref" }, /* @__PURE__ */ import_react9.default.createElement("div", { className: "eg-fb-boxhead" }, /* @__PURE__ */ import_react9.default.createElement("div", { className: "eg-fb-boxhead-left" }, /* @__PURE__ */ import_react9.default.createElement("span", { className: "lbl" }, "参考译文"), bankWords.length ? /* @__PURE__ */ import_react9.default.createElement("span", { className: "eg-fb-banktag", title: "融入的词库词" }, "词库 · " + bankWords.join(" / ")) : null), reference ? /* @__PURE__ */ import_react9.default.createElement(
+    "button",
+    {
+      type: "button",
+      className: "eg-copybtn" + (copied ? " copied" : ""),
+      onClick: handleCopy,
+      title: "复制参考译文"
+    },
+    copied ? "已复制 ✓" : "复制"
+  ) : null), /* @__PURE__ */ import_react9.default.createElement("div", { className: "eg-fb-ref-text" }, refParts.map(
+    (part, i) => i % 2 ? /* @__PURE__ */ import_react9.default.createElement("mark", { className: "eg-eg-hit", key: i }, part) : /* @__PURE__ */ import_react9.default.createElement("span", { key: i }, part)
+  ))), showCorrected ? /* @__PURE__ */ import_react9.default.createElement("div", { className: "eg-fb-corr" }, /* @__PURE__ */ import_react9.default.createElement("div", { className: "eg-fb-boxhead" }, /* @__PURE__ */ import_react9.default.createElement("span", { className: "lbl" }, "贴近你思路的改写")), /* @__PURE__ */ import_react9.default.createElement("div", { className: "eg-fb-corr-text" }, corrected)) : null, feedback.tip ? /* @__PURE__ */ import_react9.default.createElement("div", { className: "eg-fb-tip" }, /* @__PURE__ */ import_react9.default.createElement("span", { className: "b" }, "点评"), /* @__PURE__ */ import_react9.default.createElement("span", null, feedback.tip)) : null, highlights.length ? /* @__PURE__ */ import_react9.default.createElement("div", { className: "eg-fb-hl" }, /* @__PURE__ */ import_react9.default.createElement("div", { className: "eg-fb-hl-lbl" }, "核心表达"), /* @__PURE__ */ import_react9.default.createElement("div", { className: "eg-fb-hl-list" }, highlights.map((item, i) => /* @__PURE__ */ import_react9.default.createElement("span", { className: "eg-hl-chip", key: i }, /* @__PURE__ */ import_react9.default.createElement("span", { className: "en" }, item.en), /* @__PURE__ */ import_react9.default.createElement("span", { className: "zh" }, item.zh))))) : null), /* @__PURE__ */ import_react9.default.createElement("div", { className: "eg-fb-actions" }, ok ? /* @__PURE__ */ import_react9.default.createElement(import_react9.default.Fragment, null, /* @__PURE__ */ import_react9.default.createElement(
+    "button",
+    {
+      className: "eg-btn primary",
+      onClick: onNext,
+      onPointerDown: bounceButton,
+      disabled: busy,
+      title: "回车下一题",
+      "aria-keyshortcuts": "Enter"
+    },
+    "下一题 →"
+  ), canRetry ? /* @__PURE__ */ import_react9.default.createElement("button", { className: "eg-btn", onClick: onRetry, disabled: busy }, "↺ 再试一次") : null) : /* @__PURE__ */ import_react9.default.createElement(import_react9.default.Fragment, null, canRetry ? /* @__PURE__ */ import_react9.default.createElement(
+    "button",
+    {
+      className: "eg-btn primary",
+      onClick: onRetry,
+      onPointerDown: bounceButton,
+      disabled: busy,
+      title: "回车再试一次",
+      "aria-keyshortcuts": "Enter"
+    },
+    "↺ 再试一次"
+  ) : null, /* @__PURE__ */ import_react9.default.createElement("button", { className: canRetry ? "eg-btn" : "eg-btn primary", onClick: onNext, disabled: busy }, "下一题 →")), /* @__PURE__ */ import_react9.default.createElement("span", { className: "eg-kbd", title: ok ? "按 Enter 进入下一题" : "按 Enter 再试一次" }, /* @__PURE__ */ import_react9.default.createElement("kbd", null, "↵"), " ", ok ? "下一题" : "再试")));
+}
+
+// src/client/features/phrase/Drill.jsx
+var useIsoLayoutEffect = import_react10.default.useLayoutEffect || import_react10.useEffect;
 var INPUT_LINE_HEIGHT = 40;
 function Drill({
   card,
@@ -1182,16 +1256,9 @@ function Drill({
   onRetry,
   onNext
 }) {
-  const [hintOpen, setHintOpen] = (0, import_react9.useState)(false);
-  const [copied, setCopied] = (0, import_react9.useState)(false);
-  const inputRef = (0, import_react9.useRef)(null);
-  const copyTimerRef = (0, import_react9.useRef)(null);
-  const displayScore = useCountUp(feedback ? feedback.score : 0, !!feedback);
-  (0, import_react9.useEffect)(() => {
-    setCopied(false);
-    return () => clearTimeout(copyTimerRef.current);
-  }, [feedback]);
-  const syncInputHeight = (0, import_react9.useCallback)(() => {
+  const [hintOpen, setHintOpen] = (0, import_react10.useState)(false);
+  const inputRef = (0, import_react10.useRef)(null);
+  const syncInputHeight = (0, import_react10.useCallback)(() => {
     const el = inputRef.current;
     if (!el) return;
     el.style.height = INPUT_LINE_HEIGHT + "px";
@@ -1202,15 +1269,15 @@ function Drill({
   useIsoLayoutEffect(() => {
     syncInputHeight();
   }, [answer, card, feedback, syncInputHeight]);
-  (0, import_react9.useEffect)(() => {
+  (0, import_react10.useEffect)(() => {
     const el = inputRef.current;
     if (!el || typeof ResizeObserver !== "function") return void 0;
     const ro = new ResizeObserver(syncInputHeight);
     ro.observe(el);
     return () => ro.disconnect();
   }, [card, feedback, syncInputHeight]);
-  (0, import_react9.useEffect)(() => {
-    if (!retryFocusTick || feedback || !card) return;
+  (0, import_react10.useEffect)(() => {
+    if (!retryFocusTick || feedback || !card) return void 0;
     const timer = setTimeout(() => {
       try {
         const el = inputRef.current;
@@ -1223,347 +1290,89 @@ function Drill({
     }, 0);
     return () => clearTimeout(timer);
   }, [retryFocusTick, feedback, card]);
-  (0, import_react9.useEffect)(() => {
-    if (!feedback || busy) return void 0;
-    const onKeyDown = (e) => {
-      if (e.key !== "Enter" || e.isComposing || e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;
-      const el = e.target;
-      if (el && el.closest && el.closest("textarea, input, select, button, a")) return;
-      e.preventDefault();
-      if (feedback.correct) onNext();
-      else if (onRetry) onRetry();
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [feedback, busy, onNext, onRetry]);
-  const handleCopy = async () => {
-    if (!feedback || !feedback.reference) return;
-    const ok = await copyToClipboard(feedback.reference);
-    if (!ok) return;
-    setCopied(true);
-    clearTimeout(copyTimerRef.current);
-    copyTimerRef.current = setTimeout(() => setCopied(false), 1600);
-  };
   if (feedback) {
-    const ok = !!feedback.correct;
-    const verdict = phraseVerdict(feedback);
-    const promptZh = feedback.zh || card && card.zh || "";
-    const mine = String(submittedAnswer !== void 0 ? submittedAnswer : answer || "").trim();
-    const reference = feedback.reference || "";
-    const corrected = feedback.corrected || "";
-    const score = clamp(Number(feedback.score) || 0, 0, 100);
-    const hasEnglishAttempt = /[a-zA-Z]{2,}/.test(mine);
-    const showCorrected = score >= 40 && hasEnglishAttempt && corrected && normalizeEnglish(corrected) !== normalizeEnglish(reference) && normalizeEnglish(corrected) !== normalizeEnglish(mine);
-    const bankWords = Array.isArray(feedback.bankWords) && feedback.bankWords.length ? feedback.bankWords : card && Array.isArray(card.bankWords) ? card.bankWords : [];
-    const refParts = reference && bankWords.length ? splitByTerms(reference, bankWords) : [reference || "—"];
-    const highlights = Array.isArray(feedback.highlights) ? feedback.highlights : [];
-    const delta = prevScore !== null && prevScore !== void 0 ? score - prevScore : 0;
-    const canRetry = !!(card && onRetry);
-    const fromSession = (feedback.source || card && card.source) === "session";
-    return import_react9.default.createElement(
-      "div",
-      { className: "eg-fb is-phrase " + verdict.tone, "data-nodrag": "true" },
-      import_react9.default.createElement(
-        "div",
-        { className: "eg-fb-hero" },
-        import_react9.default.createElement(ScoreRing, { score, displayScore }),
-        import_react9.default.createElement(
-          "div",
-          { className: "eg-fb-verdict" },
-          import_react9.default.createElement(
-            "div",
-            { className: "eg-fb-headline" },
-            import_react9.default.createElement("span", { className: "eg-fb-status" }, verdict.title),
-            feedback.exact ? import_react9.default.createElement("span", { className: "eg-fb-pill tone" }, "完全匹配") : null,
-            fromSession ? import_react9.default.createElement("span", { className: "eg-fb-pill" }, "结合当前会话") : null,
-            attempt > 1 ? import_react9.default.createElement("span", { className: "eg-fb-pill" }, "第 " + attempt + " 次尝试") : null,
-            delta > 0 ? import_react9.default.createElement("span", { className: "eg-fb-pill up" }, "↑ +" + delta + " 分") : null
-          ),
-          import_react9.default.createElement("div", { className: "eg-fb-sub" }, verdict.sub)
-        )
-      ),
-      import_react9.default.createElement(
-        "div",
-        { className: "eg-fb-body" },
-        promptZh ? import_react9.default.createElement(
-          "div",
-          { className: "eg-fb-prompt" },
-          import_react9.default.createElement("span", { className: "eg-fb-tag" }, "原句"),
-          import_react9.default.createElement("span", { className: "eg-fb-zh" }, promptZh)
-        ) : null,
-        import_react9.default.createElement(
-          "div",
-          { className: "eg-fb-mine" },
-          import_react9.default.createElement(
-            "div",
-            { className: "eg-fb-boxhead" },
-            import_react9.default.createElement(
-              "span",
-              { className: "lbl" },
-              import_react9.default.createElement("span", { "aria-hidden": "true" }, ok ? "✓" : "✗"),
-              "你的作答"
-            )
-          ),
-          import_react9.default.createElement(
-            "div",
-            { className: "eg-fb-mine-text" + (mine ? "" : " empty") },
-            mine || "（未输入有效内容）"
-          )
-        ),
-        import_react9.default.createElement(
-          "div",
-          { className: "eg-fb-ref" },
-          import_react9.default.createElement(
-            "div",
-            { className: "eg-fb-boxhead" },
-            import_react9.default.createElement(
-              "div",
-              { className: "eg-fb-boxhead-left" },
-              import_react9.default.createElement("span", { className: "lbl" }, "参考译文"),
-              bankWords.length ? import_react9.default.createElement("span", { className: "eg-fb-banktag", title: "融入的词库词" }, "词库 · " + bankWords.join(" / ")) : null
-            ),
-            reference ? import_react9.default.createElement(
-              "button",
-              {
-                type: "button",
-                className: "eg-copybtn" + (copied ? " copied" : ""),
-                onClick: handleCopy,
-                title: "复制参考译文"
-              },
-              copied ? "已复制 ✓" : "复制"
-            ) : null
-          ),
-          import_react9.default.createElement(
-            "div",
-            { className: "eg-fb-ref-text" },
-            refParts.map(
-              (part, i) => i % 2 ? import_react9.default.createElement("mark", { className: "eg-eg-hit", key: i }, part) : import_react9.default.createElement("span", { key: i }, part)
-            )
-          )
-        ),
-        showCorrected ? import_react9.default.createElement(
-          "div",
-          { className: "eg-fb-corr" },
-          import_react9.default.createElement(
-            "div",
-            { className: "eg-fb-boxhead" },
-            import_react9.default.createElement("span", { className: "lbl" }, "贴近你思路的改写")
-          ),
-          import_react9.default.createElement("div", { className: "eg-fb-corr-text" }, corrected)
-        ) : null,
-        feedback.tip ? import_react9.default.createElement(
-          "div",
-          { className: "eg-fb-tip" },
-          import_react9.default.createElement("span", { className: "b" }, "点评"),
-          import_react9.default.createElement("span", null, feedback.tip)
-        ) : null,
-        highlights.length ? import_react9.default.createElement(
-          "div",
-          { className: "eg-fb-hl" },
-          import_react9.default.createElement("div", { className: "eg-fb-hl-lbl" }, "核心表达"),
-          import_react9.default.createElement(
-            "div",
-            { className: "eg-fb-hl-list" },
-            highlights.map(
-              (item, i) => import_react9.default.createElement(
-                "span",
-                { className: "eg-hl-chip", key: i },
-                import_react9.default.createElement("span", { className: "en" }, item.en),
-                import_react9.default.createElement("span", { className: "zh" }, item.zh)
-              )
-            )
-          )
-        ) : null
-      ),
-      import_react9.default.createElement(
-        "div",
-        { className: "eg-fb-actions" },
-        ok ? [
-          import_react9.default.createElement(
-            "button",
-            {
-              key: "next",
-              className: "eg-btn primary",
-              onClick: onNext,
-              onPointerDown: bounceButton,
-              disabled: busy,
-              title: "回车下一题",
-              "aria-keyshortcuts": "Enter"
-            },
-            "下一题 →"
-          ),
-          canRetry ? import_react9.default.createElement(
-            "button",
-            { key: "retry", className: "eg-btn", onClick: onRetry, disabled: busy },
-            "↺ 再试一次"
-          ) : null
-        ] : [
-          canRetry ? import_react9.default.createElement(
-            "button",
-            {
-              key: "retry",
-              className: "eg-btn primary",
-              onClick: onRetry,
-              onPointerDown: bounceButton,
-              disabled: busy,
-              title: "回车再试一次",
-              "aria-keyshortcuts": "Enter"
-            },
-            "↺ 再试一次"
-          ) : null,
-          import_react9.default.createElement(
-            "button",
-            { key: "next", className: canRetry ? "eg-btn" : "eg-btn primary", onClick: onNext, disabled: busy },
-            "下一题 →"
-          )
-        ],
-        import_react9.default.createElement(
-          "span",
-          { className: "eg-kbd", title: ok ? "按 Enter 进入下一题" : "按 Enter 再试一次" },
-          import_react9.default.createElement("kbd", null, "↵"),
-          " ",
-          ok ? "下一题" : "再试"
-        )
-      )
+    return /* @__PURE__ */ import_react10.default.createElement(
+      PhraseFeedback,
+      {
+        card,
+        answer,
+        submittedAnswer,
+        feedback,
+        attempt,
+        prevScore,
+        busy,
+        onRetry,
+        onNext
+      }
     );
   }
   if (!card) {
     if (error) {
-      return import_react9.default.createElement(
-        "div",
-        null,
-        import_react9.default.createElement("div", { className: "eg-err" }, error),
-        import_react9.default.createElement(
-          "div",
-          { className: "eg-foot" },
-          import_react9.default.createElement("button", { className: "eg-btn primary", onClick: onNext, disabled: busy }, "重试")
-        )
-      );
+      return /* @__PURE__ */ import_react10.default.createElement("div", null, /* @__PURE__ */ import_react10.default.createElement("div", { className: "eg-err" }, error), /* @__PURE__ */ import_react10.default.createElement("div", { className: "eg-foot" }, /* @__PURE__ */ import_react10.default.createElement("button", { className: "eg-btn primary", onClick: onNext, disabled: busy }, "重试")));
     }
-    return import_react9.default.createElement(
-      "div",
-      { className: "eg-loading is-stage" },
-      import_react9.default.createElement("span", { className: "eg-spin" }),
-      "正在出题…"
-    );
+    return /* @__PURE__ */ import_react10.default.createElement("div", { className: "eg-loading is-stage" }, /* @__PURE__ */ import_react10.default.createElement("span", { className: "eg-spin" }), "正在出题…");
   }
-  return import_react9.default.createElement(
+  return /* @__PURE__ */ import_react10.default.createElement("div", { className: "eg-drill-stage" }, /* @__PURE__ */ import_react10.default.createElement("div", { className: "eg-cap eg-cap-row" }, /* @__PURE__ */ import_react10.default.createElement("span", null, "把这句话译成英文"), card.source === "session" ? /* @__PURE__ */ import_react10.default.createElement("span", { className: "eg-source-pill", title: "根据当前会话内容生成" }, "结合当前会话") : null, attempt > 0 ? /* @__PURE__ */ import_react10.default.createElement("span", { className: "eg-attempt-pill" }, "第 " + (attempt + 1) + " 次尝试") : null), /* @__PURE__ */ import_react10.default.createElement("div", { className: "eg-zh" }, card.zh), card.hint ? /* @__PURE__ */ import_react10.default.createElement(import_react10.default.Fragment, null, /* @__PURE__ */ import_react10.default.createElement(
+    "button",
+    {
+      className: "eg-hintbtn",
+      "aria-expanded": hintOpen ? "true" : "false",
+      onClick: () => setHintOpen((v) => !v),
+      type: "button"
+    },
+    /* @__PURE__ */ import_react10.default.createElement("span", { className: "caret", "aria-hidden": "true" }, "▸"),
+    "提示"
+  ), /* @__PURE__ */ import_react10.default.createElement(
     "div",
-    { className: "eg-drill-stage" },
-    import_react9.default.createElement(
-      "div",
-      { className: "eg-cap eg-cap-row" },
-      import_react9.default.createElement("span", null, "把这句话译成英文"),
-      card.source === "session" ? import_react9.default.createElement("span", { className: "eg-source-pill", title: "根据当前会话内容生成" }, "结合当前会话") : null,
-      attempt > 0 ? import_react9.default.createElement("span", { className: "eg-attempt-pill" }, "第 " + (attempt + 1) + " 次尝试") : null
-    ),
-    import_react9.default.createElement("div", { className: "eg-zh" }, card.zh),
-    card.hint ? import_react9.default.createElement(
-      import_react9.default.Fragment,
-      null,
-      import_react9.default.createElement(
-        "button",
-        {
-          className: "eg-hintbtn",
-          "aria-expanded": hintOpen ? "true" : "false",
-          onClick: () => setHintOpen((v) => !v),
-          type: "button"
-        },
-        import_react9.default.createElement("span", { className: "caret", "aria-hidden": "true" }, "▸"),
-        "提示"
-      ),
-      import_react9.default.createElement(
-        "div",
-        {
-          className: "eg-collapse eg-hint-collapse" + (hintOpen ? " open" : ""),
-          "aria-hidden": hintOpen ? "false" : "true"
-        },
-        import_react9.default.createElement(
-          "div",
-          { className: "eg-collapse-inner" },
-          import_react9.default.createElement("div", { className: "eg-hintbox" }, card.hint)
-        )
-      )
-    ) : null,
-    import_react9.default.createElement(
-      "div",
-      { className: "eg-inputwrap" },
-      import_react9.default.createElement("textarea", {
-        ref: inputRef,
-        rows: 1,
-        className: "eg-input" + (error ? " error" : ""),
-        value: answer,
-        placeholder: "在这里写下你的英文…",
-        onChange: (e) => setAnswer(e.target.value),
-        onKeyDown: (e) => {
-          if (e.key !== "Enter" || e.isComposing || e.keyCode === 229 || e.altKey) return;
-          if (e.shiftKey) return;
-          e.preventDefault();
-          if (!busy && answer.trim()) onSubmit();
-        }
-      })
-    ),
-    error ? import_react9.default.createElement("div", { className: "eg-err" }, error) : null,
-    import_react9.default.createElement(
-      "div",
-      { className: "eg-foot" },
-      import_react9.default.createElement(
-        "button",
-        {
-          className: "eg-btn primary" + (busy ? " is-loading" : ""),
-          onClick: onSubmit,
-          onPointerDown: bounceButton,
-          disabled: busy || !answer.trim()
-        },
-        "提交"
-      ),
-      import_react9.default.createElement("button", { className: "eg-btn", onClick: onNext, disabled: busy }, "换一题"),
-      import_react9.default.createElement(
-        "span",
-        { className: "eg-kbd", title: "回车提交（Shift + Enter 换行）" },
-        import_react9.default.createElement("kbd", null, "↵")
-      )
-    )
-  );
+    {
+      className: "eg-collapse eg-hint-collapse" + (hintOpen ? " open" : ""),
+      "aria-hidden": hintOpen ? "false" : "true"
+    },
+    /* @__PURE__ */ import_react10.default.createElement("div", { className: "eg-collapse-inner" }, /* @__PURE__ */ import_react10.default.createElement("div", { className: "eg-hintbox" }, card.hint))
+  )) : null, /* @__PURE__ */ import_react10.default.createElement("div", { className: "eg-inputwrap" }, /* @__PURE__ */ import_react10.default.createElement(
+    "textarea",
+    {
+      ref: inputRef,
+      rows: 1,
+      className: "eg-input" + (error ? " error" : ""),
+      value: answer,
+      placeholder: "在这里写下你的英文…",
+      onChange: (e) => setAnswer(e.target.value),
+      onKeyDown: (e) => {
+        if (e.key !== "Enter" || e.isComposing || e.keyCode === 229 || e.altKey) return;
+        if (e.shiftKey) return;
+        e.preventDefault();
+        if (!busy && answer.trim()) onSubmit();
+      }
+    }
+  )), error ? /* @__PURE__ */ import_react10.default.createElement("div", { className: "eg-err" }, error) : null, /* @__PURE__ */ import_react10.default.createElement("div", { className: "eg-foot" }, /* @__PURE__ */ import_react10.default.createElement(
+    "button",
+    {
+      className: "eg-btn primary" + (busy ? " is-loading" : ""),
+      onClick: onSubmit,
+      onPointerDown: bounceButton,
+      disabled: busy || !answer.trim()
+    },
+    "提交"
+  ), /* @__PURE__ */ import_react10.default.createElement("button", { className: "eg-btn", onClick: onNext, disabled: busy }, "换一题"), /* @__PURE__ */ import_react10.default.createElement("span", { className: "eg-kbd", title: "回车提交（Shift + Enter 换行）" }, /* @__PURE__ */ import_react10.default.createElement("kbd", null, "↵"))));
 }
 
-// src/client/features/word/WordPractice.js
-var import_react11 = __toESM(require("react"), 1);
+// src/client/features/word/WordPractice.jsx
+var import_react16 = __toESM(require("react"), 1);
 
-// src/client/features/word/ExampleBlock.js
-var import_react10 = __toESM(require("react"), 1);
-var h = import_react10.default.createElement;
+// src/client/features/word/ExampleBlock.jsx
+var import_react11 = __toESM(require("react"), 1);
 function ExampleBlock({ example, exampleZh, word, highlight }) {
   const en = String(example || "");
   const zh = String(exampleZh || "");
   if (!en && !zh) return null;
   const parts = en && highlight && word ? splitByWord(en, word) : [en];
-  return h(
-    "div",
-    { className: "eg-eg" + (highlight ? " done" : "") },
-    en ? h(
-      "div",
-      { className: "eg-eg-en" },
-      parts.map(
-        (part, i) => i % 2 ? h("mark", { className: "eg-eg-hit", key: i }, part) : h("span", { key: i }, part)
-      )
-    ) : null,
-    zh ? h("div", { className: "eg-eg-zh" }, zh) : null
-  );
+  return /* @__PURE__ */ import_react11.default.createElement("div", { className: "eg-eg" + (highlight ? " done" : "") }, en ? /* @__PURE__ */ import_react11.default.createElement("div", { className: "eg-eg-en" }, parts.map(
+    (part, i) => i % 2 ? /* @__PURE__ */ import_react11.default.createElement("mark", { className: "eg-eg-hit", key: i }, part) : /* @__PURE__ */ import_react11.default.createElement("span", { key: i }, part)
+  )) : null, zh ? /* @__PURE__ */ import_react11.default.createElement("div", { className: "eg-eg-zh" }, zh) : null);
 }
 
-// src/client/features/word/WordPractice.js
-var cachedWord = {
-  item: null,
-  cells: [],
-  res: null,
-  revealed: false,
-  revealedEver: false,
-  mode: "smart",
-  srsStats: null,
-  bankRev: 0
-};
-var lastConsumedWordReqTick = 0;
+// src/client/features/word/srsFormat.js
 var MODES = [
   { id: "smart", label: "智能", title: "按 FSRS 算法优先复习最易遗忘的到期词，每复习 3 个穿插 1 个新词" },
   { id: "review", label: "待复习", title: "专注清理当前词库已到复习时间的单词" },
@@ -1605,30 +1414,43 @@ function memoryTooltip(srs) {
 function shortBankName(name) {
   return String(name || "").replace(/^内置\s*·\s*/, "");
 }
-function WordPractice({ bankRev = 0 } = {}) {
+
+// src/client/features/word/useWordPractice.js
+var import_react12 = require("react");
+var cachedWord = {
+  item: null,
+  cells: [],
+  res: null,
+  revealed: false,
+  revealedEver: false,
+  mode: "smart",
+  srsStats: null,
+  bankRev: 0
+};
+var lastConsumedWordReqTick = 0;
+function useWordPractice({ bankRev = 0 } = {}) {
   const shared = useShared();
-  const [item, setItem] = (0, import_react11.useState)(() => cachedWord.item);
-  const [cells, setCells] = (0, import_react11.useState)(() => cachedWord.cells);
-  const [res, setRes] = (0, import_react11.useState)(() => cachedWord.res);
-  const [revealed, setRevealed] = (0, import_react11.useState)(() => cachedWord.revealed);
-  const [busy, setBusy] = (0, import_react11.useState)(false);
-  const [rateBusy, setRateBusy] = (0, import_react11.useState)(false);
-  const [error, setError] = (0, import_react11.useState)("");
-  const [mode, setMode] = (0, import_react11.useState)(() => cachedWord.mode);
-  const [hoverMode, setHoverMode] = (0, import_react11.useState)("");
-  const [srsStats, setSrsStats] = (0, import_react11.useState)(() => cachedWord.srsStats);
-  const refs = (0, import_react11.useRef)([]);
-  const reqGenRef = (0, import_react11.useRef)(0);
-  const abortRef = (0, import_react11.useRef)(null);
-  const revealedEverRef = (0, import_react11.useRef)(cachedWord.revealedEver);
-  const modeRef = (0, import_react11.useRef)(mode);
+  const [item, setItem] = (0, import_react12.useState)(() => cachedWord.item);
+  const [cells, setCells] = (0, import_react12.useState)(() => cachedWord.cells);
+  const [res, setRes] = (0, import_react12.useState)(() => cachedWord.res);
+  const [revealed, setRevealed] = (0, import_react12.useState)(() => cachedWord.revealed);
+  const [busy, setBusy] = (0, import_react12.useState)(false);
+  const [rateBusy, setRateBusy] = (0, import_react12.useState)(false);
+  const [error, setError] = (0, import_react12.useState)("");
+  const [mode, setMode] = (0, import_react12.useState)(() => cachedWord.mode);
+  const [srsStats, setSrsStats] = (0, import_react12.useState)(() => cachedWord.srsStats);
+  const refs = (0, import_react12.useRef)([]);
+  const reqGenRef = (0, import_react12.useRef)(0);
+  const abortRef = (0, import_react12.useRef)(null);
+  const revealedEverRef = (0, import_react12.useRef)(cachedWord.revealedEver);
+  const modeRef = (0, import_react12.useRef)(mode);
   modeRef.current = mode;
-  (0, import_react11.useEffect)(() => {
+  (0, import_react12.useEffect)(() => {
     return () => {
       if (abortRef.current) abortRef.current.abort();
     };
   }, []);
-  (0, import_react11.useEffect)(() => {
+  (0, import_react12.useEffect)(() => {
     cachedWord.item = item;
     cachedWord.cells = cells;
     cachedWord.res = res;
@@ -1637,7 +1459,7 @@ function WordPractice({ bankRev = 0 } = {}) {
     cachedWord.mode = mode;
     cachedWord.srsStats = srsStats;
   }, [item, cells, res, revealed, mode, srsStats]);
-  const load = (0, import_react11.useCallback)(async (requestedMode) => {
+  const load = (0, import_react12.useCallback)(async (requestedMode) => {
     const gen = ++reqGenRef.current;
     if (abortRef.current) abortRef.current.abort();
     const ac = new AbortController();
@@ -1682,7 +1504,7 @@ function WordPractice({ bankRev = 0 } = {}) {
       }
     }
   }, []);
-  (0, import_react11.useEffect)(() => {
+  (0, import_react12.useEffect)(() => {
     const req = shared.wordModeRequest;
     if (req && req.tick && req.tick !== lastConsumedWordReqTick) {
       lastConsumedWordReqTick = req.tick;
@@ -1702,7 +1524,7 @@ function WordPractice({ bankRev = 0 } = {}) {
     }
     if (!cachedWord.item) load(modeRef.current);
   }, [shared.wordModeRequest, bankRev, load]);
-  const rate = (0, import_react11.useCallback)(
+  const rate = (0, import_react12.useCallback)(
     async (rating) => {
       if (!item || item.done || !res || !res.correct || !res.srs || !res.srs.canRate || rateBusy) return;
       if (res.srs.rating === rating) return;
@@ -1727,7 +1549,7 @@ function WordPractice({ bankRev = 0 } = {}) {
     },
     [item, res, rateBusy]
   );
-  (0, import_react11.useEffect)(() => {
+  (0, import_react12.useEffect)(() => {
     if (!res || !res.correct) return void 0;
     const onKeyDown = (e) => {
       if (e.isComposing || e.ctrlKey || e.metaKey || e.altKey) return;
@@ -1747,7 +1569,7 @@ function WordPractice({ bankRev = 0 } = {}) {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [res, load, rate]);
-  const switchMode = (0, import_react11.useCallback)(
+  const switchMode = (0, import_react12.useCallback)(
     (nextMode) => {
       if (busy || nextMode === modeRef.current) return;
       setMode(nextMode);
@@ -1756,7 +1578,7 @@ function WordPractice({ bankRev = 0 } = {}) {
     },
     [busy, load]
   );
-  const submit = (0, import_react11.useCallback)(async () => {
+  const submit = (0, import_react12.useCallback)(async () => {
     if (!item || item.done || busy || res) return;
     if (cells.some((c) => !c)) return;
     setBusy(true);
@@ -1783,7 +1605,7 @@ function WordPractice({ bankRev = 0 } = {}) {
       setBusy(false);
     }
   }, [item, cells, busy, res]);
-  const markMastered = (0, import_react11.useCallback)(async () => {
+  const markMastered = (0, import_react12.useCallback)(async () => {
     if (!item || item.done || busy) return;
     setBusy(true);
     setRateBusy(false);
@@ -1803,7 +1625,7 @@ function WordPractice({ bankRev = 0 } = {}) {
       setBusy(false);
     }
   }, [item, res, busy, load]);
-  const retry = (0, import_react11.useCallback)(() => {
+  const retry = (0, import_react12.useCallback)(() => {
     if (!item || busy) return;
     setRes(null);
     setError("");
@@ -1816,7 +1638,7 @@ function WordPractice({ bankRev = 0 } = {}) {
       }
     }, 0);
   }, [item, busy]);
-  const toggleReveal = (0, import_react11.useCallback)(() => {
+  const toggleReveal = (0, import_react12.useCallback)(() => {
     setRevealed((v) => {
       if (!v) revealedEverRef.current = true;
       return !v;
@@ -1871,131 +1693,185 @@ function WordPractice({ bankRev = 0 } = {}) {
   const learningCount = liveStats ? Number(liveStats.learning) || 0 : 0;
   const masteredCount = liveStats ? Number(liveStats.mastered) || 0 : 0;
   const bankLabel = shortBankName(item && item.bankName || shared.stats && shared.stats.wordBank && shared.stats.wordBank.name || "");
+  return {
+    item,
+    cells,
+    res,
+    revealed,
+    busy,
+    rateBusy,
+    error,
+    mode,
+    refs,
+    liveStats,
+    dueCount,
+    learningCount,
+    masteredCount,
+    bankLabel,
+    load,
+    rate,
+    switchMode,
+    submit,
+    markMastered,
+    retry,
+    toggleReveal,
+    setCell,
+    onKey
+  };
+}
+
+// src/client/features/word/WordTopBar.jsx
+var import_react13 = __toESM(require("react"), 1);
+function WordTopBar({ mode, dueCount, busy, liveStats, learningCount, masteredCount, bankLabel, onSwitchMode }) {
+  const [hoverMode, setHoverMode] = (0, import_react13.useState)("");
   const shownMode = MODES.find((m) => m.id === (hoverMode || mode)) || MODES[0];
-  const topBar = import_react11.default.createElement(
+  return /* @__PURE__ */ import_react13.default.createElement("div", { className: "eg-srs-bar", "data-nodrag": "true" }, /* @__PURE__ */ import_react13.default.createElement(
     "div",
-    { className: "eg-srs-bar", "data-nodrag": "true" },
-    import_react11.default.createElement(
-      "div",
+    {
+      className: "eg-srs-modes",
+      role: "tablist",
+      "aria-label": "出词模式",
+      onMouseLeave: () => setHoverMode("")
+    },
+    MODES.map((m) => /* @__PURE__ */ import_react13.default.createElement(
+      "button",
       {
-        className: "eg-srs-modes",
-        role: "tablist",
-        "aria-label": "出词模式",
-        onMouseLeave: () => setHoverMode("")
+        key: m.id,
+        type: "button",
+        role: "tab",
+        "aria-selected": mode === m.id ? "true" : "false",
+        className: "eg-srs-mode" + (mode === m.id ? " active" : ""),
+        title: m.title,
+        disabled: busy,
+        onMouseEnter: () => setHoverMode(m.id),
+        onFocus: () => setHoverMode(m.id),
+        onBlur: () => setHoverMode((prev) => prev === m.id ? "" : prev),
+        onClick: () => onSwitchMode(m.id)
       },
-      MODES.map(
-        (m) => import_react11.default.createElement(
-          "button",
-          {
-            key: m.id,
-            type: "button",
-            role: "tab",
-            "aria-selected": mode === m.id ? "true" : "false",
-            className: "eg-srs-mode" + (mode === m.id ? " active" : ""),
-            title: m.title,
-            disabled: busy,
-            onMouseEnter: () => setHoverMode(m.id),
-            onFocus: () => setHoverMode(m.id),
-            onBlur: () => setHoverMode((prev) => prev === m.id ? "" : prev),
-            onClick: () => switchMode(m.id)
+      m.label,
+      m.id === "review" && dueCount > 0 ? /* @__PURE__ */ import_react13.default.createElement("span", { className: "eg-srs-due" }, String(dueCount)) : null
+    ))
+  ), /* @__PURE__ */ import_react13.default.createElement("div", { className: "eg-srs-hint" }, shownMode.title), liveStats || bankLabel ? /* @__PURE__ */ import_react13.default.createElement("div", { className: "eg-srs-meta", title: "词库可在「设置 → 单词词库」切换" }, [bankLabel, liveStats ? "学习中 " + learningCount : "", liveStats ? "已掌握 " + masteredCount : ""].filter(Boolean).join(" · ")) : null);
+}
+
+// src/client/features/word/LetterGrid.jsx
+var import_react14 = __toESM(require("react"), 1);
+function LetterGrid({ cells, answered, ok, reference, busy, inputRefs, onSetCell, onKey }) {
+  const target = String(reference || "").toLowerCase().replace(/[^a-z]/g, "");
+  const letterGap = cells.length > 7 ? 8 : 10;
+  const letterFont = cells.length > 12 ? 15 : cells.length > 9 ? 17 : 22;
+  return /* @__PURE__ */ import_react14.default.createElement(
+    "div",
+    {
+      className: "eg-letters" + (answered ? " answered" + (ok ? " is-ok" : " is-bad") : ""),
+      style: { gap: letterGap }
+    },
+    cells.map((ch, i) => {
+      let cls = "eg-letter";
+      if (answered) cls += ok ? " ok" : " bad";
+      return /* @__PURE__ */ import_react14.default.createElement(
+        "input",
+        {
+          key: i,
+          ref: (el) => {
+            inputRefs.current[i] = el;
           },
-          m.label,
-          m.id === "review" && dueCount > 0 ? import_react11.default.createElement("span", { className: "eg-srs-due" }, String(dueCount)) : null
-        )
-      )
-    ),
-    import_react11.default.createElement("div", { className: "eg-srs-hint" }, shownMode.title),
-    liveStats || bankLabel ? import_react11.default.createElement(
-      "div",
-      { className: "eg-srs-meta", title: "词库可在「设置 → 单词词库」切换" },
-      [
-        bankLabel,
-        liveStats ? "学习中 " + learningCount : "",
-        liveStats ? "已掌握 " + masteredCount : ""
-      ].filter(Boolean).join(" · ")
-    ) : null
+          className: cls,
+          value: answered ? ch || target[i] || "" : ch,
+          style: { fontSize: letterFont, "--i": i },
+          maxLength: 1,
+          inputMode: "text",
+          autoCapitalize: "off",
+          autoComplete: "off",
+          autoCorrect: "off",
+          spellCheck: false,
+          disabled: answered || busy,
+          "aria-label": "第 " + (i + 1) + " 个字母",
+          onChange: (e) => onSetCell(i, e.target.value),
+          onKeyDown: (e) => onKey(i, e)
+        }
+      );
+    })
+  );
+}
+
+// src/client/features/word/WordFeedback.jsx
+var import_react15 = __toESM(require("react"), 1);
+function WordFeedback({ res, revealed, busy, rateBusy, onRate }) {
+  if (!res) return null;
+  if (res.correct) {
+    return /* @__PURE__ */ import_react15.default.createElement("div", { className: "eg-fb ok" }, /* @__PURE__ */ import_react15.default.createElement("div", { className: "eg-fb-top" }, /* @__PURE__ */ import_react15.default.createElement("span", { className: "eg-fb-status" }, "拼对了"), res.srs && res.srs.nextReviewText ? /* @__PURE__ */ import_react15.default.createElement("span", { className: "eg-srs-next" }, res.srs.nextReviewText) : null), res.srs && res.srs.canRate && res.srs.ratingPreviews ? /* @__PURE__ */ import_react15.default.createElement("div", { className: "eg-fsrs-rate", role: "group", "aria-label": "记忆体感评分（快捷键 1 / 2 / 3）" }, /* @__PURE__ */ import_react15.default.createElement("span", { className: "eg-fsrs-rate-lbl" }, "记忆体感"), /* @__PURE__ */ import_react15.default.createElement("div", { className: "eg-fsrs-rate-btns" }, FSRS_RATINGS.map((opt) => {
+      const preview = res.srs.ratingPreviews[opt.key];
+      if (!preview) return null;
+      const active = res.srs.rating === opt.rating;
+      return /* @__PURE__ */ import_react15.default.createElement(
+        "button",
+        {
+          key: opt.key,
+          type: "button",
+          className: "eg-fsrs-btn" + (active ? " active" : ""),
+          "aria-pressed": active ? "true" : "false",
+          disabled: busy || rateBusy,
+          title: "快捷键 " + opt.keyHint + "：" + opt.label + "（" + preview.text + "）",
+          onClick: () => onRate(opt.rating)
+        },
+        /* @__PURE__ */ import_react15.default.createElement("kbd", { className: "eg-fsrs-key" }, opt.keyHint),
+        /* @__PURE__ */ import_react15.default.createElement("span", { className: "eg-fsrs-lbl" }, opt.label),
+        /* @__PURE__ */ import_react15.default.createElement("span", { className: "eg-fsrs-iv" }, preview.text)
+      );
+    }))) : null, /* @__PURE__ */ import_react15.default.createElement("div", { className: "eg-fb-ref" }, /* @__PURE__ */ import_react15.default.createElement("span", { className: "lbl" }, "正确拼写"), res.reference), /* @__PURE__ */ import_react15.default.createElement(ExampleBlock, { example: res.example, exampleZh: res.exampleZh, word: res.reference, highlight: true }));
+  }
+  return /* @__PURE__ */ import_react15.default.createElement("div", { className: "eg-fb bad" }, /* @__PURE__ */ import_react15.default.createElement("div", { className: "eg-collapse eg-word-miss-wrap" + (!revealed ? " open" : ""), "aria-hidden": revealed ? "true" : "false" }, /* @__PURE__ */ import_react15.default.createElement("div", { className: "eg-collapse-inner" }, /* @__PURE__ */ import_react15.default.createElement("div", { className: "eg-word-miss" }, "拼写有误，可再试一次或查看答案 · " + (res.srs && res.srs.nextReviewText || "5 分钟后再次巩固")))), /* @__PURE__ */ import_react15.default.createElement("div", { className: "eg-collapse eg-word-reveal" + (revealed ? " open" : ""), "aria-hidden": revealed ? "false" : "true" }, /* @__PURE__ */ import_react15.default.createElement("div", { className: "eg-collapse-inner" }, /* @__PURE__ */ import_react15.default.createElement("div", { className: "eg-fb-ref" }, /* @__PURE__ */ import_react15.default.createElement("span", { className: "lbl" }, "正确拼写"), res.reference), /* @__PURE__ */ import_react15.default.createElement(ExampleBlock, { example: res.example, exampleZh: res.exampleZh, word: res.reference, highlight: true }))));
+}
+
+// src/client/features/word/WordPractice.jsx
+function WordPractice({ bankRev = 0 } = {}) {
+  const {
+    item,
+    cells,
+    res,
+    revealed,
+    busy,
+    rateBusy,
+    error,
+    mode,
+    refs,
+    liveStats,
+    dueCount,
+    learningCount,
+    masteredCount,
+    bankLabel,
+    load,
+    rate,
+    switchMode,
+    submit,
+    markMastered,
+    retry,
+    toggleReveal,
+    setCell,
+    onKey
+  } = useWordPractice({ bankRev });
+  const topBar = /* @__PURE__ */ import_react16.default.createElement(
+    WordTopBar,
+    {
+      mode,
+      dueCount,
+      busy,
+      liveStats,
+      learningCount,
+      masteredCount,
+      bankLabel,
+      onSwitchMode: switchMode
+    }
   );
   if (!item) {
-    return import_react11.default.createElement(
-      "div",
-      { className: "eg-word" },
-      topBar,
-      import_react11.default.createElement(
-        "div",
-        { className: "eg-word-main" },
-        error ? import_react11.default.createElement("div", { className: "eg-err" }, error) : import_react11.default.createElement(
-          "div",
-          { className: "eg-loading" },
-          import_react11.default.createElement("span", { className: "eg-spin" }),
-          "正在取词…"
-        ),
-        error ? import_react11.default.createElement(
-          "div",
-          { className: "eg-foot" },
-          import_react11.default.createElement("button", { className: "eg-btn primary", onClick: () => load(), disabled: busy }, "重试")
-        ) : null
-      )
-    );
+    return /* @__PURE__ */ import_react16.default.createElement("div", { className: "eg-word" }, topBar, /* @__PURE__ */ import_react16.default.createElement("div", { className: "eg-word-main" }, error ? /* @__PURE__ */ import_react16.default.createElement("div", { className: "eg-err" }, error) : /* @__PURE__ */ import_react16.default.createElement("div", { className: "eg-loading" }, /* @__PURE__ */ import_react16.default.createElement("span", { className: "eg-spin" }), "正在取词…"), error ? /* @__PURE__ */ import_react16.default.createElement("div", { className: "eg-foot" }, /* @__PURE__ */ import_react16.default.createElement("button", { className: "eg-btn primary", onClick: () => load(), disabled: busy }, "重试")) : null));
   }
   if (item.done) {
-    return import_react11.default.createElement(
-      "div",
-      { className: "eg-word" },
-      topBar,
-      import_react11.default.createElement(
-        "div",
-        { className: "eg-word-main" },
-        import_react11.default.createElement(
-          "div",
-          { className: "eg-srs-done" },
-          import_react11.default.createElement("div", { className: "eg-srs-done-title" }, "到期单词已全部复习完成"),
-          import_react11.default.createElement(
-            "div",
-            { className: "eg-srs-done-sub" },
-            (bankLabel ? bankLabel + "：" : "当前词库：") + "学习中 " + learningCount + " 词 · 已掌握 " + masteredCount + " 词"
-          ),
-          import_react11.default.createElement(
-            "button",
-            {
-              type: "button",
-              className: "eg-btn primary",
-              disabled: busy,
-              onClick: () => switchMode("smart")
-            },
-            "切回智能模式继续学习"
-          )
-        )
-      )
-    );
+    return /* @__PURE__ */ import_react16.default.createElement("div", { className: "eg-word" }, topBar, /* @__PURE__ */ import_react16.default.createElement("div", { className: "eg-word-main" }, /* @__PURE__ */ import_react16.default.createElement("div", { className: "eg-srs-done" }, /* @__PURE__ */ import_react16.default.createElement("div", { className: "eg-srs-done-title" }, "到期单词已全部复习完成"), /* @__PURE__ */ import_react16.default.createElement("div", { className: "eg-srs-done-sub" }, (bankLabel ? bankLabel + "：" : "当前词库：") + "学习中 " + learningCount + " 词 · 已掌握 " + masteredCount + " 词"), /* @__PURE__ */ import_react16.default.createElement("button", { type: "button", className: "eg-btn primary", disabled: busy, onClick: () => switchMode("smart") }, "切回智能模式继续学习"))));
   }
   const answered = !!res;
   const ok = answered && !!res.correct;
-  const target = String(res && res.reference || "").toLowerCase().replace(/[^a-z]/g, "");
-  const letterGap = cells.length > 7 ? 8 : 10;
-  const letterFont = cells.length > 12 ? 15 : cells.length > 9 ? 17 : 22;
-  const cellsNodes = cells.map((ch, i) => {
-    let cls = "eg-letter";
-    if (answered) cls += ok ? " ok" : " bad";
-    return import_react11.default.createElement("input", {
-      key: i,
-      ref: (el) => {
-        refs.current[i] = el;
-      },
-      className: cls,
-      value: answered ? ch || target[i] || "" : ch,
-      style: { fontSize: letterFont, "--i": i },
-      maxLength: 1,
-      inputMode: "text",
-      autoCapitalize: "off",
-      autoComplete: "off",
-      autoCorrect: "off",
-      spellCheck: false,
-      disabled: answered || busy,
-      "aria-label": "第 " + (i + 1) + " 个字母",
-      onChange: (e) => setCell(i, e.target.value),
-      onKeyDown: (e) => onKey(i, e)
-    });
-  });
   const srsInfo = item.srs || null;
   const activeSrs = res && res.srs || srsInfo;
   const srsFam = activeSrs ? Number(activeSrs.familiarity) || 0 : 0;
@@ -2003,218 +1879,74 @@ function WordPractice({ bankRev = 0 } = {}) {
   const showDots = srsInfo && srsInfo.kind !== "new" && srsFam > 0;
   const cleanMeaning = formatMeaning(item.zh);
   const meaningClass = "eg-zh" + (cleanMeaning.length > 28 ? " is-xlong" : cleanMeaning.length > 16 ? " is-long" : "");
-  const footerActions = answered ? import_react11.default.createElement(
-    "div",
-    { className: "eg-word-foot" },
-    ok ? [
-      import_react11.default.createElement(
-        "button",
-        { key: "next", className: "eg-btn primary", onClick: () => load(), disabled: busy, title: "回车继续", "aria-keyshortcuts": "Enter" },
-        "下一个"
-      ),
-      !(res.srs && res.srs.mastered) ? import_react11.default.createElement(
-        "button",
-        { key: "master", className: "eg-btn", onClick: markMastered, disabled: busy, title: "太简单，直接标为已掌握" },
-        "已掌握"
-      ) : null
-    ] : [
-      import_react11.default.createElement("button", { key: "retry", className: "eg-btn primary", onClick: retry, disabled: busy }, "再试一次"),
-      import_react11.default.createElement(
-        "button",
-        {
-          key: "reveal",
-          className: "eg-btn",
-          onClick: toggleReveal,
-          disabled: busy,
-          "aria-expanded": revealed ? "true" : "false"
-        },
-        revealed ? "收起答案" : "显示答案"
-      ),
-      import_react11.default.createElement("button", { key: "next", className: "eg-btn", onClick: () => load(), disabled: busy }, "下一个")
-    ]
-  ) : item ? import_react11.default.createElement(
-    "div",
-    { className: "eg-word-foot" },
-    import_react11.default.createElement(
-      "button",
-      {
-        className: "eg-btn primary" + (busy ? " is-loading" : ""),
-        onClick: submit,
-        onPointerDown: bounceButton,
-        disabled: busy || cells.some((c) => !c)
-      },
-      "提交"
-    ),
-    import_react11.default.createElement("button", { className: "eg-btn", onClick: () => load(), disabled: busy }, "换一个"),
-    import_react11.default.createElement(
-      "button",
-      { className: "eg-btn", onClick: markMastered, disabled: busy, title: "太简单，直接标为已掌握" },
-      "已掌握"
-    ),
-    import_react11.default.createElement(
-      "span",
-      { className: "eg-kbd", title: "回车提交" },
-      import_react11.default.createElement("kbd", null, "↵")
-    )
-  ) : null;
-  return import_react11.default.createElement(
-    "div",
-    { className: "eg-word" },
-    topBar,
-    import_react11.default.createElement(
-      "div",
-      { className: "eg-word-main" },
-      import_react11.default.createElement(
-        "div",
-        { className: "eg-word-stage", key: item.id },
-        import_react11.default.createElement(
-          "div",
-          { className: "eg-word-meta" },
-          item.pos ? import_react11.default.createElement("span", { className: "eg-pos-text", title: "词性提示" }, formatPos(item.pos)) : null,
-          item.pos ? import_react11.default.createElement("span", { className: "eg-meta-sep", "aria-hidden": "true" }, "·") : null,
-          import_react11.default.createElement(
-            "span",
-            {
-              className: "eg-srs-tag" + (srsInfo && srsInfo.kind === "review" ? " is-review" : ""),
-              title: memoryTooltip(srsInfo)
-            },
-            memoryLabel(srsInfo),
-            showDots ? import_react11.default.createElement(
-              "span",
-              { className: "eg-srs-dots", "aria-hidden": "true" },
-              Array.from(
-                { length: srsMaxFam },
-                (_, idx) => import_react11.default.createElement("i", { key: idx, className: "eg-srs-dot" + (idx < srsFam ? " on" : "") })
-              )
-            ) : null,
-            srsInfo && srsInfo.isHardWord ? import_react11.default.createElement("span", { className: "eg-srs-hard", title: "高难度或多次遗忘词汇" }, "易错") : null
-          )
-        ),
-        import_react11.default.createElement("div", { className: meaningClass }, cleanMeaning),
-        !answered ? import_react11.default.createElement(ExampleBlock, { example: item.example }) : null,
-        import_react11.default.createElement(
-          "div",
-          {
-            className: "eg-letters" + (answered ? " answered" + (ok ? " is-ok" : " is-bad") : ""),
-            style: { gap: letterGap }
-          },
-          cellsNodes
-        ),
-        error ? import_react11.default.createElement("div", { className: "eg-err" }, error) : null,
-        answered ? ok ? import_react11.default.createElement(
-          "div",
-          { className: "eg-fb ok" },
-          import_react11.default.createElement(
-            "div",
-            { className: "eg-fb-top" },
-            import_react11.default.createElement("span", { className: "eg-fb-status" }, "拼对了"),
-            res.srs && res.srs.nextReviewText ? import_react11.default.createElement("span", { className: "eg-srs-next" }, res.srs.nextReviewText) : null
-          ),
-          res.srs && res.srs.canRate && res.srs.ratingPreviews ? import_react11.default.createElement(
-            "div",
-            { className: "eg-fsrs-rate", role: "group", "aria-label": "记忆体感评分（快捷键 1 / 2 / 3）" },
-            import_react11.default.createElement("span", { className: "eg-fsrs-rate-lbl" }, "记忆体感"),
-            import_react11.default.createElement(
-              "div",
-              { className: "eg-fsrs-rate-btns" },
-              FSRS_RATINGS.map((opt) => {
-                const preview = res.srs.ratingPreviews[opt.key];
-                if (!preview) return null;
-                const active = res.srs.rating === opt.rating;
-                return import_react11.default.createElement(
-                  "button",
-                  {
-                    key: opt.key,
-                    type: "button",
-                    className: "eg-fsrs-btn" + (active ? " active" : ""),
-                    "aria-pressed": active ? "true" : "false",
-                    disabled: busy || rateBusy,
-                    title: "快捷键 " + opt.keyHint + "：" + opt.label + "（" + preview.text + "）",
-                    onClick: () => rate(opt.rating)
-                  },
-                  import_react11.default.createElement("kbd", { className: "eg-fsrs-key" }, opt.keyHint),
-                  import_react11.default.createElement("span", { className: "eg-fsrs-lbl" }, opt.label),
-                  import_react11.default.createElement("span", { className: "eg-fsrs-iv" }, preview.text)
-                );
-              })
-            )
-          ) : null,
-          import_react11.default.createElement(
-            "div",
-            { className: "eg-fb-ref" },
-            import_react11.default.createElement("span", { className: "lbl" }, "正确拼写"),
-            res.reference
-          ),
-          import_react11.default.createElement(ExampleBlock, {
-            example: res.example,
-            exampleZh: res.exampleZh,
-            word: res.reference,
-            highlight: true
-          })
-        ) : import_react11.default.createElement(
-          "div",
-          { className: "eg-fb bad" },
-          import_react11.default.createElement(
-            "div",
-            {
-              className: "eg-collapse eg-word-miss-wrap" + (!revealed ? " open" : ""),
-              "aria-hidden": revealed ? "true" : "false"
-            },
-            import_react11.default.createElement(
-              "div",
-              { className: "eg-collapse-inner" },
-              import_react11.default.createElement(
-                "div",
-                { className: "eg-word-miss" },
-                "拼写有误，可再试一次或查看答案 · " + (res.srs && res.srs.nextReviewText || "5 分钟后再次巩固")
-              )
-            )
-          ),
-          import_react11.default.createElement(
-            "div",
-            {
-              className: "eg-collapse eg-word-reveal" + (revealed ? " open" : ""),
-              "aria-hidden": revealed ? "false" : "true"
-            },
-            import_react11.default.createElement(
-              "div",
-              { className: "eg-collapse-inner" },
-              import_react11.default.createElement(
-                "div",
-                { className: "eg-fb-ref" },
-                import_react11.default.createElement("span", { className: "lbl" }, "正确拼写"),
-                res.reference
-              ),
-              import_react11.default.createElement(ExampleBlock, {
-                example: res.example,
-                exampleZh: res.exampleZh,
-                word: res.reference,
-                highlight: true
-              })
-            )
-          )
-        ) : null
-      )
-    ),
-    footerActions
-  );
+  const footerActions = answered ? /* @__PURE__ */ import_react16.default.createElement("div", { className: "eg-word-foot" }, ok ? /* @__PURE__ */ import_react16.default.createElement(import_react16.default.Fragment, null, /* @__PURE__ */ import_react16.default.createElement(
+    "button",
+    {
+      className: "eg-btn primary",
+      onClick: () => load(),
+      disabled: busy,
+      title: "回车继续",
+      "aria-keyshortcuts": "Enter"
+    },
+    "下一个"
+  ), !(res.srs && res.srs.mastered) ? /* @__PURE__ */ import_react16.default.createElement("button", { className: "eg-btn", onClick: markMastered, disabled: busy, title: "太简单，直接标为已掌握" }, "已掌握") : null) : /* @__PURE__ */ import_react16.default.createElement(import_react16.default.Fragment, null, /* @__PURE__ */ import_react16.default.createElement("button", { className: "eg-btn primary", onClick: retry, disabled: busy }, "再试一次"), /* @__PURE__ */ import_react16.default.createElement(
+    "button",
+    {
+      className: "eg-btn",
+      onClick: toggleReveal,
+      disabled: busy,
+      "aria-expanded": revealed ? "true" : "false"
+    },
+    revealed ? "收起答案" : "显示答案"
+  ), /* @__PURE__ */ import_react16.default.createElement("button", { className: "eg-btn", onClick: () => load(), disabled: busy }, "下一个"))) : /* @__PURE__ */ import_react16.default.createElement("div", { className: "eg-word-foot" }, /* @__PURE__ */ import_react16.default.createElement(
+    "button",
+    {
+      className: "eg-btn primary" + (busy ? " is-loading" : ""),
+      onClick: submit,
+      onPointerDown: bounceButton,
+      disabled: busy || cells.some((c) => !c)
+    },
+    "提交"
+  ), /* @__PURE__ */ import_react16.default.createElement("button", { className: "eg-btn", onClick: () => load(), disabled: busy }, "换一个"), /* @__PURE__ */ import_react16.default.createElement("button", { className: "eg-btn", onClick: markMastered, disabled: busy, title: "太简单，直接标为已掌握" }, "已掌握"), /* @__PURE__ */ import_react16.default.createElement("span", { className: "eg-kbd", title: "回车提交" }, /* @__PURE__ */ import_react16.default.createElement("kbd", null, "↵")));
+  return /* @__PURE__ */ import_react16.default.createElement("div", { className: "eg-word" }, topBar, /* @__PURE__ */ import_react16.default.createElement("div", { className: "eg-word-main" }, /* @__PURE__ */ import_react16.default.createElement("div", { className: "eg-word-stage", key: item.id }, /* @__PURE__ */ import_react16.default.createElement("div", { className: "eg-word-meta" }, item.pos ? /* @__PURE__ */ import_react16.default.createElement("span", { className: "eg-pos-text", title: "词性提示" }, formatPos(item.pos)) : null, item.pos ? /* @__PURE__ */ import_react16.default.createElement("span", { className: "eg-meta-sep", "aria-hidden": "true" }, "·") : null, /* @__PURE__ */ import_react16.default.createElement(
+    "span",
+    {
+      className: "eg-srs-tag" + (srsInfo && srsInfo.kind === "review" ? " is-review" : ""),
+      title: memoryTooltip(srsInfo)
+    },
+    memoryLabel(srsInfo),
+    showDots ? /* @__PURE__ */ import_react16.default.createElement("span", { className: "eg-srs-dots", "aria-hidden": "true" }, Array.from({ length: srsMaxFam }, (_, idx) => /* @__PURE__ */ import_react16.default.createElement("i", { key: idx, className: "eg-srs-dot" + (idx < srsFam ? " on" : "") }))) : null,
+    srsInfo && srsInfo.isHardWord ? /* @__PURE__ */ import_react16.default.createElement("span", { className: "eg-srs-hard", title: "高难度或多次遗忘词汇" }, "易错") : null
+  )), /* @__PURE__ */ import_react16.default.createElement("div", { className: meaningClass }, cleanMeaning), !answered ? /* @__PURE__ */ import_react16.default.createElement(ExampleBlock, { example: item.example }) : null, /* @__PURE__ */ import_react16.default.createElement(
+    LetterGrid,
+    {
+      cells,
+      answered,
+      ok,
+      reference: res && res.reference,
+      busy,
+      inputRefs: refs,
+      onSetCell: setCell,
+      onKey
+    }
+  ), error ? /* @__PURE__ */ import_react16.default.createElement("div", { className: "eg-err" }, error) : null, /* @__PURE__ */ import_react16.default.createElement(WordFeedback, { res, revealed, busy, rateBusy, onRate: rate }))), footerActions);
 }
 
 // src/client/features/report/useDailyReport.js
-var import_react12 = require("react");
+var import_react17 = require("react");
 function useDailyReport({ open, active }) {
-  const [report, setReport] = (0, import_react12.useState)(null);
-  const [loading, setLoading] = (0, import_react12.useState)(false);
-  const [error, setError] = (0, import_react12.useState)("");
-  const genRef = (0, import_react12.useRef)(0);
-  const abortRef = (0, import_react12.useRef)(null);
-  const startedRef = (0, import_react12.useRef)(false);
-  (0, import_react12.useEffect)(() => {
+  const [report, setReport] = (0, import_react17.useState)(null);
+  const [loading, setLoading] = (0, import_react17.useState)(false);
+  const [error, setError] = (0, import_react17.useState)("");
+  const genRef = (0, import_react17.useRef)(0);
+  const abortRef = (0, import_react17.useRef)(null);
+  const startedRef = (0, import_react17.useRef)(false);
+  (0, import_react17.useEffect)(() => {
     return () => {
       if (abortRef.current) abortRef.current.abort();
     };
   }, []);
-  const refresh = (0, import_react12.useCallback)(async (force) => {
+  const refresh = (0, import_react17.useCallback)(async (force) => {
     const gen = ++genRef.current;
     if (abortRef.current) abortRef.current.abort();
     const ac = new AbortController();
@@ -2237,18 +1969,18 @@ function useDailyReport({ open, active }) {
       }
     }
   }, []);
-  (0, import_react12.useEffect)(() => {
+  (0, import_react17.useEffect)(() => {
     if (open && active && !report && !loading && !error && !startedRef.current) {
       refresh(false);
     }
   }, [open, active, report, loading, error, refresh]);
-  (0, import_react12.useEffect)(() => {
+  (0, import_react17.useEffect)(() => {
     if (!open && error) {
       startedRef.current = false;
       setError("");
     }
   }, [open, error]);
-  const invalidate = (0, import_react12.useCallback)(() => {
+  const invalidate = (0, import_react17.useCallback)(() => {
     genRef.current += 1;
     if (abortRef.current) {
       abortRef.current.abort();
@@ -2262,8 +1994,8 @@ function useDailyReport({ open, active }) {
   return { report, loading, error, refresh, invalidate };
 }
 
-// src/client/features/report/Report.js
-var import_react13 = __toESM(require("react"), 1);
+// src/client/features/report/Report.jsx
+var import_react22 = __toESM(require("react"), 1);
 
 // src/client/features/report/highlight.js
 function segmentReportParagraphs(paragraphs, highlights, options = {}) {
@@ -2471,48 +2203,35 @@ function annotateSentenceSegments(sentenceEn, segs, hint = {}) {
   return out;
 }
 
-// src/client/features/report/Report.js
-var useIsoLayoutEffect2 = import_react13.default.useLayoutEffect || import_react13.useEffect;
-function hasSentenceHint(s) {
-  return Boolean(
-    s && (Array.isArray(s.chunks) && s.chunks.length >= 2 || Array.isArray(s.core) && s.core.length > 0)
-  );
-}
-function Report({ report, loading, error, onRefresh }) {
-  const [openMap, setOpenMap] = (0, import_react13.useState)({});
-  const [reveal, setReveal] = (0, import_react13.useState)({});
-  const [explains, setExplains] = (0, import_react13.useState)({});
-  const [active, setActive] = (0, import_react13.useState)(null);
-  const [popPos, setPopPos] = (0, import_react13.useState)(null);
-  const reportRef = (0, import_react13.useRef)(null);
-  const popRef = (0, import_react13.useRef)(null);
-  const termRefs = (0, import_react13.useRef)({});
-  const closeTimerRef = (0, import_react13.useRef)(null);
-  const reportGenRef = (0, import_react13.useRef)(0);
-  const cancelClose = (0, import_react13.useCallback)(() => {
+// src/client/features/report/useWordPopover.js
+var import_react18 = __toESM(require("react"), 1);
+var useIsoLayoutEffect2 = import_react18.default.useLayoutEffect || import_react18.useEffect;
+function useWordPopover({ report, reportRef }) {
+  const [active, setActive] = (0, import_react18.useState)(null);
+  const [popPos, setPopPos] = (0, import_react18.useState)(null);
+  const popRef = (0, import_react18.useRef)(null);
+  const termRefs = (0, import_react18.useRef)({});
+  const closeTimerRef = (0, import_react18.useRef)(null);
+  const cancelClose = (0, import_react18.useCallback)(() => {
     if (closeTimerRef.current) {
       clearTimeout(closeTimerRef.current);
       closeTimerRef.current = null;
     }
   }, []);
-  const scheduleClose = (0, import_react13.useCallback)(() => {
+  const scheduleClose = (0, import_react18.useCallback)(() => {
     cancelClose();
     closeTimerRef.current = setTimeout(() => {
       setActive((prev) => prev && !prev.pinned ? null : prev);
     }, 140);
   }, [cancelClose]);
-  (0, import_react13.useEffect)(() => {
-    reportGenRef.current += 1;
+  (0, import_react18.useEffect)(() => {
     cancelClose();
-    setOpenMap({});
-    setReveal({});
-    setExplains({});
     setActive(null);
     setPopPos(null);
     termRefs.current = {};
   }, [report, cancelClose]);
-  (0, import_react13.useEffect)(() => () => cancelClose(), [cancelClose]);
-  (0, import_react13.useEffect)(() => {
+  (0, import_react18.useEffect)(() => () => cancelClose(), [cancelClose]);
+  (0, import_react18.useEffect)(() => {
     if (!active) return void 0;
     const onPointerDown = (e) => {
       const target = e.target;
@@ -2534,7 +2253,7 @@ function Report({ report, loading, error, onRefresh }) {
       window.removeEventListener("keydown", onKeyDown, true);
     };
   }, [active]);
-  const updatePopoverPosition = (0, import_react13.useCallback)(() => {
+  const updatePopoverPosition = (0, import_react18.useCallback)(() => {
     if (!active) {
       setPopPos(null);
       return;
@@ -2562,7 +2281,7 @@ function Report({ report, loading, error, onRefresh }) {
     const left = Math.round(Math.max(0, Math.min(maxLeft, anchorCenterX - popWidth / 2)));
     const arrowX = Math.round(Math.max(12, Math.min(Math.max(12, popWidth - 12), anchorCenterX - left)));
     setPopPos({ left, top, arrowX, placement });
-  }, [active]);
+  }, [active, reportRef]);
   useIsoLayoutEffect2(() => {
     updatePopoverPosition();
     if (!active) return void 0;
@@ -2576,15 +2295,289 @@ function Report({ report, loading, error, onRefresh }) {
       window.removeEventListener("resize", updatePopoverPosition);
       if (ro) ro.disconnect();
     };
-  }, [active, updatePopoverPosition]);
+  }, [active, reportRef, updatePopoverPosition]);
+  const handleTermEnter = (0, import_react18.useCallback)(
+    (seg) => {
+      cancelClose();
+      setActive((prev) => prev && prev.pinned ? prev : { id: seg.id, item: seg.item, text: seg.text, pinned: false });
+    },
+    [cancelClose]
+  );
+  const handleTermLeave = (0, import_react18.useCallback)(() => {
+    scheduleClose();
+  }, [scheduleClose]);
+  const handleTermClick = (0, import_react18.useCallback)(
+    (e, seg) => {
+      const sel = typeof window !== "undefined" && window.getSelection ? window.getSelection() : null;
+      if (sel && String(sel).trim()) return;
+      e.stopPropagation();
+      cancelClose();
+      setActive(
+        (prev) => prev && prev.pinned && prev.id === seg.id ? null : { id: seg.id, item: seg.item, text: seg.text, pinned: true }
+      );
+    },
+    [cancelClose]
+  );
+  const handleTermFocus = (0, import_react18.useCallback)(
+    (seg) => {
+      cancelClose();
+      setActive((prev) => prev && prev.pinned ? prev : { id: seg.id, item: seg.item, text: seg.text, pinned: false });
+    },
+    [cancelClose]
+  );
+  const handleTermBlur = (0, import_react18.useCallback)((e) => {
+    if (popRef.current && e.relatedTarget && popRef.current.contains(e.relatedTarget)) return;
+    setActive((prev) => prev && !prev.pinned ? null : prev);
+  }, []);
+  const handleTermKeyDown = (0, import_react18.useCallback)(
+    (e, seg) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        e.stopPropagation();
+        cancelClose();
+        setActive(
+          (prev) => prev && prev.pinned && prev.id === seg.id ? null : { id: seg.id, item: seg.item, text: seg.text, pinned: true }
+        );
+      }
+    },
+    [cancelClose]
+  );
+  const closePopover = (0, import_react18.useCallback)(() => setActive(null), []);
+  return {
+    active,
+    popPos,
+    popRef,
+    termRefs,
+    cancelClose,
+    closePopover,
+    termHandlers: {
+      onEnter: handleTermEnter,
+      onLeave: handleTermLeave,
+      onClick: handleTermClick,
+      onFocus: handleTermFocus,
+      onBlur: handleTermBlur,
+      onKeyDown: handleTermKeyDown
+    }
+  };
+}
+
+// src/client/features/report/WordPopover.jsx
+var import_react19 = __toESM(require("react"), 1);
+function WordPopover({ active, popPos, popRef, onCancelClose, onLeave, onClose }) {
+  if (!active) return null;
+  const activePos = active.item.pos ? formatPos(active.item.pos) : "";
+  const activeLemma = active.item.lemma && active.item.lemma.toLowerCase() !== active.text.toLowerCase() ? active.item.lemma : "";
+  return /* @__PURE__ */ import_react19.default.createElement(
+    "div",
+    {
+      ref: popRef,
+      className: "eg-rpop" + (popPos ? " is-ready" : "") + (popPos && popPos.placement === "below" ? " is-below" : "") + (active.pinned ? " is-pinned" : ""),
+      role: active.pinned ? "dialog" : "tooltip",
+      "aria-label": active.text + " 释义",
+      style: popPos ? { left: popPos.left + "px", top: popPos.top + "px", "--eg-arrow-x": popPos.arrowX + "px" } : { left: 0, top: 0 },
+      onMouseEnter: onCancelClose,
+      onMouseLeave: onLeave
+    },
+    /* @__PURE__ */ import_react19.default.createElement("div", { className: "eg-rpop-head" }, /* @__PURE__ */ import_react19.default.createElement("div", { className: "eg-rpop-title" }, /* @__PURE__ */ import_react19.default.createElement("span", { className: "eg-rpop-word" }, active.text), activeLemma ? /* @__PURE__ */ import_react19.default.createElement("span", { className: "eg-rpop-lemma" }, "→ " + activeLemma) : null), active.pinned ? /* @__PURE__ */ import_react19.default.createElement("button", { type: "button", className: "eg-rpop-close", "aria-label": "关闭释义", onClick: onClose }, "×") : null),
+    activePos || active.item.fromBank ? /* @__PURE__ */ import_react19.default.createElement("div", { className: "eg-rpop-tags" }, activePos ? /* @__PURE__ */ import_react19.default.createElement("span", { className: "eg-rpop-pos" }, activePos) : null, active.item.fromBank ? /* @__PURE__ */ import_react19.default.createElement("span", { className: "eg-rpop-bank" }, "词库") : null) : null,
+    /* @__PURE__ */ import_react19.default.createElement("div", { className: "eg-rpop-zh" }, active.item.zh)
+  );
+}
+
+// src/client/features/report/ReportParagraph.jsx
+var import_react20 = __toESM(require("react"), 1);
+function hasSentenceHint(s) {
+  return Boolean(
+    s && (Array.isArray(s.chunks) && s.chunks.length >= 2 || Array.isArray(s.core) && s.core.length > 0)
+  );
+}
+function SentenceExplainBox({ exp, onRetry }) {
+  const expLoading = !!(exp && exp.loading);
+  const expData = exp && exp.data;
+  const expErr = exp && exp.error;
+  return /* @__PURE__ */ import_react20.default.createElement("div", { className: "eg-rexplain" }, expLoading ? /* @__PURE__ */ import_react20.default.createElement("div", { className: "eg-rexplain-loading" }, /* @__PURE__ */ import_react20.default.createElement("span", { className: "eg-spin" }), "正在解析句型与译法…") : expErr ? /* @__PURE__ */ import_react20.default.createElement("div", { className: "eg-rexplain-err" }, /* @__PURE__ */ import_react20.default.createElement("span", null, expErr), /* @__PURE__ */ import_react20.default.createElement("button", { type: "button", className: "eg-rslot-btn", onClick: onRetry }, "重试")) : expData ? /* @__PURE__ */ import_react20.default.createElement(import_react20.default.Fragment, null, expData.structure ? /* @__PURE__ */ import_react20.default.createElement("div", { className: "eg-rexplain-sec" }, /* @__PURE__ */ import_react20.default.createElement("span", { className: "eg-rexplain-label" }, "句型"), /* @__PURE__ */ import_react20.default.createElement("span", { className: "eg-rexplain-text" }, expData.structure)) : null, expData.points && expData.points.length ? /* @__PURE__ */ import_react20.default.createElement("ul", { className: "eg-rexplain-pts" }, expData.points.map((pt, pi) => /* @__PURE__ */ import_react20.default.createElement("li", { key: pi, className: "eg-rexplain-pt" }, /* @__PURE__ */ import_react20.default.createElement("span", { className: "eg-rexplain-phrase" }, pt.phrase), /* @__PURE__ */ import_react20.default.createElement("span", { className: "eg-rexplain-note" }, pt.note)))) : null, expData.nuance ? /* @__PURE__ */ import_react20.default.createElement("div", { className: "eg-rexplain-sec" }, /* @__PURE__ */ import_react20.default.createElement("span", { className: "eg-rexplain-label" }, "译法"), /* @__PURE__ */ import_react20.default.createElement("span", { className: "eg-rexplain-text" }, expData.nuance)) : null) : null);
+}
+function ReportParagraph({
+  index,
+  segs,
+  paragraphText,
+  info,
+  reveal,
+  explains,
+  activeTermId,
+  termRefs,
+  onToggleGist,
+  onToggleSentence,
+  onExplainToggle,
+  termHandlers
+}) {
+  const renderSeg = (seg, j) => {
+    if (seg.type === "slash") {
+      return /* @__PURE__ */ import_react20.default.createElement("span", { key: "sl-" + j, className: "eg-rslash", "aria-hidden": "true" }, "/");
+    }
+    if (seg.type !== "term") {
+      return seg.inCore ? /* @__PURE__ */ import_react20.default.createElement("span", { key: "c-" + j, className: "eg-rcore" }, seg.text) : seg.text;
+    }
+    const isActive = activeTermId === seg.id;
+    return /* @__PURE__ */ import_react20.default.createElement(
+      "mark",
+      {
+        key: seg.id + "-" + j,
+        ref: (el) => {
+          if (el) termRefs.current[seg.id] = el;
+          else delete termRefs.current[seg.id];
+        },
+        className: "eg-rword" + (isActive ? " is-active" : "") + (seg.inCore ? " is-core" : ""),
+        role: "button",
+        tabIndex: 0,
+        "aria-expanded": isActive ? "true" : "false",
+        onMouseEnter: () => termHandlers.onEnter(seg),
+        onMouseLeave: termHandlers.onLeave,
+        onClick: (e) => termHandlers.onClick(e, seg),
+        onFocus: () => termHandlers.onFocus(seg),
+        onBlur: termHandlers.onBlur,
+        onKeyDown: (e) => termHandlers.onKeyDown(e, seg)
+      },
+      seg.text
+    );
+  };
+  if (!info || !info.groups && !info.gist) {
+    return /* @__PURE__ */ import_react20.default.createElement("p", { className: "eg-rp" }, segs.map(renderSeg));
+  }
+  const handleSentenceClick = (e, key) => {
+    const sel = typeof window !== "undefined" && window.getSelection ? window.getSelection() : null;
+    if (sel && String(sel).trim()) return;
+    if (e.target && e.target.closest && e.target.closest(".eg-rword")) return;
+    onToggleSentence(key);
+  };
+  const handleSentenceKeyDown = (e, key) => {
+    if (e.target !== e.currentTarget) return;
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      e.stopPropagation();
+      onToggleSentence(key);
+    }
+  };
+  const children = info.groups ? info.groups.map((g, gi) => {
+    if (g.type !== "sentence") {
+      return /* @__PURE__ */ import_react20.default.createElement(import_react20.default.Fragment, { key: "gap-" + gi }, g.segs.map(renderSeg));
+    }
+    const n = info.base + g.index;
+    const s = info.sentences[g.index] || {};
+    const key = "s" + n;
+    const canReveal = !!(s && s.zh);
+    const isOpen = canReveal && !!reveal[key];
+    const segList = isOpen && hasSentenceHint(s) ? annotateSentenceSegments(s.en, g.segs, s) : g.segs;
+    return /* @__PURE__ */ import_react20.default.createElement(
+      "span",
+      {
+        key,
+        className: "eg-rsent" + (canReveal ? " can-reveal" : "") + (isOpen ? " is-open" : ""),
+        tabIndex: canReveal ? 0 : void 0,
+        "aria-expanded": canReveal ? isOpen ? "true" : "false" : void 0,
+        title: canReveal ? isOpen ? "点击收起本句译文" : "点击查看本句译文" : void 0,
+        onClick: canReveal ? (e) => handleSentenceClick(e, key) : void 0,
+        onKeyDown: canReveal ? (e) => handleSentenceKeyDown(e, key) : void 0
+      },
+      segList.map(renderSeg),
+      isOpen ? /* @__PURE__ */ import_react20.default.createElement("sup", { className: "eg-rsent-n", "aria-hidden": "true" }, String(n + 1)) : null
+    );
+  }) : segs.map(renderSeg);
+  const gistKey = "g" + index;
+  const gistOpen = !!(info.gist && reveal[gistKey]);
+  const openSentences = info.sentences.map((s, si) => ({ s, si, n: info.base + si })).filter(({ s, n }) => s && s.zh && reveal["s" + n]);
+  return /* @__PURE__ */ import_react20.default.createElement(import_react20.default.Fragment, null, /* @__PURE__ */ import_react20.default.createElement("p", { className: "eg-rp" }, children, info.gist ? /* @__PURE__ */ import_react20.default.createElement(
+    "button",
+    {
+      type: "button",
+      className: "eg-rgist-btn",
+      "aria-expanded": gistOpen ? "true" : "false",
+      title: gistOpen ? "收起本段大意" : "看本段大意（中文）",
+      onClick: () => onToggleGist(gistKey)
+    },
+    "段意"
+  ) : null), gistOpen || openSentences.length ? /* @__PURE__ */ import_react20.default.createElement("div", { className: "eg-rslot", "aria-live": "polite" }, gistOpen ? /* @__PURE__ */ import_react20.default.createElement("div", { key: gistKey, className: "eg-rslot-row is-gist" }, /* @__PURE__ */ import_react20.default.createElement("span", { className: "eg-rslot-tag" }, "段意"), /* @__PURE__ */ import_react20.default.createElement("span", { className: "eg-rslot-zh" }, info.gist), /* @__PURE__ */ import_react20.default.createElement("button", { type: "button", className: "eg-rslot-x", "aria-label": "收起段意", onClick: () => onToggleGist(gistKey) }, "×")) : null, openSentences.map(({ s, si, n }) => {
+    const skey = "s" + n;
+    const exp = explains[skey] || null;
+    const expOpen = !!(exp && exp.open);
+    const expLoading = !!(exp && exp.loading);
+    const explainPayload = { key: skey, pIdx: index, sIdx: si, sentence: s, paragraphText };
+    return /* @__PURE__ */ import_react20.default.createElement("div", { key: skey, className: "eg-rslot-row" }, /* @__PURE__ */ import_react20.default.createElement("span", { className: "eg-rslot-tag" }, String(n + 1)), /* @__PURE__ */ import_react20.default.createElement("div", { className: "eg-rslot-body" }, /* @__PURE__ */ import_react20.default.createElement("div", { className: "eg-rslot-zh" }, s.zh), /* @__PURE__ */ import_react20.default.createElement("div", { className: "eg-rslot-tools" }, /* @__PURE__ */ import_react20.default.createElement(
+      "button",
+      {
+        type: "button",
+        className: "eg-rslot-btn" + (expOpen ? " is-active" : ""),
+        "aria-expanded": expOpen ? "true" : "false",
+        disabled: expLoading,
+        onClick: () => onExplainToggle(explainPayload)
+      },
+      expLoading ? "解析中…" : expOpen ? "收起讲解" : "为什么？"
+    )), expOpen ? /* @__PURE__ */ import_react20.default.createElement(
+      SentenceExplainBox,
+      {
+        exp,
+        onRetry: () => onExplainToggle({ ...explainPayload, retry: true })
+      }
+    ) : null), /* @__PURE__ */ import_react20.default.createElement(
+      "button",
+      {
+        type: "button",
+        className: "eg-rslot-x",
+        "aria-label": "收起第 " + (n + 1) + " 句译文",
+        onClick: () => onToggleSentence(skey)
+      },
+      "×"
+    ));
+  })) : null);
+}
+
+// src/client/features/report/ReportPractice.jsx
+var import_react21 = __toESM(require("react"), 1);
+function ReportPractice({ report, questions }) {
+  const [openMap, setOpenMap] = (0, import_react21.useState)({});
+  (0, import_react21.useEffect)(() => {
+    setOpenMap({});
+  }, [report]);
+  if (!questions.length) return null;
+  return /* @__PURE__ */ import_react21.default.createElement("div", { className: "eg-practice" }, /* @__PURE__ */ import_react21.default.createElement("div", { className: "eg-ptitle" }, "练一练"), questions.map((q, i) => {
+    const isOpen = !!openMap[i];
+    return /* @__PURE__ */ import_react21.default.createElement("div", { key: i, className: "eg-q" + (isOpen ? " reveal" : "") }, /* @__PURE__ */ import_react21.default.createElement("div", { className: "eg-q-head" }, /* @__PURE__ */ import_react21.default.createElement("span", { className: "eg-q-n" }, String(i + 1)), /* @__PURE__ */ import_react21.default.createElement("span", { className: "eg-q-zh" }, q.zh)), /* @__PURE__ */ import_react21.default.createElement(
+      "button",
+      {
+        className: "eg-q-toggle",
+        type: "button",
+        "aria-expanded": isOpen ? "true" : "false",
+        onClick: () => setOpenMap((prev) => ({ ...prev, [i]: !prev[i] }))
+      },
+      /* @__PURE__ */ import_react21.default.createElement("span", { className: "caret", "aria-hidden": "true" }, "▸"),
+      isOpen ? "收起参考" : "看参考"
+    ), /* @__PURE__ */ import_react21.default.createElement("div", { className: "eg-collapse" + (isOpen ? " open" : ""), "aria-hidden": isOpen ? "false" : "true" }, /* @__PURE__ */ import_react21.default.createElement("div", { className: "eg-collapse-inner" }, /* @__PURE__ */ import_react21.default.createElement("div", { className: "eg-q-en" }, q.en))));
+  }));
+}
+
+// src/client/features/report/Report.jsx
+function Report({ report, loading, error, onRefresh }) {
+  const [reveal, setReveal] = (0, import_react22.useState)({});
+  const [explains, setExplains] = (0, import_react22.useState)({});
+  const reportRef = (0, import_react22.useRef)(null);
+  const reportGenRef = (0, import_react22.useRef)(0);
+  const { active, popPos, popRef, termRefs, cancelClose, closePopover, termHandlers } = useWordPopover({
+    report,
+    reportRef
+  });
+  (0, import_react22.useEffect)(() => {
+    reportGenRef.current += 1;
+    setReveal({});
+    setExplains({});
+  }, [report]);
   const body = report ? String(report.body || "") : "";
   const highlights = report && Array.isArray(report.highlights) ? report.highlights : [];
-  const paragraphs = (0, import_react13.useMemo)(() => body.split(/\n{2,}/).filter(Boolean), [body]);
-  const { segmentsByParagraph, matchedCount } = (0, import_react13.useMemo)(
+  const paragraphs = (0, import_react22.useMemo)(() => body.split(/\n{2,}/).filter(Boolean), [body]);
+  const { segmentsByParagraph, matchedCount } = (0, import_react22.useMemo)(
     () => segmentReportParagraphs(paragraphs, highlights),
     [paragraphs, highlights]
   );
-  const structure = (0, import_react13.useMemo)(() => {
+  const structure = (0, import_react22.useMemo)(() => {
     const list = report && Array.isArray(report.paragraphs) ? report.paragraphs : [];
     if (!list.length || list.length !== paragraphs.length) return null;
     let base = 0;
@@ -2602,7 +2595,7 @@ function Report({ report, loading, error, onRefresh }) {
     });
     return revealable || items.some((it) => it.gist) ? { items, revealable } : null;
   }, [report, paragraphs, segmentsByParagraph]);
-  const toggleGist = (0, import_react13.useCallback)((key) => {
+  const toggleGist = (0, import_react22.useCallback)((key) => {
     setReveal((prev) => {
       const next = { ...prev };
       if (next[key]) delete next[key];
@@ -2610,7 +2603,7 @@ function Report({ report, loading, error, onRefresh }) {
       return next;
     });
   }, []);
-  const toggleSentence = (0, import_react13.useCallback)(
+  const toggleSentence = (0, import_react22.useCallback)(
     (key) => {
       const wasOpen = !!reveal[key];
       setReveal((prev) => {
@@ -2628,7 +2621,7 @@ function Report({ report, loading, error, onRefresh }) {
     },
     [reveal]
   );
-  const handleExplainToggle = (0, import_react13.useCallback)(
+  const handleExplainToggle = (0, import_react22.useCallback)(
     async ({ key, pIdx, sIdx, sentence, paragraphText, retry = false }) => {
       const cur = explains[key];
       if (!retry && cur && cur.loading) return;
@@ -2673,403 +2666,61 @@ function Report({ report, loading, error, onRefresh }) {
     [explains, report]
   );
   if (loading && !report) {
-    return import_react13.default.createElement(
-      "div",
-      { className: "eg-loading is-stage" },
-      import_react13.default.createElement("span", { className: "eg-spin" }),
-      "正在生成今日文章…"
-    );
+    return /* @__PURE__ */ import_react22.default.createElement("div", { className: "eg-loading is-stage" }, /* @__PURE__ */ import_react22.default.createElement("span", { className: "eg-spin" }), "正在生成今日文章…");
   }
   if (!report) {
-    return import_react13.default.createElement(
-      "div",
-      null,
-      import_react13.default.createElement(
-        "div",
-        { className: "eg-loading" },
-        error ? import_react13.default.createElement("span", { className: "eg-err" }, error) : "暂无文章。"
-      ),
-      import_react13.default.createElement(
-        "div",
-        { className: "eg-actions" },
-        import_react13.default.createElement("button", { className: "eg-btn primary", onClick: onRefresh }, "生成今日文章")
-      )
-    );
+    return /* @__PURE__ */ import_react22.default.createElement("div", null, /* @__PURE__ */ import_react22.default.createElement("div", { className: "eg-loading" }, error ? /* @__PURE__ */ import_react22.default.createElement("span", { className: "eg-err" }, error) : "暂无文章。"), /* @__PURE__ */ import_react22.default.createElement("div", { className: "eg-actions" }, /* @__PURE__ */ import_react22.default.createElement("button", { className: "eg-btn primary", onClick: onRefresh }, "生成今日文章")));
   }
   const questions = report.questions || [];
   const wordCount = (body.match(/[A-Za-z0-9]+(?:['’-][A-Za-z0-9]+)*/g) || []).length;
-  const meta = [
-    report.date,
-    report.level,
-    wordCount ? wordCount + " 词" : "",
-    matchedCount ? matchedCount + " 个重点词" : ""
-  ].filter(Boolean).join(" · ");
-  const handleTermEnter = (seg) => {
-    cancelClose();
-    setActive((prev) => prev && prev.pinned ? prev : { id: seg.id, item: seg.item, text: seg.text, pinned: false });
-  };
-  const handleTermLeave = () => {
-    scheduleClose();
-  };
-  const handleTermClick = (e, seg) => {
-    const sel = typeof window !== "undefined" && window.getSelection ? window.getSelection() : null;
-    if (sel && String(sel).trim()) return;
-    e.stopPropagation();
-    cancelClose();
-    setActive(
-      (prev) => prev && prev.pinned && prev.id === seg.id ? null : { id: seg.id, item: seg.item, text: seg.text, pinned: true }
-    );
-  };
-  const handleTermFocus = (seg) => {
-    cancelClose();
-    setActive((prev) => prev && prev.pinned ? prev : { id: seg.id, item: seg.item, text: seg.text, pinned: false });
-  };
-  const handleTermBlur = (e) => {
-    if (popRef.current && e.relatedTarget && popRef.current.contains(e.relatedTarget)) return;
-    setActive((prev) => prev && !prev.pinned ? null : prev);
-  };
-  const handleTermKeyDown = (e, seg) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      e.stopPropagation();
-      cancelClose();
-      setActive(
-        (prev) => prev && prev.pinned && prev.id === seg.id ? null : { id: seg.id, item: seg.item, text: seg.text, pinned: true }
-      );
-    }
-  };
-  const activePos = active && active.item.pos ? formatPos(active.item.pos) : "";
-  const activeLemma = active && active.item.lemma && active.item.lemma.toLowerCase() !== active.text.toLowerCase() ? active.item.lemma : "";
-  const renderSeg = (seg, j) => {
-    if (seg.type === "slash") {
-      return import_react13.default.createElement("span", { key: "sl-" + j, className: "eg-rslash", "aria-hidden": "true" }, "/");
-    }
-    if (seg.type !== "term") {
-      return seg.inCore ? import_react13.default.createElement("span", { key: "c-" + j, className: "eg-rcore" }, seg.text) : seg.text;
-    }
-    const isActive = !!(active && active.id === seg.id);
-    return import_react13.default.createElement(
-      "mark",
-      {
-        key: seg.id + "-" + j,
-        ref: (el) => {
-          if (el) termRefs.current[seg.id] = el;
-          else delete termRefs.current[seg.id];
-        },
-        className: "eg-rword" + (isActive ? " is-active" : "") + (seg.inCore ? " is-core" : ""),
-        role: "button",
-        tabIndex: 0,
-        "aria-expanded": isActive ? "true" : "false",
-        onMouseEnter: () => handleTermEnter(seg),
-        onMouseLeave: handleTermLeave,
-        onClick: (e) => handleTermClick(e, seg),
-        onFocus: () => handleTermFocus(seg),
-        onBlur: handleTermBlur,
-        onKeyDown: (e) => handleTermKeyDown(e, seg)
-      },
-      seg.text
-    );
-  };
-  const handleSentenceClick = (e, key) => {
-    const sel = typeof window !== "undefined" && window.getSelection ? window.getSelection() : null;
-    if (sel && String(sel).trim()) return;
-    if (e.target && e.target.closest && e.target.closest(".eg-rword")) return;
-    toggleSentence(key);
-  };
-  const handleSentenceKeyDown = (e, key) => {
-    if (e.target !== e.currentTarget) return;
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      e.stopPropagation();
-      toggleSentence(key);
-    }
-  };
-  const renderParagraph = (segs, i) => {
-    const info = structure ? structure.items[i] : null;
-    if (!info || !info.groups && !info.gist) {
-      return import_react13.default.createElement("p", { key: i, className: "eg-rp" }, segs.map(renderSeg));
-    }
-    const children = info.groups ? info.groups.map((g, gi) => {
-      if (g.type !== "sentence") return import_react13.default.createElement(import_react13.default.Fragment, { key: "gap-" + gi }, g.segs.map(renderSeg));
-      const n = info.base + g.index;
-      const s = info.sentences[g.index] || {};
-      const key = "s" + n;
-      const canReveal = !!(s && s.zh);
-      const isOpen = canReveal && !!reveal[key];
-      const segList = isOpen && hasSentenceHint(s) ? annotateSentenceSegments(s.en, g.segs, s) : g.segs;
-      return import_react13.default.createElement(
-        "span",
-        {
-          key,
-          className: "eg-rsent" + (canReveal ? " can-reveal" : "") + (isOpen ? " is-open" : ""),
-          tabIndex: canReveal ? 0 : void 0,
-          "aria-expanded": canReveal ? isOpen ? "true" : "false" : void 0,
-          title: canReveal ? isOpen ? "点击收起本句译文" : "点击查看本句译文" : void 0,
-          onClick: canReveal ? (e) => handleSentenceClick(e, key) : void 0,
-          onKeyDown: canReveal ? (e) => handleSentenceKeyDown(e, key) : void 0
-        },
-        segList.map(renderSeg),
-        isOpen ? import_react13.default.createElement("sup", { className: "eg-rsent-n", "aria-hidden": "true" }, String(n + 1)) : null
-      );
-    }) : segs.map(renderSeg);
-    const gistKey = "g" + i;
-    const gistOpen = !!(info.gist && reveal[gistKey]);
-    const openSentences = info.sentences.map((s, si) => ({ s, si, n: info.base + si })).filter(({ s, n }) => s && s.zh && reveal["s" + n]);
-    const closeBtn = (onClose, label) => import_react13.default.createElement(
-      "button",
-      { type: "button", className: "eg-rslot-x", "aria-label": label, onClick: onClose },
-      "×"
-    );
-    return import_react13.default.createElement(
-      import_react13.default.Fragment,
-      { key: i },
-      import_react13.default.createElement(
-        "p",
-        { className: "eg-rp" },
-        children,
-        info.gist ? import_react13.default.createElement(
-          "button",
-          {
-            type: "button",
-            className: "eg-rgist-btn",
-            "aria-expanded": gistOpen ? "true" : "false",
-            title: gistOpen ? "收起本段大意" : "看本段大意（中文）",
-            onClick: () => toggleGist(gistKey)
-          },
-          "段意"
-        ) : null
-      ),
-      gistOpen || openSentences.length ? import_react13.default.createElement(
-        "div",
-        { className: "eg-rslot", "aria-live": "polite" },
-        gistOpen ? import_react13.default.createElement(
-          "div",
-          { key: gistKey, className: "eg-rslot-row is-gist" },
-          import_react13.default.createElement("span", { className: "eg-rslot-tag" }, "段意"),
-          import_react13.default.createElement("span", { className: "eg-rslot-zh" }, info.gist),
-          closeBtn(() => toggleGist(gistKey), "收起段意")
-        ) : null,
-        openSentences.map(({ s, si, n }) => {
-          const skey = "s" + n;
-          const exp = explains[skey] || null;
-          const expOpen = !!(exp && exp.open);
-          const expLoading = !!(exp && exp.loading);
-          const expData = exp && exp.data;
-          const expErr = exp && exp.error;
-          const explainPayload = { key: skey, pIdx: i, sIdx: si, sentence: s, paragraphText: paragraphs[i] };
-          return import_react13.default.createElement(
-            "div",
-            { key: skey, className: "eg-rslot-row" },
-            import_react13.default.createElement("span", { className: "eg-rslot-tag" }, String(n + 1)),
-            import_react13.default.createElement(
-              "div",
-              { className: "eg-rslot-body" },
-              import_react13.default.createElement("div", { className: "eg-rslot-zh" }, s.zh),
-              import_react13.default.createElement(
-                "div",
-                { className: "eg-rslot-tools" },
-                import_react13.default.createElement(
-                  "button",
-                  {
-                    type: "button",
-                    className: "eg-rslot-btn" + (expOpen ? " is-active" : ""),
-                    "aria-expanded": expOpen ? "true" : "false",
-                    disabled: expLoading,
-                    onClick: () => handleExplainToggle(explainPayload)
-                  },
-                  expLoading ? "解析中…" : expOpen ? "收起讲解" : "为什么？"
-                )
-              ),
-              expOpen ? import_react13.default.createElement(
-                "div",
-                { className: "eg-rexplain" },
-                expLoading ? import_react13.default.createElement(
-                  "div",
-                  { className: "eg-rexplain-loading" },
-                  import_react13.default.createElement("span", { className: "eg-spin" }),
-                  "正在解析句型与译法…"
-                ) : expErr ? import_react13.default.createElement(
-                  "div",
-                  { className: "eg-rexplain-err" },
-                  import_react13.default.createElement("span", null, expErr),
-                  import_react13.default.createElement(
-                    "button",
-                    {
-                      type: "button",
-                      className: "eg-rslot-btn",
-                      onClick: () => handleExplainToggle({ ...explainPayload, retry: true })
-                    },
-                    "重试"
-                  )
-                ) : expData ? import_react13.default.createElement(
-                  import_react13.default.Fragment,
-                  null,
-                  expData.structure ? import_react13.default.createElement(
-                    "div",
-                    { className: "eg-rexplain-sec" },
-                    import_react13.default.createElement("span", { className: "eg-rexplain-label" }, "句型"),
-                    import_react13.default.createElement("span", { className: "eg-rexplain-text" }, expData.structure)
-                  ) : null,
-                  expData.points && expData.points.length ? import_react13.default.createElement(
-                    "ul",
-                    { className: "eg-rexplain-pts" },
-                    expData.points.map(
-                      (pt, pi) => import_react13.default.createElement(
-                        "li",
-                        { key: pi, className: "eg-rexplain-pt" },
-                        import_react13.default.createElement("span", { className: "eg-rexplain-phrase" }, pt.phrase),
-                        import_react13.default.createElement("span", { className: "eg-rexplain-note" }, pt.note)
-                      )
-                    )
-                  ) : null,
-                  expData.nuance ? import_react13.default.createElement(
-                    "div",
-                    { className: "eg-rexplain-sec" },
-                    import_react13.default.createElement("span", { className: "eg-rexplain-label" }, "译法"),
-                    import_react13.default.createElement("span", { className: "eg-rexplain-text" }, expData.nuance)
-                  ) : null
-                ) : null
-              ) : null
-            ),
-            closeBtn(() => toggleSentence(skey), "收起第 " + (n + 1) + " 句译文")
-          );
-        })
-      ) : null
-    );
-  };
+  const meta = [report.date, report.level, wordCount ? wordCount + " 词" : "", matchedCount ? matchedCount + " 个重点词" : ""].filter(Boolean).join(" · ");
   const revealedCount = structure ? structure.items.reduce(
     (sum, it) => sum + it.sentences.filter((s, si) => s && s.zh && reveal["s" + (it.base + si)]).length,
     0
   ) : 0;
   const footHint = structure ? revealedCount ? `已看 ${revealedCount}/${structure.revealable} 句译文 · 点「为什么？」看语法与译法讲解` : "读不懂时点句子看译文，点「段意」看段落大意" : matchedCount ? "标黄词可悬停或点击查译，可随时换一篇" : "按当前内容方向生成，可随时换一篇";
-  return import_react13.default.createElement(
-    "div",
-    { className: "eg-report", ref: reportRef, "data-nodrag": "true" },
-    import_react13.default.createElement("div", { className: "r-top" }, import_react13.default.createElement("h2", { className: "eg-rtitle" }, report.title || "Daily Report")),
-    import_react13.default.createElement(
-      "div",
-      { className: "eg-rmeta-row" },
-      meta ? import_react13.default.createElement("div", { className: "eg-rmeta" }, meta) : import_react13.default.createElement("span", null),
-      import_react13.default.createElement(
-        "button",
-        {
-          type: "button",
-          className: "eg-rrefresh",
-          onClick: onRefresh,
-          disabled: loading,
-          title: "重新生成一篇今日文章"
-        },
-        loading ? "生成中…" : "↻ 换一篇"
-      )
-    ),
-    report.summary_zh ? import_react13.default.createElement("p", { className: "eg-rsum" }, report.summary_zh) : null,
-    segmentsByParagraph.map(renderParagraph),
-    active ? import_react13.default.createElement(
-      "div",
-      {
-        ref: popRef,
-        className: "eg-rpop" + (popPos ? " is-ready" : "") + (popPos && popPos.placement === "below" ? " is-below" : "") + (active.pinned ? " is-pinned" : ""),
-        role: active.pinned ? "dialog" : "tooltip",
-        "aria-label": active.text + " 释义",
-        style: popPos ? {
-          left: popPos.left + "px",
-          top: popPos.top + "px",
-          "--eg-arrow-x": popPos.arrowX + "px"
-        } : { left: 0, top: 0 },
-        onMouseEnter: cancelClose,
-        onMouseLeave: handleTermLeave
-      },
-      import_react13.default.createElement(
-        "div",
-        { className: "eg-rpop-head" },
-        import_react13.default.createElement(
-          "div",
-          { className: "eg-rpop-title" },
-          import_react13.default.createElement("span", { className: "eg-rpop-word" }, active.text),
-          activeLemma ? import_react13.default.createElement("span", { className: "eg-rpop-lemma" }, "→ " + activeLemma) : null
-        ),
-        active.pinned ? import_react13.default.createElement(
-          "button",
-          {
-            type: "button",
-            className: "eg-rpop-close",
-            "aria-label": "关闭释义",
-            onClick: () => setActive(null)
-          },
-          "×"
-        ) : null
-      ),
-      activePos || active.item.fromBank ? import_react13.default.createElement(
-        "div",
-        { className: "eg-rpop-tags" },
-        activePos ? import_react13.default.createElement("span", { className: "eg-rpop-pos" }, activePos) : null,
-        active.item.fromBank ? import_react13.default.createElement("span", { className: "eg-rpop-bank" }, "词库") : null
-      ) : null,
-      import_react13.default.createElement("div", { className: "eg-rpop-zh" }, active.item.zh)
-    ) : null,
-    questions.length ? import_react13.default.createElement(
-      "div",
-      { className: "eg-practice" },
-      import_react13.default.createElement("div", { className: "eg-ptitle" }, "练一练"),
-      questions.map((q, i) => {
-        const isOpen = !!openMap[i];
-        return import_react13.default.createElement(
-          "div",
-          { key: i, className: "eg-q" + (isOpen ? " reveal" : "") },
-          import_react13.default.createElement(
-            "div",
-            { className: "eg-q-head" },
-            import_react13.default.createElement("span", { className: "eg-q-n" }, String(i + 1)),
-            import_react13.default.createElement("span", { className: "eg-q-zh" }, q.zh)
-          ),
-          import_react13.default.createElement(
-            "button",
-            {
-              className: "eg-q-toggle",
-              type: "button",
-              "aria-expanded": isOpen ? "true" : "false",
-              onClick: () => setOpenMap((prev) => ({ ...prev, [i]: !prev[i] }))
-            },
-            import_react13.default.createElement("span", { className: "caret", "aria-hidden": "true" }, "▸"),
-            isOpen ? "收起参考" : "看参考"
-          ),
-          import_react13.default.createElement(
-            "div",
-            { className: "eg-collapse" + (isOpen ? " open" : ""), "aria-hidden": isOpen ? "false" : "true" },
-            import_react13.default.createElement(
-              "div",
-              { className: "eg-collapse-inner" },
-              import_react13.default.createElement("div", { className: "eg-q-en" }, q.en)
-            )
-          )
-        );
-      })
-    ) : null,
-    import_react13.default.createElement(
-      "div",
-      { className: "eg-report-foot" },
-      import_react13.default.createElement(
-        "span",
-        { className: "eg-report-foot-hint" },
-        footHint
-      ),
-      import_react13.default.createElement(
-        "button",
-        {
-          type: "button",
-          className: "eg-btn",
-          onClick: onRefresh,
-          onPointerDown: bounceButton,
-          disabled: loading
-        },
-        loading ? "生成中…" : "↻ 换一篇"
-      )
-    )
-  );
+  return /* @__PURE__ */ import_react22.default.createElement("div", { className: "eg-report", ref: reportRef, "data-nodrag": "true" }, /* @__PURE__ */ import_react22.default.createElement("div", { className: "r-top" }, /* @__PURE__ */ import_react22.default.createElement("h2", { className: "eg-rtitle" }, report.title || "Daily Report")), /* @__PURE__ */ import_react22.default.createElement("div", { className: "eg-rmeta-row" }, meta ? /* @__PURE__ */ import_react22.default.createElement("div", { className: "eg-rmeta" }, meta) : /* @__PURE__ */ import_react22.default.createElement("span", null), /* @__PURE__ */ import_react22.default.createElement(
+    "button",
+    {
+      type: "button",
+      className: "eg-rrefresh",
+      onClick: onRefresh,
+      disabled: loading,
+      title: "重新生成一篇今日文章"
+    },
+    loading ? "生成中…" : "↻ 换一篇"
+  )), report.summary_zh ? /* @__PURE__ */ import_react22.default.createElement("p", { className: "eg-rsum" }, report.summary_zh) : null, segmentsByParagraph.map((segs, i) => /* @__PURE__ */ import_react22.default.createElement(
+    ReportParagraph,
+    {
+      key: i,
+      index: i,
+      segs,
+      paragraphText: paragraphs[i],
+      info: structure ? structure.items[i] : null,
+      reveal,
+      explains,
+      activeTermId: active ? active.id : null,
+      termRefs,
+      onToggleGist: toggleGist,
+      onToggleSentence: toggleSentence,
+      onExplainToggle: handleExplainToggle,
+      termHandlers
+    }
+  )), /* @__PURE__ */ import_react22.default.createElement(
+    WordPopover,
+    {
+      active,
+      popPos,
+      popRef,
+      onCancelClose: cancelClose,
+      onLeave: termHandlers.onLeave,
+      onClose: closePopover
+    }
+  ), /* @__PURE__ */ import_react22.default.createElement(ReportPractice, { report, questions }), /* @__PURE__ */ import_react22.default.createElement("div", { className: "eg-report-foot" }, /* @__PURE__ */ import_react22.default.createElement("span", { className: "eg-report-foot-hint" }, footHint), /* @__PURE__ */ import_react22.default.createElement("button", { type: "button", className: "eg-btn", onClick: onRefresh, onPointerDown: bounceButton, disabled: loading }, loading ? "生成中…" : "↻ 换一篇")));
 }
 
-// src/client/features/dashboard/Dashboard.js
-var import_react14 = __toESM(require("react"), 1);
+// src/client/features/dashboard/Dashboard.jsx
+var import_react25 = __toESM(require("react"), 1);
 
 // src/client/features/dashboard/heatmap.js
 function pad2(n) {
@@ -3189,32 +2840,83 @@ function getPageItems(totalPages, currentPage) {
   return items;
 }
 
-// src/client/features/dashboard/Dashboard.js
-var WEEKDAYS = ["日", "一", "二", "三", "四", "五", "六"];
+// src/client/features/dashboard/ContributionCard.jsx
+var import_react23 = __toESM(require("react"), 1);
 var DOW_LABELS = ["", "一", "", "三", "", "五", ""];
-var PAGE_SIZE = 5;
-var useIsoLayoutEffect3 = import_react14.default.useLayoutEffect || import_react14.useEffect;
-var cachedDashboard = null;
-function invalidateDashboardCache() {
-  cachedDashboard = null;
+var useIsoLayoutEffect3 = import_react23.default.useLayoutEffect || import_react23.useEffect;
+function ContributionCard({ range, rangeLabel, grid, onSelectDay }) {
+  const [tip, setTip] = (0, import_react23.useState)(null);
+  const cardRef = (0, import_react23.useRef)(null);
+  const scrollRef = (0, import_react23.useRef)(null);
+  useIsoLayoutEffect3(() => {
+    setTip(null);
+    const el = scrollRef.current;
+    if (el) el.scrollLeft = el.scrollWidth;
+  }, [range, grid]);
+  const showTip = (e, cell) => {
+    const cardEl = cardRef.current;
+    const cellEl = e.currentTarget;
+    if (!cardEl || !cellEl) return;
+    const cardRect = cardEl.getBoundingClientRect();
+    const cellRect = cellEl.getBoundingClientRect();
+    const rawX = cellRect.left - cardRect.left + cellRect.width / 2;
+    const pad = Math.min(82, Math.max(40, cardRect.width * 0.24));
+    const x = Math.round(Math.max(pad, Math.min(Math.max(pad, cardRect.width - pad), rawX)));
+    const y = Math.round(cellRect.top - cardRect.top);
+    setTip({ x, y, cell });
+  };
+  const hideTip = () => setTip(null);
+  const tipCell = tip ? tip.cell : null;
+  const tipAct = tipCell && tipCell.activity;
+  const tipText = tipCell ? tipAct ? tipCell.key + " · 单词 " + tipAct.words + " · 句子 " + tipAct.phrases : tipCell.key + " · 无学习记录" : "";
+  return /* @__PURE__ */ import_react23.default.createElement("div", { className: "eg-cal-card", ref: cardRef, "data-nodrag": "true" }, /* @__PURE__ */ import_react23.default.createElement("div", { className: "eg-gh-head" }, rangeLabel + "共完成 " + grid.rangeTotal + " 项练习 · " + grid.rangeDays + " 天"), /* @__PURE__ */ import_react23.default.createElement("div", { className: "eg-gh-wrap" }, /* @__PURE__ */ import_react23.default.createElement("div", { className: "eg-gh-dows", "aria-hidden": "true" }, DOW_LABELS.map((lbl, i) => /* @__PURE__ */ import_react23.default.createElement("span", { key: i }, lbl))), /* @__PURE__ */ import_react23.default.createElement("div", { className: "eg-gh-scroll", ref: scrollRef }, /* @__PURE__ */ import_react23.default.createElement("div", { className: "eg-gh-inner" }, /* @__PURE__ */ import_react23.default.createElement("div", { className: "eg-gh-months", style: { width: grid.weeks.length * 11 - 2 + "px" } }, grid.monthLabels.map((m) => /* @__PURE__ */ import_react23.default.createElement("span", { key: m.col, className: "eg-gh-month", style: { left: m.col * 11 + "px" } }, m.label))), /* @__PURE__ */ import_react23.default.createElement("div", { className: "eg-gh-grid", role: "grid", "aria-label": rangeLabel + "学习热力图" }, grid.weeks.map((week, ci) => /* @__PURE__ */ import_react23.default.createElement("div", { className: "eg-gh-col", key: ci }, week.map((cell, ri) => {
+    if (cell.out) {
+      return /* @__PURE__ */ import_react23.default.createElement("span", { className: "eg-gh-cell out", key: ri, "aria-hidden": "true" });
+    }
+    const has = Boolean(cell.activity && cell.activity.total > 0);
+    const cls = ["eg-gh-cell", "l" + cell.level];
+    if (has) cls.push("has");
+    if (cell.isToday) cls.push("today");
+    return /* @__PURE__ */ import_react23.default.createElement(
+      "button",
+      {
+        key: cell.key,
+        type: "button",
+        className: cls.join(" "),
+        "aria-label": cell.activity ? cell.key + " 单词 " + cell.activity.words + " 句子 " + cell.activity.phrases : cell.key + " 无学习记录",
+        onMouseEnter: (e) => showTip(e, cell),
+        onMouseLeave: hideTip,
+        onFocus: (e) => showTip(e, cell),
+        onBlur: hideTip,
+        onClick: has ? () => onSelectDay(cell.key) : void 0
+      }
+    );
+  }))))))), /* @__PURE__ */ import_react23.default.createElement("div", { className: "eg-gh-foot" }, /* @__PURE__ */ import_react23.default.createElement("span", { className: "eg-gh-hint" }, "点击绿色方块定位当日记录"), /* @__PURE__ */ import_react23.default.createElement("div", { className: "eg-dash-legend" }, "少", /* @__PURE__ */ import_react23.default.createElement("i", { className: "l0" }), /* @__PURE__ */ import_react23.default.createElement("i", { className: "l1" }), /* @__PURE__ */ import_react23.default.createElement("i", { className: "l2" }), /* @__PURE__ */ import_react23.default.createElement("i", { className: "l3" }), /* @__PURE__ */ import_react23.default.createElement("i", { className: "l4" }), "多")), tip ? /* @__PURE__ */ import_react23.default.createElement("div", { className: "eg-gh-tip", role: "tooltip", style: { left: tip.x + "px", top: tip.y + "px" } }, tipText) : null);
 }
-function Dashboard() {
-  const [data, setData] = (0, import_react14.useState)(() => cachedDashboard);
-  const [loading, setLoading] = (0, import_react14.useState)(() => !cachedDashboard);
-  const [error, setError] = (0, import_react14.useState)("");
-  const [range, setRange] = (0, import_react14.useState)("last-year");
-  const [page, setPage] = (0, import_react14.useState)(1);
-  const [expanded, setExpanded] = (0, import_react14.useState)({});
-  const [flashDay, setFlashDay] = (0, import_react14.useState)("");
-  const [tip, setTip] = (0, import_react14.useState)(null);
-  const flashTimerRef = (0, import_react14.useRef)(null);
-  const closeTimersRef = (0, import_react14.useRef)({});
-  const pendingJumpRef = (0, import_react14.useRef)("");
-  const cardRef = (0, import_react14.useRef)(null);
-  const scrollRef = (0, import_react14.useRef)(null);
-  const histHeadRef = (0, import_react14.useRef)(null);
-  const WORD_LIMIT = 5;
-  const PHRASE_LIMIT = 3;
+
+// src/client/features/dashboard/DailyHistoryList.jsx
+var import_react24 = __toESM(require("react"), 1);
+var WEEKDAYS = ["日", "一", "二", "三", "四", "五", "六"];
+var WORD_LIMIT = 5;
+var PHRASE_LIMIT = 3;
+function DailyHistoryList({
+  pageRecords,
+  totalFilteredCount,
+  safePage,
+  totalPages,
+  pageItems,
+  flashDay,
+  histHeadRef,
+  onGoPage
+}) {
+  const [expanded, setExpanded] = (0, import_react24.useState)({});
+  const closeTimersRef = (0, import_react24.useRef)({});
+  (0, import_react24.useEffect)(() => {
+    return () => {
+      const timers = closeTimersRef.current;
+      for (const k of Object.keys(timers)) clearTimeout(timers[k]);
+    };
+  }, []);
   const toggleGroup = (key, extraCount = 0) => {
     const timers = closeTimersRef.current;
     if (timers[key]) {
@@ -3245,14 +2947,100 @@ function Dashboard() {
       setExpanded((prev) => ({ ...prev, [key]: "open" }));
     }
   };
-  (0, import_react14.useEffect)(() => {
-    return () => {
-      clearTimeout(flashTimerRef.current);
-      const timers = closeTimersRef.current;
-      for (const k of Object.keys(timers)) clearTimeout(timers[k]);
-    };
+  const renderWordChip = (w, key, animCls, animStyle) => /* @__PURE__ */ import_react24.default.createElement("span", { className: "eg-wchip " + (w.ok ? "ok" : "bad") + animCls, style: animStyle, key, title: w.ok ? "拼对了" : "没拼对" }, /* @__PURE__ */ import_react24.default.createElement("span", { className: "w" }, w.en), w.zh ? /* @__PURE__ */ import_react24.default.createElement("span", { className: "m" }, w.zh) : null);
+  const renderPhraseRow = (p, key, animCls, animStyle) => /* @__PURE__ */ import_react24.default.createElement("div", { className: "eg-sent " + (p.ok ? "ok" : "bad") + animCls, style: animStyle, key }, /* @__PURE__ */ import_react24.default.createElement("span", { className: "mark" }, p.ok ? "✓" : "✗"), /* @__PURE__ */ import_react24.default.createElement("div", { className: "body" }, /* @__PURE__ */ import_react24.default.createElement("div", { className: "zh" }, p.zh), p.en ? /* @__PURE__ */ import_react24.default.createElement("div", { className: "en" }, p.en) : null));
+  const renderMoreBtn = (key, total, limit, state) => total > limit ? /* @__PURE__ */ import_react24.default.createElement(
+    "button",
+    {
+      className: "eg-more",
+      key: "more",
+      "aria-expanded": state === "open" ? "true" : "false",
+      onClick: () => toggleGroup(key, total - limit)
+    },
+    state === "open" ? "收起" : "展开全部 · 共 " + total + " 条"
+  ) : null;
+  return /* @__PURE__ */ import_react24.default.createElement("div", null, /* @__PURE__ */ import_react24.default.createElement("div", { className: "eg-hist-bar", ref: histHeadRef }, /* @__PURE__ */ import_react24.default.createElement("div", { className: "eg-hist-title" }, "每日学习记录"), /* @__PURE__ */ import_react24.default.createElement("div", { className: "eg-hist-meta" }, "共 " + totalFilteredCount + " 天" + (totalPages > 1 ? " · 第 " + safePage + " / " + totalPages + " 页" : ""))), /* @__PURE__ */ import_react24.default.createElement("div", { className: "eg-hist" }, pageRecords.map((rec) => {
+    const dt = /* @__PURE__ */ new Date(rec.day + "T00:00:00");
+    const wd = WEEKDAYS[dt.getDay()];
+    const t = rec.totals || {};
+    const allWords = rec.words || [];
+    const allPhrases = rec.phrases || [];
+    const wKey = rec.day + ":w";
+    const pKey = rec.day + ":p";
+    const wState = expanded[wKey];
+    const pState = expanded[pKey];
+    const headWords = allWords.slice(0, WORD_LIMIT);
+    const extraWords = allWords.slice(WORD_LIMIT);
+    const headPhrases = allPhrases.slice(0, PHRASE_LIMIT);
+    const extraPhrases = allPhrases.slice(PHRASE_LIMIT);
+    return /* @__PURE__ */ import_react24.default.createElement("div", { className: "eg-hist-day" + (flashDay === rec.day ? " is-flash" : ""), id: "eg-hist-" + rec.day, key: rec.day }, /* @__PURE__ */ import_react24.default.createElement("div", { className: "eg-hist-head" }, /* @__PURE__ */ import_react24.default.createElement("div", { className: "eg-hist-date" }, dt.getMonth() + 1 + "月" + dt.getDate() + "日", /* @__PURE__ */ import_react24.default.createElement("span", { className: "wd" }, "周" + wd)), /* @__PURE__ */ import_react24.default.createElement("div", { className: "eg-hist-count" }, "单词 " + (t.words || 0) + " · 句子 " + (t.phrases || 0))), allWords.length ? /* @__PURE__ */ import_react24.default.createElement("div", null, /* @__PURE__ */ import_react24.default.createElement("div", { className: "eg-hist-sub" }, "单词"), /* @__PURE__ */ import_react24.default.createElement("div", { className: "eg-wchips" }, headWords.map((w, i) => renderWordChip(w, "w" + i, "", void 0))), extraWords.length && (wState === "open" || wState === "closing") ? /* @__PURE__ */ import_react24.default.createElement(
+      "div",
+      {
+        className: "eg-extra-collapse" + (wState === "open" ? " open" : ""),
+        "aria-hidden": wState === "open" ? "false" : "true"
+      },
+      /* @__PURE__ */ import_react24.default.createElement("div", { className: "eg-extra-inner" }, /* @__PURE__ */ import_react24.default.createElement("div", { className: "eg-wchips eg-extra-wchips" }, extraWords.map((w, idx) => {
+        const animCls = wState === "open" ? " is-enter" : " is-leave";
+        const animStyle = wState === "open" ? { "--i": Math.min(idx, 18) } : { "--ri": Math.min(extraWords.length - 1 - idx, 8) };
+        return renderWordChip(w, "we" + idx, animCls, animStyle);
+      })))
+    ) : null, renderMoreBtn(wKey, allWords.length, WORD_LIMIT, wState)) : null, allPhrases.length ? /* @__PURE__ */ import_react24.default.createElement("div", null, /* @__PURE__ */ import_react24.default.createElement("div", { className: "eg-hist-sub" }, "句子"), /* @__PURE__ */ import_react24.default.createElement("div", { className: "eg-sents" }, headPhrases.map((p, i) => renderPhraseRow(p, "p" + i, "", void 0))), extraPhrases.length && (pState === "open" || pState === "closing") ? /* @__PURE__ */ import_react24.default.createElement(
+      "div",
+      {
+        className: "eg-extra-collapse" + (pState === "open" ? " open" : ""),
+        "aria-hidden": pState === "open" ? "false" : "true"
+      },
+      /* @__PURE__ */ import_react24.default.createElement("div", { className: "eg-extra-inner" }, /* @__PURE__ */ import_react24.default.createElement("div", { className: "eg-sents eg-extra-sents" }, extraPhrases.map((p, idx) => {
+        const animCls = pState === "open" ? " is-enter" : " is-leave";
+        const animStyle = pState === "open" ? { "--i": Math.min(idx, 12) } : { "--ri": Math.min(extraPhrases.length - 1 - idx, 8) };
+        return renderPhraseRow(p, "pe" + idx, animCls, animStyle);
+      })))
+    ) : null, renderMoreBtn(pKey, allPhrases.length, PHRASE_LIMIT, pState)) : null);
+  })), totalPages > 1 ? /* @__PURE__ */ import_react24.default.createElement("div", { className: "eg-pager", role: "navigation", "aria-label": "学习记录分页" }, /* @__PURE__ */ import_react24.default.createElement("button", { type: "button", className: "eg-pagebtn", disabled: safePage <= 1, onClick: () => onGoPage(safePage - 1) }, "‹ 上一页"), pageItems.map(
+    (it, i) => it === "..." ? /* @__PURE__ */ import_react24.default.createElement("span", { className: "eg-page-dots", key: "dots-" + i }, "…") : /* @__PURE__ */ import_react24.default.createElement(
+      "button",
+      {
+        type: "button",
+        key: it,
+        className: "eg-pagebtn" + (it === safePage ? " active" : ""),
+        "aria-current": it === safePage ? "page" : void 0,
+        onClick: () => onGoPage(it)
+      },
+      String(it)
+    )
+  ), /* @__PURE__ */ import_react24.default.createElement(
+    "button",
+    {
+      type: "button",
+      className: "eg-pagebtn",
+      disabled: safePage >= totalPages,
+      onClick: () => onGoPage(safePage + 1)
+    },
+    "下一页 ›"
+  )) : null);
+}
+
+// src/client/features/dashboard/Dashboard.jsx
+var PAGE_SIZE = 5;
+var useIsoLayoutEffect4 = import_react25.default.useLayoutEffect || import_react25.useEffect;
+var cachedDashboard = null;
+function invalidateDashboardCache() {
+  cachedDashboard = null;
+}
+function Dashboard() {
+  const [data, setData] = (0, import_react25.useState)(() => cachedDashboard);
+  const [loading, setLoading] = (0, import_react25.useState)(() => !cachedDashboard);
+  const [error, setError] = (0, import_react25.useState)("");
+  const [range, setRange] = (0, import_react25.useState)("last-year");
+  const [page, setPage] = (0, import_react25.useState)(1);
+  const [flashDay, setFlashDay] = (0, import_react25.useState)("");
+  const flashTimerRef = (0, import_react25.useRef)(null);
+  const pendingJumpRef = (0, import_react25.useRef)("");
+  const histHeadRef = (0, import_react25.useRef)(null);
+  (0, import_react25.useEffect)(() => {
+    return () => clearTimeout(flashTimerRef.current);
   }, []);
-  const load = (0, import_react14.useCallback)(async () => {
+  const load = (0, import_react25.useCallback)(async () => {
     if (!cachedDashboard) setLoading(true);
     setError("");
     try {
@@ -3265,10 +3053,10 @@ function Dashboard() {
       setLoading(false);
     }
   }, []);
-  (0, import_react14.useEffect)(() => {
+  (0, import_react25.useEffect)(() => {
     load();
   }, [load]);
-  const activity = (0, import_react14.useMemo)(() => {
+  const activity = (0, import_react25.useMemo)(() => {
     const map = {};
     if (data && Array.isArray(data.activity)) {
       for (const a of data.activity) map[a.day] = a;
@@ -3278,7 +3066,7 @@ function Dashboard() {
   const today = data ? data.today : null;
   const streak = data ? data.streak || 0 : 0;
   const totals = data && data.totals ? data.totals : { days: 0, words: 0, phrases: 0 };
-  const years = (0, import_react14.useMemo)(() => {
+  const years = (0, import_react25.useMemo)(() => {
     const set = /* @__PURE__ */ new Set();
     const currentYear = (today || (/* @__PURE__ */ new Date()).toISOString().slice(0, 10)).slice(0, 4);
     if (/^\d{4}$/.test(currentYear)) set.add(currentYear);
@@ -3288,12 +3076,12 @@ function Dashboard() {
     }
     return Array.from(set).sort((a, b) => b.localeCompare(a)).slice(0, 4);
   }, [activity, today]);
-  const grid = (0, import_react14.useMemo)(
+  const grid = (0, import_react25.useMemo)(
     () => buildContributionGrid({ todayStr: today, range, activityMap: activity }),
     [today, range, activity]
   );
-  const records = (0, import_react14.useMemo)(() => data && Array.isArray(data.days) ? data.days : [], [data]);
-  const filteredRecords = (0, import_react14.useMemo)(
+  const records = (0, import_react25.useMemo)(() => data && Array.isArray(data.days) ? data.days : [], [data]);
+  const filteredRecords = (0, import_react25.useMemo)(
     () => records.filter((r) => {
       const day = String(r && r.day || "");
       return day >= grid.startKey && day <= grid.endKey;
@@ -3302,18 +3090,15 @@ function Dashboard() {
   );
   const totalPages = Math.max(1, Math.ceil(filteredRecords.length / PAGE_SIZE));
   const safePage = Math.max(1, Math.min(page, totalPages));
-  const pageRecords = (0, import_react14.useMemo)(
+  const pageRecords = (0, import_react25.useMemo)(
     () => filteredRecords.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE),
     [filteredRecords, safePage]
   );
-  const pageItems = (0, import_react14.useMemo)(() => getPageItems(totalPages, safePage), [totalPages, safePage]);
-  useIsoLayoutEffect3(() => {
-    setTip(null);
+  const pageItems = (0, import_react25.useMemo)(() => getPageItems(totalPages, safePage), [totalPages, safePage]);
+  useIsoLayoutEffect4(() => {
     setPage(1);
-    const el = scrollRef.current;
-    if (el) el.scrollLeft = el.scrollWidth;
   }, [range, data]);
-  const scrollAndFlash = (0, import_react14.useCallback)((day) => {
+  const scrollAndFlash = (0, import_react25.useCallback)((day) => {
     try {
       const el = document.getElementById("eg-hist-" + day);
       if (el && el.scrollIntoView) el.scrollIntoView({ block: "start", behavior: "smooth" });
@@ -3326,26 +3111,13 @@ function Dashboard() {
       flashTimerRef.current = setTimeout(() => setFlashDay(""), 1200);
     }, 20);
   }, []);
-  (0, import_react14.useEffect)(() => {
+  (0, import_react25.useEffect)(() => {
     const pendingDay = pendingJumpRef.current;
     if (!pendingDay) return;
     if (!pageRecords.some((r) => r.day === pendingDay)) return;
     pendingJumpRef.current = "";
     scrollAndFlash(pendingDay);
   }, [safePage, pageRecords, scrollAndFlash]);
-  const showTip = (e, cell) => {
-    const cardEl = cardRef.current;
-    const cellEl = e.currentTarget;
-    if (!cardEl || !cellEl) return;
-    const cardRect = cardEl.getBoundingClientRect();
-    const cellRect = cellEl.getBoundingClientRect();
-    const rawX = cellRect.left - cardRect.left + cellRect.width / 2;
-    const pad = Math.min(82, Math.max(40, cardRect.width * 0.24));
-    const x = Math.round(Math.max(pad, Math.min(Math.max(pad, cardRect.width - pad), rawX)));
-    const y = Math.round(cellRect.top - cardRect.top);
-    setTip({ x, y, cell });
-  };
-  const hideTip = () => setTip(null);
   const jumpTo = (day) => {
     const idx = filteredRecords.findIndex((r) => r.day === day);
     if (idx < 0) return;
@@ -3370,358 +3142,61 @@ function Dashboard() {
     } catch {
     }
   };
-  const recordNodes = pageRecords.map((rec) => {
-    const dt = /* @__PURE__ */ new Date(rec.day + "T00:00:00");
-    const wd = WEEKDAYS[dt.getDay()];
-    const t = rec.totals || {};
-    const allWords = rec.words || [];
-    const allPhrases = rec.phrases || [];
-    const wKey = rec.day + ":w";
-    const pKey = rec.day + ":p";
-    const wState = expanded[wKey];
-    const pState = expanded[pKey];
-    const headWords = allWords.slice(0, WORD_LIMIT);
-    const extraWords = allWords.slice(WORD_LIMIT);
-    const headPhrases = allPhrases.slice(0, PHRASE_LIMIT);
-    const extraPhrases = allPhrases.slice(PHRASE_LIMIT);
-    const moreBtn = (key, total, limit, state) => total > limit ? import_react14.default.createElement(
-      "button",
-      {
-        className: "eg-more",
-        key: "more",
-        "aria-expanded": state === "open" ? "true" : "false",
-        onClick: () => toggleGroup(key, total - limit)
-      },
-      state === "open" ? "收起" : "展开全部 · 共 " + total + " 条"
-    ) : null;
-    const renderWordChip = (w, key, animCls, animStyle) => import_react14.default.createElement(
-      "span",
-      {
-        className: "eg-wchip " + (w.ok ? "ok" : "bad") + animCls,
-        style: animStyle,
-        key,
-        title: w.ok ? "拼对了" : "没拼对"
-      },
-      import_react14.default.createElement("span", { className: "w" }, w.en),
-      w.zh ? import_react14.default.createElement("span", { className: "m" }, w.zh) : null
-    );
-    const renderPhraseRow = (p, key, animCls, animStyle) => import_react14.default.createElement(
-      "div",
-      {
-        className: "eg-sent " + (p.ok ? "ok" : "bad") + animCls,
-        style: animStyle,
-        key
-      },
-      import_react14.default.createElement("span", { className: "mark" }, p.ok ? "✓" : "✗"),
-      import_react14.default.createElement(
-        "div",
-        { className: "body" },
-        import_react14.default.createElement("div", { className: "zh" }, p.zh),
-        p.en ? import_react14.default.createElement("div", { className: "en" }, p.en) : null
-      )
-    );
-    return import_react14.default.createElement(
-      "div",
-      { className: "eg-hist-day" + (flashDay === rec.day ? " is-flash" : ""), id: "eg-hist-" + rec.day, key: rec.day },
-      import_react14.default.createElement(
-        "div",
-        { className: "eg-hist-head" },
-        import_react14.default.createElement(
-          "div",
-          { className: "eg-hist-date" },
-          dt.getMonth() + 1 + "月" + dt.getDate() + "日",
-          import_react14.default.createElement("span", { className: "wd" }, "周" + wd)
-        ),
-        import_react14.default.createElement("div", { className: "eg-hist-count" }, "单词 " + (t.words || 0) + " · 句子 " + (t.phrases || 0))
-      ),
-      allWords.length ? import_react14.default.createElement(
-        "div",
-        null,
-        import_react14.default.createElement("div", { className: "eg-hist-sub" }, "单词"),
-        import_react14.default.createElement(
-          "div",
-          { className: "eg-wchips" },
-          headWords.map((w, i) => renderWordChip(w, "w" + i, "", void 0))
-        ),
-        extraWords.length && (wState === "open" || wState === "closing") ? import_react14.default.createElement(
-          "div",
-          {
-            className: "eg-extra-collapse" + (wState === "open" ? " open" : ""),
-            "aria-hidden": wState === "open" ? "false" : "true"
-          },
-          import_react14.default.createElement(
-            "div",
-            { className: "eg-extra-inner" },
-            import_react14.default.createElement(
-              "div",
-              { className: "eg-wchips eg-extra-wchips" },
-              extraWords.map((w, idx) => {
-                const animCls = wState === "open" ? " is-enter" : " is-leave";
-                const animStyle = wState === "open" ? { "--i": Math.min(idx, 18) } : { "--ri": Math.min(extraWords.length - 1 - idx, 8) };
-                return renderWordChip(w, "we" + idx, animCls, animStyle);
-              })
-            )
-          )
-        ) : null,
-        moreBtn(wKey, allWords.length, WORD_LIMIT, wState)
-      ) : null,
-      allPhrases.length ? import_react14.default.createElement(
-        "div",
-        null,
-        import_react14.default.createElement("div", { className: "eg-hist-sub" }, "句子"),
-        import_react14.default.createElement(
-          "div",
-          { className: "eg-sents" },
-          headPhrases.map((p, i) => renderPhraseRow(p, "p" + i, "", void 0))
-        ),
-        extraPhrases.length && (pState === "open" || pState === "closing") ? import_react14.default.createElement(
-          "div",
-          {
-            className: "eg-extra-collapse" + (pState === "open" ? " open" : ""),
-            "aria-hidden": pState === "open" ? "false" : "true"
-          },
-          import_react14.default.createElement(
-            "div",
-            { className: "eg-extra-inner" },
-            import_react14.default.createElement(
-              "div",
-              { className: "eg-sents eg-extra-sents" },
-              extraPhrases.map((p, idx) => {
-                const animCls = pState === "open" ? " is-enter" : " is-leave";
-                const animStyle = pState === "open" ? { "--i": Math.min(idx, 12) } : { "--ri": Math.min(extraPhrases.length - 1 - idx, 8) };
-                return renderPhraseRow(p, "pe" + idx, animCls, animStyle);
-              })
-            )
-          )
-        ) : null,
-        moreBtn(pKey, allPhrases.length, PHRASE_LIMIT, pState)
-      ) : null
-    );
-  });
   if (loading && !data) {
-    return import_react14.default.createElement(
-      "div",
-      { className: "eg-dash" },
-      import_react14.default.createElement("div", { className: "eg-loading" }, import_react14.default.createElement("span", { className: "eg-spin" }), "正在加载看板…")
-    );
+    return /* @__PURE__ */ import_react25.default.createElement("div", { className: "eg-dash" }, /* @__PURE__ */ import_react25.default.createElement("div", { className: "eg-loading" }, /* @__PURE__ */ import_react25.default.createElement("span", { className: "eg-spin" }), "正在加载看板…"));
   }
   const rangeLabel = range === "last-year" ? "近一年" : range + " 年";
-  const tipCell = tip ? tip.cell : null;
-  const tipAct = tipCell && tipCell.activity;
-  const tipText = tipCell ? tipAct ? tipCell.key + " · 单词 " + tipAct.words + " · 句子 " + tipAct.phrases : tipCell.key + " · 无学习记录" : "";
-  return import_react14.default.createElement(
-    "div",
-    { className: "eg-dash" },
-    import_react14.default.createElement(
-      "div",
-      { className: "eg-dash-top" },
-      import_react14.default.createElement("div", { className: "eg-dash-title" }, "学习看板"),
-      import_react14.default.createElement(
-        "div",
-        { className: "eg-dash-ranges", role: "tablist", "aria-label": "统计范围" },
-        import_react14.default.createElement(
-          "button",
-          {
-            type: "button",
-            role: "tab",
-            "aria-selected": range === "last-year" ? "true" : "false",
-            className: "eg-rangebtn" + (range === "last-year" ? " active" : ""),
-            onClick: () => setRange("last-year")
-          },
-          "近一年"
-        ),
-        years.map(
-          (y) => import_react14.default.createElement(
-            "button",
-            {
-              key: y,
-              type: "button",
-              role: "tab",
-              "aria-selected": range === y ? "true" : "false",
-              className: "eg-rangebtn" + (range === y ? " active" : ""),
-              onClick: () => setRange(y)
-            },
-            y
-          )
-        )
-      )
-    ),
-    import_react14.default.createElement(
-      "div",
-      { className: "eg-dash-sum" },
-      import_react14.default.createElement("div", { className: "eg-stat" }, import_react14.default.createElement("b", null, streak), import_react14.default.createElement("span", { title: "连续学习天数" }, "连续")),
-      import_react14.default.createElement("div", { className: "eg-stat" }, import_react14.default.createElement("b", null, totals.words || 0), import_react14.default.createElement("span", { title: "累计单词" }, "单词")),
-      import_react14.default.createElement("div", { className: "eg-stat" }, import_react14.default.createElement("b", null, totals.phrases || 0), import_react14.default.createElement("span", { title: "累计句子" }, "句子")),
-      import_react14.default.createElement("div", { className: "eg-stat" }, import_react14.default.createElement("b", null, totals.days || 0), import_react14.default.createElement("span", { title: "累计学习天数" }, "累计"))
-    ),
-    import_react14.default.createElement(
-      "div",
-      { className: "eg-cal-card", ref: cardRef, "data-nodrag": "true" },
-      import_react14.default.createElement(
-        "div",
-        { className: "eg-gh-head" },
-        rangeLabel + "共完成 " + grid.rangeTotal + " 项练习 · " + grid.rangeDays + " 天"
-      ),
-      import_react14.default.createElement(
-        "div",
-        { className: "eg-gh-wrap" },
-        import_react14.default.createElement(
-          "div",
-          { className: "eg-gh-dows", "aria-hidden": "true" },
-          DOW_LABELS.map((lbl, i) => import_react14.default.createElement("span", { key: i }, lbl))
-        ),
-        import_react14.default.createElement(
-          "div",
-          { className: "eg-gh-scroll", ref: scrollRef },
-          import_react14.default.createElement(
-            "div",
-            { className: "eg-gh-inner" },
-            import_react14.default.createElement(
-              "div",
-              { className: "eg-gh-months", style: { width: grid.weeks.length * 11 - 2 + "px" } },
-              grid.monthLabels.map(
-                (m) => import_react14.default.createElement(
-                  "span",
-                  { key: m.col, className: "eg-gh-month", style: { left: m.col * 11 + "px" } },
-                  m.label
-                )
-              )
-            ),
-            import_react14.default.createElement(
-              "div",
-              { className: "eg-gh-grid", role: "grid", "aria-label": rangeLabel + "学习热力图" },
-              grid.weeks.map(
-                (week, ci) => import_react14.default.createElement(
-                  "div",
-                  { className: "eg-gh-col", key: ci },
-                  week.map((cell, ri) => {
-                    if (cell.out) {
-                      return import_react14.default.createElement("span", { className: "eg-gh-cell out", key: ri, "aria-hidden": "true" });
-                    }
-                    const has = Boolean(cell.activity && cell.activity.total > 0);
-                    const cls = ["eg-gh-cell", "l" + cell.level];
-                    if (has) cls.push("has");
-                    if (cell.isToday) cls.push("today");
-                    return import_react14.default.createElement("button", {
-                      key: cell.key,
-                      type: "button",
-                      className: cls.join(" "),
-                      "aria-label": cell.activity ? cell.key + " 单词 " + cell.activity.words + " 句子 " + cell.activity.phrases : cell.key + " 无学习记录",
-                      onMouseEnter: (e) => showTip(e, cell),
-                      onMouseLeave: hideTip,
-                      onFocus: (e) => showTip(e, cell),
-                      onBlur: hideTip,
-                      onClick: has ? () => jumpTo(cell.key) : void 0
-                    });
-                  })
-                )
-              )
-            )
-          )
-        )
-      ),
-      import_react14.default.createElement(
-        "div",
-        { className: "eg-gh-foot" },
-        import_react14.default.createElement("span", { className: "eg-gh-hint" }, "点击绿色方块定位当日记录"),
-        import_react14.default.createElement(
-          "div",
-          { className: "eg-dash-legend" },
-          "少",
-          import_react14.default.createElement("i", { className: "l0" }),
-          import_react14.default.createElement("i", { className: "l1" }),
-          import_react14.default.createElement("i", { className: "l2" }),
-          import_react14.default.createElement("i", { className: "l3" }),
-          import_react14.default.createElement("i", { className: "l4" }),
-          "多"
-        )
-      ),
-      tip ? import_react14.default.createElement(
-        "div",
-        {
-          className: "eg-gh-tip",
-          role: "tooltip",
-          style: { left: tip.x + "px", top: tip.y + "px" }
-        },
-        tipText
-      ) : null
-    ),
-    error ? import_react14.default.createElement("div", { className: "eg-dash-error" }, error) : null,
-    filteredRecords.length ? import_react14.default.createElement(
-      "div",
-      null,
-      import_react14.default.createElement(
-        "div",
-        { className: "eg-hist-bar", ref: histHeadRef },
-        import_react14.default.createElement("div", { className: "eg-hist-title" }, "每日学习记录"),
-        import_react14.default.createElement(
-          "div",
-          { className: "eg-hist-meta" },
-          "共 " + filteredRecords.length + " 天" + (totalPages > 1 ? " · 第 " + safePage + " / " + totalPages + " 页" : "")
-        )
-      ),
-      import_react14.default.createElement("div", { className: "eg-hist" }, recordNodes),
-      totalPages > 1 ? import_react14.default.createElement(
-        "div",
-        { className: "eg-pager", role: "navigation", "aria-label": "学习记录分页" },
-        import_react14.default.createElement(
-          "button",
-          {
-            type: "button",
-            className: "eg-pagebtn",
-            disabled: safePage <= 1,
-            onClick: () => goPage(safePage - 1)
-          },
-          "‹ 上一页"
-        ),
-        pageItems.map(
-          (it, i) => it === "..." ? import_react14.default.createElement("span", { className: "eg-page-dots", key: "dots-" + i }, "…") : import_react14.default.createElement(
-            "button",
-            {
-              type: "button",
-              key: it,
-              className: "eg-pagebtn" + (it === safePage ? " active" : ""),
-              "aria-current": it === safePage ? "page" : void 0,
-              onClick: () => goPage(it)
-            },
-            String(it)
-          )
-        ),
-        import_react14.default.createElement(
-          "button",
-          {
-            type: "button",
-            className: "eg-pagebtn",
-            disabled: safePage >= totalPages,
-            onClick: () => goPage(safePage + 1)
-          },
-          "下一页 ›"
-        )
-      ) : null
-    ) : import_react14.default.createElement(
-      "div",
-      { className: "eg-dash-empty" },
-      loading ? "正在加载…" : records.length ? rangeLabel + "还没有详细学习记录。" : "还没有学习记录，去练几题吧。"
-    )
-  );
+  return /* @__PURE__ */ import_react25.default.createElement("div", { className: "eg-dash" }, /* @__PURE__ */ import_react25.default.createElement("div", { className: "eg-dash-top" }, /* @__PURE__ */ import_react25.default.createElement("div", { className: "eg-dash-title" }, "学习看板"), /* @__PURE__ */ import_react25.default.createElement("div", { className: "eg-dash-ranges", role: "tablist", "aria-label": "统计范围" }, /* @__PURE__ */ import_react25.default.createElement(
+    "button",
+    {
+      type: "button",
+      role: "tab",
+      "aria-selected": range === "last-year" ? "true" : "false",
+      className: "eg-rangebtn" + (range === "last-year" ? " active" : ""),
+      onClick: () => setRange("last-year")
+    },
+    "近一年"
+  ), years.map((y) => /* @__PURE__ */ import_react25.default.createElement(
+    "button",
+    {
+      key: y,
+      type: "button",
+      role: "tab",
+      "aria-selected": range === y ? "true" : "false",
+      className: "eg-rangebtn" + (range === y ? " active" : ""),
+      onClick: () => setRange(y)
+    },
+    y
+  )))), /* @__PURE__ */ import_react25.default.createElement("div", { className: "eg-dash-sum" }, /* @__PURE__ */ import_react25.default.createElement("div", { className: "eg-stat" }, /* @__PURE__ */ import_react25.default.createElement("b", null, streak), /* @__PURE__ */ import_react25.default.createElement("span", { title: "连续学习天数" }, "连续")), /* @__PURE__ */ import_react25.default.createElement("div", { className: "eg-stat" }, /* @__PURE__ */ import_react25.default.createElement("b", null, totals.words || 0), /* @__PURE__ */ import_react25.default.createElement("span", { title: "累计单词" }, "单词")), /* @__PURE__ */ import_react25.default.createElement("div", { className: "eg-stat" }, /* @__PURE__ */ import_react25.default.createElement("b", null, totals.phrases || 0), /* @__PURE__ */ import_react25.default.createElement("span", { title: "累计句子" }, "句子")), /* @__PURE__ */ import_react25.default.createElement("div", { className: "eg-stat" }, /* @__PURE__ */ import_react25.default.createElement("b", null, totals.days || 0), /* @__PURE__ */ import_react25.default.createElement("span", { title: "累计学习天数" }, "累计"))), /* @__PURE__ */ import_react25.default.createElement(ContributionCard, { range, rangeLabel, grid, onSelectDay: jumpTo }), error ? /* @__PURE__ */ import_react25.default.createElement("div", { className: "eg-dash-error" }, error) : null, filteredRecords.length ? /* @__PURE__ */ import_react25.default.createElement(
+    DailyHistoryList,
+    {
+      pageRecords,
+      totalFilteredCount: filteredRecords.length,
+      safePage,
+      totalPages,
+      pageItems,
+      flashDay,
+      histHeadRef,
+      onGoPage: goPage
+    }
+  ) : /* @__PURE__ */ import_react25.default.createElement("div", { className: "eg-dash-empty" }, loading ? "正在加载…" : records.length ? rangeLabel + "还没有详细学习记录。" : "还没有学习记录，去练几题吧。"));
 }
 
-// src/client/features/settings/SettingsPanel.js
-var import_react16 = __toESM(require("react"), 1);
+// src/client/features/settings/SettingsPanel.jsx
+var import_react33 = __toESM(require("react"), 1);
 
-// src/client/features/word/WordBankImport.js
-var import_react15 = __toESM(require("react"), 1);
-var h2 = import_react15.default.createElement;
+// src/client/features/word/WordBankImport.jsx
+var import_react26 = __toESM(require("react"), 1);
 function WordBankImport({ onClose, onImported }) {
-  const [name, setName] = (0, import_react15.useState)("");
-  const [filename, setFilename] = (0, import_react15.useState)("");
-  const [content, setContent] = (0, import_react15.useState)("");
-  const [preview, setPreview] = (0, import_react15.useState)(null);
-  const [busy, setBusy] = (0, import_react15.useState)(false);
-  const [error, setError] = (0, import_react15.useState)("");
-  const [over, setOver] = (0, import_react15.useState)(false);
-  const fileRef = (0, import_react15.useRef)(null);
-  const readFile = (0, import_react15.useCallback)(async (file) => {
+  const [name, setName] = (0, import_react26.useState)("");
+  const [filename, setFilename] = (0, import_react26.useState)("");
+  const [content, setContent] = (0, import_react26.useState)("");
+  const [preview, setPreview] = (0, import_react26.useState)(null);
+  const [busy, setBusy] = (0, import_react26.useState)(false);
+  const [error, setError] = (0, import_react26.useState)("");
+  const [over, setOver] = (0, import_react26.useState)(false);
+  const fileRef = (0, import_react26.useRef)(null);
+  const readFile = (0, import_react26.useCallback)(async (file) => {
     if (!file) return;
     setError("");
     try {
@@ -3740,7 +3215,7 @@ function WordBankImport({ onClose, onImported }) {
       setError("读取文件失败：" + (e.message || e));
     }
   }, []);
-  const doPreview = (0, import_react15.useCallback)(async () => {
+  const doPreview = (0, import_react26.useCallback)(async () => {
     if (!content.trim() || busy) return;
     setBusy(true);
     setError("");
@@ -3752,7 +3227,7 @@ function WordBankImport({ onClose, onImported }) {
       setBusy(false);
     }
   }, [content, filename, busy]);
-  const doImport = (0, import_react15.useCallback)(async () => {
+  const doImport = (0, import_react26.useCallback)(async () => {
     if (!preview || !preview.valid || busy) return;
     setBusy(true);
     setError("");
@@ -3772,66 +3247,46 @@ function WordBankImport({ onClose, onImported }) {
     const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
     if (file) readFile(file);
   };
-  return h2(
+  return /* @__PURE__ */ import_react26.default.createElement("div", { className: "eg-import", "data-nodrag": "true" }, /* @__PURE__ */ import_react26.default.createElement("div", { className: "eg-import-head" }, /* @__PURE__ */ import_react26.default.createElement("div", null, /* @__PURE__ */ import_react26.default.createElement("div", { className: "eg-import-title" }, "导入词库"), /* @__PURE__ */ import_react26.default.createElement("div", { className: "eg-import-sub" }, "CSV/TSV/TXT/JSON")), /* @__PURE__ */ import_react26.default.createElement("div", { className: "eg-import-actions" }, /* @__PURE__ */ import_react26.default.createElement(
+    "button",
+    {
+      className: "eg-filebtn",
+      onClick: () => {
+        try {
+          if (fileRef.current) fileRef.current.click();
+        } catch {
+        }
+      }
+    },
+    filename ? "换文件" : "选择文件"
+  ), /* @__PURE__ */ import_react26.default.createElement("button", { className: "eg-import-back", onClick: onClose }, "← 返回"))), /* @__PURE__ */ import_react26.default.createElement("div", { className: "eg-field" }, /* @__PURE__ */ import_react26.default.createElement("label", { htmlFor: "eg-bank-name" }, "词库名称"), /* @__PURE__ */ import_react26.default.createElement(
+    "input",
+    {
+      id: "eg-bank-name",
+      className: "eg-text",
+      value: name,
+      maxLength: 60,
+      placeholder: "例如：CET-6 核心词",
+      onChange: (e) => setName(e.target.value)
+    }
+  )), /* @__PURE__ */ import_react26.default.createElement(
     "div",
-    { className: "eg-import", "data-nodrag": "true" },
-    h2(
-      "div",
-      { className: "eg-import-head" },
-      h2(
-        "div",
-        null,
-        h2("div", { className: "eg-import-title" }, "导入词库"),
-        h2("div", { className: "eg-import-sub" }, "CSV/TSV/TXT/JSON")
-      ),
-      h2(
-        "div",
-        { className: "eg-import-actions" },
-        h2(
-          "button",
-          {
-            className: "eg-filebtn",
-            onClick: () => {
-              try {
-                if (fileRef.current) fileRef.current.click();
-              } catch {
-              }
-            }
-          },
-          filename ? "换文件" : "选择文件"
-        ),
-        h2("button", { className: "eg-import-back", onClick: onClose }, "← 返回")
-      )
-    ),
-    h2(
-      "div",
-      { className: "eg-field" },
-      h2("label", { htmlFor: "eg-bank-name" }, "词库名称"),
-      h2("input", {
-        id: "eg-bank-name",
-        className: "eg-text",
-        value: name,
-        maxLength: 60,
-        placeholder: "例如：CET-6 核心词",
-        onChange: (e) => setName(e.target.value)
-      })
-    ),
-    h2(
-      "div",
-      {
-        className: "eg-textarea-wrap" + (over ? " over" : ""),
-        onDragEnter: (e) => {
-          e.preventDefault();
-          setOver(true);
-        },
-        onDragOver: (e) => {
-          e.preventDefault();
-          setOver(true);
-        },
-        onDragLeave: () => setOver(false),
-        onDrop
+    {
+      className: "eg-textarea-wrap" + (over ? " over" : ""),
+      onDragEnter: (e) => {
+        e.preventDefault();
+        setOver(true);
       },
-      h2("textarea", {
+      onDragOver: (e) => {
+        e.preventDefault();
+        setOver(true);
+      },
+      onDragLeave: () => setOver(false),
+      onDrop
+    },
+    /* @__PURE__ */ import_react26.default.createElement(
+      "textarea",
+      {
         className: "eg-textarea",
         value: content,
         placeholder: "把 CSV / TSV / TXT / JSON 内容粘贴到这里，或把文件拖进来…",
@@ -3840,8 +3295,11 @@ function WordBankImport({ onClose, onImported }) {
           setFilename("");
           setPreview(null);
         }
-      }),
-      h2("input", {
+      }
+    ),
+    /* @__PURE__ */ import_react26.default.createElement(
+      "input",
+      {
         ref: fileRef,
         type: "file",
         accept: ".csv,.tsv,.txt,.json,text/csv,text/tab-separated-values,application/json",
@@ -3851,59 +3309,13 @@ function WordBankImport({ onClose, onImported }) {
           if (file) readFile(file);
           e.target.value = "";
         }
-      })
-    ),
-    h2(
-      "div",
-      { className: "eg-import-foot" },
-      h2(
-        "button",
-        { className: "eg-btn primary", onClick: doPreview, disabled: busy || !content.trim() },
-        busy ? "解析中…" : "解析预览"
-      ),
-      h2(
-        "button",
-        { className: "eg-btn ghost", onClick: doImport, disabled: busy || !preview || !preview.valid },
-        preview && preview.valid ? "导入 " + preview.valid + " 条" : "导入"
-      )
-    ),
-    error ? h2("div", { className: "eg-err" }, error) : null,
-    preview ? h2(
-      "div",
-      null,
-      h2(
-        "div",
-        { className: "eg-preview" },
-        h2(
-          "div",
-          { className: "eg-preview-top" },
-          h2("strong", null, "识别到 " + preview.valid + " 条"),
-          h2(
-            "span",
-            null,
-            String(preview.format || "").toUpperCase() + (preview.hasHeader ? " · 含表头" : "") + (preview.skippedCount ? " · 跳过 " + preview.skippedCount + " 行" : "")
-          )
-        ),
-        (preview.sample || []).map(
-          (item, i) => h2(
-            "div",
-            { className: "eg-preview-row", key: i },
-            h2("span", { className: "w" }, item.word),
-            h2("span", { className: "m" }, item.meaning),
-            item.example ? h2("span", { className: "ex" }, item.example) : null
-          )
-        )
-      ),
-      preview.errors && preview.errors.length ? h2(
-        "div",
-        { className: "eg-preview-errors" },
-        preview.errors.map((e, i) => h2("div", { className: "er", key: i }, "第 " + e.line + " 行：" + e.reason))
-      ) : null
-    ) : null
-  );
+      }
+    )
+  ), /* @__PURE__ */ import_react26.default.createElement("div", { className: "eg-import-foot" }, /* @__PURE__ */ import_react26.default.createElement("button", { className: "eg-btn primary", onClick: doPreview, disabled: busy || !content.trim() }, busy ? "解析中…" : "解析预览"), /* @__PURE__ */ import_react26.default.createElement("button", { className: "eg-btn ghost", onClick: doImport, disabled: busy || !preview || !preview.valid }, preview && preview.valid ? "导入 " + preview.valid + " 条" : "导入")), error ? /* @__PURE__ */ import_react26.default.createElement("div", { className: "eg-err" }, error) : null, preview ? /* @__PURE__ */ import_react26.default.createElement("div", null, /* @__PURE__ */ import_react26.default.createElement("div", { className: "eg-preview" }, /* @__PURE__ */ import_react26.default.createElement("div", { className: "eg-preview-top" }, /* @__PURE__ */ import_react26.default.createElement("strong", null, "识别到 " + preview.valid + " 条"), /* @__PURE__ */ import_react26.default.createElement("span", null, String(preview.format || "").toUpperCase() + (preview.hasHeader ? " · 含表头" : "") + (preview.skippedCount ? " · 跳过 " + preview.skippedCount + " 行" : ""))), (preview.sample || []).map((item, i) => /* @__PURE__ */ import_react26.default.createElement("div", { className: "eg-preview-row", key: i }, /* @__PURE__ */ import_react26.default.createElement("span", { className: "w" }, item.word), /* @__PURE__ */ import_react26.default.createElement("span", { className: "m" }, item.meaning), item.example ? /* @__PURE__ */ import_react26.default.createElement("span", { className: "ex" }, item.example) : null))), preview.errors && preview.errors.length ? /* @__PURE__ */ import_react26.default.createElement("div", { className: "eg-preview-errors" }, preview.errors.map((e, i) => /* @__PURE__ */ import_react26.default.createElement("div", { className: "er", key: i }, "第 " + e.line + " 行：" + e.reason))) : null) : null);
 }
 
-// src/client/features/settings/SettingsPanel.js
+// src/client/features/settings/useSettings.js
+var import_react27 = require("react");
 var cachedSettings = null;
 var cachedBanks = null;
 var FALLBACK_LEVELS = [
@@ -3920,40 +3332,26 @@ var FALLBACK_RETENTIONS = [
   { id: 0.93, label: "93%", desc: "强化", detail: "复习频率适度提高、遗忘率更低，适合四六级 / 雅思 / 托福备考" },
   { id: 0.95, label: "95%", desc: "极致", detail: "高频巩固以维持极高记住率，适合考前冲刺（每日复习量明显增加）" }
 ];
-var CLEANUP_RANGES = [
-  { id: "7d", label: "7 天前" },
-  { id: "30d", label: "30 天前" },
-  { id: "90d", label: "90 天前" },
-  { id: "365d", label: "一年前" },
-  { id: "all", label: "全部记录" }
-];
-function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChange, onWordBankChange, onDataCleared }) {
+function shortBankName2(name) {
+  return String(name || "").replace(/^内置\s*·\s*/, "");
+}
+function useSettings({ onTopicChange, onPhraseConfigChange, onReportConfigChange, onWordBankChange }) {
   const shared = useShared();
-  const [data, setData] = (0, import_react16.useState)(() => cachedSettings);
-  const [bankData, setBankData] = (0, import_react16.useState)(() => cachedBanks);
-  const [importing, setImporting] = (0, import_react16.useState)(false);
-  const [bankNotice, setBankNotice] = (0, import_react16.useState)("");
-  const [cleanRange, setCleanRange] = (0, import_react16.useState)("30d");
-  const [clearMemory, setClearMemory] = (0, import_react16.useState)(false);
-  const [cleanPreview, setCleanPreview] = (0, import_react16.useState)(null);
-  const [cleanBusy, setCleanBusy] = (0, import_react16.useState)(false);
-  const [cleanNotice, setCleanNotice] = (0, import_react16.useState)("");
-  const [adding, setAdding] = (0, import_react16.useState)(false);
-  const [error, setError] = (0, import_react16.useState)("");
-  const [draft, setDraft] = (0, import_react16.useState)("");
-  const [hoverLevel, setHoverLevel] = (0, import_react16.useState)("");
-  const [hoverRetention, setHoverRetention] = (0, import_react16.useState)(null);
-  const [loading, setLoading] = (0, import_react16.useState)(() => !cachedSettings);
-  const queueRef = (0, import_react16.useRef)(Promise.resolve());
-  const seqRef = (0, import_react16.useRef)(0);
-  const lastConfirmedRef = (0, import_react16.useRef)(cachedSettings);
-  const customTopicsRef = (0, import_react16.useRef)(
+  const [data, setData] = (0, import_react27.useState)(() => cachedSettings);
+  const [bankData, setBankData] = (0, import_react27.useState)(() => cachedBanks);
+  const [bankNotice, setBankNotice] = (0, import_react27.useState)("");
+  const [error, setError] = (0, import_react27.useState)("");
+  const [loading, setLoading] = (0, import_react27.useState)(() => !cachedSettings);
+  const queueRef = (0, import_react27.useRef)(Promise.resolve());
+  const seqRef = (0, import_react27.useRef)(0);
+  const lastConfirmedRef = (0, import_react27.useRef)(cachedSettings);
+  const customTopicsRef = (0, import_react27.useRef)(
     cachedSettings && cachedSettings.settings && cachedSettings.settings.customTopics || []
   );
-  const bankQueueRef = (0, import_react16.useRef)(Promise.resolve());
-  const bankSeqRef = (0, import_react16.useRef)(0);
-  const lastConfirmedBanksRef = (0, import_react16.useRef)(cachedBanks);
-  const load = (0, import_react16.useCallback)(async () => {
+  const bankQueueRef = (0, import_react27.useRef)(Promise.resolve());
+  const bankSeqRef = (0, import_react27.useRef)(0);
+  const lastConfirmedBanksRef = (0, import_react27.useRef)(cachedBanks);
+  const load = (0, import_react27.useCallback)(async () => {
     if (!cachedSettings) setLoading(true);
     try {
       const [settingsRes, banksRes] = await Promise.all([
@@ -3977,10 +3375,10 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChan
       setLoading(false);
     }
   }, []);
-  (0, import_react16.useEffect)(() => {
+  (0, import_react27.useEffect)(() => {
     load();
   }, [load]);
-  const save = (0, import_react16.useCallback)(
+  const save = (0, import_react27.useCallback)(
     (patchOrBuilder, changeScope, optimisticOverride) => {
       const seq = ++seqRef.current;
       setError("");
@@ -4079,23 +3477,17 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChan
     if (value === activeRetention) return;
     save({ fsrsRetention: value }, false);
   };
-  const addCustom = async () => {
-    const label = draft.trim();
-    if (!label || adding) return;
-    setAdding(true);
-    try {
-      const ok = await save(
-        (latest) => {
-          const base = latest && Array.isArray(latest.customTopics) ? latest.customTopics : customTopicsRef.current;
-          return { customTopics: base.concat({ label }) };
-        },
-        false,
-        null
-      );
-      if (ok) setDraft("");
-    } finally {
-      setAdding(false);
-    }
+  const addCustom = (rawLabel) => {
+    const label = String(rawLabel || "").trim();
+    if (!label) return Promise.resolve(false);
+    return save(
+      (latest) => {
+        const base = latest && Array.isArray(latest.customTopics) ? latest.customTopics : customTopicsRef.current;
+        return { customTopics: base.concat({ label }) };
+      },
+      false,
+      null
+    );
   };
   const removeCustom = (id) => {
     const nextTopics = customTopicsRef.current.filter((item) => item.id !== id);
@@ -4114,34 +3506,13 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChan
     if (next === settings.bankRetries) return;
     save({ bankRetries: next }, false);
   };
-  if (loading && !data) {
-    return import_react16.default.createElement(
-      "div",
-      { className: "eg-settings" },
-      import_react16.default.createElement(
-        "div",
-        { className: "eg-settings-loading" },
-        import_react16.default.createElement("span", { className: "eg-spin" }),
-        "正在加载设置…"
-      ),
-      error ? import_react16.default.createElement("div", { className: "eg-settings-error" }, error) : null
-    );
-  }
-  const builtinDirections = directions.filter((item) => item.builtin !== false);
-  const customDirections = directions.filter((item) => item.builtin === false);
-  const activeDirection = directions.find((item) => item.id === activeId);
-  const activeLevelObj = levels.find((item) => item.id === activeLevel) || levels[2] || { id: activeLevel, label: activeLevel, desc: "", detail: "" };
-  const shownLevelObj = levels.find((item) => item.id === (hoverLevel || activeLevel)) || activeLevelObj;
-  const activeRetentionObj = retentions.find((item) => item.id === activeRetention) || retentions.find((item) => item.id === 0.9) || { id: activeRetention, label: Math.round(activeRetention * 100) + "%", desc: "自定义", detail: "目标记忆保留率越高，复习安排越紧密。" };
-  const shownRetentionObj = (hoverRetention != null ? retentions.find((item) => item.id === hoverRetention) : null) || activeRetentionObj;
   const banks = bankData && Array.isArray(bankData.banks) ? bankData.banks : [];
   const activeBankId = bankData && bankData.active || "builtin";
   const builtinBanks = banks.filter((b) => b.builtin !== false);
   const customBanks = banks.filter((b) => b.builtin === false);
   const activeBankObj = banks.find((b) => b.id === activeBankId);
-  const shortBankName2 = (name) => String(name || "").replace(/^内置\s*·\s*/, "");
   const chooseBank = (id) => {
-    if (!id || id === activeBankId) return;
+    if (!id || id === activeBankId) return void 0;
     const seq = ++bankSeqRef.current;
     setError("");
     setBankNotice("");
@@ -4198,7 +3569,6 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChan
     }
   };
   const handleBankImported = async (res) => {
-    setImporting(false);
     setBankNotice("已导入「" + res.bank.name + "」" + res.bank.count + " 条");
     try {
       const banksRes = await api("/wordbanks");
@@ -4211,10 +3581,283 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChan
     }
     if (typeof onWordBankChange === "function") onWordBankChange();
   };
+  return {
+    data,
+    loading,
+    error,
+    setError,
+    settings,
+    directions,
+    levels,
+    retentions,
+    customTopics,
+    activeId,
+    activeLevel,
+    activeRetention,
+    banks,
+    activeBankId,
+    builtinBanks,
+    customBanks,
+    activeBankObj,
+    bankNotice,
+    setBankNotice,
+    save,
+    chooseDirection,
+    chooseReportLevel,
+    chooseRetention,
+    addCustom,
+    removeCustom,
+    setRetries,
+    chooseBank,
+    removeBank,
+    handleBankImported
+  };
+}
+
+// src/client/features/settings/PracticePrefsSection.jsx
+var import_react28 = __toESM(require("react"), 1);
+function PracticePrefsSection({ settings, onSave, onSetRetries }) {
+  return /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-section" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-section-head" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-section-label" }, "练习偏好")), /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-card" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-row" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-head" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-info" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-title" }, "庆祝效果"), /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-desc" }, "答对时从四周喷射彩带。")), /* @__PURE__ */ import_react28.default.createElement(
+    "button",
+    {
+      type: "button",
+      className: "eg-switch",
+      role: "switch",
+      "aria-checked": settings.confetti ? "true" : "false",
+      "aria-label": "彩带庆祝",
+      onClick: () => onSave({ confetti: !settings.confetti }, false)
+    }
+  ))), /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-row" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-head" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-info" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-title" }, "会话关联"), /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-desc" }, "开启后，短语训练会读取当前会话并截取部分对话内容作为翻译素材（自动过滤代码与过长文本），不再关注词库关联和内容方向；当前会话暂无可用内容时自动回退。")), /* @__PURE__ */ import_react28.default.createElement(
+    "button",
+    {
+      type: "button",
+      className: "eg-switch",
+      role: "switch",
+      "aria-checked": settings.sessionLink ? "true" : "false",
+      "aria-label": "会话关联",
+      onClick: () => onSave({ sessionLink: !settings.sessionLink }, "phrase")
+    }
+  ))), /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-row" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-head" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-info" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-title" }, "词库关联"), /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-desc" }, "开启后，短语出题和今日文章会从当前词库挑词，自然融入句子和文章（不硬塞）。")), /* @__PURE__ */ import_react28.default.createElement(
+    "button",
+    {
+      type: "button",
+      className: "eg-switch",
+      role: "switch",
+      "aria-checked": settings.bankLink ? "true" : "false",
+      "aria-label": "词库关联",
+      onClick: () => onSave({ bankLink: !settings.bankLink }, true)
+    }
+  )), settings.sessionLink ? /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-note" }, "已开启会话关联：短语训练优先按当前会话出题，词库关联仅用于今日文章或无可用会话时兜底。") : null, /* @__PURE__ */ import_react28.default.createElement(
+    "div",
+    {
+      className: "eg-collapse" + (settings.bankLink ? " open" : ""),
+      "aria-hidden": settings.bankLink ? "false" : "true"
+    },
+    /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-collapse-inner" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-sub" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-info" }, /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-sub-title" }, "重试次数"), /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-setting-desc" }, "生成的句子或文章没用到词库词时，再试几次（0–5）。")), /* @__PURE__ */ import_react28.default.createElement("div", { className: "eg-stepper" }, /* @__PURE__ */ import_react28.default.createElement(
+      "button",
+      {
+        type: "button",
+        className: "eg-stepbtn",
+        "aria-label": "减少重试次数",
+        tabIndex: settings.bankLink ? void 0 : -1,
+        disabled: !settings.bankLink || settings.bankRetries <= 0,
+        onClick: () => onSetRetries(settings.bankRetries - 1)
+      },
+      "−"
+    ), /* @__PURE__ */ import_react28.default.createElement("span", { className: "eg-stepper-value" }, String(settings.bankRetries)), /* @__PURE__ */ import_react28.default.createElement(
+      "button",
+      {
+        type: "button",
+        className: "eg-stepbtn",
+        "aria-label": "增加重试次数",
+        tabIndex: settings.bankLink ? void 0 : -1,
+        disabled: !settings.bankLink || settings.bankRetries >= 5,
+        onClick: () => onSetRetries(settings.bankRetries + 1)
+      },
+      "+"
+    ))))
+  ))));
+}
+
+// src/client/features/settings/WordBankSection.jsx
+var import_react29 = __toESM(require("react"), 1);
+function WordBankSection({
+  activeBankId,
+  activeBankObj,
+  builtinBanks,
+  customBanks,
+  bankNotice,
+  onChooseBank,
+  onRemoveBank,
+  onStartImport
+}) {
+  return /* @__PURE__ */ import_react29.default.createElement("div", { className: "eg-setting-section" }, /* @__PURE__ */ import_react29.default.createElement("div", { className: "eg-section-head" }, /* @__PURE__ */ import_react29.default.createElement("div", { className: "eg-section-label" }, "单词词库"), activeBankObj ? /* @__PURE__ */ import_react29.default.createElement("div", { className: "eg-active-badge", title: "当前词库：" + activeBankObj.name }, /* @__PURE__ */ import_react29.default.createElement("span", null, shortBankName2(activeBankObj.name) + " · " + activeBankObj.count + " 词")) : null), /* @__PURE__ */ import_react29.default.createElement("div", { className: "eg-setting-card" }, /* @__PURE__ */ import_react29.default.createElement("div", { className: "eg-setting-row" }, /* @__PURE__ */ import_react29.default.createElement("div", { className: "eg-setting-desc eg-lead" }, "选择单词训练与词库关联使用的词库；记忆进度跨词库通用。"), builtinBanks.length ? /* @__PURE__ */ import_react29.default.createElement("div", { className: "eg-bank-list" }, builtinBanks.map((b) => /* @__PURE__ */ import_react29.default.createElement(
+    "button",
+    {
+      type: "button",
+      key: b.id,
+      className: "eg-bank-item" + (b.id === activeBankId ? " active" : ""),
+      "aria-pressed": b.id === activeBankId ? "true" : "false",
+      title: b.name + "（" + b.count + " 词）",
+      onClick: () => onChooseBank(b.id)
+    },
+    /* @__PURE__ */ import_react29.default.createElement("span", { className: "eg-bank-name" }, shortBankName2(b.name)),
+    /* @__PURE__ */ import_react29.default.createElement("span", { className: "eg-bank-cnt" }, b.count + " 词")
+  ))) : null), /* @__PURE__ */ import_react29.default.createElement("div", { className: "eg-setting-row" }, /* @__PURE__ */ import_react29.default.createElement("div", { className: "eg-custom-head" }, /* @__PURE__ */ import_react29.default.createElement("div", { className: "eg-sub-title" }, "自定义词库"), /* @__PURE__ */ import_react29.default.createElement("button", { type: "button", className: "eg-bankbtn", onClick: onStartImport }, "+ 导入词库")), /* @__PURE__ */ import_react29.default.createElement("div", { className: "eg-setting-desc" }, "支持导入 CSV / TSV / TXT / JSON 词表，导入后自动切换，不影响内置词库。"), bankNotice ? /* @__PURE__ */ import_react29.default.createElement("div", { className: "eg-notice eg-bank-notice" }, bankNotice) : null, customBanks.length ? /* @__PURE__ */ import_react29.default.createElement("div", { className: "eg-custom-chips" }, customBanks.map((b) => /* @__PURE__ */ import_react29.default.createElement("div", { className: "eg-custom-chip" + (b.id === activeBankId ? " active" : ""), key: b.id }, /* @__PURE__ */ import_react29.default.createElement(
+    "button",
+    {
+      type: "button",
+      className: "eg-custom-select",
+      "aria-pressed": b.id === activeBankId ? "true" : "false",
+      title: b.name + "（" + b.count + " 词）",
+      onClick: () => onChooseBank(b.id)
+    },
+    b.name + "（" + b.count + "）"
+  ), /* @__PURE__ */ import_react29.default.createElement(
+    "button",
+    {
+      type: "button",
+      className: "eg-custom-remove",
+      title: "删除词库",
+      "aria-label": "删除 " + b.name,
+      onClick: () => onRemoveBank(b.id)
+    },
+    "×"
+  )))) : null)));
+}
+
+// src/client/features/settings/ChoiceCardSection.jsx
+var import_react30 = __toESM(require("react"), 1);
+function ChoiceCardSection({
+  title,
+  badgePrefix,
+  lead,
+  listClassName,
+  items,
+  activeId,
+  fallbackActiveItem,
+  onSelect
+}) {
+  const [hoverId, setHoverId] = (0, import_react30.useState)(null);
+  const activeItem = items.find((item) => item.id === activeId) || fallbackActiveItem;
+  const shownItem = (hoverId !== null ? items.find((item) => item.id === hoverId) : null) || activeItem;
+  return /* @__PURE__ */ import_react30.default.createElement("div", { className: "eg-setting-section" }, /* @__PURE__ */ import_react30.default.createElement("div", { className: "eg-section-head" }, /* @__PURE__ */ import_react30.default.createElement("div", { className: "eg-section-label" }, title), activeItem ? /* @__PURE__ */ import_react30.default.createElement(
+    "div",
+    {
+      className: "eg-active-badge",
+      title: badgePrefix + "：" + activeItem.label + (activeItem.desc ? " · " + activeItem.desc : "")
+    },
+    /* @__PURE__ */ import_react30.default.createElement("span", null, activeItem.label + (activeItem.desc ? " · " + activeItem.desc : ""))
+  ) : null), /* @__PURE__ */ import_react30.default.createElement("div", { className: "eg-setting-card" }, /* @__PURE__ */ import_react30.default.createElement("div", { className: "eg-setting-row" }, /* @__PURE__ */ import_react30.default.createElement("div", { className: "eg-setting-desc eg-lead" }, lead), /* @__PURE__ */ import_react30.default.createElement("div", { className: listClassName, onMouseLeave: () => setHoverId(null) }, items.map((item) => /* @__PURE__ */ import_react30.default.createElement(
+    "button",
+    {
+      type: "button",
+      key: String(item.id),
+      className: "eg-level" + (item.id === activeId ? " active" : ""),
+      "aria-pressed": item.id === activeId ? "true" : "false",
+      title: item.label + (item.desc ? " · " + item.desc : ""),
+      onMouseEnter: () => setHoverId(item.id),
+      onFocus: () => setHoverId(item.id),
+      onBlur: () => setHoverId((prev) => prev === item.id ? null : prev),
+      onClick: () => onSelect(item.id)
+    },
+    /* @__PURE__ */ import_react30.default.createElement("span", { className: "eg-level-code" }, item.label),
+    item.desc ? /* @__PURE__ */ import_react30.default.createElement("span", { className: "eg-level-desc" }, item.desc) : null
+  ))), shownItem && shownItem.detail ? /* @__PURE__ */ import_react30.default.createElement("div", { className: "eg-level-detail" }, /* @__PURE__ */ import_react30.default.createElement("strong", null, shownItem.label + (shownItem.desc ? " " + shownItem.desc : "")), /* @__PURE__ */ import_react30.default.createElement("span", null, shownItem.detail)) : null)));
+}
+
+// src/client/features/settings/DirectionSection.jsx
+var import_react31 = __toESM(require("react"), 1);
+function DirectionSection({
+  sessionLink,
+  activeId,
+  activeDirection,
+  builtinDirections,
+  customDirections,
+  customTopicsCount,
+  onChooseDirection,
+  onAddCustom,
+  onRemoveCustom
+}) {
+  const [draft, setDraft] = (0, import_react31.useState)("");
+  const [adding, setAdding] = (0, import_react31.useState)(false);
+  const handleAdd = async () => {
+    const label = draft.trim();
+    if (!label || adding) return;
+    setAdding(true);
+    try {
+      const ok = await onAddCustom(label);
+      if (ok) setDraft("");
+    } finally {
+      setAdding(false);
+    }
+  };
+  return /* @__PURE__ */ import_react31.default.createElement("div", { className: "eg-setting-section" }, /* @__PURE__ */ import_react31.default.createElement("div", { className: "eg-section-head" }, /* @__PURE__ */ import_react31.default.createElement("div", { className: "eg-section-label" }, "内容方向"), activeDirection ? /* @__PURE__ */ import_react31.default.createElement("div", { className: "eg-active-badge", title: "当前方向：" + activeDirection.label }, /* @__PURE__ */ import_react31.default.createElement("span", null, activeDirection.label)) : null), /* @__PURE__ */ import_react31.default.createElement("div", { className: "eg-setting-card" }, /* @__PURE__ */ import_react31.default.createElement("div", { className: "eg-setting-row" }, /* @__PURE__ */ import_react31.default.createElement("div", { className: "eg-setting-desc eg-lead" }, sessionLink ? "已开启会话关联，短语训练优先按当前会话出题；内容方向用于今日文章及无可用会话时兜底。" : "用于生成短语和今日文章；切换后下一题、下一篇生效。"), /* @__PURE__ */ import_react31.default.createElement("div", { className: "eg-direction-list" }, builtinDirections.map((item) => /* @__PURE__ */ import_react31.default.createElement(
+    "button",
+    {
+      type: "button",
+      key: item.id,
+      className: "eg-direction" + (item.id === activeId ? " active" : ""),
+      "aria-pressed": item.id === activeId ? "true" : "false",
+      title: item.label,
+      onClick: () => onChooseDirection(item.id)
+    },
+    item.label
+  )))), /* @__PURE__ */ import_react31.default.createElement("div", { className: "eg-setting-row" }, /* @__PURE__ */ import_react31.default.createElement("div", { className: "eg-custom-head" }, /* @__PURE__ */ import_react31.default.createElement("div", { className: "eg-sub-title" }, "自定义方向"), /* @__PURE__ */ import_react31.default.createElement("span", { className: "eg-custom-count" }, customTopicsCount ? customTopicsCount + " / 40" : "最多 40 个")), /* @__PURE__ */ import_react31.default.createElement("div", { className: "eg-setting-desc" }, "添加你自己的主题，点击即可切换，与内置方向一样用于生成内容。"), customDirections.length ? /* @__PURE__ */ import_react31.default.createElement("div", { className: "eg-custom-chips" }, customDirections.map((item) => /* @__PURE__ */ import_react31.default.createElement("div", { className: "eg-custom-chip" + (item.id === activeId ? " active" : ""), key: item.id }, /* @__PURE__ */ import_react31.default.createElement(
+    "button",
+    {
+      type: "button",
+      className: "eg-custom-select",
+      "aria-pressed": item.id === activeId ? "true" : "false",
+      title: item.label,
+      onClick: () => onChooseDirection(item.id)
+    },
+    item.label
+  ), /* @__PURE__ */ import_react31.default.createElement(
+    "button",
+    {
+      type: "button",
+      className: "eg-custom-remove",
+      title: "删除方向",
+      "aria-label": "删除 " + item.label,
+      onClick: () => onRemoveCustom(item.id)
+    },
+    "×"
+  )))) : null, /* @__PURE__ */ import_react31.default.createElement("div", { className: "eg-addrow" }, /* @__PURE__ */ import_react31.default.createElement(
+    "input",
+    {
+      className: "eg-text",
+      value: draft,
+      maxLength: 40,
+      placeholder: "例如：摄影与视觉",
+      "aria-label": "自定义方向名称",
+      onChange: (e) => setDraft(e.target.value),
+      onKeyDown: (e) => {
+        if (e.key === "Enter") handleAdd();
+      }
+    }
+  ), /* @__PURE__ */ import_react31.default.createElement("button", { type: "button", className: "eg-btn primary", disabled: adding || !draft.trim(), onClick: handleAdd }, "添加")))));
+}
+
+// src/client/features/settings/DataCleanupSection.jsx
+var import_react32 = __toESM(require("react"), 1);
+var CLEANUP_RANGES = [
+  { id: "7d", label: "7 天前" },
+  { id: "30d", label: "30 天前" },
+  { id: "90d", label: "90 天前" },
+  { id: "365d", label: "一年前" },
+  { id: "all", label: "全部记录" }
+];
+function DataCleanupSection({ onDataCleared, onError }) {
+  const [cleanRange, setCleanRange] = (0, import_react32.useState)("30d");
+  const [clearMemory, setClearMemory] = (0, import_react32.useState)(false);
+  const [cleanPreview, setCleanPreview] = (0, import_react32.useState)(null);
+  const [cleanBusy, setCleanBusy] = (0, import_react32.useState)(false);
+  const [cleanNotice, setCleanNotice] = (0, import_react32.useState)("");
   const startCleanupPreview = async () => {
     if (cleanBusy) return;
     setCleanBusy(true);
-    setError("");
+    onError("");
     setCleanNotice("");
     try {
       const preview = await api("/data/preview", {
@@ -4223,7 +3866,7 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChan
       });
       setCleanPreview(preview);
     } catch (e) {
-      setError(e.message || "统计可清理数据失败");
+      onError(e.message || "统计可清理数据失败");
     } finally {
       setCleanBusy(false);
     }
@@ -4231,7 +3874,7 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChan
   const confirmCleanup = async () => {
     if (cleanBusy) return;
     setCleanBusy(true);
-    setError("");
+    onError("");
     try {
       const res = await api("/data/clear", {
         method: "POST",
@@ -4247,646 +3890,159 @@ function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChan
       setCleanNotice(parts.length ? "已清理：" + parts.join("、") : "已清理完成");
       if (typeof onDataCleared === "function") onDataCleared({ range: cleanRange, clearMemory });
     } catch (e) {
-      setError(e.message || "清理数据失败");
+      onError(e.message || "清理数据失败");
     } finally {
       setCleanBusy(false);
     }
   };
-  if (importing) {
-    return import_react16.default.createElement(WordBankImport, {
-      onClose: () => setImporting(false),
-      onImported: handleBankImported
-    });
+  const totalItems = cleanPreview ? (cleanPreview.recordDays || 0) + (cleanPreview.reports || 0) + (cleanPreview.memoryWords || 0) : 0;
+  const rangeObj = cleanPreview ? CLEANUP_RANGES.find((r) => r.id === cleanPreview.range) : null;
+  const summaryParts = [];
+  if (cleanPreview) {
+    if (cleanPreview.recordDays) summaryParts.push(cleanPreview.recordDays + " 天学习记录");
+    if (cleanPreview.reports) summaryParts.push(cleanPreview.reports + " 篇缓存文章");
+    if (cleanPreview.memoryWords) summaryParts.push(cleanPreview.memoryWords + " 个单词记忆进度");
   }
-  return import_react16.default.createElement(
-    "div",
-    { className: "eg-settings" },
-    import_react16.default.createElement(
-      "div",
-      { className: "eg-setting-section" },
-      import_react16.default.createElement(
-        "div",
-        { className: "eg-section-head" },
-        import_react16.default.createElement("div", { className: "eg-section-label" }, "练习偏好")
-      ),
-      import_react16.default.createElement(
-        "div",
-        { className: "eg-setting-card" },
-        import_react16.default.createElement(
-          "div",
-          { className: "eg-setting-row" },
-          import_react16.default.createElement(
-            "div",
-            { className: "eg-setting-head" },
-            import_react16.default.createElement(
-              "div",
-              { className: "eg-setting-info" },
-              import_react16.default.createElement("div", { className: "eg-setting-title" }, "庆祝效果"),
-              import_react16.default.createElement("div", { className: "eg-setting-desc" }, "答对时从四周喷射彩带。")
-            ),
-            import_react16.default.createElement("button", {
-              type: "button",
-              className: "eg-switch",
-              role: "switch",
-              "aria-checked": settings.confetti ? "true" : "false",
-              "aria-label": "彩带庆祝",
-              onClick: () => save({ confetti: !settings.confetti }, false)
-            })
-          )
-        ),
-        import_react16.default.createElement(
-          "div",
-          { className: "eg-setting-row" },
-          import_react16.default.createElement(
-            "div",
-            { className: "eg-setting-head" },
-            import_react16.default.createElement(
-              "div",
-              { className: "eg-setting-info" },
-              import_react16.default.createElement("div", { className: "eg-setting-title" }, "会话关联"),
-              import_react16.default.createElement(
-                "div",
-                { className: "eg-setting-desc" },
-                "开启后，短语训练会读取当前会话并截取部分对话内容作为翻译素材（自动过滤代码与过长文本），不再关注词库关联和内容方向；当前会话暂无可用内容时自动回退。"
-              )
-            ),
-            import_react16.default.createElement("button", {
-              type: "button",
-              className: "eg-switch",
-              role: "switch",
-              "aria-checked": settings.sessionLink ? "true" : "false",
-              "aria-label": "会话关联",
-              onClick: () => save({ sessionLink: !settings.sessionLink }, "phrase")
-            })
-          )
-        ),
-        import_react16.default.createElement(
-          "div",
-          { className: "eg-setting-row" },
-          import_react16.default.createElement(
-            "div",
-            { className: "eg-setting-head" },
-            import_react16.default.createElement(
-              "div",
-              { className: "eg-setting-info" },
-              import_react16.default.createElement("div", { className: "eg-setting-title" }, "词库关联"),
-              import_react16.default.createElement(
-                "div",
-                { className: "eg-setting-desc" },
-                "开启后，短语出题和今日文章会从当前词库挑词，自然融入句子和文章（不硬塞）。"
-              )
-            ),
-            import_react16.default.createElement("button", {
-              type: "button",
-              className: "eg-switch",
-              role: "switch",
-              "aria-checked": settings.bankLink ? "true" : "false",
-              "aria-label": "词库关联",
-              onClick: () => save({ bankLink: !settings.bankLink }, true)
-            })
-          ),
-          settings.sessionLink ? import_react16.default.createElement(
-            "div",
-            { className: "eg-setting-note" },
-            "已开启会话关联：短语训练优先按当前会话出题，词库关联仅用于今日文章或无可用会话时兜底。"
-          ) : null,
-          import_react16.default.createElement(
-            "div",
-            {
-              className: "eg-collapse" + (settings.bankLink ? " open" : ""),
-              "aria-hidden": settings.bankLink ? "false" : "true"
-            },
-            import_react16.default.createElement(
-              "div",
-              { className: "eg-collapse-inner" },
-              import_react16.default.createElement(
-                "div",
-                { className: "eg-setting-sub" },
-                import_react16.default.createElement(
-                  "div",
-                  { className: "eg-setting-info" },
-                  import_react16.default.createElement("div", { className: "eg-sub-title" }, "重试次数"),
-                  import_react16.default.createElement(
-                    "div",
-                    { className: "eg-setting-desc" },
-                    "生成的句子或文章没用到词库词时，再试几次（0–5）。"
-                  )
-                ),
-                import_react16.default.createElement(
-                  "div",
-                  { className: "eg-stepper" },
-                  import_react16.default.createElement(
-                    "button",
-                    {
-                      type: "button",
-                      className: "eg-stepbtn",
-                      "aria-label": "减少重试次数",
-                      tabIndex: settings.bankLink ? void 0 : -1,
-                      disabled: !settings.bankLink || settings.bankRetries <= 0,
-                      onClick: () => setRetries(settings.bankRetries - 1)
-                    },
-                    "−"
-                  ),
-                  import_react16.default.createElement("span", { className: "eg-stepper-value" }, String(settings.bankRetries)),
-                  import_react16.default.createElement(
-                    "button",
-                    {
-                      type: "button",
-                      className: "eg-stepbtn",
-                      "aria-label": "增加重试次数",
-                      tabIndex: settings.bankLink ? void 0 : -1,
-                      disabled: !settings.bankLink || settings.bankRetries >= 5,
-                      onClick: () => setRetries(settings.bankRetries + 1)
-                    },
-                    "+"
-                  )
-                )
-              )
-            )
-          )
-        )
-      )
-    ),
-    import_react16.default.createElement(
-      "div",
-      { className: "eg-setting-section" },
-      import_react16.default.createElement(
-        "div",
-        { className: "eg-section-head" },
-        import_react16.default.createElement("div", { className: "eg-section-label" }, "单词词库"),
-        activeBankObj ? import_react16.default.createElement(
-          "div",
-          { className: "eg-active-badge", title: "当前词库：" + activeBankObj.name },
-          import_react16.default.createElement("span", null, shortBankName2(activeBankObj.name) + " · " + activeBankObj.count + " 词")
-        ) : null
-      ),
-      import_react16.default.createElement(
-        "div",
-        { className: "eg-setting-card" },
-        import_react16.default.createElement(
-          "div",
-          { className: "eg-setting-row" },
-          import_react16.default.createElement(
-            "div",
-            { className: "eg-setting-desc eg-lead" },
-            "选择单词训练与词库关联使用的词库；记忆进度跨词库通用。"
-          ),
-          builtinBanks.length ? import_react16.default.createElement(
-            "div",
-            { className: "eg-bank-list" },
-            builtinBanks.map(
-              (b) => import_react16.default.createElement(
-                "button",
-                {
-                  type: "button",
-                  key: b.id,
-                  className: "eg-bank-item" + (b.id === activeBankId ? " active" : ""),
-                  "aria-pressed": b.id === activeBankId ? "true" : "false",
-                  title: b.name + "（" + b.count + " 词）",
-                  onClick: () => chooseBank(b.id)
-                },
-                import_react16.default.createElement("span", { className: "eg-bank-name" }, shortBankName2(b.name)),
-                import_react16.default.createElement("span", { className: "eg-bank-cnt" }, b.count + " 词")
-              )
-            )
-          ) : null
-        ),
-        import_react16.default.createElement(
-          "div",
-          { className: "eg-setting-row" },
-          import_react16.default.createElement(
-            "div",
-            { className: "eg-custom-head" },
-            import_react16.default.createElement("div", { className: "eg-sub-title" }, "自定义词库"),
-            import_react16.default.createElement(
-              "button",
-              {
-                type: "button",
-                className: "eg-bankbtn",
-                onClick: () => {
-                  setBankNotice("");
-                  setImporting(true);
-                }
-              },
-              "+ 导入词库"
-            )
-          ),
-          import_react16.default.createElement(
-            "div",
-            { className: "eg-setting-desc" },
-            "支持导入 CSV / TSV / TXT / JSON 词表，导入后自动切换，不影响内置词库。"
-          ),
-          bankNotice ? import_react16.default.createElement("div", { className: "eg-notice eg-bank-notice" }, bankNotice) : null,
-          customBanks.length ? import_react16.default.createElement(
-            "div",
-            { className: "eg-custom-chips" },
-            customBanks.map(
-              (b) => import_react16.default.createElement(
-                "div",
-                {
-                  className: "eg-custom-chip" + (b.id === activeBankId ? " active" : ""),
-                  key: b.id
-                },
-                import_react16.default.createElement(
-                  "button",
-                  {
-                    type: "button",
-                    className: "eg-custom-select",
-                    "aria-pressed": b.id === activeBankId ? "true" : "false",
-                    title: b.name + "（" + b.count + " 词）",
-                    onClick: () => chooseBank(b.id)
-                  },
-                  b.name + "（" + b.count + "）"
-                ),
-                import_react16.default.createElement(
-                  "button",
-                  {
-                    type: "button",
-                    className: "eg-custom-remove",
-                    title: "删除词库",
-                    "aria-label": "删除 " + b.name,
-                    onClick: () => removeBank(b.id)
-                  },
-                  "×"
-                )
-              )
-            )
-          ) : null
-        )
-      )
-    ),
-    import_react16.default.createElement(
-      "div",
-      { className: "eg-setting-section" },
-      import_react16.default.createElement(
-        "div",
-        { className: "eg-section-head" },
-        import_react16.default.createElement("div", { className: "eg-section-label" }, "记忆调度（FSRS）"),
-        activeRetentionObj ? import_react16.default.createElement(
-          "div",
-          {
-            className: "eg-active-badge",
-            title: "目标记住率：" + activeRetentionObj.label + (activeRetentionObj.desc ? " · " + activeRetentionObj.desc : "")
-          },
-          import_react16.default.createElement("span", null, activeRetentionObj.label + (activeRetentionObj.desc ? " · " + activeRetentionObj.desc : ""))
-        ) : null
-      ),
-      import_react16.default.createElement(
-        "div",
-        { className: "eg-setting-card" },
-        import_react16.default.createElement(
-          "div",
-          { className: "eg-setting-row" },
-          import_react16.default.createElement(
-            "div",
-            { className: "eg-setting-desc eg-lead" },
-            "设置单词训练的目标记忆保留率；数值越高，系统会在遗忘前更早安排复习（修改后对后续复习生效）。"
-          ),
-          import_react16.default.createElement(
-            "div",
-            {
-              className: "eg-retention-list",
-              onMouseLeave: () => setHoverRetention(null)
-            },
-            retentions.map(
-              (item) => import_react16.default.createElement(
-                "button",
-                {
-                  type: "button",
-                  key: String(item.id),
-                  className: "eg-level" + (item.id === activeRetention ? " active" : ""),
-                  "aria-pressed": item.id === activeRetention ? "true" : "false",
-                  title: item.label + (item.desc ? " · " + item.desc : ""),
-                  onMouseEnter: () => setHoverRetention(item.id),
-                  onFocus: () => setHoverRetention(item.id),
-                  onBlur: () => setHoverRetention((prev) => prev === item.id ? null : prev),
-                  onClick: () => chooseRetention(item.id)
-                },
-                import_react16.default.createElement("span", { className: "eg-level-code" }, item.label),
-                item.desc ? import_react16.default.createElement("span", { className: "eg-level-desc" }, item.desc) : null
-              )
-            )
-          ),
-          shownRetentionObj && shownRetentionObj.detail ? import_react16.default.createElement(
-            "div",
-            { className: "eg-level-detail" },
-            import_react16.default.createElement(
-              "strong",
-              null,
-              shownRetentionObj.label + (shownRetentionObj.desc ? " " + shownRetentionObj.desc : "")
-            ),
-            import_react16.default.createElement("span", null, shownRetentionObj.detail)
-          ) : null
-        )
-      )
-    ),
-    import_react16.default.createElement(
-      "div",
-      { className: "eg-setting-section" },
-      import_react16.default.createElement(
-        "div",
-        { className: "eg-section-head" },
-        import_react16.default.createElement("div", { className: "eg-section-label" }, "文章难度"),
-        activeLevelObj ? import_react16.default.createElement(
-          "div",
-          { className: "eg-active-badge", title: "当前难度：" + activeLevelObj.label + (activeLevelObj.desc ? " · " + activeLevelObj.desc : "") },
-          import_react16.default.createElement("span", null, activeLevelObj.label + (activeLevelObj.desc ? " · " + activeLevelObj.desc : ""))
-        ) : null
-      ),
-      import_react16.default.createElement(
-        "div",
-        { className: "eg-setting-card" },
-        import_react16.default.createElement(
-          "div",
-          { className: "eg-setting-row" },
-          import_react16.default.createElement(
-            "div",
-            { className: "eg-setting-desc eg-lead" },
-            "控制今日文章的词汇与句式难度（CEFR）；切换后下次进入或换一篇生效。"
-          ),
-          import_react16.default.createElement(
-            "div",
-            {
-              className: "eg-level-list",
-              onMouseLeave: () => setHoverLevel("")
-            },
-            levels.map(
-              (item) => import_react16.default.createElement(
-                "button",
-                {
-                  type: "button",
-                  key: item.id,
-                  className: "eg-level" + (item.id === activeLevel ? " active" : ""),
-                  "aria-pressed": item.id === activeLevel ? "true" : "false",
-                  title: item.label + (item.desc ? " · " + item.desc : ""),
-                  onMouseEnter: () => setHoverLevel(item.id),
-                  onFocus: () => setHoverLevel(item.id),
-                  onBlur: () => setHoverLevel((prev) => prev === item.id ? "" : prev),
-                  onClick: () => chooseReportLevel(item.id)
-                },
-                import_react16.default.createElement("span", { className: "eg-level-code" }, item.label),
-                item.desc ? import_react16.default.createElement("span", { className: "eg-level-desc" }, item.desc) : null
-              )
-            )
-          ),
-          shownLevelObj && shownLevelObj.detail ? import_react16.default.createElement(
-            "div",
-            { className: "eg-level-detail" },
-            import_react16.default.createElement(
-              "strong",
-              null,
-              shownLevelObj.label + (shownLevelObj.desc ? " " + shownLevelObj.desc : "")
-            ),
-            import_react16.default.createElement("span", null, shownLevelObj.detail)
-          ) : null
-        )
-      )
-    ),
-    import_react16.default.createElement(
-      "div",
-      { className: "eg-setting-section" },
-      import_react16.default.createElement(
-        "div",
-        { className: "eg-section-head" },
-        import_react16.default.createElement("div", { className: "eg-section-label" }, "内容方向"),
-        activeDirection ? import_react16.default.createElement(
-          "div",
-          { className: "eg-active-badge", title: "当前方向：" + activeDirection.label },
-          import_react16.default.createElement("span", null, activeDirection.label)
-        ) : null
-      ),
-      import_react16.default.createElement(
-        "div",
-        { className: "eg-setting-card" },
-        import_react16.default.createElement(
-          "div",
-          { className: "eg-setting-row" },
-          import_react16.default.createElement(
-            "div",
-            { className: "eg-setting-desc eg-lead" },
-            settings.sessionLink ? "已开启会话关联，短语训练优先按当前会话出题；内容方向用于今日文章及无可用会话时兜底。" : "用于生成短语和今日文章；切换后下一题、下一篇生效。"
-          ),
-          import_react16.default.createElement(
-            "div",
-            { className: "eg-direction-list" },
-            builtinDirections.map(
-              (item) => import_react16.default.createElement(
-                "button",
-                {
-                  type: "button",
-                  key: item.id,
-                  className: "eg-direction" + (item.id === activeId ? " active" : ""),
-                  "aria-pressed": item.id === activeId ? "true" : "false",
-                  title: item.label,
-                  onClick: () => chooseDirection(item.id)
-                },
-                item.label
-              )
-            )
-          )
-        ),
-        import_react16.default.createElement(
-          "div",
-          { className: "eg-setting-row" },
-          import_react16.default.createElement(
-            "div",
-            { className: "eg-custom-head" },
-            import_react16.default.createElement("div", { className: "eg-sub-title" }, "自定义方向"),
-            import_react16.default.createElement(
-              "span",
-              { className: "eg-custom-count" },
-              customTopics.length ? customTopics.length + " / 40" : "最多 40 个"
-            )
-          ),
-          import_react16.default.createElement(
-            "div",
-            { className: "eg-setting-desc" },
-            "添加你自己的主题，点击即可切换，与内置方向一样用于生成内容。"
-          ),
-          customDirections.length ? import_react16.default.createElement(
-            "div",
-            { className: "eg-custom-chips" },
-            customDirections.map(
-              (item) => import_react16.default.createElement(
-                "div",
-                {
-                  className: "eg-custom-chip" + (item.id === activeId ? " active" : ""),
-                  key: item.id
-                },
-                import_react16.default.createElement(
-                  "button",
-                  {
-                    type: "button",
-                    className: "eg-custom-select",
-                    "aria-pressed": item.id === activeId ? "true" : "false",
-                    title: item.label,
-                    onClick: () => chooseDirection(item.id)
-                  },
-                  item.label
-                ),
-                import_react16.default.createElement(
-                  "button",
-                  {
-                    type: "button",
-                    className: "eg-custom-remove",
-                    title: "删除方向",
-                    "aria-label": "删除 " + item.label,
-                    onClick: () => removeCustom(item.id)
-                  },
-                  "×"
-                )
-              )
-            )
-          ) : null,
-          import_react16.default.createElement(
-            "div",
-            { className: "eg-addrow" },
-            import_react16.default.createElement("input", {
-              className: "eg-text",
-              value: draft,
-              maxLength: 40,
-              placeholder: "例如：摄影与视觉",
-              "aria-label": "自定义方向名称",
-              onChange: (e) => setDraft(e.target.value),
-              onKeyDown: (e) => {
-                if (e.key === "Enter") addCustom();
-              }
-            }),
-            import_react16.default.createElement(
-              "button",
-              {
-                type: "button",
-                className: "eg-btn primary",
-                disabled: adding || !draft.trim(),
-                onClick: addCustom
-              },
-              "添加"
-            )
-          )
-        )
-      )
-    ),
-    import_react16.default.createElement(
-      "div",
-      { className: "eg-setting-section" },
-      import_react16.default.createElement(
-        "div",
-        { className: "eg-section-head" },
-        import_react16.default.createElement("div", { className: "eg-section-label" }, "数据管理")
-      ),
-      import_react16.default.createElement(
-        "div",
-        { className: "eg-setting-card" },
-        import_react16.default.createElement(
-          "div",
-          { className: "eg-setting-row" },
-          import_react16.default.createElement(
-            "div",
-            { className: "eg-setting-desc eg-lead" },
-            "按时间清理历史学习记录与文章缓存；不会删除你的偏好设置和自定义词库。"
-          ),
-          import_react16.default.createElement(
-            "div",
-            { className: "eg-clean-ranges" },
-            CLEANUP_RANGES.map(
-              (item) => import_react16.default.createElement(
-                "button",
-                {
-                  type: "button",
-                  key: item.id,
-                  className: "eg-clean-range" + (item.id === cleanRange ? " active" : "") + (item.id === "all" ? " is-danger" : ""),
-                  "aria-pressed": item.id === cleanRange ? "true" : "false",
-                  disabled: cleanBusy,
-                  onClick: () => {
-                    setCleanRange(item.id);
-                    setCleanPreview(null);
-                    setCleanNotice("");
-                  }
-                },
-                item.label
-              )
-            )
-          ),
-          import_react16.default.createElement(
-            "div",
-            { className: "eg-clean-foot" },
-            import_react16.default.createElement(
-              "label",
-              { className: "eg-clean-check" },
-              import_react16.default.createElement("input", {
-                type: "checkbox",
-                checked: clearMemory,
-                disabled: cleanBusy,
-                onChange: (e) => {
-                  setClearMemory(e.target.checked);
-                  setCleanPreview(null);
-                  setCleanNotice("");
-                }
-              }),
-              import_react16.default.createElement("span", null, "同时清除对应时间段内学习中的记忆进度（已掌握单词仅在「全部记录」时清除）")
-            ),
-            !cleanPreview ? import_react16.default.createElement(
-              "button",
-              {
-                type: "button",
-                className: "eg-btn danger",
-                disabled: cleanBusy,
-                onClick: startCleanupPreview
-              },
-              cleanBusy ? "统计中…" : "清理数据"
-            ) : null
-          ),
-          cleanPreview ? (() => {
-            const totalItems = (cleanPreview.recordDays || 0) + (cleanPreview.reports || 0) + (cleanPreview.memoryWords || 0);
-            const rangeObj = CLEANUP_RANGES.find((r) => r.id === cleanPreview.range);
-            const summaryParts = [];
-            if (cleanPreview.recordDays) summaryParts.push(cleanPreview.recordDays + " 天学习记录");
-            if (cleanPreview.reports) summaryParts.push(cleanPreview.reports + " 篇缓存文章");
-            if (cleanPreview.memoryWords) summaryParts.push(cleanPreview.memoryWords + " 个单词记忆进度");
-            return import_react16.default.createElement(
-              "div",
-              { className: "eg-clean-confirm" },
-              import_react16.default.createElement(
-                "div",
-                { className: "eg-clean-confirm-text" },
-                totalItems > 0 ? "将清除「" + (rangeObj ? rangeObj.label : cleanPreview.range) + "」范围内：" + summaryParts.join("、") + "，操作不可恢复。" : "所选范围内暂无可清理的学习记录或缓存文章。"
-              ),
-              import_react16.default.createElement(
-                "div",
-                { className: "eg-clean-confirm-actions" },
-                import_react16.default.createElement(
-                  "button",
-                  {
-                    type: "button",
-                    className: "eg-btn",
-                    disabled: cleanBusy,
-                    onClick: () => setCleanPreview(null)
-                  },
-                  "取消"
-                ),
-                totalItems > 0 ? import_react16.default.createElement(
-                  "button",
-                  {
-                    type: "button",
-                    className: "eg-btn danger",
-                    disabled: cleanBusy,
-                    onClick: confirmCleanup
-                  },
-                  cleanBusy ? "清理中…" : "确认清理"
-                ) : null
-              )
-            );
-          })() : null,
-          cleanNotice ? import_react16.default.createElement("div", { className: "eg-notice eg-clean-notice" }, cleanNotice) : null
-        )
-      )
-    ),
-    error ? import_react16.default.createElement("div", { className: "eg-settings-error" }, error) : null
-  );
+  return /* @__PURE__ */ import_react32.default.createElement("div", { className: "eg-setting-section" }, /* @__PURE__ */ import_react32.default.createElement("div", { className: "eg-section-head" }, /* @__PURE__ */ import_react32.default.createElement("div", { className: "eg-section-label" }, "数据管理")), /* @__PURE__ */ import_react32.default.createElement("div", { className: "eg-setting-card" }, /* @__PURE__ */ import_react32.default.createElement("div", { className: "eg-setting-row" }, /* @__PURE__ */ import_react32.default.createElement("div", { className: "eg-setting-desc eg-lead" }, "按时间清理历史学习记录与文章缓存；不会删除你的偏好设置和自定义词库。"), /* @__PURE__ */ import_react32.default.createElement("div", { className: "eg-clean-ranges" }, CLEANUP_RANGES.map((item) => /* @__PURE__ */ import_react32.default.createElement(
+    "button",
+    {
+      type: "button",
+      key: item.id,
+      className: "eg-clean-range" + (item.id === cleanRange ? " active" : "") + (item.id === "all" ? " is-danger" : ""),
+      "aria-pressed": item.id === cleanRange ? "true" : "false",
+      disabled: cleanBusy,
+      onClick: () => {
+        setCleanRange(item.id);
+        setCleanPreview(null);
+        setCleanNotice("");
+      }
+    },
+    item.label
+  ))), /* @__PURE__ */ import_react32.default.createElement("div", { className: "eg-clean-foot" }, /* @__PURE__ */ import_react32.default.createElement("label", { className: "eg-clean-check" }, /* @__PURE__ */ import_react32.default.createElement(
+    "input",
+    {
+      type: "checkbox",
+      checked: clearMemory,
+      disabled: cleanBusy,
+      onChange: (e) => {
+        setClearMemory(e.target.checked);
+        setCleanPreview(null);
+        setCleanNotice("");
+      }
+    }
+  ), /* @__PURE__ */ import_react32.default.createElement("span", null, "同时清除对应时间段内学习中的记忆进度（已掌握单词仅在「全部记录」时清除）")), !cleanPreview ? /* @__PURE__ */ import_react32.default.createElement("button", { type: "button", className: "eg-btn danger", disabled: cleanBusy, onClick: startCleanupPreview }, cleanBusy ? "统计中…" : "清理数据") : null), cleanPreview ? /* @__PURE__ */ import_react32.default.createElement("div", { className: "eg-clean-confirm" }, /* @__PURE__ */ import_react32.default.createElement("div", { className: "eg-clean-confirm-text" }, totalItems > 0 ? "将清除「" + (rangeObj ? rangeObj.label : cleanPreview.range) + "」范围内：" + summaryParts.join("、") + "，操作不可恢复。" : "所选范围内暂无可清理的学习记录或缓存文章。"), /* @__PURE__ */ import_react32.default.createElement("div", { className: "eg-clean-confirm-actions" }, /* @__PURE__ */ import_react32.default.createElement("button", { type: "button", className: "eg-btn", disabled: cleanBusy, onClick: () => setCleanPreview(null) }, "取消"), totalItems > 0 ? /* @__PURE__ */ import_react32.default.createElement("button", { type: "button", className: "eg-btn danger", disabled: cleanBusy, onClick: confirmCleanup }, cleanBusy ? "清理中…" : "确认清理") : null)) : null, cleanNotice ? /* @__PURE__ */ import_react32.default.createElement("div", { className: "eg-notice eg-clean-notice" }, cleanNotice) : null)));
 }
 
-// src/client/shell/EnglishGymBoard.js
-var useIsoLayoutEffect4 = import_react17.default.useLayoutEffect || import_react17.useEffect;
+// src/client/features/settings/SettingsPanel.jsx
+function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportConfigChange, onWordBankChange, onDataCleared }) {
+  const [importing, setImporting] = (0, import_react33.useState)(false);
+  const {
+    data,
+    loading,
+    error,
+    setError,
+    settings,
+    directions,
+    levels,
+    retentions,
+    customTopics,
+    activeId,
+    activeLevel,
+    activeRetention,
+    activeBankId,
+    builtinBanks,
+    customBanks,
+    activeBankObj,
+    bankNotice,
+    setBankNotice,
+    save,
+    chooseDirection,
+    chooseReportLevel,
+    chooseRetention,
+    addCustom,
+    removeCustom,
+    setRetries,
+    chooseBank,
+    removeBank,
+    handleBankImported
+  } = useSettings({ onTopicChange, onPhraseConfigChange, onReportConfigChange, onWordBankChange });
+  if (loading && !data) {
+    return /* @__PURE__ */ import_react33.default.createElement("div", { className: "eg-settings" }, /* @__PURE__ */ import_react33.default.createElement("div", { className: "eg-settings-loading" }, /* @__PURE__ */ import_react33.default.createElement("span", { className: "eg-spin" }), "正在加载设置…"), error ? /* @__PURE__ */ import_react33.default.createElement("div", { className: "eg-settings-error" }, error) : null);
+  }
+  if (importing) {
+    return /* @__PURE__ */ import_react33.default.createElement(
+      WordBankImport,
+      {
+        onClose: () => setImporting(false),
+        onImported: (res) => {
+          setImporting(false);
+          return handleBankImported(res);
+        }
+      }
+    );
+  }
+  const builtinDirections = directions.filter((item) => item.builtin !== false);
+  const customDirections = directions.filter((item) => item.builtin === false);
+  const activeDirection = directions.find((item) => item.id === activeId);
+  const fallbackLevel = levels[2] || { id: activeLevel, label: activeLevel, desc: "", detail: "" };
+  const fallbackRetention = retentions.find((item) => item.id === 0.9) || { id: activeRetention, label: Math.round(activeRetention * 100) + "%", desc: "自定义", detail: "目标记忆保留率越高，复习安排越紧密。" };
+  return /* @__PURE__ */ import_react33.default.createElement("div", { className: "eg-settings" }, /* @__PURE__ */ import_react33.default.createElement(PracticePrefsSection, { settings, onSave: save, onSetRetries: setRetries }), /* @__PURE__ */ import_react33.default.createElement(
+    WordBankSection,
+    {
+      activeBankId,
+      activeBankObj,
+      builtinBanks,
+      customBanks,
+      bankNotice,
+      onChooseBank: chooseBank,
+      onRemoveBank: removeBank,
+      onStartImport: () => {
+        setBankNotice("");
+        setImporting(true);
+      }
+    }
+  ), /* @__PURE__ */ import_react33.default.createElement(
+    ChoiceCardSection,
+    {
+      title: "记忆调度（FSRS）",
+      badgePrefix: "目标记住率",
+      lead: "设置单词训练的目标记忆保留率；数值越高，系统会在遗忘前更早安排复习（修改后对后续复习生效）。",
+      listClassName: "eg-retention-list",
+      items: retentions,
+      activeId: activeRetention,
+      fallbackActiveItem: fallbackRetention,
+      onSelect: chooseRetention
+    }
+  ), /* @__PURE__ */ import_react33.default.createElement(
+    ChoiceCardSection,
+    {
+      title: "文章难度",
+      badgePrefix: "当前难度",
+      lead: "控制今日文章的词汇与句式难度（CEFR）；切换后下次进入或换一篇生效。",
+      listClassName: "eg-level-list",
+      items: levels,
+      activeId: activeLevel,
+      fallbackActiveItem: fallbackLevel,
+      onSelect: chooseReportLevel
+    }
+  ), /* @__PURE__ */ import_react33.default.createElement(
+    DirectionSection,
+    {
+      sessionLink: settings.sessionLink,
+      activeId,
+      activeDirection,
+      builtinDirections,
+      customDirections,
+      customTopicsCount: customTopics.length,
+      onChooseDirection: chooseDirection,
+      onAddCustom: addCustom,
+      onRemoveCustom: removeCustom
+    }
+  ), /* @__PURE__ */ import_react33.default.createElement(DataCleanupSection, { onDataCleared, onError: setError }), error ? /* @__PURE__ */ import_react33.default.createElement("div", { className: "eg-settings-error" }, error) : null);
+}
+
+// src/client/shell/EnglishGymBoard.jsx
+var useIsoLayoutEffect5 = import_react34.default.useLayoutEffect || import_react34.useEffect;
 var TABS = [
   { id: "word", label: "单词训练" },
   { id: "drill", label: "短语训练" },
@@ -4897,18 +4053,18 @@ var TABS = [
 function EnglishGymBoard() {
   useStyle();
   const shared = useShared();
-  const [tab, setTab] = (0, import_react17.useState)("word");
+  const [tab, setTab] = (0, import_react34.useState)("word");
   const open = shared.open;
-  const [mounted, setMounted] = (0, import_react17.useState)(open);
-  const [closing, setClosing] = (0, import_react17.useState)(false);
-  const tabRefs = (0, import_react17.useRef)({});
-  const bodyRef = (0, import_react17.useRef)(null);
-  const [slider, setSlider] = (0, import_react17.useState)({ left: 0, width: 0, ready: false });
-  const [confettiKey, setConfettiKey] = (0, import_react17.useState)(0);
-  const [wordBankRev, setWordBankRev] = (0, import_react17.useState)(0);
-  const lastBurstRef = (0, import_react17.useRef)(shared.burst || 0);
-  const lastWordReqTickRef = (0, import_react17.useRef)(0);
-  const settingsLoadedRef = (0, import_react17.useRef)(false);
+  const [mounted, setMounted] = (0, import_react34.useState)(open);
+  const [closing, setClosing] = (0, import_react34.useState)(false);
+  const tabRefs = (0, import_react34.useRef)({});
+  const bodyRef = (0, import_react34.useRef)(null);
+  const [slider, setSlider] = (0, import_react34.useState)({ left: 0, width: 0, ready: false });
+  const [confettiKey, setConfettiKey] = (0, import_react34.useState)(0);
+  const [wordBankRev, setWordBankRev] = (0, import_react34.useState)(0);
+  const lastBurstRef = (0, import_react34.useRef)(shared.burst || 0);
+  const lastWordReqTickRef = (0, import_react34.useRef)(0);
+  const settingsLoadedRef = (0, import_react34.useRef)(false);
   const {
     geom,
     onPanelDown,
@@ -4920,7 +4076,7 @@ function EnglishGymBoard() {
   } = useBoardGeom(open);
   const drill = usePhraseDrill({ open, active: tab === "drill" });
   const dailyReport = useDailyReport({ open, active: tab === "report" });
-  (0, import_react17.useEffect)(() => {
+  (0, import_react34.useEffect)(() => {
     if (open) {
       setMounted(true);
       setClosing(false);
@@ -4939,7 +4095,7 @@ function EnglishGymBoard() {
     }, 145);
     return () => clearTimeout(timer);
   }, [open, mounted]);
-  useIsoLayoutEffect4(() => {
+  useIsoLayoutEffect5(() => {
     if (!mounted) return void 0;
     const measure = () => {
       const el = tabRefs.current && tabRefs.current[tab];
@@ -4953,17 +4109,17 @@ function EnglishGymBoard() {
     const raf = requestAnimationFrame(measure);
     return () => cancelAnimationFrame(raf);
   }, [tab, mounted, geom.w]);
-  useIsoLayoutEffect4(() => {
+  useIsoLayoutEffect5(() => {
     if (bodyRef.current) bodyRef.current.scrollTop = 0;
   }, [tab]);
-  (0, import_react17.useEffect)(() => {
+  (0, import_react34.useEffect)(() => {
     if (!open || settingsLoadedRef.current) return;
     settingsLoadedRef.current = true;
     api("/settings").then((result) => store.setSettings(result.settings)).catch(() => {
       settingsLoadedRef.current = false;
     });
   }, [open]);
-  (0, import_react17.useEffect)(() => {
+  (0, import_react34.useEffect)(() => {
     const burst = shared.burst || 0;
     if (!burst || burst === lastBurstRef.current) return;
     lastBurstRef.current = burst;
@@ -4971,16 +4127,16 @@ function EnglishGymBoard() {
     const timer = setTimeout(() => setConfettiKey(0), 1400);
     return () => clearTimeout(timer);
   }, [shared.burst]);
-  (0, import_react17.useEffect)(() => {
+  (0, import_react34.useEffect)(() => {
     const req = shared.wordModeRequest;
     if (!req || !req.tick || req.tick === lastWordReqTickRef.current) return;
     lastWordReqTickRef.current = req.tick;
     setTab("word");
   }, [shared.wordModeRequest]);
-  (0, import_react17.useEffect)(() => {
+  (0, import_react34.useEffect)(() => {
     if (open || !store.stats) refreshStats();
   }, [open]);
-  (0, import_react17.useEffect)(() => {
+  (0, import_react34.useEffect)(() => {
     if (!open) return;
     const onKey = (e) => {
       if (e.key === "Escape" && !e.defaultPrevented) store.setOpen(false);
@@ -4989,7 +4145,7 @@ function EnglishGymBoard() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
   if (!mounted) return null;
-  return import_react17.default.createElement(
+  return /* @__PURE__ */ import_react34.default.createElement(
     "div",
     {
       className: "eg-panel" + (closing ? " is-closing" : ""),
@@ -5001,102 +4157,88 @@ function EnglishGymBoard() {
       onPointerUp: onPanelUp,
       onPointerCancel: onPanelUp
     },
-    import_react17.default.createElement(
-      "div",
-      { className: "eg-head" },
-      import_react17.default.createElement("span", { className: "eg-grip", "aria-hidden": "true" }, "⠿"),
-      import_react17.default.createElement(
-        "div",
-        { className: "eg-tabs" + (slider.ready ? " has-slider" : "") },
-        TABS.map(
-          (t) => import_react17.default.createElement(
-            "button",
-            {
-              key: t.id,
-              ref: (el) => {
-                tabRefs.current[t.id] = el;
-              },
-              className: "eg-tab" + (tab === t.id ? " active" : ""),
-              onClick: () => setTab(t.id)
-            },
-            t.label
-          )
-        ),
-        slider.ready ? import_react17.default.createElement("span", {
-          className: "eg-tab-indicator",
-          "aria-hidden": "true",
-          style: { transform: "translateX(" + slider.left + "px)", width: slider.width + "px" }
-        }) : null
-      ),
-      import_react17.default.createElement(
-        "div",
-        { className: "eg-head-right" },
-        import_react17.default.createElement("button", { className: "eg-close", onClick: () => store.setOpen(false), title: "收起" }, "✕")
-      )
-    ),
-    import_react17.default.createElement(
-      "div",
-      { className: "eg-body", ref: bodyRef },
-      import_react17.default.createElement(
-        "div",
-        { className: "eg-view", key: tab },
-        tab === "drill" ? import_react17.default.createElement(
-          "div",
-          { className: "eg-drill" },
-          import_react17.default.createElement(Drill, {
-            key: drill.card ? drill.card.id : drill.feedback ? "fb" : "loading",
-            card: drill.card,
-            answer: drill.answer,
-            setAnswer: drill.setAnswer,
-            submittedAnswer: drill.submittedAnswer,
-            feedback: drill.feedback,
-            attempt: drill.attempt,
-            prevScore: drill.prevScore,
-            retryFocusTick: drill.retryFocusTick,
-            busy: drill.busy,
-            error: drill.error,
-            onSubmit: drill.submit,
-            onRetry: drill.retry,
-            onNext: drill.next
-          })
-        ) : tab === "word" ? import_react17.default.createElement(WordPractice, { key: "word", bankRev: wordBankRev }) : tab === "report" ? import_react17.default.createElement(Report, {
-          report: dailyReport.report,
-          loading: dailyReport.loading,
-          error: dailyReport.error,
-          onRefresh: () => dailyReport.refresh(true)
-        }) : tab === "dashboard" ? import_react17.default.createElement(Dashboard, { key: "dashboard" }) : import_react17.default.createElement(SettingsPanel, {
-          onPhraseConfigChange: drill.reset,
-          onReportConfigChange: dailyReport.invalidate,
-          onWordBankChange: () => {
-            setWordBankRev((n) => n + 1);
-            drill.reset();
-            dailyReport.invalidate();
-          },
-          onDataCleared: ({ range, clearMemory } = {}) => {
-            invalidateDashboardCache();
-            if (clearMemory || range === "all") setWordBankRev((n) => n + 1);
-            if (range === "all") {
-              drill.reset();
-              dailyReport.invalidate();
-            }
-            refreshStats();
-          },
-          onTopicChange: () => {
+    /* @__PURE__ */ import_react34.default.createElement("div", { className: "eg-head" }, /* @__PURE__ */ import_react34.default.createElement("span", { className: "eg-grip", "aria-hidden": "true" }, "⠿"), /* @__PURE__ */ import_react34.default.createElement("div", { className: "eg-tabs" + (slider.ready ? " has-slider" : "") }, TABS.map((t) => /* @__PURE__ */ import_react34.default.createElement(
+      "button",
+      {
+        key: t.id,
+        ref: (el) => {
+          tabRefs.current[t.id] = el;
+        },
+        className: "eg-tab" + (tab === t.id ? " active" : ""),
+        onClick: () => setTab(t.id)
+      },
+      t.label
+    )), slider.ready ? /* @__PURE__ */ import_react34.default.createElement(
+      "span",
+      {
+        className: "eg-tab-indicator",
+        "aria-hidden": "true",
+        style: { transform: "translateX(" + slider.left + "px)", width: slider.width + "px" }
+      }
+    ) : null), /* @__PURE__ */ import_react34.default.createElement("div", { className: "eg-head-right" }, /* @__PURE__ */ import_react34.default.createElement("button", { className: "eg-close", onClick: () => store.setOpen(false), title: "收起" }, "✕"))),
+    /* @__PURE__ */ import_react34.default.createElement("div", { className: "eg-body", ref: bodyRef }, /* @__PURE__ */ import_react34.default.createElement("div", { className: "eg-view", key: tab }, tab === "drill" ? /* @__PURE__ */ import_react34.default.createElement("div", { className: "eg-drill" }, /* @__PURE__ */ import_react34.default.createElement(
+      Drill,
+      {
+        key: drill.card ? drill.card.id : drill.feedback ? "fb" : "loading",
+        card: drill.card,
+        answer: drill.answer,
+        setAnswer: drill.setAnswer,
+        submittedAnswer: drill.submittedAnswer,
+        feedback: drill.feedback,
+        attempt: drill.attempt,
+        prevScore: drill.prevScore,
+        retryFocusTick: drill.retryFocusTick,
+        busy: drill.busy,
+        error: drill.error,
+        onSubmit: drill.submit,
+        onRetry: drill.retry,
+        onNext: drill.next
+      }
+    )) : tab === "word" ? /* @__PURE__ */ import_react34.default.createElement(WordPractice, { key: "word", bankRev: wordBankRev }) : tab === "report" ? /* @__PURE__ */ import_react34.default.createElement(
+      Report,
+      {
+        report: dailyReport.report,
+        loading: dailyReport.loading,
+        error: dailyReport.error,
+        onRefresh: () => dailyReport.refresh(true)
+      }
+    ) : tab === "dashboard" ? /* @__PURE__ */ import_react34.default.createElement(Dashboard, { key: "dashboard" }) : /* @__PURE__ */ import_react34.default.createElement(
+      SettingsPanel,
+      {
+        onPhraseConfigChange: drill.reset,
+        onReportConfigChange: dailyReport.invalidate,
+        onWordBankChange: () => {
+          setWordBankRev((n) => n + 1);
+          drill.reset();
+          dailyReport.invalidate();
+        },
+        onDataCleared: ({ range, clearMemory } = {}) => {
+          invalidateDashboardCache();
+          if (clearMemory || range === "all") setWordBankRev((n) => n + 1);
+          if (range === "all") {
             drill.reset();
             dailyReport.invalidate();
           }
-        })
-      )
-    ),
-    confettiKey ? import_react17.default.createElement(Confetti, { key: confettiKey }) : null,
-    import_react17.default.createElement("div", {
-      className: "eg-resize",
-      onPointerDown: onResizeDown,
-      onPointerMove: onResizeMove,
-      onPointerUp: onResizeUp,
-      onPointerCancel: onResizeUp,
-      title: "拖动缩放"
-    })
+          refreshStats();
+        },
+        onTopicChange: () => {
+          drill.reset();
+          dailyReport.invalidate();
+        }
+      }
+    ))),
+    confettiKey ? /* @__PURE__ */ import_react34.default.createElement(Confetti, { key: confettiKey }) : null,
+    /* @__PURE__ */ import_react34.default.createElement(
+      "div",
+      {
+        className: "eg-resize",
+        onPointerDown: onResizeDown,
+        onPointerMove: onResizeMove,
+        onPointerUp: onResizeUp,
+        onPointerCancel: onResizeUp,
+        title: "拖动缩放"
+      }
+    )
   );
 }
 

@@ -1,5 +1,5 @@
-import { EnglishGymPill } from './shell/EnglishGymPill.js'
-import { EnglishGymBoard } from './shell/EnglishGymBoard.js'
+import { EnglishGymPill } from './shell/EnglishGymPill.jsx'
+import { EnglishGymBoard } from './shell/EnglishGymBoard.jsx'
 
 export const inject = ['slots']
 

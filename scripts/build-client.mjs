@@ -8,6 +8,7 @@ const options = {
   platform: 'browser',
   format: 'cjs',
   target: ['es2020'],
+  jsx: 'transform',
   outfile: 'client.js',
   external: ['react'],
   loader: { '.css': 'text' },

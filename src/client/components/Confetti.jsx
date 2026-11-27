@@ -59,9 +59,11 @@ export function makeConfettiPieces() {
 
 export function Confetti() {
   const [pieces] = useState(makeConfettiPieces)
-  return React.createElement(
-    'div',
-    { className: 'eg-confetti', 'aria-hidden': 'true' },
-    pieces.map((piece) => React.createElement('span', { key: piece.key, className: 'eg-confetti-piece', style: piece.style })),
+  return (
+    <div className="eg-confetti" aria-hidden="true">
+      {pieces.map((piece) => (
+        <span key={piece.key} className="eg-confetti-piece" style={piece.style} />
+      ))}
+    </div>
   )
 }
