@@ -382,10 +382,10 @@ export function Drill({
         placeholder: '在这里写下你的英文…',
         onChange: (e) => setAnswer(e.target.value),
         onKeyDown: (e) => {
-          if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-            e.preventDefault()
-            if (answer.trim()) onSubmit()
-          }
+          if (e.key !== 'Enter' || e.isComposing || e.keyCode === 229 || e.altKey) return
+          if (e.shiftKey) return
+          e.preventDefault()
+          if (!busy && answer.trim()) onSubmit()
         },
       }),
     ),
@@ -406,9 +406,7 @@ export function Drill({
       React.createElement('button', { className: 'eg-btn', onClick: onNext, disabled: busy }, '换一题'),
       React.createElement(
         'span',
-        { className: 'eg-kbd', title: '⌘/Ctrl + Enter 提交' },
-        React.createElement('kbd', null, '⌘'),
-        ' ',
+        { className: 'eg-kbd', title: '回车提交（Shift + Enter 换行）' },
         React.createElement('kbd', null, '↵'),
       ),
     ),

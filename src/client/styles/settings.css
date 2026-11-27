@@ -91,15 +91,20 @@
 .eg-level-list {
   display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; margin-top: 12px;
 }
+.eg-retention-list {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; margin-top: 12px;
+}
 @container (min-width: 440px) {
   .eg-direction-list { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
   .eg-bank-list { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
   .eg-level-list { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+  .eg-retention-list { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
 }
 @container (max-width: 279px) {
   .eg-direction-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .eg-bank-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .eg-level-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .eg-retention-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 .eg-bank-item {
   appearance: none; -webkit-appearance: none;

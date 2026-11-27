@@ -13,12 +13,16 @@ import {
   saveWordBank,
 } from './banks.js'
 import { parseWordBank, summarizeParse } from './import.js'
+import { normalizeFsrsRetention } from '../settings/service.js'
 import {
   applyWordReview,
+  FSRS_RATING,
+  inspectWordMemory,
   markWordMastered,
+  normalizeRating,
   normalizeWordKey,
   pickWordSrs,
-  SRS_MAX_STAGE,
+  previewWordRatings,
   summarizeBankMemory,
 } from './srs.js'
 
@@ -77,6 +81,7 @@ export function createWordService({ dir }) {
       createdAt: new Date().toISOString(),
       hadMiss: false,
       missRecorded: false,
+      checked: false,
     }
     pruneWordPending(state)
     state.wordRecent.push(picked.word)
@@ -99,19 +104,34 @@ export function createWordService({ dir }) {
       srsStats,
       srs: {
         kind: pick.kind,
-        stage: mem ? Number(mem.stage) || 0 : 0,
-        maxStage: SRS_MAX_STAGE,
-        reps: mem ? Number(mem.reps) || 0 : 0,
-        lapses: mem ? Number(mem.lapses) || 0 : 0,
-        mastered: Boolean(mem && mem.mastered),
+        ...inspectWordMemory(mem, now),
       },
+    }
+  }
+
+  function buildCheckSrsPayload(outcome, ratingPreviews) {
+    return {
+      rating: outcome.rating,
+      state: outcome.state,
+      stability: outcome.stability,
+      difficulty: outcome.difficulty,
+      retrievability: outcome.retrievability,
+      familiarity: outcome.familiarity,
+      maxFamiliarity: outcome.maxFamiliarity,
+      mastered: outcome.mastered,
+      nextIntervalMs: outcome.nextIntervalMs,
+      nextReviewText: outcome.nextReviewText,
+      clean: outcome.clean,
+      early: Boolean(outcome.early),
+      canRate: Boolean(ratingPreviews),
+      ratingPreviews,
     }
   }
 
   function checkWord({ id, answer, revealed } = {}) {
     const state = loadState(dir)
     const pending = id ? state.wordPending[id] : null
-    if (!pending) {
+    if (!pending || pending.checked) {
       const error = new Error('题目已过期，请点“换一个”重新开始。')
       error.status = 409
       throw error
@@ -122,20 +142,38 @@ export function createWordService({ dir }) {
     const now = Date.now()
     const key = normalizeWordKey(pending.en)
     const clean = correct && !pending.hadMiss && !revealed
-    const outcome = applyWordReview(state.wordMemory[key], {
+    const requestRetention = normalizeFsrsRetention(state.settings && state.settings.fsrsRetention)
+    const beforeMem = state.wordMemory[key] ? { ...state.wordMemory[key] } : null
+    const outcome = applyWordReview(beforeMem, {
       correct,
       clean,
+      rating: correct && clean ? FSRS_RATING.GOOD : FSRS_RATING.AGAIN,
       countLapse: !correct && !pending.missRecorded,
       now,
+      requestRetention,
     })
     state.wordMemory[key] = outcome.memory
+
+    const ratingPreviews =
+      correct && clean && !outcome.early && !outcome.wasMastered
+        ? previewWordRatings(beforeMem, { now, requestRetention })
+        : null
 
     state.word.answered = (state.word.answered || 0) + 1
     if (correct) state.word.correct = (state.word.correct || 0) + 1
     recordStudy(state, 'word', { en: pending.en, zh: pending.zh, pos: pending.pos || '', ok: correct })
-    // Keep a missed word pending so “再试一次” can re-check the same word without double-counting lapses.
+    // Keep a missed word pending so “再试一次” can re-check without double-counting lapses.
+    // On clean correct answers with rating previews, keep snapshot for optional /word/rate adjustment.
     if (correct) {
-      delete state.wordPending[id]
+      if (ratingPreviews) {
+        pending.checked = true
+        pending.beforeMem = beforeMem
+        pending.checkedAt = now
+        pending.retention = requestRetention
+        pending.rating = outcome.rating
+      } else {
+        delete state.wordPending[id]
+      }
     } else {
       pending.hadMiss = true
       pending.missRecorded = true
@@ -153,16 +191,49 @@ export function createWordService({ dir }) {
       letters: letterCount(pending.en),
       example: pending.example || '',
       exampleZh: pending.exampleZh || '',
-      srs: {
-        stage: outcome.stage,
-        maxStage: outcome.maxStage,
-        mastered: outcome.mastered,
-        nextIntervalMs: outcome.nextIntervalMs,
-        nextReviewText: outcome.nextReviewText,
-        clean: outcome.clean,
-        early: Boolean(outcome.early),
-      },
+      srs: buildCheckSrsPayload(outcome, ratingPreviews),
       srsStats,
+    }
+  }
+
+  function rateWord({ id, rating } = {}) {
+    const normRating = normalizeRating(rating, 0)
+    if (normRating !== FSRS_RATING.HARD && normRating !== FSRS_RATING.GOOD && normRating !== FSRS_RATING.EASY) {
+      return { ok: false, status: 400, body: { error: '无效的评分档位' } }
+    }
+    const state = loadState(dir)
+    const pending = id ? state.wordPending[id] : null
+    if (!pending || !pending.checked) {
+      return { ok: false, status: 409, body: { error: '当前题目已过期，无法调整评分' } }
+    }
+    const key = normalizeWordKey(pending.en)
+    const now = Number.isFinite(Number(pending.checkedAt)) ? Number(pending.checkedAt) : Date.now()
+    const requestRetention = normalizeFsrsRetention(
+      pending.retention !== undefined ? pending.retention : state.settings && state.settings.fsrsRetention,
+    )
+    const outcome = applyWordReview(pending.beforeMem || null, {
+      correct: true,
+      clean: true,
+      rating: normRating,
+      now,
+      requestRetention,
+    })
+    state.wordMemory[key] = outcome.memory
+    pending.rating = normRating
+
+    const ratingPreviews = previewWordRatings(pending.beforeMem || null, { now, requestRetention })
+    const bank = resolveActiveBank(dir, state)
+    const srsStats = summarizeBankMemory(bank ? bank.entries : [], state.wordMemory, Date.now())
+    saveState(dir, state)
+
+    return {
+      ok: true,
+      status: 200,
+      body: {
+        ok: true,
+        srs: buildCheckSrsPayload(outcome, ratingPreviews),
+        srsStats,
+      },
     }
   }
 
@@ -269,5 +340,5 @@ export function createWordService({ dir }) {
     return { ok: true, status: 200, body: { ok: true, active: state.wordBankId, banks: listWordBanks(dir) } }
   }
 
-  return { nextWord, checkWord, markMastered, listBanks, previewImport, importBank, setActiveBank, deleteBank }
+  return { nextWord, checkWord, rateWord, markMastered, listBanks, previewImport, importBank, setActiveBank, deleteBank }
 }

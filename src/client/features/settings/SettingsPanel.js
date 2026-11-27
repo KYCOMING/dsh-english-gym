@@ -15,6 +15,13 @@ const FALLBACK_LEVELS = [
   { id: 'C2', label: 'C2', desc: '精通', detail: '约雅思 8.0+ / 母语外刊水准 · 细腻修辞、高阶词汇与深度评论风格' },
 ]
 
+const FALLBACK_RETENTIONS = [
+  { id: 0.85, label: '85%', desc: '轻松', detail: '复习间隔更长、每日复习负担最轻，适合长期泛背积累' },
+  { id: 0.9, label: '90%', desc: '均衡', detail: 'FSRS 官方推荐默认值，在记忆牢固度与复习量之间取得最佳平衡' },
+  { id: 0.93, label: '93%', desc: '强化', detail: '复习频率适度提高、遗忘率更低，适合四六级 / 雅思 / 托福备考' },
+  { id: 0.95, label: '95%', desc: '极致', detail: '高频巩固以维持极高记住率，适合考前冲刺（每日复习量明显增加）' },
+]
+
 const CLEANUP_RANGES = [
   { id: '7d', label: '7 天前' },
   { id: '30d', label: '30 天前' },
@@ -39,6 +46,7 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportCon
   const [error, setError] = useState('')
   const [draft, setDraft] = useState('')
   const [hoverLevel, setHoverLevel] = useState('')
+  const [hoverRetention, setHoverRetention] = useState(null)
   const [loading, setLoading] = useState(() => !cachedSettings)
   const queueRef = useRef(Promise.resolve())
   const seqRef = useRef(0)
@@ -93,7 +101,7 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportCon
 
       // Optimistically apply scalar and customTopics removals immediately so controls never flash disabled.
       const scalarPatch = {}
-      for (const key of ['confetti', 'sessionLink', 'bankLink', 'bankRetries', 'reportLevel', 'topicId']) {
+      for (const key of ['confetti', 'sessionLink', 'bankLink', 'bankRetries', 'reportLevel', 'topicId', 'fsrsRetention']) {
         if (optimisticPatch && optimisticPatch[key] !== undefined) scalarPatch[key] = optimisticPatch[key]
       }
       const hasOptimisticTopics = Boolean(optimisticPatch && Array.isArray(optimisticPatch.customTopics))
@@ -168,9 +176,14 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportCon
     const fb = FALLBACK_LEVELS.find((f) => f.id === item.id)
     return item.detail || !fb ? item : { ...item, detail: fb.detail }
   })
+  const retentions = (data && Array.isArray(data.retentions) && data.retentions.length ? data.retentions : FALLBACK_RETENTIONS).map((item) => {
+    const fb = FALLBACK_RETENTIONS.find((f) => f.id === item.id)
+    return item.detail || !fb ? item : { ...item, detail: fb.detail }
+  })
   const customTopics = settings.customTopics || []
   const activeId = settings.topicId
   const activeLevel = settings.reportLevel || 'B1'
+  const activeRetention = Number.isFinite(Number(settings.fsrsRetention)) ? Number(settings.fsrsRetention) : 0.9
 
   const chooseDirection = (id) => {
     if (id === activeId) return
@@ -180,6 +193,11 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportCon
   const chooseReportLevel = (id) => {
     if (id === activeLevel) return
     save({ reportLevel: id }, 'report')
+  }
+
+  const chooseRetention = (value) => {
+    if (value === activeRetention) return
+    save({ fsrsRetention: value }, false)
   }
 
   const addCustom = async () => {
@@ -239,6 +257,12 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportCon
   const activeDirection = directions.find((item) => item.id === activeId)
   const activeLevelObj = levels.find((item) => item.id === activeLevel) || levels[2] || { id: activeLevel, label: activeLevel, desc: '', detail: '' }
   const shownLevelObj = levels.find((item) => item.id === (hoverLevel || activeLevel)) || activeLevelObj
+  const activeRetentionObj =
+    retentions.find((item) => item.id === activeRetention) ||
+    retentions.find((item) => item.id === 0.9) ||
+    { id: activeRetention, label: Math.round(activeRetention * 100) + '%', desc: '自定义', detail: '目标记忆保留率越高，复习安排越紧密。' }
+  const shownRetentionObj =
+    (hoverRetention != null ? retentions.find((item) => item.id === hoverRetention) : null) || activeRetentionObj
 
   const banks = bankData && Array.isArray(bankData.banks) ? bankData.banks : []
   const activeBankId = (bankData && bankData.active) || 'builtin'
@@ -631,6 +655,75 @@ export function SettingsPanel({ onTopicChange, onPhraseConfigChange, onReportCon
                     ),
                   ),
                 ),
+              )
+            : null,
+        ),
+      ),
+    ),
+    React.createElement(
+      'div',
+      { className: 'eg-setting-section' },
+      React.createElement(
+        'div',
+        { className: 'eg-section-head' },
+        React.createElement('div', { className: 'eg-section-label' }, '记忆调度（FSRS）'),
+        activeRetentionObj
+          ? React.createElement(
+              'div',
+              {
+                className: 'eg-active-badge',
+                title: '目标记住率：' + activeRetentionObj.label + (activeRetentionObj.desc ? ' · ' + activeRetentionObj.desc : ''),
+              },
+              React.createElement('span', null, activeRetentionObj.label + (activeRetentionObj.desc ? ' · ' + activeRetentionObj.desc : '')),
+            )
+          : null,
+      ),
+      React.createElement(
+        'div',
+        { className: 'eg-setting-card' },
+        React.createElement(
+          'div',
+          { className: 'eg-setting-row' },
+          React.createElement(
+            'div',
+            { className: 'eg-setting-desc eg-lead' },
+            '设置单词训练的目标记忆保留率；数值越高，系统会在遗忘前更早安排复习（修改后对后续复习生效）。',
+          ),
+          React.createElement(
+            'div',
+            {
+              className: 'eg-retention-list',
+              onMouseLeave: () => setHoverRetention(null),
+            },
+            retentions.map((item) =>
+              React.createElement(
+                'button',
+                {
+                  type: 'button',
+                  key: String(item.id),
+                  className: 'eg-level' + (item.id === activeRetention ? ' active' : ''),
+                  'aria-pressed': item.id === activeRetention ? 'true' : 'false',
+                  title: item.label + (item.desc ? ' · ' + item.desc : ''),
+                  onMouseEnter: () => setHoverRetention(item.id),
+                  onFocus: () => setHoverRetention(item.id),
+                  onBlur: () => setHoverRetention((prev) => (prev === item.id ? null : prev)),
+                  onClick: () => chooseRetention(item.id),
+                },
+                React.createElement('span', { className: 'eg-level-code' }, item.label),
+                item.desc ? React.createElement('span', { className: 'eg-level-desc' }, item.desc) : null,
+              ),
+            ),
+          ),
+          shownRetentionObj && shownRetentionObj.detail
+            ? React.createElement(
+                'div',
+                { className: 'eg-level-detail' },
+                React.createElement(
+                  'strong',
+                  null,
+                  shownRetentionObj.label + (shownRetentionObj.desc ? ' ' + shownRetentionObj.desc : ''),
+                ),
+                React.createElement('span', null, shownRetentionObj.detail),
               )
             : null,
         ),

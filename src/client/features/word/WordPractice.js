@@ -19,24 +19,53 @@ const cachedWord = {
 let lastConsumedWordReqTick = 0
 
 const MODES = [
-  { id: 'smart', label: '智能', title: '按艾宾浩斯曲线优先复习到期词，每复习 3 个穿插 1 个新词' },
+  { id: 'smart', label: '智能', title: '按 FSRS 算法优先复习最易遗忘的到期词，每复习 3 个穿插 1 个新词' },
   { id: 'review', label: '待复习', title: '专注清理当前词库已到复习时间的单词' },
   { id: 'new', label: '新词', title: '跳过到期复习，优先抽取尚未背过的新词' },
 ]
 
-function stageLabel(srs) {
-  if (!srs) return '新词'
-  if (srs.kind === 'new') return '新词'
+const FSRS_RATINGS = [
+  { rating: 2, key: 'hard', keyHint: '1', label: '模糊' },
+  { rating: 3, key: 'good', keyHint: '2', label: '记得' },
+  { rating: 4, key: 'easy', keyHint: '3', label: '很熟' },
+]
+
+function formatStabilityShort(days) {
+  const n = Number(days)
+  if (!Number.isFinite(n) || n <= 0) return ''
+  if (n < 1) return Math.max(1, Math.round(n * 24)) + ' 小时'
+  return Math.max(1, Math.round(n)) + ' 天'
+}
+
+function memoryLabel(srs) {
+  if (!srs || srs.kind === 'new') return '新词'
   if (srs.kind === 'mastered' || srs.mastered) return '已掌握回顾'
-  if (srs.kind === 'upcoming') return '提前巩固 · 第 ' + ((srs.stage || 0) + 1) + ' 阶'
-  return '复习 · 第 ' + ((srs.stage || 0) + 1) + ' 阶'
+  if (srs.state === 'learning' || srs.state === 'relearning') return '巩固中'
+  if (srs.kind === 'upcoming') {
+    const st = formatStabilityShort(srs.stability)
+    return st ? '提前巩固 · 稳定 ' + st : '提前巩固'
+  }
+  if (srs.retrievability != null) return '复习 · 记忆 ' + srs.retrievability + '%'
+  const st = formatStabilityShort(srs.stability)
+  return st ? '复习 · 稳定 ' + st : '复习'
+}
+
+function memoryTooltip(srs) {
+  if (!srs || srs.kind === 'new') return '首次学习该词，将按 FSRS 记忆算法安排复习'
+  const parts = []
+  const st = formatStabilityShort(srs.stability)
+  if (st) parts.push('稳定度 ' + st)
+  if (srs.difficulty > 0) parts.push('难度 ' + srs.difficulty + '/10')
+  if (srs.retrievability != null) parts.push('回忆概率 ' + srs.retrievability + '%')
+  parts.push('复习 ' + (srs.reps || 0) + ' 次 / 遗忘 ' + (srs.lapses || 0) + ' 次')
+  return parts.join(' · ')
 }
 
 function shortBankName(name) {
   return String(name || '').replace(/^内置\s*·\s*/, '')
 }
 
-// Static word bank drill: Ebbinghaus SRS + Chinese gloss + one underline per letter.
+// Static word bank drill: FSRS-6 SRS + Chinese gloss + one underline per letter.
 export function WordPractice({ bankRev = 0 } = {}) {
   const shared = useShared()
   const [item, setItem] = useState(() => cachedWord.item)
@@ -44,6 +73,7 @@ export function WordPractice({ bankRev = 0 } = {}) {
   const [res, setRes] = useState(() => cachedWord.res)
   const [revealed, setRevealed] = useState(() => cachedWord.revealed)
   const [busy, setBusy] = useState(false)
+  const [rateBusy, setRateBusy] = useState(false)
   const [error, setError] = useState('')
   const [mode, setMode] = useState(() => cachedWord.mode)
   const [hoverMode, setHoverMode] = useState('')
@@ -81,6 +111,7 @@ export function WordPractice({ bankRev = 0 } = {}) {
         ? requestedMode
         : modeRef.current
     setBusy(true)
+    setRateBusy(false)
     setError('')
     setRes(null)
     setRevealed(false)
@@ -141,20 +172,53 @@ export function WordPractice({ bankRev = 0 } = {}) {
     if (!cachedWord.item) load(modeRef.current)
   }, [shared.wordModeRequest, bankRev, load])
 
-  // After a correct spelling, Enter acts as “next word” — the primary action is
-  // always one keystroke away, even when the letter inputs are disabled.
+  const rate = useCallback(
+    async (rating) => {
+      if (!item || item.done || !res || !res.correct || !res.srs || !res.srs.canRate || rateBusy) return
+      if (res.srs.rating === rating) return
+      setRateBusy(true)
+      setError('')
+      try {
+        const r = await api('/word/rate', {
+          method: 'POST',
+          body: JSON.stringify({ id: item.id, rating }),
+        })
+        if (r && r.srs) {
+          setRes((prev) => (prev ? { ...prev, srs: r.srs } : prev))
+        }
+        if (r && r.srsStats) setSrsStats(r.srsStats)
+        if (r && r.summary) store.setStats(r.summary)
+        else if (r && r.srsStats) store.setWordSrs(r.srsStats)
+      } catch (e) {
+        setError(e.message || '调整评分失败')
+      } finally {
+        setRateBusy(false)
+      }
+    },
+    [item, res, rateBusy],
+  )
+
+  // After a correct spelling, Enter acts as “next word” and 1/2/3 adjust the FSRS rating.
   useEffect(() => {
     if (!res || !res.correct) return undefined
     const onKeyDown = (e) => {
-      if (e.key !== 'Enter' || e.isComposing) return
+      if (e.isComposing || e.ctrlKey || e.metaKey || e.altKey) return
       const el = e.target
-      if (el && el.closest && el.closest('textarea, input:not([disabled]), select, button')) return
-      e.preventDefault()
-      load()
+      if (e.key === 'Enter') {
+        if (el && el.closest && el.closest('textarea, input:not([disabled]), select, button')) return
+        e.preventDefault()
+        load()
+        return
+      }
+      if (res.srs && res.srs.canRate && (e.key === '1' || e.key === '2' || e.key === '3')) {
+        if (el && el.closest && el.closest('textarea, input:not([disabled]), select')) return
+        e.preventDefault()
+        rate(e.key === '1' ? 2 : e.key === '2' ? 3 : 4)
+      }
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [res, load])
+  }, [res, load, rate])
 
   const switchMode = useCallback(
     (nextMode) => {
@@ -170,6 +234,7 @@ export function WordPractice({ bankRev = 0 } = {}) {
     if (!item || item.done || busy || res) return
     if (cells.some((c) => !c)) return
     setBusy(true)
+    setRateBusy(false)
     setError('')
     setRevealed(false)
     try {
@@ -196,6 +261,7 @@ export function WordPractice({ bankRev = 0 } = {}) {
   const markMastered = useCallback(async () => {
     if (!item || item.done || busy) return
     setBusy(true)
+    setRateBusy(false)
     setError('')
     try {
       const r = await api('/word/master', {
@@ -431,9 +497,10 @@ export function WordPractice({ bankRev = 0 } = {}) {
   })
 
   const srsInfo = item.srs || null
-  const srsStage = srsInfo ? Number(srsInfo.stage) || 0 : 0
-  const srsMax = (srsInfo && Number(srsInfo.maxStage)) || 9
-  const showDots = srsInfo && srsInfo.kind !== 'new' && srsStage > 0
+  const activeSrs = (res && res.srs) || srsInfo
+  const srsFam = activeSrs ? Number(activeSrs.familiarity) || 0 : 0
+  const srsMaxFam = (activeSrs && Number(activeSrs.maxFamiliarity)) || 5
+  const showDots = srsInfo && srsInfo.kind !== 'new' && srsFam > 0
   const cleanMeaning = formatMeaning(item.zh)
   const meaningClass = 'eg-zh' + (cleanMeaning.length > 28 ? ' is-xlong' : cleanMeaning.length > 16 ? ' is-long' : '')
 
@@ -517,16 +584,22 @@ export function WordPractice({ bankRev = 0 } = {}) {
           item.pos ? React.createElement('span', { className: 'eg-meta-sep', 'aria-hidden': 'true' }, '·') : null,
           React.createElement(
             'span',
-            { className: 'eg-srs-tag' + (srsInfo && srsInfo.kind === 'review' ? ' is-review' : '') },
-            stageLabel(srsInfo),
+            {
+              className: 'eg-srs-tag' + (srsInfo && srsInfo.kind === 'review' ? ' is-review' : ''),
+              title: memoryTooltip(srsInfo),
+            },
+            memoryLabel(srsInfo),
             showDots
               ? React.createElement(
                   'span',
                   { className: 'eg-srs-dots', 'aria-hidden': 'true' },
-                  Array.from({ length: srsMax }, (_, idx) =>
-                    React.createElement('i', { key: idx, className: 'eg-srs-dot' + (idx < srsStage ? ' on' : '') }),
+                  Array.from({ length: srsMaxFam }, (_, idx) =>
+                    React.createElement('i', { key: idx, className: 'eg-srs-dot' + (idx < srsFam ? ' on' : '') }),
                   ),
                 )
+              : null,
+            srsInfo && srsInfo.isHardWord
+              ? React.createElement('span', { className: 'eg-srs-hard', title: '高难度或多次遗忘词汇' }, '易错')
               : null,
           ),
         ),
@@ -554,6 +627,37 @@ export function WordPractice({ bankRev = 0 } = {}) {
                     ? React.createElement('span', { className: 'eg-srs-next' }, res.srs.nextReviewText)
                     : null,
                 ),
+                res.srs && res.srs.canRate && res.srs.ratingPreviews
+                  ? React.createElement(
+                      'div',
+                      { className: 'eg-fsrs-rate', role: 'group', 'aria-label': '记忆体感评分（快捷键 1 / 2 / 3）' },
+                      React.createElement('span', { className: 'eg-fsrs-rate-lbl' }, '记忆体感'),
+                      React.createElement(
+                        'div',
+                        { className: 'eg-fsrs-rate-btns' },
+                        FSRS_RATINGS.map((opt) => {
+                          const preview = res.srs.ratingPreviews[opt.key]
+                          if (!preview) return null
+                          const active = res.srs.rating === opt.rating
+                          return React.createElement(
+                            'button',
+                            {
+                              key: opt.key,
+                              type: 'button',
+                              className: 'eg-fsrs-btn' + (active ? ' active' : ''),
+                              'aria-pressed': active ? 'true' : 'false',
+                              disabled: busy || rateBusy,
+                              title: '快捷键 ' + opt.keyHint + '：' + opt.label + '（' + preview.text + '）',
+                              onClick: () => rate(opt.rating),
+                            },
+                            React.createElement('kbd', { className: 'eg-fsrs-key' }, opt.keyHint),
+                            React.createElement('span', { className: 'eg-fsrs-lbl' }, opt.label),
+                            React.createElement('span', { className: 'eg-fsrs-iv' }, preview.text),
+                          )
+                        }),
+                      ),
+                    )
+                  : null,
                 React.createElement(
                   'div',
                   { className: 'eg-fb-ref' },
@@ -570,9 +674,22 @@ export function WordPractice({ bankRev = 0 } = {}) {
             : React.createElement(
                 'div',
                 { className: 'eg-fb bad' },
-                !revealed
-                  ? React.createElement('div', { className: 'eg-word-miss' }, '拼写有误，可再试一次或查看答案 · 5 分钟后再次巩固')
-                  : null,
+                React.createElement(
+                  'div',
+                  {
+                    className: 'eg-collapse eg-word-miss-wrap' + (!revealed ? ' open' : ''),
+                    'aria-hidden': revealed ? 'true' : 'false',
+                  },
+                  React.createElement(
+                    'div',
+                    { className: 'eg-collapse-inner' },
+                    React.createElement(
+                      'div',
+                      { className: 'eg-word-miss' },
+                      '拼写有误，可再试一次或查看答案 · ' + ((res.srs && res.srs.nextReviewText) || '5 分钟后再次巩固'),
+                    ),
+                  ),
+                ),
                 React.createElement(
                   'div',
                   {

@@ -1,4 +1,7 @@
 import { resolveActiveBank } from './banks.js'
+import { computeRetrievability, ensureFsrsMemory } from './srs.js'
+
+const DAY_MS = 24 * 60 * 60 * 1000
 
 const WORD_RE = /^[A-Za-z][A-Za-z' -]{1,23}$/
 
@@ -58,11 +61,13 @@ export function pickBankCandidates(dir, state, count = 24) {
 
   for (const item of all) {
     const key = item.word.toLowerCase()
-    const mem = memMap[key]
-    if (mem && typeof mem === 'object') {
-      if (mem.mastered === true) continue
-      const isDue = Number.isFinite(mem.dueAt) && mem.dueAt <= now
-      if (isDue || (Number(mem.lapses) || 0) > 0) dueOrLapsedPool.push(item)
+    const fsrs = ensureFsrsMemory(memMap[key])
+    if (fsrs) {
+      if (fsrs.mastered === true) continue
+      const isDue = Number.isFinite(fsrs.dueAt) && fsrs.dueAt <= now
+      const elapsedDays = fsrs.lastAt > 0 ? Math.max(0, (now - fsrs.lastAt) / DAY_MS) : 0
+      const r = fsrs.lastAt > 0 ? computeRetrievability(elapsedDays, fsrs.stability) : 1
+      if (isDue || fsrs.lapses > 0 || fsrs.difficulty >= 7 || r < 0.85) dueOrLapsedPool.push(item)
       else learningPool.push(item)
     } else if (recent.has(key)) {
       recentPool.push(item)

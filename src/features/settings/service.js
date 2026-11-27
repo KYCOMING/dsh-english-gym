@@ -37,6 +37,22 @@ export function normalizeReportLevel(value, fallback = 'B1') {
   return 'B1'
 }
 
+export const FSRS_RETENTIONS = [
+  { id: 0.85, label: '85%', desc: '轻松', detail: '复习间隔更长、每日复习负担最轻，适合长期泛背积累' },
+  { id: 0.9, label: '90%', desc: '均衡', detail: 'FSRS 官方推荐默认值，在记忆牢固度与复习量之间取得最佳平衡' },
+  { id: 0.93, label: '93%', desc: '强化', detail: '复习频率适度提高、遗忘率更低，适合四六级 / 雅思 / 托福备考' },
+  { id: 0.95, label: '95%', desc: '极致', detail: '高频巩固以维持极高记住率，适合考前冲刺（每日复习量明显增加）' },
+]
+
+export function normalizeFsrsRetention(value, fallback = 0.9) {
+  const num = Number(value)
+  if (!Number.isFinite(num)) {
+    const fb = Number(fallback)
+    return Number.isFinite(fb) ? Math.round(Math.min(0.97, Math.max(0.75, fb)) * 100) / 100 : 0.9
+  }
+  return Math.round(Math.min(0.97, Math.max(0.75, num)) * 100) / 100
+}
+
 export const DEFAULT_SETTINGS = {
   confetti: true,
   topicId: 'ai',
@@ -45,6 +61,7 @@ export const DEFAULT_SETTINGS = {
   bankRetries: 1,
   sessionLink: false,
   reportLevel: 'B1',
+  fsrsRetention: 0.9,
 }
 
 export const MAX_BANK_RETRIES = 5
@@ -101,6 +118,7 @@ export function normalizeSettings(raw, fallbackLevel) {
     bankRetries: normalizeBankRetries(source.bankRetries),
     sessionLink: source.sessionLink === true,
     reportLevel: normalizeReportLevel(source.reportLevel, fallbackLevel || DEFAULT_SETTINGS.reportLevel),
+    fsrsRetention: normalizeFsrsRetention(source.fsrsRetention, DEFAULT_SETTINGS.fsrsRetention),
   }
 }
 
@@ -125,7 +143,7 @@ export function createSettingsService({ dir, conf }) {
   function get() {
     const state = loadState(dir)
     const settings = normalizeSettings(state.settings, defaultLevel)
-    return { settings, directions: listDirections(settings), levels: REPORT_LEVELS }
+    return { settings, directions: listDirections(settings), levels: REPORT_LEVELS, retentions: FSRS_RETENTIONS }
   }
 
   function update(patch) {
@@ -140,6 +158,9 @@ export function createSettingsService({ dir, conf }) {
     if (typeof body.sessionLink === 'boolean') next.sessionLink = body.sessionLink
     if (typeof body.reportLevel === 'string' && body.reportLevel.trim()) {
       next.reportLevel = normalizeReportLevel(body.reportLevel, next.reportLevel)
+    }
+    if (body.fsrsRetention !== undefined) {
+      next.fsrsRetention = normalizeFsrsRetention(body.fsrsRetention, next.fsrsRetention)
     }
     if (Array.isArray(body.customTopics)) next.customTopics = normalizeCustomTopics(body.customTopics)
     if (typeof body.topicId === 'string' && body.topicId) {

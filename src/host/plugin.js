@@ -150,6 +150,12 @@ export function createEnglishGym(ctx, rawConfig) {
         const result = word.checkWord(body || {})
         return sendJson(res, 200, { ...result, summary: summarize(loadState(dir), conf, dir) })
       }
+      if (req.method === 'POST' && sub === '/word/rate') {
+        const body = await readBody(req)
+        const result = word.rateWord(body || {})
+        if (!result.ok) return sendJson(res, result.status, result.body)
+        return sendJson(res, 200, { ...result.body, summary: summarize(loadState(dir), conf, dir) })
+      }
       if (req.method === 'POST' && sub === '/word/master') {
         const body = await readBody(req)
         const result = word.markMastered(body || {})
