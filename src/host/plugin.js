@@ -65,10 +65,35 @@ export function createEnglishGym(ctx, rawConfig) {
   const word = createWordService({ dir })
   const report = createReportService({ ctx, conf, dir, getTopic, getReportLevel, getReasoningEffort })
 
+  /**
+   * Admit one HTTP request against the DSH Connection service.
+   *
+   * DSH 0.2.3+ authenticates a route before invoking its handler and passes the
+   * admitted Peer as the third argument. DSH 0.2.2-rc.5 predates route-level
+   * `auth` declarations: its WebRoute handler only receives `(req, res)`, so the
+   * route must call `connection.admit()` itself. Keep both paths fail-closed.
+   *
+   * @returns {{ peer: object } | { rejection: number }}
+   */
+  function admitRequest(req, peer) {
+    if (peer) return { peer }
+    const connection = ctx.get('connection')
+    if (!connection || typeof connection.admit !== 'function') return { rejection: 401 }
+    try {
+      const admission = connection.admit(req)
+      if (admission && admission.peer) return { peer: admission.peer }
+      return { rejection: (admission && admission.rejection) || 401 }
+    } catch {
+      return { rejection: 401 }
+    }
+  }
+
   async function handler(req, res, peer) {
     // Defense in depth: with route auth 'required' the webServer only invokes this
-    // handler after a live owner Peer is verified; refuse if that ever changes.
-    if (!peer) return sendJson(res, 401, { error: 'unauthorized' })
+    // handler after a live owner Peer is verified; on older DSH versions the
+    // handler admits the request through Connection itself.
+    const admission = admitRequest(req, peer)
+    if (admission.rejection) return sendJson(res, admission.rejection, { error: 'unauthorized' })
     const url = new URL(req.url || '/', 'http://localhost')
     let sub = url.pathname.slice(API_PREFIX.length) || '/'
     if (sub.length > 1 && sub.endsWith('/')) sub = sub.slice(0, -1)

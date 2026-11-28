@@ -42,6 +42,7 @@ dsh-english-gym（英语健身房）是常驻在 DSH对话输入框下方的英�
 
 在 DSH 的「插件 → 发现」中搜索「英语健身房」即可安装；也可在插件页按包名 `dsh-english-gym` 添加。
 
+- 要求：DSH `>= 0.2.2-rc.5`（含当前 npm `latest` 版），Node `>= 22.13.0`。
 - **npm**：https://www.npmjs.com/package/dsh-english-gym
 - **GitHub**：https://github.com/KYCOMING/dsh-english-gym
 
