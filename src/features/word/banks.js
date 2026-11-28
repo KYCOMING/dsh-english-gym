@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { ensureDir, readJson, writeJson } from '../../core/store.js'
+import { normalizePhonetic } from '../../shared/text.js'
 
 export const BUILTIN_BANK_ID = 'builtin'
 
@@ -22,6 +23,9 @@ function normalizeEntry(row) {
     word,
     meaning,
     pos: String(row.pos || '').trim(),
+    uk: normalizePhonetic(row.uk ?? row.ukphone ?? row.phoneticUk ?? row.phonetic_uk ?? ''),
+    us: normalizePhonetic(row.us ?? row.usphone ?? row.phoneticUs ?? row.phonetic_us ?? ''),
+    phonetic: normalizePhonetic(row.phonetic ?? row.ipa ?? ''),
     example: String(row.example || '').trim(),
     exampleZh: String(row.exampleZh || row.example_zh || '').trim(),
   }
@@ -108,7 +112,11 @@ export function loadWordBank(dir, id) {
   if (!isValidBankId(id)) return null
   const data = readJson(bankFile(dir, id), null)
   if (!data || !Array.isArray(data.entries)) return null
-  return { id: data.id, name: data.name || '未命名词库', entries: data.entries }
+  return {
+    id: data.id,
+    name: data.name || '未命名词库',
+    entries: data.entries.map(normalizeEntry).filter(Boolean),
+  }
 }
 
 export function saveWordBank(dir, bank) {

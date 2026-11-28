@@ -2,6 +2,35 @@ import React from 'react'
 import { ExampleBlock } from './ExampleBlock.jsx'
 import { FSRS_RATINGS } from './srsFormat.js'
 
+function PhoneticRow({ uk, us, phonetic }) {
+  if (!uk && !us && !phonetic) return null
+  if (uk || us) {
+    return (
+      <div className="eg-phonetics" aria-label="英美音标">
+        {uk ? (
+          <span className="eg-phonetic">
+            <span className="eg-phonetic-tag">英</span>
+            <span className="eg-phonetic-ipa">{'/' + uk + '/'}</span>
+          </span>
+        ) : null}
+        {us ? (
+          <span className="eg-phonetic">
+            <span className="eg-phonetic-tag">美</span>
+            <span className="eg-phonetic-ipa">{'/' + us + '/'}</span>
+          </span>
+        ) : null}
+      </div>
+    )
+  }
+  return (
+    <div className="eg-phonetics" aria-label="音标">
+      <span className="eg-phonetic">
+        <span className="eg-phonetic-ipa">{'/' + phonetic + '/'}</span>
+      </span>
+    </div>
+  )
+}
+
 export function WordFeedback({ res, revealed, busy, rateBusy, onRate }) {
   if (!res) return null
 
@@ -39,10 +68,13 @@ export function WordFeedback({ res, revealed, busy, rateBusy, onRate }) {
             </div>
           </div>
         ) : null}
-        <div className="eg-fb-ref">
-          <span className="lbl">正确拼写</span>
-          {res.reference}
-        </div>
+        {res.reference && /[^a-zA-Z]/.test(res.reference) ? (
+          <div className="eg-fb-ref">
+            <span className="lbl">正确拼写</span>
+            {res.reference}
+          </div>
+        ) : null}
+        <PhoneticRow uk={res.uk} us={res.us} phonetic={res.phonetic} />
         <ExampleBlock example={res.example} exampleZh={res.exampleZh} word={res.reference} highlight={true} />
       </div>
     )
@@ -63,6 +95,7 @@ export function WordFeedback({ res, revealed, busy, rateBusy, onRate }) {
             <span className="lbl">正确拼写</span>
             {res.reference}
           </div>
+          <PhoneticRow uk={res.uk} us={res.us} phonetic={res.phonetic} />
           <ExampleBlock example={res.example} exampleZh={res.exampleZh} word={res.reference} highlight={true} />
         </div>
       </div>

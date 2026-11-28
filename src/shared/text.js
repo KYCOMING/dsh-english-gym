@@ -85,3 +85,31 @@ export function isCleanExample(word, example, exampleZh) {
   if (/[A-Za-z]/.test(zh)) return false
   return true
 }
+
+/** Normalize an IPA transcription (strip outer slashes/brackets, unify IPA symbols). */
+export function normalizePhonetic(value) {
+  const raw = String(value == null ? '' : value)
+    .trim()
+    .replace(/^[/[\]\s]+|[/[\]\s]+$/g, '')
+    .replace(/\u0279/g, 'r')
+    .replace(/\u026b/g, 'l')
+    .replace(/\u0261/g, 'g')
+    .replace(/'/g, '\u02c8')
+    .replace(/:/g, '\u02d0')
+    .replace(/\s+/g, ' ')
+    .trim()
+  if (!raw) return ''
+  return raw.slice(0, 64).trim()
+}
+
+/** Validate a normalized IPA string for safe offline storage and UI display. */
+export function isCleanPhonetic(value) {
+  if (typeof value !== 'string') return false
+  if (!value || value.length > 64) return false
+  if (/^[/[\]]|[/[\]]$/.test(value)) return false
+  if (/[\x00-\x1f\x7f]/.test(value)) return false
+  if (/[\u4e00-\u9fff]/.test(value)) return false
+  if (/[0-9]/.test(value)) return false
+  if (/[<>]/.test(value)) return false
+  return true
+}

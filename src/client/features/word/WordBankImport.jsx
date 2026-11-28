@@ -160,13 +160,26 @@ export function WordBankImport({ onClose, onImported }) {
                   (preview.skippedCount ? ' · 跳过 ' + preview.skippedCount + ' 行' : '')}
               </span>
             </div>
-            {(preview.sample || []).map((item, i) => (
-              <div className="eg-preview-row" key={i}>
-                <span className="w">{item.word}</span>
-                <span className="m">{item.meaning}</span>
-                {item.example ? <span className="ex">{item.example}</span> : null}
-              </div>
-            ))}
+            {(preview.sample || []).map((item, i) => {
+              const ph =
+                item.uk || item.us
+                  ? [item.uk ? '英 /' + item.uk + '/' : '', item.us ? '美 /' + item.us + '/' : '']
+                      .filter(Boolean)
+                      .join(' · ')
+                  : item.phonetic
+                    ? '/' + item.phonetic + '/'
+                    : ''
+              return (
+                <div className="eg-preview-row" key={i}>
+                  <span className="w">
+                    {item.word}
+                    {ph ? <span className="ph">{ph}</span> : null}
+                  </span>
+                  <span className="m">{item.meaning}</span>
+                  {item.example ? <span className="ex">{item.example}</span> : null}
+                </div>
+              )
+            })}
           </div>
           {preview.errors && preview.errors.length ? (
             <div className="eg-preview-errors">

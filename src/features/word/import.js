@@ -13,11 +13,15 @@
  * either English or Chinese are all handled.
  */
 
+import { normalizePhonetic } from '../../shared/text.js'
+
 const WORD_RE = /^[A-Za-z][A-Za-z'’-]{1,31}$/
 
 const HEADER_ALIASES = {
   word: ['word', 'en', 'english', 'term', 'spelling', '单词', '英文', '英语', '词汇'],
   meaning: ['meaning', 'zh', 'cn', 'chinese', 'definition', 'translation', 'trans', '释义', '中文', '翻译', '意思', '词义'],
+  uk: ['uk', 'ukphone', 'uk_phone', 'phonetic_uk', 'phoneticuk', 'uk_ipa', 'br', 'bre', '英音', '英式音标', '英标'],
+  us: ['us', 'usphone', 'us_phone', 'phonetic_us', 'phoneticus', 'us_ipa', 'am', 'ame', '美音', '美式音标', '美标'],
   phonetic: ['phonetic', 'ipa', 'pronunciation', '音标', '发音'],
   example: ['example', 'sentence', 'example_en', 'en_example', '英文例句', '例句'],
   exampleZh: ['examplezh', 'example_zh', 'example zh', 'zh_example', 'sentencezh', 'sentence_zh', 'sentence zh', '例句翻译', '例句中文', '句意'],
@@ -86,6 +90,9 @@ function headerMapping(fields) {
     word: find('word'),
     meaning: find('meaning'),
     pos: find('pos'),
+    uk: find('uk'),
+    us: find('us'),
+    phonetic: find('phonetic'),
     example: find('example'),
     exampleZh: find('exampleZh'),
   }
@@ -126,6 +133,9 @@ function parseJson(content) {
     let word = ''
     let meaning = ''
     let pos = ''
+    let uk = ''
+    let us = ''
+    let phonetic = ''
     let example = ''
     let exampleZh = ''
     if (Array.isArray(row)) {
@@ -139,6 +149,9 @@ function parseJson(content) {
       const rawMeaning = row.meaning ?? row.zh ?? row.trans ?? row.definition ?? row.translation ?? ''
       meaning = normalizeMeaning(Array.isArray(rawMeaning) ? rawMeaning.join('；') : rawMeaning)
       pos = normalizeWord(row.pos ?? row.type ?? row.partOfSpeech ?? row.part_of_speech ?? '')
+      uk = normalizePhonetic(row.uk ?? row.ukphone ?? row.uk_phone ?? row.phoneticUk ?? row.phonetic_uk ?? '')
+      us = normalizePhonetic(row.us ?? row.usphone ?? row.us_phone ?? row.phoneticUs ?? row.phonetic_us ?? '')
+      phonetic = normalizePhonetic(row.phonetic ?? row.ipa ?? row.pronunciation ?? '')
       example = normalizeMeaning(row.example ?? row.sentence ?? row.example_en ?? '').slice(0, 300)
       exampleZh = normalizeMeaning(row.exampleZh ?? row.example_zh ?? row.zhExample ?? row.sentenceZh ?? '').slice(0, 160)
     }
@@ -150,7 +163,7 @@ function parseJson(content) {
       skipped.push({ line: index + 1, reason: '不是单个英文单词', raw: word.slice(0, 60) })
       return
     }
-    entries.push({ word, meaning: meaning.slice(0, 300), pos: pos.slice(0, 24), example, exampleZh })
+    entries.push({ word, meaning: meaning.slice(0, 300), pos: pos.slice(0, 24), uk, us, phonetic, example, exampleZh })
   })
   return { format: 'json', delimiter: '', hasHeader: false, entries, skipped }
 }
@@ -161,7 +174,7 @@ function parseText(content) {
   const entries = []
   const skipped = []
   let hasHeader = false
-  let mapping = { word: 0, meaning: 1, pos: -1, example: -1, exampleZh: -1 }
+  let mapping = { word: 0, meaning: 1, pos: -1, uk: -1, us: -1, phonetic: -1, example: -1, exampleZh: -1 }
   let firstDataLineSeen = false
 
   lines.forEach((line, index) => {
@@ -182,7 +195,7 @@ function parseText(content) {
         hasHeader = true
         mapping = headerMapping(fields)
         if (mapping.word < 0 || mapping.meaning < 0) {
-          mapping = { word: 0, meaning: 1, pos: -1, example: -1, exampleZh: -1 }
+          mapping = { word: 0, meaning: 1, pos: -1, uk: -1, us: -1, phonetic: -1, example: -1, exampleZh: -1 }
         }
         return
       }
@@ -191,6 +204,9 @@ function parseText(content) {
     const word = normalizeWord(fields[mapping.word] ?? '')
     const meaning = normalizeMeaning(fields[mapping.meaning] ?? '')
     const pos = mapping.pos >= 0 ? normalizeWord(fields[mapping.pos] ?? '').slice(0, 24) : ''
+    const uk = mapping.uk >= 0 ? normalizePhonetic(fields[mapping.uk] ?? '') : ''
+    const us = mapping.us >= 0 ? normalizePhonetic(fields[mapping.us] ?? '') : ''
+    const phonetic = mapping.phonetic >= 0 ? normalizePhonetic(fields[mapping.phonetic] ?? '') : ''
     const example = mapping.example >= 0 ? normalizeMeaning(fields[mapping.example] ?? '').slice(0, 300) : ''
     const exampleZh = mapping.exampleZh >= 0 ? normalizeMeaning(fields[mapping.exampleZh] ?? '').slice(0, 160) : ''
     if (!word || !meaning) {
@@ -201,7 +217,7 @@ function parseText(content) {
       skipped.push({ line: index + 1, reason: '不是单个英文单词', raw: word.slice(0, 60) })
       return
     }
-    entries.push({ word, meaning: meaning.slice(0, 300), pos, example, exampleZh })
+    entries.push({ word, meaning: meaning.slice(0, 300), pos, uk, us, phonetic, example, exampleZh })
   })
 
   return {
