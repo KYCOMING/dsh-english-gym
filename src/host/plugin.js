@@ -10,7 +10,7 @@ import { buildDashboard, currentStreak } from '../features/activity/service.js'
 import { executeCleanup, previewCleanup } from '../features/activity/cleanup.js'
 import { resolveActiveBank } from '../features/word/banks.js'
 import { summarizeBankMemory } from '../features/word/srs.js'
-import { readBody, sendJson } from './http.js'
+import { readBody, sendJson, sendSse, startSse } from './http.js'
 
 const API_PREFIX = '/api/english-gym'
 
@@ -115,6 +115,42 @@ export function createEnglishGym(ctx, rawConfig) {
       if (req.method === 'POST' && sub === '/next') {
         const body = await readBody(req)
         return sendJson(res, 200, await phrase.nextQuestion({ sessionId: body && body.sessionId }))
+      }
+      if (req.method === 'POST' && sub === '/next/stream') {
+        const body = await readBody(req)
+        const ac = new AbortController()
+        const onClose = () => {
+          if (!res.writableEnded) ac.abort()
+        }
+        if (typeof res.on === 'function') res.on('close', onClose)
+        startSse(res)
+        try {
+          const card = await phrase.nextQuestion({
+            sessionId: body && body.sessionId,
+            signal: ac.signal,
+            onThinking: () => {
+              if (!ac.signal.aborted) sendSse(res, 'status', { stage: 'thinking' })
+            },
+            onSource: (source) => {
+              if (!ac.signal.aborted) sendSse(res, 'meta', { source })
+            },
+            onZh: (zh, done) => {
+              if (!ac.signal.aborted) sendSse(res, 'zh', { zh, done: !!done })
+            },
+          })
+          if (!ac.signal.aborted && !res.writableEnded && !res.destroyed) {
+            sendSse(res, 'done', card)
+          }
+        } catch (err) {
+          if (!ac.signal.aborted && !res.writableEnded && !res.destroyed) {
+            sendSse(res, 'error', { error: (err && err.message) || String(err) })
+          }
+        } finally {
+          if (typeof res.off === 'function') res.off('close', onClose)
+          else if (typeof res.removeListener === 'function') res.removeListener('close', onClose)
+          if (!res.writableEnded && !res.destroyed) res.end()
+        }
+        return
       }
       if (req.method === 'POST' && sub === '/check') {
         const body = await readBody(req)

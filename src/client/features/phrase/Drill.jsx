@@ -15,6 +15,7 @@ export function Drill({
   prevScore,
   retryFocusTick,
   busy,
+  streaming,
   error,
   onSubmit,
   onRetry,
@@ -22,6 +23,9 @@ export function Drill({
 }) {
   const [hintOpen, setHintOpen] = useState(false)
   const inputRef = useRef(null)
+  const isStreaming = Boolean(streaming || (card && card.streaming))
+  const canSubmit = !busy && !isStreaming && Boolean(card && card.id) && Boolean(answer.trim())
+  const cardKey = card ? card.turnKey || card.id : ''
 
   const syncInputHeight = useCallback(() => {
     const el = inputRef.current
@@ -34,7 +38,7 @@ export function Drill({
 
   useIsoLayoutEffect(() => {
     syncInputHeight()
-  }, [answer, card, feedback, syncInputHeight])
+  }, [answer, cardKey, feedback, syncInputHeight])
 
   useEffect(() => {
     const el = inputRef.current
@@ -42,7 +46,7 @@ export function Drill({
     const ro = new ResizeObserver(syncInputHeight)
     ro.observe(el)
     return () => ro.disconnect()
-  }, [card, feedback, syncInputHeight])
+  }, [cardKey, feedback, syncInputHeight])
 
   // Focus and select the previous draft when returning from “再试一次”.
   useEffect(() => {
@@ -83,7 +87,7 @@ export function Drill({
         <div>
           <div className="eg-err">{error}</div>
           <div className="eg-foot">
-            <button className="eg-btn primary" onClick={onNext} disabled={busy}>
+            <button className="eg-btn primary" onClick={onNext} disabled={busy || streaming}>
               重试
             </button>
           </div>
@@ -102,6 +106,9 @@ export function Drill({
     <div className="eg-drill-stage">
       <div className="eg-cap eg-cap-row">
         <span>把这句话译成英文</span>
+        {isStreaming ? (
+          <span className="eg-stream-pill">{card.stage === 'thinking' ? '思考中…' : '出题中…'}</span>
+        ) : null}
         {card.source === 'session' ? (
           <span className="eg-source-pill" title="根据当前会话内容生成">
             结合当前会话
@@ -109,7 +116,10 @@ export function Drill({
         ) : null}
         {attempt > 0 ? <span className="eg-attempt-pill">{'第 ' + (attempt + 1) + ' 次尝试'}</span> : null}
       </div>
-      <div className="eg-zh">{card.zh}</div>
+      <div className={'eg-zh' + (isStreaming && !card.zh ? ' is-pending' : '')} aria-busy={isStreaming ? 'true' : undefined}>
+        {card.zh || (card.stage === 'thinking' ? '正在构思短语…' : '正在生成短语…')}
+        {isStreaming && !card.zhDone ? <span className="eg-stream-caret" aria-hidden="true" /> : null}
+      </div>
       {card.hint ? (
         <>
           <button
@@ -145,7 +155,7 @@ export function Drill({
             if (e.key !== 'Enter' || e.isComposing || e.keyCode === 229 || e.altKey) return
             if (e.shiftKey) return
             e.preventDefault()
-            if (!busy && answer.trim()) onSubmit()
+            if (canSubmit) onSubmit()
           }}
         />
       </div>
@@ -155,7 +165,7 @@ export function Drill({
           className={'eg-btn primary' + (busy ? ' is-loading' : '')}
           onClick={onSubmit}
           onPointerDown={bounceButton}
-          disabled={busy || !answer.trim()}
+          disabled={!canSubmit}
         >
           提交
         </button>

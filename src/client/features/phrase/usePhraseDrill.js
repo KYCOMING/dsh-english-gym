@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { api } from '../../core/api.js'
+import { api, apiStream } from '../../core/api.js'
 import { store } from '../../core/store.js'
 
 export function usePhraseDrill({ open, active }) {
@@ -11,6 +11,7 @@ export function usePhraseDrill({ open, active }) {
   const [prevScore, setPrevScore] = useState(null)
   const [retryFocusTick, setRetryFocusTick] = useState(0)
   const [busy, setBusy] = useState(false)
+  const [streaming, setStreaming] = useState(false)
   const [error, setError] = useState('')
   const lastScoreRef = useRef(null)
   const startedRef = useRef(false)
@@ -28,30 +29,85 @@ export function usePhraseDrill({ open, active }) {
     if (abortRef.current) abortRef.current.abort()
     const ac = new AbortController()
     abortRef.current = ac
-    setBusy(true)
+    setStreaming(true)
     setError('')
+    setAnswer('')
+    setSubmittedAnswer('')
+    setFeedback(null)
+    setAttempt(0)
+    setPrevScore(null)
+    setRetryFocusTick(0)
+    lastScoreRef.current = null
+    let pendingSource = ''
+    setCard({
+      id: '',
+      zh: '',
+      hint: '',
+      bankWords: [],
+      source: '',
+      streaming: true,
+      zhDone: false,
+      stage: 'connecting',
+      turnKey: gen,
+    })
     try {
-      const data = await api('/next', {
-        method: 'POST',
+      const data = await apiStream('/next/stream', {
         body: JSON.stringify({ sessionId: store.sessionId || '' }),
         signal: ac.signal,
+        onEvent(event, payload) {
+          if (gen !== genRef.current || ac.signal.aborted) return
+          if (event === 'status' && payload && typeof payload.stage === 'string') {
+            setCard((prev) => (prev && prev.turnKey === gen && !prev.zh ? { ...prev, stage: payload.stage } : prev))
+          } else if (event === 'meta' && payload && typeof payload.source === 'string') {
+            pendingSource = payload.source
+            setCard((prev) => (prev && prev.turnKey === gen ? { ...prev, source: payload.source } : prev))
+          } else if (event === 'zh' && payload && typeof payload.zh === 'string') {
+            setCard((prev) => {
+              if (prev && prev.turnKey === gen) {
+                return { ...prev, zh: payload.zh, zhDone: Boolean(payload.done), stage: 'streaming' }
+              }
+              return {
+                id: '',
+                zh: payload.zh,
+                hint: '',
+                bankWords: [],
+                source: pendingSource,
+                streaming: true,
+                zhDone: Boolean(payload.done),
+                stage: 'streaming',
+                turnKey: gen,
+              }
+            })
+          }
+        },
       })
       if (gen !== genRef.current || ac.signal.aborted) return
-      setCard(data)
-      setAnswer('')
-      setSubmittedAnswer('')
-      setFeedback(null)
-      setAttempt(0)
-      setPrevScore(null)
-      setRetryFocusTick(0)
-      lastScoreRef.current = null
+      setCard({ ...data, streaming: false, zhDone: true, stage: 'ready', turnKey: gen })
     } catch (e) {
       if (gen !== genRef.current || ac.signal.aborted || (e && e.name === 'AbortError')) return
-      setError(e.message || '出题失败')
+      if (e && e.status === 404) {
+        try {
+          const fallbackData = await api('/next', {
+            method: 'POST',
+            body: JSON.stringify({ sessionId: store.sessionId || '' }),
+            signal: ac.signal,
+          })
+          if (gen !== genRef.current || ac.signal.aborted) return
+          setCard({ ...fallbackData, streaming: false, zhDone: true, stage: 'ready', turnKey: gen })
+          return
+        } catch (fallbackErr) {
+          if (gen !== genRef.current || ac.signal.aborted || (fallbackErr && fallbackErr.name === 'AbortError')) return
+          setCard(null)
+          setError((fallbackErr && fallbackErr.message) || '出题失败')
+          return
+        }
+      }
+      setCard(null)
+      setError((e && e.message) || '出题失败')
     } finally {
       if (gen === genRef.current) {
         abortRef.current = null
-        setBusy(false)
+        setStreaming(false)
       }
     }
   }, [])
@@ -64,7 +120,7 @@ export function usePhraseDrill({ open, active }) {
   }, [open, active, card, feedback, loadNext])
 
   const submit = useCallback(async () => {
-    if (!card || busy || !String(answer || '').trim()) return
+    if (!card || !card.id || card.streaming || busy || streaming || !String(answer || '').trim()) return
     const currentAnswer = answer
     const gen = ++genRef.current
     if (abortRef.current) abortRef.current.abort()
@@ -103,18 +159,17 @@ export function usePhraseDrill({ open, active }) {
         setBusy(false)
       }
     }
-  }, [card, answer, busy])
+  }, [card, answer, busy, streaming])
 
   const retry = useCallback(() => {
-    if (!card || busy) return
+    if (!card || busy || streaming) return
     setFeedback(null)
     setError('')
     setRetryFocusTick((n) => n + 1)
-  }, [card, busy])
+  }, [card, busy, streaming])
 
   const next = useCallback(() => {
     setFeedback(null)
-    setCard(null)
     setSubmittedAnswer('')
     setAttempt(0)
     setPrevScore(null)
@@ -141,6 +196,7 @@ export function usePhraseDrill({ open, active }) {
     setRetryFocusTick(0)
     setError('')
     setBusy(false)
+    setStreaming(false)
     lastScoreRef.current = null
     startedRef.current = false
   }, [])
@@ -155,6 +211,7 @@ export function usePhraseDrill({ open, active }) {
     prevScore,
     retryFocusTick,
     busy,
+    streaming,
     error,
     submit,
     retry,

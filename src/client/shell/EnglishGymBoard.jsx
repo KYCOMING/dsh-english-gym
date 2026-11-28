@@ -186,7 +186,7 @@ export function EnglishGymBoard() {
           {tab === 'drill' ? (
             <div className="eg-drill">
               <Drill
-                key={drill.card ? drill.card.id : drill.feedback ? 'fb' : 'loading'}
+                key={drill.card ? (drill.card.turnKey || drill.card.id) : drill.feedback ? 'fb' : 'loading'}
                 card={drill.card}
                 answer={drill.answer}
                 setAnswer={drill.setAnswer}
@@ -196,6 +196,7 @@ export function EnglishGymBoard() {
                 prevScore={drill.prevScore}
                 retryFocusTick={drill.retryFocusTick}
                 busy={drill.busy}
+                streaming={drill.streaming}
                 error={drill.error}
                 onSubmit={drill.submit}
                 onRetry={drill.retry}
