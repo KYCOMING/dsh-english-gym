@@ -59,19 +59,41 @@ function recentPrompts(state, limit = 6) {
 /** Phrase translation drill: generate one prompt, grade one answer. */
 export function createPhraseService({ ctx, conf, dir, getTopic, getReasoningEffort }) {
   async function nextQuestion(input) {
-    const sessionId = typeof input === 'object' && input ? input.sessionId : ''
+    const optsInput = typeof input === 'object' && input ? input : {}
+    const sessionId = optsInput.sessionId || ''
+    const signal = optsInput.signal
+    const onZh = typeof optsInput.onZh === 'function' ? optsInput.onZh : undefined
+    const onSource = typeof optsInput.onSource === 'function' ? optsInput.onSource : undefined
+    const onThinking = typeof optsInput.onThinking === 'function' ? optsInput.onThinking : undefined
+    const checkAborted = () => {
+      if (signal && signal.aborted) throw new Error('model call aborted')
+    }
+    checkAborted()
+
     const snapshot = loadState(dir)
     const opts = normalizeSettings(snapshot.settings)
     const reasoningEffort = typeof getReasoningEffort === 'function' ? getReasoningEffort() : opts.reasoningEffort
     const sessionExcerpt = opts.sessionLink && sessionId ? await readSessionExcerpt(ctx, sessionId) : ''
+    checkAborted()
+
     let picked
     if (sessionExcerpt) {
+      if (onSource) {
+        try {
+          onSource('session')
+        } catch {
+          /* ignore */
+        }
+      }
       // Session-linked mode ignores topic and word-bank coupling so the sentence stays focused on the active conversation.
       const q = await generateQuestion(ctx, conf, {
         level: conf.level,
         sessionContext: sessionExcerpt,
         avoid: recentPrompts(snapshot, 6),
         reasoningEffort,
+        signal,
+        onZh,
+        onThinking,
       })
       picked = {
         zh: q.zh,
@@ -81,13 +103,29 @@ export function createPhraseService({ ctx, conf, dir, getTopic, getReasoningEffo
         source: q.fallback ? 'fallback' : 'session',
       }
     } else {
+      if (onSource) {
+        try {
+          onSource('topic')
+        } catch {
+          /* ignore */
+        }
+      }
       const topic = typeof getTopic === 'function' ? getTopic() : conf.topic
       const words = opts.bankLink ? pickBankCandidates(dir, snapshot, 24) : []
       const retries = opts.bankLink ? opts.bankRetries : 0
       let best = null
       let last = null
       for (let attempt = 0; attempt <= retries; attempt += 1) {
-        const q = await generateQuestion(ctx, conf, { level: conf.level, topic, words, reasoningEffort })
+        checkAborted()
+        const q = await generateQuestion(ctx, conf, {
+          level: conf.level,
+          topic,
+          words,
+          reasoningEffort,
+          signal,
+          onZh: attempt === 0 ? onZh : undefined,
+          onThinking: attempt === 0 ? onThinking : undefined,
+        })
         last = q
         if (!q || q.fallback) break
         const usedCount = Array.isArray(q.used) ? q.used.length : 0
@@ -104,6 +142,7 @@ export function createPhraseService({ ctx, conf, dir, getTopic, getReasoningEffo
         source: chosen.fallback ? 'fallback' : 'topic',
       }
     }
+    checkAborted()
     const id = randomUUID()
     // Re-read state after async LLM calls so concurrent word/settings writes are never overwritten.
     const state = loadState(dir)

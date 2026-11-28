@@ -4,6 +4,7 @@
   margin-top: 14px; font-family: var(--eg-font); font-size: 18px; line-height: 1.6; font-weight: 650;
   letter-spacing: -.005em; color: var(--eg-ink); overflow-wrap: break-word;
 }
+.eg-zh.is-pending { color: var(--eg-ink-2); font-weight: 500; }
 .eg-hintbtn { appearance: none; -webkit-appearance: none;
   margin-top: 14px; display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 5px 11px;
   border: 1px solid var(--eg-line); background: var(--eg-bg); border-radius: 999px;
@@ -298,6 +299,30 @@
 .eg-source-pill::before {
   content: ""; width: 6px; height: 6px; border-radius: 50%; flex: 0 0 auto;
   background: var(--eg-accent);
+}
+.eg-stream-pill {
+  display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 999px;
+  background: color-mix(in srgb, var(--eg-accent) 10%, var(--eg-bg));
+  border: 1px solid color-mix(in srgb, var(--eg-accent) 22%, transparent);
+  color: var(--eg-accent); font: 600 11px/1.3 var(--eg-font); font-variant-numeric: tabular-nums;
+}
+.eg-stream-pill::before {
+  content: ""; width: 6px; height: 6px; border-radius: 50%; flex: 0 0 auto;
+  background: var(--eg-accent);
+  animation: eg-stream-pulse 1.1s ease-in-out infinite;
+}
+@keyframes eg-stream-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .35; transform: scale(.75); }
+}
+.eg-stream-caret {
+  display: inline-block; width: 2px; height: 1.05em; margin-left: 3px;
+  vertical-align: -0.14em; border-radius: 1px; background: var(--eg-accent);
+  animation: eg-caret-blink .85s steps(1, end) infinite;
+}
+@keyframes eg-caret-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: .15; }
 }
 
 /* phrase drill: centred prompt, left-aligned reading feedback */

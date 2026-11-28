@@ -252,6 +252,7 @@ export async function completeText(ctx, config, req) {
     let text = ''
     const seen = new Set()
     let finishKind = ''
+    let thinkingNotified = false
     let iter = null
     resetIdleTimer()
     try {
@@ -265,7 +266,16 @@ export async function completeText(ctx, config, req) {
         if (!chunk || typeof chunk !== 'object') continue
         if (chunk.type) seen.add(chunk.type)
         if (chunk.type === 'text-delta') {
-          text += chunk.text || ''
+          if (chunk.text) {
+            text += chunk.text
+            if (typeof req.onDelta === 'function') {
+              try {
+                req.onDelta(chunk.text, text)
+              } catch {
+                /* observer errors must not break the stream */
+              }
+            }
+          }
         } else if (chunk.type === 'finish') {
           const reason = chunk.reason || {}
           finishKind = reason.kind || ''
@@ -277,6 +287,15 @@ export async function completeText(ctx, config, req) {
           }
           if (reason.kind === 'aborted') {
             throw new Error('model call aborted')
+          }
+        } else if (chunk.type && /reason|think/i.test(chunk.type)) {
+          if (!thinkingNotified && typeof req.onThinking === 'function') {
+            thinkingNotified = true
+            try {
+              req.onThinking()
+            } catch {
+              /* observer errors must not break the stream */
+            }
           }
         }
       }
@@ -300,6 +319,13 @@ export async function completeText(ctx, config, req) {
   } catch (err) {
     if (options.reasoningEffort && !ac.signal.aborted && isReasoningOptionError(err)) {
       markEffortRejected(llm, provider, model, options.reasoningEffort)
+      if (typeof req.onReset === 'function') {
+        try {
+          req.onReset()
+        } catch {
+          /* ignore */
+        }
+      }
       const retryOptions = { ...options, maxTokens: Math.max(options.maxTokens || 900, 4096) }
       delete retryOptions.reasoningEffort
       return await runStream(retryOptions)
