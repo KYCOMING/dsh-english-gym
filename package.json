@@ -28,7 +28,8 @@
     "access": "public"
   },
   "engines": {
-    "dsh": ">=0.2.3-alpha.2"
+    "dsh": ">=0.2.3-alpha.2",
+    "node": ">=22.13.0"
   },
   "keywords": [
     "dsh",

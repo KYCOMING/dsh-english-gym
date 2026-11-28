@@ -5,6 +5,7 @@ import os from 'node:os'
 import path from 'node:path'
 import { createSettingsService, normalizeReportLevel, REPORT_LEVELS } from '../src/features/settings/service.js'
 import { createReportService } from '../src/features/report/service.js'
+import { dayKey, loadReport } from '../src/core/store.js'
 
 test('normalizeReportLevel normalizes case, rejects invalid levels, and respects fallback', () => {
   assert.equal(normalizeReportLevel('c1'), 'C1')
@@ -151,6 +152,7 @@ test('createReportService does not cache fallback report on LLM failure and retr
     assert.equal(fb.fallback, true)
     assert.equal(calls, 1)
     assert.equal(fs.existsSync(path.join(dir, 'reports')), false)
+    assert.equal(loadReport(dir, dayKey()), null)
 
     available = true
     const real = await reportSvc.getReport(false)

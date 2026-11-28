@@ -4,7 +4,7 @@ import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { cutoffDayKey, executeCleanup, previewCleanup, pruneOldReports } from '../src/features/activity/cleanup.js'
-import { loadState, saveReport, saveState } from '../src/core/store.js'
+import { loadReport, loadState, saveReport, saveState } from '../src/core/store.js'
 import { createWordService } from '../src/features/word/service.js'
 
 test('cutoffDayKey calculates local cutoff dates across ranges', () => {
@@ -63,8 +63,8 @@ test('previewCleanup and executeCleanup remove old logs/reports while preserving
     assert.ok(afterSafe.log['2026-11-24'])
     assert.ok(afterSafe.wordMemory.oldword)
     assert.ok(afterSafe.wordMemory.newword)
-    assert.equal(fs.existsSync(path.join(dir, 'reports', '2026-09-01.json')), false)
-    assert.equal(fs.existsSync(path.join(dir, 'reports', '2026-11-24.json')), true)
+    assert.equal(loadReport(dir, '2026-09-01'), null)
+    assert.ok(loadReport(dir, '2026-11-24'))
 
     // Execute with clearMemory=true for 30d -> prunes oldword, keeps newword
     const resMem = executeCleanup(dir, { range: '30d', clearMemory: true, now })
@@ -121,8 +121,8 @@ test('pruneOldReports removes reports older than 90 days and retains recent ones
     saveReport(dir, '2026-11-20', { title: 'Recent', body: 'Recent' })
     const removed = pruneOldReports(dir, 90, now)
     assert.equal(removed, 1)
-    assert.equal(fs.existsSync(path.join(dir, 'reports', '2026-08-01.json')), false)
-    assert.equal(fs.existsSync(path.join(dir, 'reports', '2026-11-20.json')), true)
+    assert.equal(loadReport(dir, '2026-08-01'), null)
+    assert.ok(loadReport(dir, '2026-11-20'))
   } finally {
     fs.rmSync(dir, { recursive: true, force: true })
   }

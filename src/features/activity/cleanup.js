@@ -1,6 +1,4 @@
-import fs from 'node:fs'
-import path from 'node:path'
-import { dayKey, loadState, saveState } from '../../core/store.js'
+import { dayKey, deleteReportsBefore, listReportDays, loadState, saveState } from '../../core/store.js'
 
 export const CLEANUP_RANGES = [
   { id: '7d', label: '7 天前', days: 7 },
@@ -28,23 +26,6 @@ export function cutoffDayKey(range, now = new Date()) {
   return dayKey(d)
 }
 
-function listReportFiles(dir) {
-  const reportsDir = path.join(dir, 'reports')
-  let names = []
-  try {
-    names = fs.readdirSync(reportsDir)
-  } catch {
-    return []
-  }
-  const out = []
-  for (const file of names) {
-    const m = /^(\d{4}-\d{2}-\d{2})\.json$/.exec(file)
-    if (!m) continue
-    out.push({ file, fullPath: path.join(reportsDir, file), day: m[1] })
-  }
-  return out
-}
-
 function computeMatches(dir, state, { range, clearMemory = false, now = new Date() } = {}) {
   const normRange = assertValidRange(range)
   const cutoff = cutoffDayKey(normRange, now)
@@ -53,7 +34,7 @@ function computeMatches(dir, state, { range, clearMemory = false, now = new Date
   const logKeys = Object.keys(state.log || {}).filter(isOld)
   const dailyKeys = Object.keys(state.daily || {}).filter(isOld)
   const daySet = new Set([...logKeys, ...dailyKeys])
-  const reportFiles = listReportFiles(dir).filter((f) => isOld(f.day))
+  const reportDays = listReportDays(dir).filter(isOld)
 
   let memoryKeys = []
   if (clearMemory === true) {
@@ -74,7 +55,7 @@ function computeMatches(dir, state, { range, clearMemory = false, now = new Date
     logKeys,
     dailyKeys,
     recordDays: daySet.size,
-    reportFiles,
+    reportDays,
     memoryKeys,
   }
 }
@@ -88,7 +69,7 @@ export function previewCleanup(dir, { range, clearMemory = false, now = new Date
     range: m.range,
     cutoff: m.cutoff,
     recordDays: m.recordDays,
-    reports: m.reportFiles.length,
+    reports: m.reportDays.length,
     memoryWords: m.memoryKeys.length,
   }
 }
@@ -194,15 +175,7 @@ export function executeCleanup(dir, { range, clearMemory = false, now = new Date
 
   saveState(dir, state)
 
-  let removedReports = 0
-  for (const f of m.reportFiles) {
-    try {
-      fs.unlinkSync(f.fullPath)
-      removedReports += 1
-    } catch {
-      /* ignore missing/locked file */
-    }
-  }
+  const removedReports = deleteReportsBefore(dir, m.cutoff)
 
   return {
     ok: true,
@@ -221,16 +194,5 @@ export function pruneOldReports(dir, maxAgeDays = 90, now = new Date()) {
   const days = Math.max(1, Math.floor(Number(maxAgeDays) || 90))
   const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - days)
   const cutoff = dayKey(d)
-  let removed = 0
-  for (const f of listReportFiles(dir)) {
-    if (f.day < cutoff) {
-      try {
-        fs.unlinkSync(f.fullPath)
-        removed += 1
-      } catch {
-        /* ignore */
-      }
-    }
-  }
-  return removed
+  return deleteReportsBefore(dir, cutoff)
 }

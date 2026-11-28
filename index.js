@@ -7,7 +7,7 @@ export const inject = ['webServer']
  * English Gym host half.
  *
  * Responsibilities:
- *  - persist practice progress + daily reports under $DSH_HOME (plain JSON, no deps)
+ *  - persist practice progress + daily reports + custom wordbanks under $DSH_HOME (SQLite via node:sqlite, no external deps)
  *  - expose a small JSON API for the resident widget (composer dock) over ctx.webServer
  *  - generate practice sentences / grade answers / write the daily AI-tech report via ctx.llm
  *  - (optional) register `english_*` tools so the main conversation can drill too
@@ -27,6 +27,8 @@ export function apply(ctx, config) {
     }
     // background daily reporter (best-effort, only if a timer is available)
     disposers.push(gym.startDailyReporter())
+    // close SQLite handle on plugin teardown
+    disposers.push(() => gym.close())
     return () => {
       for (const dispose of disposers) {
         try {

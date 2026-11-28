@@ -1,4 +1,4 @@
-import { dayKey, loadState, resolveDataDir } from '../core/store.js'
+import { closeDb, dayKey, loadState, resolveDataDir } from '../core/store.js'
 import { hasLlm } from '../core/llm.js'
 import { gradeAnswer } from '../features/phrase/grade.js'
 import { generateQuestion } from '../features/phrase/generate.js'
@@ -332,5 +332,6 @@ export function createEnglishGym(ctx, rawConfig) {
     getReport: report.getReport,
     enrichReport: report.enrichReport,
     summarize,
+    close: () => closeDb(dir),
   }
 }

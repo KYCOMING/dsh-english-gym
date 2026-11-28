@@ -1,6 +1,11 @@
-import fs from 'node:fs'
 import path from 'node:path'
-import { ensureDir, readJson, writeJson } from '../../core/store.js'
+import {
+  deleteCustomWordBank,
+  listCustomWordBanks,
+  loadCustomWordBank,
+  readJson,
+  saveCustomWordBank,
+} from '../../core/store.js'
 import { normalizePhonetic } from '../../shared/text.js'
 
 export const BUILTIN_BANK_ID = 'builtin'
@@ -58,10 +63,6 @@ export function wordbanksDir(dir) {
   return path.join(dir, 'wordbanks')
 }
 
-function bankFile(dir, id) {
-  return path.join(wordbanksDir(dir), `${id}.json`)
-}
-
 export function isValidBankId(id) {
   return typeof id === 'string' && /^wb-[a-z0-9-]{4,64}$/.test(id)
 }
@@ -78,24 +79,8 @@ export function listWordBanks(dir) {
       builtin: true,
     }
   })
-  const folder = wordbanksDir(dir)
-  let files = []
-  try {
-    files = fs.readdirSync(folder).filter((name) => name.endsWith('.json'))
-  } catch {
-    files = []
-  }
-  for (const file of files) {
-    const data = readJson(path.join(folder, file), null)
-    if (!data || !Array.isArray(data.entries) || !data.id) continue
-    banks.push({
-      id: data.id,
-      name: data.name || '未命名词库',
-      count: data.entries.length,
-      source: data.source || 'import',
-      createdAt: data.createdAt || null,
-      builtin: false,
-    })
+  for (const custom of listCustomWordBanks(dir)) {
+    banks.push(custom)
   }
   banks.sort((a, b) => {
     if (a.builtin && b.builtin) return 0
@@ -110,7 +95,7 @@ export function loadWordBank(dir, id) {
   const meta = getBuiltinMeta(id || BUILTIN_BANK_ID)
   if (meta) return loadBuiltin(meta)
   if (!isValidBankId(id)) return null
-  const data = readJson(bankFile(dir, id), null)
+  const data = loadCustomWordBank(dir, id)
   if (!data || !Array.isArray(data.entries)) return null
   return {
     id: data.id,
@@ -120,7 +105,6 @@ export function loadWordBank(dir, id) {
 }
 
 export function saveWordBank(dir, bank) {
-  ensureDir(wordbanksDir(dir))
   const payload = {
     id: bank.id,
     name: bank.name,
@@ -128,18 +112,13 @@ export function saveWordBank(dir, bank) {
     createdAt: bank.createdAt || new Date().toISOString(),
     entries: bank.entries,
   }
-  writeJson(bankFile(dir, bank.id), payload)
+  saveCustomWordBank(dir, payload)
   return payload
 }
 
 export function deleteWordBank(dir, id) {
   if (isBuiltinBankId(id) || !isValidBankId(id)) return false
-  try {
-    fs.unlinkSync(bankFile(dir, id))
-    return true
-  } catch {
-    return false
-  }
+  return deleteCustomWordBank(dir, id)
 }
 
 /** The active bank, falling back to the built-in bank when it vanished. */
